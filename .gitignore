@@ -2,7 +2,6 @@ venv
 front/bower_components
 front/node_modules
 staticfiles
-front/src/temp
 result.xml
 .vagrant
 *.pyc
