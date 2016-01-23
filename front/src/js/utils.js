@@ -12,8 +12,20 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
         });
     };
 })
-.factory('UtilsSvc', function ($http, $q) {
+.factory('UtilsSvc', function ($http, $q, $timeout) {
     var service={};
+
+    service.selecter=function(elementId, active){
+        if (active){
+            $('#'+elementId).selecter('destroy');
+            $timeout(function(){
+                $('#'+elementId).selecter();
+                $('.selecter-options>.selecter-item').filter(function(){
+                    return $(this).data('value').toString().indexOf('? number:')!=-1;
+                }).addClass('disabled');
+            },0)
+        }
+    }
 
     service.capitalise = function (string) {
       if (string.length>0)
@@ -23,10 +35,10 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
     }
     //Numbers 1, 3 и 5.
     //Sample: decOfNum(5, ['секунда', 'секунды', 'секунд'])
-    service.declOfNum = function(number, titles)  
-    {  
-        cases = [2, 0, 1, 1, 1, 2];  
-        return titles[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];  
-    }  
+    service.declOfNum = function(number, titles)
+    {
+        cases = [2, 0, 1, 1, 1, 2];
+        return titles[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];
+    }
     return service;
-  });
+});

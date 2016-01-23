@@ -1,3 +1,6 @@
 app.constant('CaruselConst', {
-    template:'views/widjets/carusel/content.html'
+    templates:{
+        item: 'views/widjets/carusel/item.html',
+        update: 'views/widjets/carusel/update.html'
+    }
 });

@@ -1,3 +1,6 @@
 app.constant('AnonceConst', {
-    template:'views/widjets/anonce/content.html'
+    templates:{
+        item: 'views/widjets/anonce/item.html',
+        update: 'views/widjets/anonce/update.html'
+    }
 });

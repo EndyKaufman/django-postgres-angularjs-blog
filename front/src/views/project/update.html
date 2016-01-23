@@ -1,0 +1,72 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Edit project</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="form-group">
+                <label for="ItemTitle">Title</label>
+                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">
+            </div>
+            <div class="form-group">
+                <label for="ItemName">Name</label>
+                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">
+            </div>
+            <div class="form-group">
+                <label for="ItemDescription">Description</label>
+                <textarea type="text" class="form-control" id="ItemDescription"
+                          ng-model="ProjectSvc.item.description"></textarea>
+            </div>
+            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">
+                <div class="form-group">
+                    <label for="ItemText">Text</label>
+                <textarea type="text" class="form-control" id="ItemText"
+                          ng-model="ProjectSvc.item.text" rows="15"></textarea>
+                </div>
+            </div>
+            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">
+                <div class="form-group">
+                    <label for="Description">Html</label>
+                <textarea type="text" class="form-control" id="ItemHtml"
+                          ng-model="ProjectSvc.item.html" rows="15"></textarea>
+                </div>
+            </div>
+            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">
+                <div class="form-group">
+                    <label for="ItemUrl">Url</label>
+                <textarea type="text" class="form-control" id="ItemUrl"
+                          ng-model="ProjectSvc.item.url" rows="15"></textarea>
+                </div>
+            </div>
+            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">
+                <div class="form-group">
+                    <label for="ItemMarkdown">Markdown</label>
+                <textarea type="text" class="form-control" id="ItemMarkdown"
+                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="ItemType">Type</label>
+                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">
+                    <option ng-repeat="type in ProjectSvc.types"
+                            ng-value="type.id"
+                            ng-bind-html="type.title | unsafe"
+                            ng-selected="ProjectSvc.item.type==type.id"
+                            ng-init="UtilsSvc.selecter('ItemType', $last)"></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ItemTags">Tags</label>
+                <select multiple class="form-control" id="ItemTags" ng-model="ProjectSvc.item.tags">
+                    <option ng-repeat="tag in ProjectSvc.tags"
+                            ng-value="tag"
+                            ng-bind-html="tag | unsafe"
+                            ng-selected="ProjectSvc.item.tags.indexOf(tag)!=-1"
+                            ng-init="UtilsSvc.selecter('ItemTags', $last)"></option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

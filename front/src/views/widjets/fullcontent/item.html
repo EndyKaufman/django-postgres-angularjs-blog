@@ -1,0 +1,12 @@
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">
+    <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>
+</div>
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">
+    <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>
+</div>
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">
+    <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>
+</div>
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">
+    <p ng-bind-html="ProjectSvc.item.markdown | unsafe"></p>
+</div>

@@ -1,4 +1,16 @@
-angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/carusel/content.html', '<div class="jumbotron-photo" ng-if="item.images.length>0">\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.markdown | unsafe"></p>\n' +
+    '</div>');
+	a.put('views/widjets/carusel/item.html', '<div class="jumbotron-photo" ng-if="item.images.length>0">\n' +
     '    <div id="{{\'carousel-\'+item.name}}" class="carousel slide" data-ride="carousel">\n' +
     '        <ol class="carousel-indicators" ng-if="item.images.length>1">\n' +
     '            <li ng-repeat="image in item.images" data-target="{{\'#carousel-\'+item.name}}"\n' +
@@ -18,21 +30,9 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </a>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/widjets/anonce/content.html', '<div class="jumbotron-contents" ng-if="item.type==1">\n' +
+	a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
     '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.text | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="item.type==2">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.html | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="item.type==3">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.url | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="item.type==4">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.markdown | unsafe"></p>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
     '</div>');
 	a.put('views/tag/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -56,6 +56,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                            <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -86,6 +87,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                            <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -93,6 +95,78 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </div>\n' +
     '    </div>\n' +
     '\n' +
+    '</div>');
+	a.put('views/project/update.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Edit project</h1>\n' +
+    '    </div>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-md-9">\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemTitle">Title</label>\n' +
+    '                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemName">Name</label>\n' +
+    '                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
+    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="Description">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '        <div class="col-md-3">\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemType">Type</label>\n' +
+    '                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
+    '                    <option ng-repeat="type in ProjectSvc.types"\n' +
+    '                            ng-value="type.id"\n' +
+    '                            ng-bind-html="type.title | unsafe"\n' +
+    '                            ng-selected="ProjectSvc.item.type==type.id"\n' +
+    '                            ng-init="UtilsSvc.selecter(\'ItemType\', $last)"></option>\n' +
+    '                </select>\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemTags">Tags</label>\n' +
+    '                <select multiple class="form-control" id="ItemTags" ng-model="ProjectSvc.item.tags">\n' +
+    '                    <option ng-repeat="tag in ProjectSvc.tags"\n' +
+    '                            ng-value="tag"\n' +
+    '                            ng-bind-html="tag | unsafe"\n' +
+    '                            ng-selected="ProjectSvc.item.tags.indexOf(tag)!=-1"\n' +
+    '                            ng-init="UtilsSvc.selecter(\'ItemTags\', $last)"></option>\n' +
+    '                </select>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
     '</div>');
 	a.put('views/project/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -102,8 +176,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    <div class="row">\n' +
     '        <div ng-class="\'col-md-\'+(12/ProjectSvc.countItemsOnRow)" ng-repeat="item in ProjectSvc.list">\n' +
     '            <div class="jumbotron">\n' +
-    '                <div ng-include="AppConst.widjets.carusel.template"></div>\n' +
-    '                <div ng-include="AppConst.widjets.anonce.template"></div>\n' +
+    '                <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
+    '                <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
     '\n' +
     '                <div class="jumbotron-contents">\n' +
     '                    <div class="row">\n' +
@@ -115,6 +189,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{ProjectSvc.projectUrl+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -131,7 +206,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                <a ng-href="{{ProjectSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
     '                   ng-bind-html="tag | unsafe"></a>\n' +
     '            </span>\n' +
-    '            <>\n' +
+    '            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>\n' +
     '        </div>\n' +
     '        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-xs"></h1>\n' +
     '    </div>\n' +
@@ -147,18 +222,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    </div>\n' +
     '                </div>\n' +
     '\n' +
-    '                <div ng-include="ProjectSvc.anonceTemplate"></div>\n' +
-    '\n' +
-    '                <div class="jumbotron-contents">\n' +
-    '                    <div class="row">\n' +
-    '                        <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '                                <a ng-href="{{ProjectSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
+    '                <div ng-include="AppConst.widjets.fullcontent.templates.item"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +

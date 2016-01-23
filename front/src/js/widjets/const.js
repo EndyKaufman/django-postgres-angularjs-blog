@@ -1,6 +1,7 @@
-app.factory('WidjetsConst', function(AnonceConst, CaruselConst){
+app.factory('WidjetsConst', function(AnonceConst, CaruselConst, FullContentConst){
     return {
         carusel: CaruselConst,
-        anonce: AnonceConst
+        anonce: AnonceConst,
+        fullcontent: FullContentConst
     }
 });

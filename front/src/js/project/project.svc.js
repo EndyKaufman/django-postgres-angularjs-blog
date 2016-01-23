@@ -4,6 +4,14 @@ app.factory('ProjectSvc', function ($routeParams, $http, AppConst, NavbarSvc) {
     service.item=false;
     service.list=false;
 
+    service.tags=['tag1', 'tag21', 'tag23', 'tag44','tag133', 'tag215', 'tag235', 'tag445','tag155', 'tag2155', 'tag23555', 'tag44555'];
+    service.types=[
+        {id:1,title:'Text'},
+        {id:2,title:'Html'},
+        {id:3,title:'Url'},
+        {id:4,title:'Markdown'}
+    ];
+
     service.projectUrl=AppConst.project.urls.url;
     service.tagUrl=AppConst.tag.urls.url;
 

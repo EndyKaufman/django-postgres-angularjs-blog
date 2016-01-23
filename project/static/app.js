@@ -1,3 +1,21 @@
+var initCheck = function(){
+  $('input').iCheck({
+    checkboxClass: 'icheckbox_custom-blue',
+    radioClass: 'iradio_custom-blue',
+    increaseArea: '20%'
+  });
+};
+
+initJQueryPlugins = function(){
+  initCheck();
+};
+
+$(document).ready(function(){
+  $('[data-toggle="offcanvas"]').click(function () {
+    $('.row-offcanvas').toggleClass('active')
+  });
+  initJQueryPlugins();
+});
 !function(e,t){"undefined"!=typeof module?module.exports=t():"function"==typeof define&&"object"==typeof define.amd?define("domready",t):this[e]=t()}("domready",function(e){function t(e){for(f=1;e=i.shift();)e()}var n,i=[],r=!1,o=document,a=o.documentElement,s=a.doScroll,l="DOMContentLoaded",c="addEventListener",u="onreadystatechange",d="readyState",m=s?/^loaded|^c/:/^loaded|c/,f=m.test(o[d]);return o[c]&&o[c](l,n=function(){o.removeEventListener(l,n,r),t()},r),s&&o.attachEvent(u,n=function(){/^c/.test(o[d])&&(o.detachEvent(u,n),t())}),e=s?function(t){self!=top?f?t():i.push(t):function(){try{a.doScroll("left")}catch(n){return setTimeout(function(){e(t)},50)}t()}()}:function(e){f?e():i.push(e)}}),define("detect-resize",[],function(){"use strict";function e(){f=c(),window.requestAnimationFrame&&window.cancelAnimationFrame||l(),i()}function t(e,t){if(m)return void e.attachEvent("onresize",function(){t.call(e)});var n=e.id;return n?void(h[n]||r(e,t)):void u("error","Element has been passed to addListener but hasnt been identified yet.")}function n(e,t){if(m)return void e.detachEvent("onresize",t);var n=h[e.id];n&&(e.removeEventListener("scroll",o),e.removeChild(n.triggerElements.container),delete h[e.id])}function i(){var e=[f.keyframesRule?f.keyframesRule:"",".resize-triggers { "+(f.styleDeclaration?f.styleDeclaration:"")+" visibility: hidden; opacity: 0; }",'.resize-triggers, .resize-triggers > div, .contract-trigger:before { content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; } .resize-triggers > div { background: #eee; overflow: auto; } .contract-trigger:before { width: 200%; height: 200%; }'];e=e.join(" ");var t=document.head||document.getElementsByTagName("head")[0],n=document.createElement("style");n.type="text/css",n.styleSheet?n.styleSheet.cssText=e:n.appendChild(document.createTextNode(e)),t.appendChild(n)}function r(e,t){var n=d(e,"position");"static"===n&&(e.style.position="relative");var i=document.createElement("div"),r=document.createElement("div"),s=document.createElement("div"),l=document.createElement("div");i.className="resize-triggers",r.className="expand-trigger",l.className="contract-trigger",r.appendChild(s),i.appendChild(r),i.appendChild(l),e.appendChild(i),h[e.id]={targetElement:e,resizeLast:{},callbackFunction:t,triggerElements:{container:i,expand:r,expandChild:s,contract:l},resizeRAF:null},e.addEventListener("scroll",o,!0),f.isSupported&&i.addEventListener(f.animationStartEvent,function(t){t.animationName===f.animationName&&a(e)})}function o(){var e=this,t=h[e.id];a(e),t.resizeRAF&&window.cancelAnimationFrame(t.resizeRAF),t.resizeRAF=window.requestAnimationFrame(function(){var n=s(e),i=t.resizeLast;(n.width!=i.width||n.height!=i.height)&&(i.width=n.width,i.height=n.height,t.callbackFunction.call(e,n.width,n.height))})}function a(e){var t=e.id,n=h[t].triggerElements.expand,i=h[t].triggerElements.contract,r=h[t].triggerElements.expandChild;i.scrollLeft=i.scrollWidth,i.scrollTop=i.scrollHeight,r.style.width=n.offsetWidth+1+"px",r.style.height=n.offsetHeight+1+"px",n.scrollLeft=n.scrollWidth,n.scrollTop=n.scrollHeight}function s(e){return{width:e.offsetWidth,height:e.offsetHeight}}function l(){window.requestAnimationFrame||(window.requestAnimationFrame=function(){return window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(e){window.setTimeout(e,1e3/60)}}()),window.cancelAnimationFrame||(window.cancelAnimationFrame=function(){return window.webkitCancelAnimationFrame||window.mozCancelAnimationFrame||window.oCancelAnimationFrame||window.msCancelAnimationFrame||window.clearTimeout}())}function c(){var e=!1,t="",n="animationstart",i="Webkit Moz O ms".split(" "),r="webkitAnimationStart animationstart oAnimationStart MSAnimationStart".split(" "),o=document.createElement("div");if(void 0!==o.style.animationName&&(e=!0),e===!1)for(var a=0,s=i.length;s>a;a++)if(void 0!==o.style[i[a]+"AnimationName"]){t="-"+i[a].toLowerCase()+"-",n=r[a],e=!0;break}if(!e)return{isSupported:!1};var l="resizeanim";return{isSupported:e,keyframesRule:"@"+t+"keyframes "+l+" {from { opacity: 0; } to { opacity: 0; }}",styleDeclaration:t+"animation: 1ms "+l+";",animationStartEvent:n,animationName:l}}function u(e,t){console&&console[e](t)}function d(e,t){var n=null;return e.currentStyle?n=e.currentStyle[t]:window.getComputedStyle&&(n=document.defaultView.getComputedStyle(e,null).getPropertyValue(t)),n}var m=document.attachEvent;if(m)return{addListener:t,removeListener:n};var f={},h={};return e(),{addListener:t,removeListener:n}}),define("src/element-queries",["domready","detect-resize"],function(e,t){"use strict";function n(e){this.element=e,this.queries=[],this.addElementQuery=function(e){this.queries.push(e)},this.callback=function(e,t){var n=this,i=l(n.id);if(null===i)return void u("error","There is no instance of ElementQueryElement for element id "+n.id);var r=i.queries.length,o={};e=e||n.offsetWidth,t=t||n.offsetHeight;for(var a=0;r>a;a++){var s=i.queries[a],c="width"===s.property?e:t,d=s.mode+"-"+s.property,m=parseFloat(s.value),f="";if("min"===s.mode&&c>=m&&(f=s.value),"max"===s.mode&&m>=c&&(f=s.value),f){o[d]||(o[d]=[]);var h=o[d].join(" ");if(-1!==h.indexOf(f))continue;o[d].push(f)}}var p=["min-width","min-height","max-width","max-height"];for(a=0,r=p.length;r>a;a++)o[p[a]]?n.setAttribute(p[a],o[p[a]].join(" ")):n.removeAttribute(p[a])}}function i(e,t){if(null===e)return[];if("string"==typeof e){var n=e.toLowerCase();return a(n)?[e]:[]}if(!t)var t=[];for(var r=0,o=e.length;o>r;r++)1===e[r].type?(n=e[r].selectorText||e[r].cssText,a(n)&&t.push(n)):4===e[r].type&&i(e[r].cssRules||e[r].rules,t);return t}function r(){var e=document.createStyleSheet();document.querySelectorAll=function(t){t=t.replace(/\[for\b/gi,"[htmlFor").split(",");for(var n=[],i=document.all,r=t.length;r--;){e.addRule(t[r],"k:v");for(var o=i.length;o--;)i[o].currentStyle.k&&n.push(i[o]);e.removeRule(0)}return n}}function o(){String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g,"")}}function a(e){return-1!==e.indexOf("min-height")||-1!==e.indexOf("max-height")||-1!==e.indexOf("min-width")||-1!==e.indexOf("max-width")}function s(e){var t=e.id;if(t)return t;var n="element-query-element-";return t=n+c(d),e.id=t,t}function l(e){return d[e]?d[e]:null}function c(e){return Object.keys||(Object.keys=function(e){var t,n=[];for(t in e)e.hasOwnProperty(t)&&n.push(t);return n}),Object.keys(e).length}function u(e,t){console&&console[e](t)}var d={},m=function(){this.selectorsToParse=[],this.setupCache=[],this.initialize()};m.prototype.initialize=function(){if(!t)return void u("error","ElementQueryElements need some sort of element resize detection. `ResizeDetection` seems to be unavailable.");"function"!=typeof document.querySelectorAll&&r(),"function"!=typeof String.prototype.trim&&o();for(var e=0,n=document.styleSheets.length;n>e;e++)try{var a=i(document.styleSheets[e].cssText||document.styleSheets[e].cssRules||document.styleSheets[e].rules);a.length>0&&(this.selectorsToParse=this.selectorsToParse.concat(a))}catch(s){u("error","Unable to read from file: "+document.styleSheets[e].href)}if(this.selectorsToParse.length<1)return void u("info","No selectors found to initialize.");this.addSelectorsToParseToSetupCache(),this.setupElementQueryElements();for(var l in d)if(d.hasOwnProperty(l)){var c=d[l].element;d[l].callback.call(c)}},m.prototype.addSelectorsToParseToSetupCache=function(){for(var e=0,t=this.selectorsToParse.length;t>e;e++){var n,i=this.selectorsToParse[e],r=/,?([^,\n]*)\[[\s\t]*(min|max)-(width|height)[\s\t]*[~$\^]?=[\s\t]*"([^"]*)"[\s\t]*]([^\n\s\{]*)/gim;for(i=i.replace(/'/g,'"');null!==(n=r.exec(i));)if(n.length>5){var o=n[1].trim();""!==n[5]&&(o=n[5].trim()),this.setupCache.push([o,n[2],n[3],n[4]])}else u("info","Didn't find all necessary parts for selector "+i),u("info",n)}},m.prototype.setupElementQueryElements=function(){for(var e=0,i=this.setupCache.length;i>e;e++){var r=this.setupCache[e],o=r[0];try{var a=document.querySelectorAll(o);if(!a||a.length<1){u("info","No elements found for selector "+o);continue}for(var l=0,c=a.length;c>l;l++){var m=a[l],f=s(m);d[f]||(d[f]=new n(m),t.addListener(m,d[f].callback)),d[f].addElementQuery({mode:r[1],property:r[2],value:r[3]})}}catch(h){u("error","Unable to perform querySelectorAll for selector: "+o)}}console.log("foo")},m.prototype.removeListeners=function(){for(var e in d)d.hasOwnProperty(e)&&t.removeListener(d[e].element,d[e].callback);d={}};var f=function(){var t=this;e(function(){t.Instance=new m})};return f.prototype.resetElementQueryElements=function(){this.Instance.removeListeners(),this.Instance.setupElementQueryElements()},new f});
 //# sourceMappingURL=element-queries.min.js.map
 /**
@@ -37064,7 +37082,9 @@ angular.module('ngResource', ['ng']).
 })();
 
 var app = angular.module('app', [
-	'ngAnimate','ngRoute','ngCookies',
+	'ngAnimate',
+	'ngRoute',
+	'ngCookies',
 	'ngResource',
     'ui.tree']);
 app.constant('AuthConst',{
@@ -37182,17 +37202,30 @@ app.constant('TagConst', {
         getData: '/tag'
     }
 });
-app.factory('WidjetsConst', function(AnonceConst, CaruselConst){
+app.factory('WidjetsConst', function(AnonceConst, CaruselConst, FullContentConst){
     return {
         carusel: CaruselConst,
-        anonce: AnonceConst
+        anonce: AnonceConst,
+        fullcontent: FullContentConst
     }
 });
 app.constant('AnonceConst', {
-    template:'views/widjets/anonce/content.html'
+    templates:{
+        item: 'views/widjets/anonce/item.html',
+        update: 'views/widjets/anonce/update.html'
+    }
 });
 app.constant('CaruselConst', {
-    template:'views/widjets/carusel/content.html'
+    templates:{
+        item: 'views/widjets/carusel/item.html',
+        update: 'views/widjets/carusel/update.html'
+    }
+});
+app.constant('FullContentConst', {
+    templates:{
+        item: 'views/widjets/fullcontent/item.html',
+        update: 'views/widjets/fullcontent/update.html'
+    }
 });
 app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst, WidjetsConst){
 
@@ -37231,6 +37264,10 @@ app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
       .when('/project/:projectName', {
         templateUrl: 'views/project/item.html',
+        controller: 'ProjectCtrl'
+      })
+      .when('/project/update/:projectName', {
+        templateUrl: 'views/project/update.html',
         controller: 'ProjectCtrl'
       })
       .when('/project', {
@@ -37273,7 +37310,19 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
       requireBase: false
     });
 });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/carusel/content.html', '<div class="jumbotron-photo" ng-if="item.images.length>0">\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
+    '    <p ng-bind-html="ProjectSvc.item.markdown | unsafe"></p>\n' +
+    '</div>');
+	a.put('views/widjets/carusel/item.html', '<div class="jumbotron-photo" ng-if="item.images.length>0">\n' +
     '    <div id="{{\'carousel-\'+item.name}}" class="carousel slide" data-ride="carousel">\n' +
     '        <ol class="carousel-indicators" ng-if="item.images.length>1">\n' +
     '            <li ng-repeat="image in item.images" data-target="{{\'#carousel-\'+item.name}}"\n' +
@@ -37293,21 +37342,9 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </a>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/widjets/anonce/content.html', '<div class="jumbotron-contents" ng-if="item.type==1">\n' +
+	a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
     '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.text | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="item.type==2">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.html | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="item.type==3">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.url | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="item.type==4">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.markdown | unsafe"></p>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
     '</div>');
 	a.put('views/tag/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -37331,6 +37368,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                            <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -37361,6 +37399,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                            <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -37368,6 +37407,78 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </div>\n' +
     '    </div>\n' +
     '\n' +
+    '</div>');
+	a.put('views/project/update.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Edit project</h1>\n' +
+    '    </div>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-md-9">\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemTitle">Title</label>\n' +
+    '                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemName">Name</label>\n' +
+    '                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
+    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="Description">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '        <div class="col-md-3">\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemType">Type</label>\n' +
+    '                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
+    '                    <option ng-repeat="type in ProjectSvc.types"\n' +
+    '                            ng-value="type.id"\n' +
+    '                            ng-bind-html="type.title | unsafe"\n' +
+    '                            ng-selected="ProjectSvc.item.type==type.id"\n' +
+    '                            ng-init="UtilsSvc.selecter(\'ItemType\', $last)"></option>\n' +
+    '                </select>\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemTags">Tags</label>\n' +
+    '                <select multiple class="form-control" id="ItemTags" ng-model="ProjectSvc.item.tags">\n' +
+    '                    <option ng-repeat="tag in ProjectSvc.tags"\n' +
+    '                            ng-value="tag"\n' +
+    '                            ng-bind-html="tag | unsafe"\n' +
+    '                            ng-selected="ProjectSvc.item.tags.indexOf(tag)!=-1"\n' +
+    '                            ng-init="UtilsSvc.selecter(\'ItemTags\', $last)"></option>\n' +
+    '                </select>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
     '</div>');
 	a.put('views/project/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -37377,8 +37488,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    <div class="row">\n' +
     '        <div ng-class="\'col-md-\'+(12/ProjectSvc.countItemsOnRow)" ng-repeat="item in ProjectSvc.list">\n' +
     '            <div class="jumbotron">\n' +
-    '                <div ng-include="AppConst.widjets.carusel.template"></div>\n' +
-    '                <div ng-include="AppConst.widjets.anonce.template"></div>\n' +
+    '                <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
+    '                <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
     '\n' +
     '                <div class="jumbotron-contents">\n' +
     '                    <div class="row">\n' +
@@ -37390,6 +37501,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{ProjectSvc.projectUrl+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -37406,7 +37518,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                <a ng-href="{{ProjectSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
     '                   ng-bind-html="tag | unsafe"></a>\n' +
     '            </span>\n' +
-    '            <>\n' +
+    '            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>\n' +
     '        </div>\n' +
     '        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-xs"></h1>\n' +
     '    </div>\n' +
@@ -37422,18 +37534,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    </div>\n' +
     '                </div>\n' +
     '\n' +
-    '                <div ng-include="ProjectSvc.anonceTemplate"></div>\n' +
-    '\n' +
-    '                <div class="jumbotron-contents">\n' +
-    '                    <div class="row">\n' +
-    '                        <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '                                <a ng-href="{{ProjectSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
+    '                <div ng-include="AppConst.widjets.fullcontent.templates.item"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
@@ -37529,8 +37630,20 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
         });
     };
 })
-.factory('UtilsSvc', function ($http, $q) {
+.factory('UtilsSvc', function ($http, $q, $timeout) {
     var service={};
+
+    service.selecter=function(elementId, active){
+        if (active){
+            $('#'+elementId).selecter('destroy');
+            $timeout(function(){
+                $('#'+elementId).selecter();
+                $('.selecter-options>.selecter-item').filter(function(){
+                    return $(this).data('value').toString().indexOf('? number:')!=-1;
+                }).addClass('disabled');
+            },0)
+        }
+    }
 
     service.capitalise = function (string) {
       if (string.length>0)
@@ -37540,13 +37653,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
     }
     //Numbers 1, 3 и 5.
     //Sample: decOfNum(5, ['секунда', 'секунды', 'секунд'])
-    service.declOfNum = function(number, titles)  
-    {  
-        cases = [2, 0, 1, 1, 1, 2];  
-        return titles[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];  
-    }  
+    service.declOfNum = function(number, titles)
+    {
+        cases = [2, 0, 1, 1, 1, 2];
+        return titles[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];
+    }
     return service;
-  });
+});
 
 app.factory('AppSvc', function (AppConst) {
     var service={};
@@ -37676,6 +37789,14 @@ app.factory('ProjectSvc', function ($routeParams, $http, AppConst, NavbarSvc) {
 
     service.item=false;
     service.list=false;
+
+    service.tags=['tag1', 'tag21', 'tag23', 'tag44','tag133', 'tag215', 'tag235', 'tag445','tag155', 'tag2155', 'tag23555', 'tag44555'];
+    service.types=[
+        {id:1,title:'Text'},
+        {id:2,title:'Html'},
+        {id:3,title:'Url'},
+        {id:4,title:'Markdown'}
+    ];
 
     service.projectUrl=AppConst.project.urls.url;
     service.tagUrl=AppConst.tag.urls.url;
@@ -37850,7 +37971,8 @@ app.controller('NavbarCtrl', function ($scope, $rootScope, NavbarSvc) {
 
     NavbarSvc.init();
 });
-app.controller('ProjectCtrl', function ($scope, $rootScope, ProjectSvc, CaruselSvc, AppConst) {
+app.controller('ProjectCtrl', function ($scope, $rootScope, UtilsSvc, ProjectSvc, CaruselSvc, AppConst) {
+    $scope.UtilsSvc=UtilsSvc;
 	$scope.ProjectSvc=ProjectSvc;
 	$scope.CaruselSvc=CaruselSvc;
 	$scope.AppConst=AppConst;
@@ -37870,14 +37992,4 @@ app.controller('TagCtrl', function ($scope, $rootScope, TagSvc, AppConst, Caruse
 	$scope.AppConst=AppConst;
 
 	TagSvc.init();
-});
-$(document).ready(function(){
-  $('[data-toggle="offcanvas"]').click(function () {
-    $('.row-offcanvas').toggleClass('active')
-  });
-  $('input').iCheck({
-    checkboxClass: 'icheckbox_custom-blue',
-    radioClass: 'iradio_custom-blue',
-    increaseArea: '20%'
-  });
 });

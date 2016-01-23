@@ -1,4 +1,6 @@
 var app = angular.module('app', [
-	'ngAnimate','ngRoute','ngCookies',
+	'ngAnimate',
+	'ngRoute',
+	'ngCookies',
 	'ngResource',
     'ui.tree']);
