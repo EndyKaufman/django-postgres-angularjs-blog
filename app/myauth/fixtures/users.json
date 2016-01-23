@@ -1,0 +1,26 @@
+[
+  {
+    "userId": 1,
+    "userData": {
+      "userName": "Admin User Name",
+      "userEmail": "admin@email.com",
+      "firstName": "FirstAdminName",
+      "lastName": "LastAdminName",
+      "roles": [
+        "admin"
+      ]
+    }
+  },
+  {
+    "userId": 2,
+    "userData": {
+      "userName": "User Name",
+      "userEmail": "user@email.com",
+      "firstName": "FirstName",
+      "lastName": "LastName",
+      "roles": [
+        "user"
+      ]
+    }
+  }
+]

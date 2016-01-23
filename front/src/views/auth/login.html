@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Login on site</h1>
+    </div>
+    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com, user@email.com, author@email.com)</code></p>
+    <p>
+    <div class="row">
+        <div class="col-sm-4">
+            <form ng-submit="AuthSvc.doLogin(email,password)" novalidate class="css-form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" placeholder="email" ng-model="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" placeholder="password"
+                           ng-model="password" >
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+    </p>
+    <p>If you lose password please click to <a ng-href="{{AuthSvc.recovery.url}}">recovery password</a></p>
+    <p>For registration on site use <a ng-href="{{AuthSvc.reg.url}}">registration form</a></p>
+</div>

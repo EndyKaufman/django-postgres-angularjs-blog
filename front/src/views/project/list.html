@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="page-header">
+        <h1>My projects</h1>
+    </div>
+    <p class="lead">Description of projects</p>
+    <div class="row">
+        <div ng-class="'col-md-'+(12/ProjectSvc.countItemsOnRow)" ng-repeat="item in ProjectSvc.list">
+            <div class="jumbotron">
+                <div ng-include="AppConst.widjets.carusel.template"></div>
+                <div ng-include="AppConst.widjets.anonce.template"></div>
+
+                <div class="jumbotron-contents">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <span ng-repeat="tag in item.tags">
+                                <a ng-href="{{ProjectSvc.tagUrl+'/'+tag}}" class="btn btn-default btn-xs"
+                                   ng-bind-html="tag | unsafe"></a>
+                            </span>
+                        </div>
+                        <div class="col-md-4">
+                            <a ng-href="{{ProjectSvc.projectUrl+'/'+item.name}}" class="btn btn-link pull-right">Detail...</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

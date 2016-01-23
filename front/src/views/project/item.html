@@ -1,0 +1,40 @@
+<div class="container">
+    <div class="page-header">
+        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-sm hidden-md hidden-lg"></h1>
+        <div class="pull-right">
+            <span ng-repeat="tag in ProjectSvc.item.tags">
+                <a ng-href="{{ProjectSvc.tagUrl+'/'+tag}}" class="btn btn-default btn-xs"
+                   ng-bind-html="tag | unsafe"></a>
+            </span>
+            <>
+        </div>
+        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-xs"></h1>
+    </div>
+    <p class="lead" ng-bind-html="ProjectSvc.item.description | unsafe"></p>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="jumbotron">
+                <div class="jumbotron-photo">
+                    <div class="row">
+                        <div ng-class="'col-md-'+(12/ProjectSvc.item.images.length)" ng-repeat="image in ProjectSvc.item.images">
+                            <img ng-src="{{image}}"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-include="ProjectSvc.anonceTemplate"></div>
+
+                <div class="jumbotron-contents">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <span ng-repeat="tag in ProjectSvc.item.tags">
+                                <a ng-href="{{ProjectSvc.tagUrl+'/'+tag}}" class="btn btn-default btn-xs"
+                                   ng-bind-html="tag | unsafe"></a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

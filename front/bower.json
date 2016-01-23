@@ -1,0 +1,35 @@
+{
+  "name": "django-postgres-angularjs-blog",
+  "version": "0.0.0",
+  "authors": [
+    "EndyKaufman <admin@site15.ru>"
+  ],
+  "description": "Simple blog written on django + angularjs and use postgre sql as database",
+  "main": "index.html",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "base",
+    "angular"
+  ],
+  "license": "MIT",
+  "homepage": "http://django-postgres-angularjs-blog.herokuapp.com",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    ".env"
+  ],
+  "dependencies": {
+    "angular-animate": "~1.4.5",
+    "angular-cookies": "~1.4.5",
+    "angular-resource": "~1.4.5",
+    "angular-route": "~1.4.5",
+    "angular-ui-tree": "~2.13.0",
+    "element-queries": "element-queries-css#~0.2.0",
+    "normalize-css": "normalize.css#~3.0.3",
+    "angular-bootstrap": "~1.0.0",
+    "Bootflat": "git://github.com/EndyKaufman/bootflat.github.io.git#master"
+  }
+}
