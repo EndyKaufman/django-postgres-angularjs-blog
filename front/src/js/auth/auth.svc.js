@@ -1,4 +1,4 @@
-app.factory('AuthSvc', function ($http, AppConst, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routeParams, NavbarSvc) {
     var service={};
     service.init=function(reload){
         NavbarSvc.init();
@@ -8,27 +8,13 @@ app.factory('AuthSvc', function ($http, AppConst, $rootScope, $routeParams, Navb
         service.recovery=AppConst.recovery;
     }
 
-    service.actionLogin=function(email, password){
-        return $http.post(AppConst.auth.login.action, {
-            email: email,
-            password: password,
-            csrfmiddlewaretoken: AppConfig.csrf_token
-        });
-    };
-
-    service.actionLogout=function(){
-        return $http.post(AppConst.auth.logout.action,{
-            csrfmiddlewaretoken: AppConfig.csrf_token
-        });
-    };
-
 	service.doLogin=function(email,password){
-	    service.actionLogin(email,password).then(
+	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     var data=angular.copy(response.data.data);
                     AppConfig=angular.extend(AppConfig, data);
-                	$rootScope.$broadcast('login', data);
+                	$rootScope.$broadcast('auth.login', data);
                 }
             },
             function (response) {
@@ -38,7 +24,7 @@ app.factory('AuthSvc', function ($http, AppConst, $rootScope, $routeParams, Navb
         );
 	}
 	service.doLogout=function(){
-		 service.actionLogout().then(
+		 AuthRes.actionLogout().then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     var data={
@@ -46,7 +32,7 @@ app.factory('AuthSvc', function ($http, AppConst, $rootScope, $routeParams, Navb
                       "userData": {}
                     }
                     AppConfig=angular.extend(AppConfig, data);
-                    $rootScope.$broadcast('logout', data);
+                    $rootScope.$broadcast('auth.logout', data);
                 }
             },
             function (response) {

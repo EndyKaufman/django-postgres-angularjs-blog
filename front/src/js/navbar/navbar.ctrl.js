@@ -3,15 +3,15 @@ app.controller('NavbarCtrl', function ($scope, $rootScope, NavbarSvc) {
 
 	$rootScope.$on('$routeChangeSuccess',function(event, current, previous){
 	    NavbarSvc.init();
-	    $rootScope.$broadcast('routeChangeSuccess', current, previous);
+	    $rootScope.$broadcast('navbar.change', current, previous);
 	});
 
-	$rootScope.$on('login',function(data){
+	$rootScope.$on('auth.login',function(data){
 	    NavbarSvc.init();
 	    NavbarSvc.goHome();
 	});
 
-	$rootScope.$on('logout',function(data){
+	$rootScope.$on('auth.logout',function(data){
 	    NavbarSvc.init();
 	    NavbarSvc.goHome();
 	});

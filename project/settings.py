@@ -18,6 +18,7 @@ SITE_HASH_TAG = u'#myblog'
 SHORT_SITE_NAME = u'My Blog'
 ON_PRODUCTION = os.environ.get('ON_PRODUCTION', None) == '1'
 USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'
+USE_FIXTURE = os.environ.get('USE_FIXTURE', None) == '1'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -49,6 +50,7 @@ INSTALLED_APPS = (
     'storages',
     'jsonview',
     'app.myauth',
+    'app.tag',
     'app.home',
     'app.project'
 )

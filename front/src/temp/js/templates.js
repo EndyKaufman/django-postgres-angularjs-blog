@@ -18,7 +18,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </ol>\n' +
     '        <div class="carousel-inner">\n' +
     '            <div ng-repeat="image in item.images" class="item" ng-class="$index==0?\'active\':\'\'"><img\n' +
-    '                    ng-src="{{image}}"></div>\n' +
+    '                    ng-src="{{image.src}}"></div>\n' +
     '        </div>\n' +
     '        <a ng-click="CaruselSvc.prev(\'#carousel-\'+item.name)" class="left carousel-control"\n' +
     '           data-slide="prev" ng-if="item.images.length>1">\n' +
@@ -106,15 +106,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                <label for="ItemTitle">Title</label>\n' +
     '                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">\n' +
     '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemName">Name</label>\n' +
-    '                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">\n' +
-    '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemDescription">Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
-    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
-    '            </div>\n' +
     '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
     '                <div class="form-group">\n' +
     '                    <label for="ItemText">Text</label>\n' +
@@ -124,7 +115,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            </div>\n' +
     '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
     '                <div class="form-group">\n' +
-    '                    <label for="Description">Html</label>\n' +
+    '                    <label for="ItemHtml">Html</label>\n' +
     '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
     '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
     '                </div>\n' +
@@ -143,27 +134,54 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
     '                </div>\n' +
     '            </div>\n' +
+    '            <div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
+    '                <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '                <div class="input-group">\n' +
+    '                    <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '                           ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-danger"\n' +
+    '                                    type="button">\n' +
+    '                                Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div>\n' +
+    '                <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success">Update</button>\n' +
+    '                <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project</button>\n' +
+    '                <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image</button>\n' +
+    '            </div>\n' +
     '        </div>\n' +
     '        <div class="col-md-3">\n' +
     '            <div class="form-group">\n' +
+    '                <label for="ItemName">Name</label>\n' +
+    '                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
     '                <label for="ItemType">Type</label>\n' +
-    '                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
-    '                    <option ng-repeat="type in ProjectSvc.types"\n' +
-    '                            ng-value="type.id"\n' +
-    '                            ng-bind-html="type.title | unsafe"\n' +
-    '                            ng-selected="ProjectSvc.item.type==type.id"\n' +
-    '                            ng-init="UtilsSvc.selecter(\'ItemType\', $last)"></option>\n' +
-    '                </select>\n' +
+    '                <ul id="ItemType" nq-select="" ng-model="ProjectSvc.item.type"\n' +
+    '                    qo-placeholder="" qo-effect="false">\n' +
+    '                    <li ng-repeat="type in ProjectSvc.types" option-value="{{type.id}}"\n' +
+    '                        select-option="{{type.id}}" option-label="{{type.title}}">\n' +
+    '                        <span ng-bind-html="type.title | unsafe"></span>\n' +
+    '                    </li>\n' +
+    '                </ul>\n' +
     '            </div>\n' +
     '            <div class="form-group">\n' +
     '                <label for="ItemTags">Tags</label>\n' +
-    '                <select multiple class="form-control" id="ItemTags" ng-model="ProjectSvc.item.tags">\n' +
-    '                    <option ng-repeat="tag in ProjectSvc.tags"\n' +
-    '                            ng-value="tag"\n' +
-    '                            ng-bind-html="tag | unsafe"\n' +
-    '                            ng-selected="ProjectSvc.item.tags.indexOf(tag)!=-1"\n' +
-    '                            ng-init="UtilsSvc.selecter(\'ItemTags\', $last)"></option>\n' +
-    '                </select>\n' +
+    '                <ul id="ItemTags" nq-select="" qo-multiple="true" ng-model="ProjectSvc.item.tags"\n' +
+    '                    qo-placeholder="" qo-effect="false">\n' +
+    '                    <li ng-repeat="tag in ProjectSvc.TagSvc.list" option-value="{{tag}}"\n' +
+    '                        select-option="{{tag}}" option-label="{{tag}}">\n' +
+    '                        <span ng-bind-html="tag | unsafe"></span>\n' +
+    '                    </li>\n' +
+    '                </ul>\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
+    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
@@ -189,7 +207,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{ProjectSvc.projectUrl+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
+    '                            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+item.name}}" class="btn btn-primary pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -283,10 +301,16 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            <form class="navbar-form navbar-right" role="search" ng-if="!NavbarSvc.items.search.hidden"\n' +
     '                  novalidate>\n' +
     '                <div class="form-search search-only">\n' +
-    '                    <i class="search-icon glyphicon glyphicon-search"></i>\n' +
-    '                    <input type="text" class="form-control search-query"\n' +
-    '                           placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="searchText"\n' +
-    '                           ng-enter="NavbarSvc.doSearch(searchText)">\n' +
+    '                    <div class="input-group">\n' +
+    '                        <input type="text" class="form-control search-query"\n' +
+    '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="searchText"\n' +
+    '                               ng-enter="NavbarSvc.doSearch(searchText)"/>\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-success" type="button">\n' +
+    '                                Search\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '                    </div>\n' +
     '                </div>\n' +
     '            </form>\n' +
     '            <ul class="nav navbar-nav navbar-right" ng-if="NavbarSvc.items.right.length>0">\n' +

@@ -3,4 +3,7 @@ var app = angular.module('app', [
 	'ngRoute',
 	'ngCookies',
 	'ngResource',
-    'ui.tree']);
+    'ui.tree',
+    'ngSanitize',
+    'ngAnimate',
+    'ngQuantum']);

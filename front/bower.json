@@ -29,7 +29,7 @@
     "angular-ui-tree": "~2.13.0",
     "element-queries": "element-queries-css#~0.2.0",
     "normalize-css": "normalize.css#~3.0.3",
-    "angular-bootstrap": "~1.0.0",
-    "Bootflat": "git://github.com/EndyKaufman/bootflat.github.io.git#master"
+    "quantumui": "~1.0.0",
+    "chance": "~0.8.0"
   }
 }

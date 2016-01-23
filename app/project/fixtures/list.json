@@ -1,7 +1,7 @@
 {
   "pageNumber": 1,
-  "countRecordsOnPage": 5,
-  "countAllRecords":100,
+  "countRecordsOnPage": 0,
+  "countAllRecords": 100,
   "records": [
     {
       "id": 1,
@@ -9,9 +9,18 @@
       "description": "Project description",
       "name": "project1",
       "images": [
-        "http://bootflat.github.io/img/slider1.jpg",
-        "http://bootflat.github.io/img/slider2.jpg",
-        "http://bootflat.github.io/img/slider3.jpg"
+        {
+          "id": 1,
+          "src": "http://bootflat.github.io/img/slider1.jpg"
+        },
+        {
+          "id": 2,
+          "src": "http://bootflat.github.io/img/slider2.jpg"
+        },
+        {
+          "id": 3,
+          "src": "http://bootflat.github.io/img/slider3.jpg"
+        }
       ],
       "url": "http://project1",
       "type": 1,
@@ -31,7 +40,10 @@
       "description": "Project description",
       "name": "project2",
       "images": [
-        "http://bootflat.github.io/img/slider1.jpg"
+        {
+          "id": 1,
+          "src": "http://bootflat.github.io/img/slider1.jpg"
+        }
       ],
       "url": "http://project1",
       "type": 2,

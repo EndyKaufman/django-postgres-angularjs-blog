@@ -1,4 +1,4 @@
-app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc, ProjectSvc) {
+app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc, ProjectRes) {
     var service={};
 
     service.allList=false;
@@ -17,7 +17,7 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
         if ($routeParams.searchText!=undefined){
             service.allList=[];
             $q.all([
-                ProjectSvc.getSearch($routeParams.searchText)
+                ProjectRes.getSearch($routeParams.searchText)
             ]).then(function(responseList) {
                 for (var i=0;i<responseList.length;i++){
                     service.allList.push({

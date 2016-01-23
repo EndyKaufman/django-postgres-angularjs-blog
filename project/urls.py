@@ -18,6 +18,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 import app.myauth
+import app.tag
 import app.project
 import app.home.views
 import app.home
@@ -27,6 +28,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^$', app.home.views.index, name='index'),
     url(r'^auth/', include(app.myauth)),
+    url(r'^tag/', include(app.tag)),
     url(r'^project/', include(app.project)),
     url(r'^admin/', admin.site.urls),
 ]

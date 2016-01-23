@@ -1,4 +1,4 @@
-app.factory('NavbarSvc', function ($routeParams, $route, $rootScope, $location, AppConst) {
+app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
     var service={};
 
     function modifiItem(item){

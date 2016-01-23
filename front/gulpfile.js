@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var change = require('gulp-change');
 var clean = require('gulp-clean');
 var sass = require('gulp-sass');
 var less = require('gulp-less');
@@ -24,22 +25,24 @@ var scss_source=['src/scss/**/*.scss'];
 var less_source=['src/less/**/*.less'];
 var css_source=[
     'bower_components/normalize-css/normalize.css',
-    'bower_components/Bootflat/bootflat/css/bootflat.css',
     'bower_components/angular-ui-tree/dist/angular-ui-tree.min.css',
+    'bower_components/quantumui/dist/css/addon/effect-light.min.css',
+    'bower_components/quantumui/dist/css/quantumui.css',
     'src/temp/css/**/*.css',
     'src/**/css/*.css',
     'src/**/*.css',];
 var js_source=[
     'src/js/**/tools.js',
-    'bower_components/element-queries/dist/element-queries.min.js',
+    //'bower_components/element-queries/dist/element-queries.min.js',
     'bower_components/angular/angular.js',
-    'bower_components/Bootflat/bootflat/js/jquery.fs.selecter.min.js',
-    'bower_components/Bootflat/bootflat/js/jquery.fs.stepper.min.js',
     'bower_components/angular-route/angular-route.js',
     'bower_components/angular-cookies/angular-cookies.js',
     'bower_components/angular-animate/angular-animate.js',
     'bower_components/angular-resource/angular-resource.js',
+    'bower_components/angular-sanitize/angular-sanitize.js',
     'bower_components/angular-ui-tree/dist/angular-ui-tree.js',
+    'bower_components/quantumui/dist/js/quantumui.js',
+    'bower_components/chance/chance.js',
     'src/js/app.init.js',
 
     'src/js/**/**/**/const.js',
@@ -55,6 +58,11 @@ var js_source=[
     'src/js/**/init.js',
     'src/temp/js/templates.js',
     'src/js/**/utils.js',
+
+    'src/js/**/**/**/*.res.js',
+    'src/js/**/**/*.res.js',
+    'src/js/**/*.res.js',
+    'src/js/app.res.js',
 
     'src/js/**/**/**/*.svc.js',
     'src/js/**/**/*.svc.js',
@@ -76,6 +84,12 @@ var tests_source=[
 
 //dest
 var dest_path='../project/static/'
+
+//css modifi function
+function cssChange(content) {
+    return content.replace(new RegExp("../../bower_components/bootstrap/fonts/glyphicons-halflings-regular","ig"),
+    '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular');
+}
 
 //clear temp folder
 gulp.task('clear', function () {
@@ -99,6 +113,7 @@ gulp.task('less', function () {
 //concat dev css
 gulp.task('dev:css', function () {
   return gulp.src(css_source)
+    .pipe(change(cssChange))
     .pipe(concat(dest_path+'app.css'))
     .pipe(gulp.dest('.'))
 });
@@ -108,6 +123,7 @@ gulp.task('public:css', function () {
   return gulp.src(css_source)
     .pipe(sourcemaps.init({loadMaps:true}))
     .pipe(minifyCSS({compatibility: 'ie8'}))
+    .pipe(change(cssChange))
     .pipe(concat(dest_path+'app.css'))
     .pipe(sourcemaps.write({addComment: false}))
     .pipe(gulp.dest('.'))

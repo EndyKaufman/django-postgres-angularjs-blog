@@ -15,18 +15,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
 .factory('UtilsSvc', function ($http, $q, $timeout) {
     var service={};
 
-    service.selecter=function(elementId, active){
-        if (active){
-            $('#'+elementId).selecter('destroy');
-            $timeout(function(){
-                $('#'+elementId).selecter();
-                $('.selecter-options>.selecter-item').filter(function(){
-                    return $(this).data('value').toString().indexOf('? number:')!=-1;
-                }).addClass('disabled');
-            },0)
-        }
-    }
-
     service.capitalise = function (string) {
       if (string.length>0)
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
