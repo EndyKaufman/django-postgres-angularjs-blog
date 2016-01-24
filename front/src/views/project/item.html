@@ -3,10 +3,10 @@
         <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-sm hidden-md hidden-lg"></h1>
         <div class="pull-right">
             <span ng-repeat="tag in ProjectSvc.item.tags">
-                <a ng-href="{{ProjectSvc.tagUrl+'/'+tag}}" class="btn btn-default btn-xs"
+                <a ng-href="{{AppConst.tag.urls.url+'/'+tag}}" class="btn btn-default btn-xs"
                    ng-bind-html="tag | unsafe"></a>
             </span>
-            <a ng-href="{{ProjectSvc.projectUrl+'/update/'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>
+            <a ng-href="{{AppConst.project.urls.url+'/update/'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>
         </div>
         <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-xs"></h1>
     </div>

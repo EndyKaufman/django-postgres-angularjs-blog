@@ -4,8 +4,6 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
     service.list=false;
     service.allList=false;
 
-    service.tagUrl=AppConst.tag.urls.url;
-
     service.countItemsOnRow=3;
 
     service.title=AppConst.tag.strings.title;

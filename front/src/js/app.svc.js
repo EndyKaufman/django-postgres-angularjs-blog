@@ -1,4 +1,4 @@
-app.factory('AppSvc', function (AppConst) {
+app.factory('AppSvc', function () {
     var service={};
 
     service.init=function(reload){

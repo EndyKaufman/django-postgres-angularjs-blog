@@ -3,8 +3,6 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
 
     service.allList=false;
 
-    service.tagUrl=AppConst.tag.urls.url;
-
     service.countItemsOnRow=3;
 
     service.title=AppConst.search.strings.title;

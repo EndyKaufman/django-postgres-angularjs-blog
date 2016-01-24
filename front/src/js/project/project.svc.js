@@ -6,10 +6,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
 
     service.TagSvc=TagSvc;
 
-    service.types=AppConst.project.types;
-    service.projectUrl=AppConst.project.urls.url;
-    service.tagUrl=AppConst.tag.urls.url;
-
     service.countItemsOnRow=2;
 
     service.title=AppConst.project.strings.title;
@@ -26,7 +22,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
     }
 
     service.goList=function(){
-        $location.path(service.projectUrl.replace('#',''));
+        $location.path(AppConst.project.urls.url.replace('#',''));
     }
 	service.doCreate=function(item){
 		 ProjectRes.actionCreate(item).then(

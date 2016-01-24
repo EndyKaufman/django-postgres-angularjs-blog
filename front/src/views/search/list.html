@@ -14,7 +14,7 @@
                     <div class="row">
                         <div class="col-md-8">
                             <span ng-repeat="tag in item.tags">
-                                <a ng-href="{{SearchSvc.tagUrl+'/'+tag}}" class="btn btn-default btn-xs"
+                                <a ng-href="{{AppConst.tag.urls.url+'/'+tag}}" class="btn btn-default btn-xs"
                                    ng-bind-html="tag | unsafe"></a>
                             </span>
                         </div>

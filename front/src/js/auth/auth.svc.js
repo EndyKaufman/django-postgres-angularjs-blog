@@ -2,10 +2,6 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routePar
     var service={};
     service.init=function(reload){
         NavbarSvc.init();
-
-        service.reg=AppConst.reg;
-        service.login=AppConst.login;
-        service.recovery=AppConst.recovery;
     }
 
 	service.doLogin=function(email,password){
@@ -40,6 +36,22 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routePar
                     alert(response.data.code);
             }
         );
+    }
+
+    service.isLogged=function(){
+        return AppConfig.userId!=false;
+    }
+
+    service.isAdmin=function(){
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('admin')
+    }
+
+    service.isAuthor=function(){
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('author')
+    }
+
+    service.isUser=function(){
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('user')
     }
 
     return service;

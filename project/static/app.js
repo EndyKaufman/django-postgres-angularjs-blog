@@ -48391,7 +48391,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    <div class="row">\n' +
     '                        <div class="col-md-8">\n' +
     '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{TagSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
     '                                   ng-bind-html="tag | unsafe"></a>\n' +
     '                            </span>\n' +
     '                        </div>\n' +
@@ -48422,7 +48422,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    <div class="row">\n' +
     '                        <div class="col-md-8">\n' +
     '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{SearchSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
     '                                   ng-bind-html="tag | unsafe"></a>\n' +
     '                            </span>\n' +
     '                        </div>\n' +
@@ -48503,7 +48503,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                <label for="ItemType">Type</label>\n' +
     '                <ul id="ItemType" nq-select="" ng-model="ProjectSvc.item.type"\n' +
     '                    qo-placeholder="" qo-effect="false">\n' +
-    '                    <li ng-repeat="type in ProjectSvc.types" option-value="{{type.id}}"\n' +
+    '                    <li ng-repeat="type in AppConst.project.types" option-value="{{type.id}}"\n' +
     '                        select-option="{{type.id}}" option-label="{{type.title}}">\n' +
     '                        <span ng-bind-html="type.title | unsafe"></span>\n' +
     '                    </li>\n' +
@@ -48542,13 +48542,13 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    <div class="row">\n' +
     '                        <div class="col-md-8">\n' +
     '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{ProjectSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
     '                                   ng-bind-html="tag | unsafe"></a>\n' +
     '                            </span>\n' +
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
-    '                            <a ng-href="{{ProjectSvc.projectUrl+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+item.name}}" class="btn btn-primary pull-right">Edit</a>\n' +
+    '                            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -48562,10 +48562,10 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-sm hidden-md hidden-lg"></h1>\n' +
     '        <div class="pull-right">\n' +
     '            <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '                <a ng-href="{{ProjectSvc.tagUrl+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
+    '                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
     '                   ng-bind-html="tag | unsafe"></a>\n' +
     '            </span>\n' +
-    '            <a ng-href="{{ProjectSvc.projectUrl+\'/update/\'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>\n' +
     '        </div>\n' +
     '        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-xs"></h1>\n' +
     '    </div>\n' +
@@ -48616,8 +48616,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </div>\n' +
     '    </div>\n' +
     '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AuthSvc.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AuthSvc.reg.url}}">registration form</a></p>\n' +
+    '    <p>If you lose password please click to <a ng-href="{{AppConst.auth.recovery.url}}">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="{{AppConst.auth.reg.url}}">registration form</a></p>\n' +
     '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
@@ -48702,7 +48702,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
     return service;
 });
 
-app.factory('AppRes', function (AppConst) {
+app.factory('AppRes', function () {
     var service={};
 
     service.init=function(reload){
@@ -48786,7 +48786,7 @@ app.factory('TagRes', function ($http, AppConst) {
 
     return service;
   });
-app.factory('AppSvc', function (AppConst) {
+app.factory('AppSvc', function () {
     var service={};
 
     service.init=function(reload){
@@ -48798,10 +48798,6 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routePar
     var service={};
     service.init=function(reload){
         NavbarSvc.init();
-
-        service.reg=AppConst.reg;
-        service.login=AppConst.login;
-        service.recovery=AppConst.recovery;
     }
 
 	service.doLogin=function(email,password){
@@ -48836,6 +48832,22 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routePar
                     alert(response.data.code);
             }
         );
+    }
+
+    service.isLogged=function(){
+        return AppConfig.userId!=false;
+    }
+
+    service.isAdmin=function(){
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('admin')
+    }
+
+    service.isAuthor=function(){
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('author')
+    }
+
+    service.isUser=function(){
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('user')
     }
 
     return service;
@@ -48903,10 +48915,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
 
     service.TagSvc=TagSvc;
 
-    service.types=AppConst.project.types;
-    service.projectUrl=AppConst.project.urls.url;
-    service.tagUrl=AppConst.tag.urls.url;
-
     service.countItemsOnRow=2;
 
     service.title=AppConst.project.strings.title;
@@ -48923,7 +48931,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
     }
 
     service.goList=function(){
-        $location.path(service.projectUrl.replace('#',''));
+        $location.path(AppConst.project.urls.url.replace('#',''));
     }
 	service.doCreate=function(item){
 		 ProjectRes.actionCreate(item).then(
@@ -49028,8 +49036,6 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
 
     service.allList=false;
 
-    service.tagUrl=AppConst.tag.urls.url;
-
     service.countItemsOnRow=3;
 
     service.title=AppConst.search.strings.title;
@@ -49061,8 +49067,6 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
 
     service.list=false;
     service.allList=false;
-
-    service.tagUrl=AppConst.tag.urls.url;
 
     service.countItemsOnRow=3;
 

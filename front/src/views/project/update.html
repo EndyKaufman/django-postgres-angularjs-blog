@@ -64,7 +64,7 @@
                 <label for="ItemType">Type</label>
                 <ul id="ItemType" nq-select="" ng-model="ProjectSvc.item.type"
                     qo-placeholder="" qo-effect="false">
-                    <li ng-repeat="type in ProjectSvc.types" option-value="{{type.id}}"
+                    <li ng-repeat="type in AppConst.project.types" option-value="{{type.id}}"
                         select-option="{{type.id}}" option-label="{{type.title}}">
                         <span ng-bind-html="type.title | unsafe"></span>
                     </li>
