@@ -28,11 +28,15 @@ var css_source=[
     'bower_components/angular-ui-tree/dist/angular-ui-tree.min.css',
     'bower_components/quantumui/dist/css/addon/effect-light.min.css',
     'bower_components/quantumui/dist/css/quantumui.css',
+    'bower_components/ng-tags-input/ng-tags-input.css',
+    'bower_components/ng-tags-input/ng-tags-input.bootstrap.css',
     'src/temp/css/**/*.css',
     'src/**/css/*.css',
     'src/**/*.css',];
 var js_source=[
     'src/js/**/tools.js',
+    'bower_components/sprintf/dist/sprintf.min.js',
+    'bower_components/chance/chance.js',
     //'bower_components/element-queries/dist/element-queries.min.js',
     'bower_components/angular/angular.js',
     'bower_components/angular-route/angular-route.js',
@@ -42,8 +46,11 @@ var js_source=[
     'bower_components/angular-sanitize/angular-sanitize.js',
     'bower_components/angular-ui-tree/dist/angular-ui-tree.js',
     'bower_components/quantumui/dist/js/quantumui.js',
-    'bower_components/chance/chance.js',
+    'bower_components/angular-strap/dist/angular-strap.js',
+    'bower_components/angular-strap/dist/angular-strap.tpl.js',
+    'bower_components/ng-tags-input/ng-tags-input.js',
     'src/js/app.init.js',
+    'src/js/app.skin.js',
 
     'src/js/**/**/**/const.js',
     'src/js/**/**/const.js',

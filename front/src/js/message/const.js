@@ -1,0 +1,2 @@
+app.constant('MessageConst', {
+});

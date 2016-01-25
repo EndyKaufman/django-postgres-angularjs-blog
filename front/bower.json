@@ -30,6 +30,9 @@
     "element-queries": "element-queries-css#~0.2.0",
     "normalize-css": "normalize.css#~3.0.3",
     "quantumui": "~1.0.0",
-    "chance": "~0.8.0"
+    "chance": "~0.8.0",
+    "sprintf": "~1.0.3",
+    "angular-strap": "~2.3.7",
+    "ng-tags-input": "~3.0.0"
   }
 }

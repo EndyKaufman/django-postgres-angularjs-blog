@@ -1,5 +1,10 @@
-app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
+app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
     var service={};
+
+    $rootScope.$on('$routeChangeStart',function(event, current, previous){
+        service.init();
+        $rootScope.$broadcast('navbar.change', event, current, previous);
+    });
 
     function modifiItem(item){
         var navItem={};
@@ -26,6 +31,9 @@ app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
                 item.hidden=false;
     }
 
+    service.goBack=function(){
+        $window.history.back();
+    }
     service.goHome=function(){
         $location.path(service.brand.url.replace('#',''));
     }
@@ -38,7 +46,7 @@ app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
         if (navId!=undefined)
             $routeParams.navId=navId;
         else
-        if ($route.current.$$route.navId!=undefined)
+        if ($route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
             $routeParams.navId=$route.current.$$route.navId;
 
         service.brand=AppConst.brand;

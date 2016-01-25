@@ -1,12 +1,9 @@
-app.controller('ProjectCtrl', function ($scope, $rootScope, UtilsSvc, ProjectSvc, CaruselSvc, AppConst) {
+app.controller('ProjectCtrl', function ($scope, $timeout, UtilsSvc, ProjectSvc, CaruselSvc, AppConst, AuthSvc) {
     $scope.UtilsSvc=UtilsSvc;
 	$scope.ProjectSvc=ProjectSvc;
 	$scope.CaruselSvc=CaruselSvc;
 	$scope.AppConst=AppConst;
-
-    $rootScope.$on('project.delete',function(item){
-        ProjectSvc.goList();
-	});
+	$scope.AuthSvc=AuthSvc;
 
 	ProjectSvc.init();
 });

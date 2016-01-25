@@ -29,9 +29,18 @@
       "markdown": "Markdown **description**",
       "text": "Plain text description",
       "tags": [
-        "tag1",
-        "tag21",
-        "tag32"
+        {
+          "id": 1,
+          "text": "tag1"
+        },
+        {
+          "id": 2,
+          "text": "tag21"
+        },
+        {
+          "id": 3,
+          "text": "tag23"
+        }
       ]
     },
     {
@@ -52,9 +61,14 @@
       "markdown": "Markdown **description**",
       "text": "Plain text description",
       "tags": [
-        "tag1",
-        "tag23",
-        "tag35"
+        {
+          "id": 1,
+          "text": "tag1"
+        },
+        {
+          "id": 3,
+          "text": "tag23"
+        }
       ]
     },
     {
@@ -71,9 +85,14 @@
       "markdown": "Markdown **description**",
       "text": "Plain text description",
       "tags": [
-        "tag14",
-        "tag23",
-        "tag3"
+        {
+          "id": 2,
+          "text": "tag21"
+        },
+        {
+          "id": 3,
+          "text": "tag23"
+        }
       ]
     },
     {
@@ -90,9 +109,10 @@
       "markdown": "Markdown **description**",
       "text": "Plain text description",
       "tags": [
-        "tag146",
-        "tag234",
-        "tag3"
+        {
+          "id": 1,
+          "text": "tag1"
+        }
       ]
     }
   ]

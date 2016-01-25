@@ -28,5 +28,11 @@ app.constant('AuthConst',{
         name: 'recovery',
         url: '#/recovery',
         action: '/auth/recovery'
+    },
+    message:{
+        'auth/login/success':'You authorizing!',
+        'auth/logout/success':'Bye-Bye!',
+        'auth/logout/confirm':'Do you really want to leave?',
+        'auth/usernofound':'User with email %s not found!'
     }
 });

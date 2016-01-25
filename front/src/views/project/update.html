@@ -1,6 +1,10 @@
 <div class="container">
     <div class="page-header">
-        <h1>Edit project</h1>
+        <h1>
+            <span>Edit project</span>
+            <a ng-href="{{AppConst.project.urls.url+'/'+ProjectSvc.item.name}}"
+               class="btn btn-default">View</a>
+        </h1>
     </div>
     <div class="row">
         <div class="col-md-9">
@@ -62,23 +66,18 @@
             </div>
             <div class="form-group">
                 <label for="ItemType">Type</label>
-                <ul id="ItemType" nq-select="" ng-model="ProjectSvc.item.type"
-                    qo-placeholder="" qo-effect="false">
-                    <li ng-repeat="type in AppConst.project.types" option-value="{{type.id}}"
-                        select-option="{{type.id}}" option-label="{{type.title}}">
-                        <span ng-bind-html="type.title | unsafe"></span>
-                    </li>
-                </ul>
+                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">
+                    <option ng-repeat="type in AppConst.project.types"
+                            ng-value="type.id"
+                            ng-bind-html="type.title | unsafe"
+                            ng-selected="ProjectSvc.item.type==type.id"></option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="ItemTags">Tags</label>
-                <ul id="ItemTags" nq-select="" qo-multiple="true" ng-model="ProjectSvc.item.tags"
-                    qo-placeholder="" qo-effect="false">
-                    <li ng-repeat="tag in ProjectSvc.TagSvc.list" option-value="{{tag}}"
-                        select-option="{{tag}}" option-label="{{tag}}">
-                        <span ng-bind-html="tag | unsafe"></span>
-                    </li>
-                </ul>
+                <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">
+                    <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>
+                </tags-input>
             </div>
             <div class="form-group">
                 <label for="ItemDescription">Description</label>

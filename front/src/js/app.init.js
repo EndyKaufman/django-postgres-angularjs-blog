@@ -6,4 +6,6 @@ var app = angular.module('app', [
     'ui.tree',
     'ngSanitize',
     'ngAnimate',
-    'ngQuantum']);
+    'ngQuantum',
+    'mgcrea.ngStrap',
+    'ngTagsInput']);

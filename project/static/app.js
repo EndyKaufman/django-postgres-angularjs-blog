@@ -8,6 +8,2604 @@ $(document).ready(function(){
   });
   initJQueryPlugins();
 });
+/*! sprintf-js | Alexandru Marasteanu <hello@alexei.ro> (http://alexei.ro/) | BSD-3-Clause */
+
+!function(a){function b(){var a=arguments[0],c=b.cache;return c[a]&&c.hasOwnProperty(a)||(c[a]=b.parse(a)),b.format.call(null,c[a],arguments)}function c(a){return Object.prototype.toString.call(a).slice(8,-1).toLowerCase()}function d(a,b){return Array(b+1).join(a)}var e={not_string:/[^s]/,number:/[diefg]/,json:/[j]/,not_json:/[^j]/,text:/^[^\x25]+/,modulo:/^\x25{2}/,placeholder:/^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/,key:/^([a-z_][a-z_\d]*)/i,key_access:/^\.([a-z_][a-z_\d]*)/i,index_access:/^\[(\d+)\]/,sign:/^[\+\-]/};b.format=function(a,f){var g,h,i,j,k,l,m,n=1,o=a.length,p="",q=[],r=!0,s="";for(h=0;o>h;h++)if(p=c(a[h]),"string"===p)q[q.length]=a[h];else if("array"===p){if(j=a[h],j[2])for(g=f[n],i=0;i<j[2].length;i++){if(!g.hasOwnProperty(j[2][i]))throw new Error(b("[sprintf] property '%s' does not exist",j[2][i]));g=g[j[2][i]]}else g=j[1]?f[j[1]]:f[n++];if("function"==c(g)&&(g=g()),e.not_string.test(j[8])&&e.not_json.test(j[8])&&"number"!=c(g)&&isNaN(g))throw new TypeError(b("[sprintf] expecting number but found %s",c(g)));switch(e.number.test(j[8])&&(r=g>=0),j[8]){case"b":g=g.toString(2);break;case"c":g=String.fromCharCode(g);break;case"d":case"i":g=parseInt(g,10);break;case"j":g=JSON.stringify(g,null,j[6]?parseInt(j[6]):0);break;case"e":g=j[7]?g.toExponential(j[7]):g.toExponential();break;case"f":g=j[7]?parseFloat(g).toFixed(j[7]):parseFloat(g);break;case"g":g=j[7]?parseFloat(g).toPrecision(j[7]):parseFloat(g);break;case"o":g=g.toString(8);break;case"s":g=(g=String(g))&&j[7]?g.substring(0,j[7]):g;break;case"u":g>>>=0;break;case"x":g=g.toString(16);break;case"X":g=g.toString(16).toUpperCase()}e.json.test(j[8])?q[q.length]=g:(!e.number.test(j[8])||r&&!j[3]?s="":(s=r?"+":"-",g=g.toString().replace(e.sign,"")),l=j[4]?"0"===j[4]?"0":j[4].charAt(1):" ",m=j[6]-(s+g).length,k=j[6]&&m>0?d(l,m):"",q[q.length]=j[5]?s+g+k:"0"===l?s+k+g:k+s+g)}return q.join("")},b.cache={},b.parse=function(a){for(var b=a,c=[],d=[],f=0;b;){if(null!==(c=e.text.exec(b)))d[d.length]=c[0];else if(null!==(c=e.modulo.exec(b)))d[d.length]="%";else{if(null===(c=e.placeholder.exec(b)))throw new SyntaxError("[sprintf] unexpected placeholder");if(c[2]){f|=1;var g=[],h=c[2],i=[];if(null===(i=e.key.exec(h)))throw new SyntaxError("[sprintf] failed to parse named argument key");for(g[g.length]=i[1];""!==(h=h.substring(i[0].length));)if(null!==(i=e.key_access.exec(h)))g[g.length]=i[1];else{if(null===(i=e.index_access.exec(h)))throw new SyntaxError("[sprintf] failed to parse named argument key");g[g.length]=i[1]}c[2]=g}else f|=2;if(3===f)throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported");d[d.length]=c}b=b.substring(c[0].length)}return d};var f=function(a,c,d){return d=(c||[]).slice(0),d.splice(0,0,a),b.apply(null,d)};"undefined"!=typeof exports?(exports.sprintf=b,exports.vsprintf=f):(a.sprintf=b,a.vsprintf=f,"function"==typeof define&&define.amd&&define(function(){return{sprintf:b,vsprintf:f}}))}("undefined"==typeof window?this:window);
+//# sourceMappingURL=sprintf.min.map
+//  Chance.js 0.8.0
+//  http://chancejs.com
+//  (c) 2013 Victor Quinn
+//  Chance may be freely distributed or modified under the MIT license.
+
+(function () {
+
+    // Constants
+    var MAX_INT = 9007199254740992;
+    var MIN_INT = -MAX_INT;
+    var NUMBERS = '0123456789';
+    var CHARS_LOWER = 'abcdefghijklmnopqrstuvwxyz';
+    var CHARS_UPPER = CHARS_LOWER.toUpperCase();
+    var HEX_POOL  = NUMBERS + "abcdef";
+
+    // Cached array helpers
+    var slice = Array.prototype.slice;
+
+    // Constructor
+    function Chance (seed) {
+        if (!(this instanceof Chance)) {
+            return seed == null ? new Chance() : new Chance(seed);
+        }
+
+        // if user has provided a function, use that as the generator
+        if (typeof seed === 'function') {
+            this.random = seed;
+            return this;
+        }
+
+        if (arguments.length) {
+            // set a starting value of zero so we can add to it
+            this.seed = 0;
+        }
+
+        // otherwise, leave this.seed blank so that MT will receive a blank
+
+        for (var i = 0; i < arguments.length; i++) {
+            var seedling = 0;
+            if (Object.prototype.toString.call(arguments[i]) === '[object String]') {
+                for (var j = 0; j < arguments[i].length; j++) {
+                    // create a numeric hash for each argument, add to seedling
+                    var hash = 0;
+                    for (var k = 0; k < arguments[i].length; k++) {
+                        hash = arguments[i].charCodeAt(k) + (hash << 6) + (hash << 16) - hash;
+                    }
+                    seedling += hash;
+                }
+            } else {
+                seedling = arguments[i];
+            }
+            this.seed += (arguments.length - i) * seedling;
+        }
+
+        // If no generator function was provided, use our MT
+        this.mt = this.mersenne_twister(this.seed);
+        this.bimd5 = this.blueimp_md5();
+        this.random = function () {
+            return this.mt.random(this.seed);
+        };
+
+        return this;
+    }
+
+    Chance.prototype.VERSION = "0.8.0";
+
+    // Random helper functions
+    function initOptions(options, defaults) {
+        options || (options = {});
+
+        if (defaults) {
+            for (var i in defaults) {
+                if (typeof options[i] === 'undefined') {
+                    options[i] = defaults[i];
+                }
+            }
+        }
+
+        return options;
+    }
+
+    function testRange(test, errorMessage) {
+        if (test) {
+            throw new RangeError(errorMessage);
+        }
+    }
+
+    /**
+     * Encode the input string with Base64.
+     */
+    var base64 = function() {
+        throw new Error('No Base64 encoder available.');
+    };
+
+    // Select proper Base64 encoder.
+    (function determineBase64Encoder() {
+        if (typeof btoa === 'function') {
+            base64 = btoa;
+        } else if (typeof Buffer === 'function') {
+            base64 = function(input) {
+                return new Buffer(input).toString('base64');
+            };
+        }
+    })();
+
+    // -- Basics --
+
+    /**
+     *  Return a random bool, either true or false
+     *
+     *  @param {Object} [options={ likelihood: 50 }] alter the likelihood of
+     *    receiving a true or false value back.
+     *  @throws {RangeError} if the likelihood is out of bounds
+     *  @returns {Bool} either true or false
+     */
+    Chance.prototype.bool = function (options) {
+        // likelihood of success (true)
+        options = initOptions(options, {likelihood : 50});
+
+        // Note, we could get some minor perf optimizations by checking range
+        // prior to initializing defaults, but that makes code a bit messier
+        // and the check more complicated as we have to check existence of
+        // the object then existence of the key before checking constraints.
+        // Since the options initialization should be minor computationally,
+        // decision made for code cleanliness intentionally. This is mentioned
+        // here as it's the first occurrence, will not be mentioned again.
+        testRange(
+            options.likelihood < 0 || options.likelihood > 100,
+            "Chance: Likelihood accepts values from 0 to 100."
+        );
+
+        return this.random() * 100 < options.likelihood;
+    };
+
+    /**
+     *  Return a random character.
+     *
+     *  @param {Object} [options={}] can specify a character pool, only alpha,
+     *    only symbols, and casing (lower or upper)
+     *  @returns {String} a single random character
+     *  @throws {RangeError} Can only specify alpha or symbols, not both
+     */
+    Chance.prototype.character = function (options) {
+        options = initOptions(options);
+        testRange(
+            options.alpha && options.symbols,
+            "Chance: Cannot specify both alpha and symbols."
+        );
+
+        var symbols = "!@#$%^&*()[]",
+            letters, pool;
+
+        if (options.casing === 'lower') {
+            letters = CHARS_LOWER;
+        } else if (options.casing === 'upper') {
+            letters = CHARS_UPPER;
+        } else {
+            letters = CHARS_LOWER + CHARS_UPPER;
+        }
+
+        if (options.pool) {
+            pool = options.pool;
+        } else if (options.alpha) {
+            pool = letters;
+        } else if (options.symbols) {
+            pool = symbols;
+        } else {
+            pool = letters + NUMBERS + symbols;
+        }
+
+        return pool.charAt(this.natural({max: (pool.length - 1)}));
+    };
+
+    // Note, wanted to use "float" or "double" but those are both JS reserved words.
+
+    // Note, fixed means N OR LESS digits after the decimal. This because
+    // It could be 14.9000 but in JavaScript, when this is cast as a number,
+    // the trailing zeroes are dropped. Left to the consumer if trailing zeroes are
+    // needed
+    /**
+     *  Return a random floating point number
+     *
+     *  @param {Object} [options={}] can specify a fixed precision, min, max
+     *  @returns {Number} a single floating point number
+     *  @throws {RangeError} Can only specify fixed or precision, not both. Also
+     *    min cannot be greater than max
+     */
+    Chance.prototype.floating = function (options) {
+        options = initOptions(options, {fixed : 4});
+        testRange(
+            options.fixed && options.precision,
+            "Chance: Cannot specify both fixed and precision."
+        );
+
+        var num;
+        var fixed = Math.pow(10, options.fixed);
+
+        var max = MAX_INT / fixed;
+        var min = -max;
+
+        testRange(
+            options.min && options.fixed && options.min < min,
+            "Chance: Min specified is out of range with fixed. Min should be, at least, " + min
+        );
+        testRange(
+            options.max && options.fixed && options.max > max,
+            "Chance: Max specified is out of range with fixed. Max should be, at most, " + max
+        );
+
+        options = initOptions(options, { min : min, max : max });
+
+        // Todo - Make this work!
+        // options.precision = (typeof options.precision !== "undefined") ? options.precision : false;
+
+        num = this.integer({min: options.min * fixed, max: options.max * fixed});
+        var num_fixed = (num / fixed).toFixed(options.fixed);
+
+        return parseFloat(num_fixed);
+    };
+
+    /**
+     *  Return a random integer
+     *
+     *  NOTE the max and min are INCLUDED in the range. So:
+     *  chance.integer({min: 1, max: 3});
+     *  would return either 1, 2, or 3.
+     *
+     *  @param {Object} [options={}] can specify a min and/or max
+     *  @returns {Number} a single random integer number
+     *  @throws {RangeError} min cannot be greater than max
+     */
+    Chance.prototype.integer = function (options) {
+        // 9007199254740992 (2^53) is the max integer number in JavaScript
+        // See: http://vq.io/132sa2j
+        options = initOptions(options, {min: MIN_INT, max: MAX_INT});
+        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
+
+        return Math.floor(this.random() * (options.max - options.min + 1) + options.min);
+    };
+
+    /**
+     *  Return a random natural
+     *
+     *  NOTE the max and min are INCLUDED in the range. So:
+     *  chance.natural({min: 1, max: 3});
+     *  would return either 1, 2, or 3.
+     *
+     *  @param {Object} [options={}] can specify a min and/or max
+     *  @returns {Number} a single random integer number
+     *  @throws {RangeError} min cannot be greater than max
+     */
+    Chance.prototype.natural = function (options) {
+        options = initOptions(options, {min: 0, max: MAX_INT});
+        testRange(options.min < 0, "Chance: Min cannot be less than zero.");
+        return this.integer(options);
+    };
+
+    /**
+     *  Return a random string
+     *
+     *  @param {Object} [options={}] can specify a length
+     *  @returns {String} a string of random length
+     *  @throws {RangeError} length cannot be less than zero
+     */
+    Chance.prototype.string = function (options) {
+        options = initOptions(options, { length: this.natural({min: 5, max: 20}) });
+        testRange(options.length < 0, "Chance: Length cannot be less than zero.");
+        var length = options.length,
+            text = this.n(this.character, length, options);
+
+        return text.join("");
+    };
+
+    // -- End Basics --
+
+    // -- Helpers --
+
+    Chance.prototype.capitalize = function (word) {
+        return word.charAt(0).toUpperCase() + word.substr(1);
+    };
+
+    Chance.prototype.mixin = function (obj) {
+        for (var func_name in obj) {
+            Chance.prototype[func_name] = obj[func_name];
+        }
+        return this;
+    };
+
+    /**
+     *  Given a function that generates something random and a number of items to generate,
+     *    return an array of items where none repeat.
+     *
+     *  @param {Function} fn the function that generates something random
+     *  @param {Number} num number of terms to generate
+     *  @param {Object} options any options to pass on to the generator function
+     *  @returns {Array} an array of length `num` with every item generated by `fn` and unique
+     *
+     *  There can be more parameters after these. All additional parameters are provided to the given function
+     */
+    Chance.prototype.unique = function(fn, num, options) {
+        testRange(
+            typeof fn !== "function",
+            "Chance: The first argument must be a function."
+        );
+
+        options = initOptions(options, {
+            // Default comparator to check that val is not already in arr.
+            // Should return `false` if item not in array, `true` otherwise
+            comparator: function(arr, val) {
+                return arr.indexOf(val) !== -1;
+            }
+        });
+
+        var arr = [], count = 0, result, MAX_DUPLICATES = num * 50, params = slice.call(arguments, 2);
+
+        while (arr.length < num) {
+            result = fn.apply(this, params);
+            if (!options.comparator(arr, result)) {
+                arr.push(result);
+                // reset count when unique found
+                count = 0;
+            }
+
+            if (++count > MAX_DUPLICATES) {
+                throw new RangeError("Chance: num is likely too large for sample set");
+            }
+        }
+        return arr;
+    };
+
+    /**
+     *  Gives an array of n random terms
+     *
+     *  @param {Function} fn the function that generates something random
+     *  @param {Number} n number of terms to generate
+     *  @returns {Array} an array of length `n` with items generated by `fn`
+     *
+     *  There can be more parameters after these. All additional parameters are provided to the given function
+     */
+    Chance.prototype.n = function(fn, n) {
+        testRange(
+            typeof fn !== "function",
+            "Chance: The first argument must be a function."
+        );
+
+        if (typeof n === 'undefined') {
+            n = 1;
+        }
+        var i = n, arr = [], params = slice.call(arguments, 2);
+
+        // Providing a negative count should result in a noop.
+        i = Math.max( 0, i );
+
+        for (null; i--; null) {
+            arr.push(fn.apply(this, params));
+        }
+
+        return arr;
+    };
+
+    // H/T to SO for this one: http://vq.io/OtUrZ5
+    Chance.prototype.pad = function (number, width, pad) {
+        // Default pad to 0 if none provided
+        pad = pad || '0';
+        // Convert number to a string
+        number = number + '';
+        return number.length >= width ? number : new Array(width - number.length + 1).join(pad) + number;
+    };
+
+    Chance.prototype.pick = function (arr, count) {
+        if (arr.length === 0) {
+            throw new RangeError("Chance: Cannot pick() from an empty array");
+        }
+        if (!count || count === 1) {
+            return arr[this.natural({max: arr.length - 1})];
+        } else {
+            return this.shuffle(arr).slice(0, count);
+        }
+    };
+
+    Chance.prototype.shuffle = function (arr) {
+        var old_array = arr.slice(0),
+            new_array = [],
+            j = 0,
+            length = Number(old_array.length);
+
+        for (var i = 0; i < length; i++) {
+            // Pick a random index from the array
+            j = this.natural({max: old_array.length - 1});
+            // Add it to the new array
+            new_array[i] = old_array[j];
+            // Remove that element from the original array
+            old_array.splice(j, 1);
+        }
+
+        return new_array;
+    };
+
+    // Returns a single item from an array with relative weighting of odds
+    Chance.prototype.weighted = function(arr, weights) {
+        if (arr.length !== weights.length) {
+            throw new RangeError("Chance: length of array and weights must match");
+        }
+
+        // Handle weights that are less or equal to zero.
+        for (var weightIndex = weights.length - 1; weightIndex >= 0; --weightIndex) {
+            // If the weight is less or equal to zero, remove it and the value.
+            if (weights[weightIndex] <= 0) {
+                arr.splice(weightIndex,1);
+                weights.splice(weightIndex,1);
+            }
+        }
+
+        // If any of the weights are less than 1, we want to scale them up to whole
+        //   numbers for the rest of this logic to work
+        if (weights.some(function(weight) { return weight < 1; })) {
+            var min = weights.reduce(function(min, weight) {
+                return (weight < min) ? weight : min;
+            }, weights[0]);
+
+            var scaling_factor = 1 / min;
+
+            weights = weights.map(function(weight) {
+                return weight * scaling_factor;
+            });
+        }
+
+        var sum = weights.reduce(function(total, weight) {
+            return total + weight;
+        }, 0);
+
+        // get an index
+        var selected = this.natural({ min: 1, max: sum });
+
+        var total = 0;
+        var chosen;
+        // Using some() here so we can bail as soon as we get our match
+        weights.some(function(weight, index) {
+            if (selected <= total + weight) {
+                chosen = arr[index];
+                return true;
+            }
+            total += weight;
+            return false;
+        });
+
+        return chosen;
+    };
+
+    // -- End Helpers --
+
+    // -- Text --
+
+    Chance.prototype.paragraph = function (options) {
+        options = initOptions(options);
+
+        var sentences = options.sentences || this.natural({min: 3, max: 7}),
+            sentence_array = this.n(this.sentence, sentences);
+
+        return sentence_array.join(' ');
+    };
+
+    // Could get smarter about this than generating random words and
+    // chaining them together. Such as: http://vq.io/1a5ceOh
+    Chance.prototype.sentence = function (options) {
+        options = initOptions(options);
+
+        var words = options.words || this.natural({min: 12, max: 18}),
+            punctuation = options.punctuation,
+            text, word_array = this.n(this.word, words);
+
+        text = word_array.join(' ');
+        
+        // Capitalize first letter of sentence
+        text = this.capitalize(text);
+        
+        // Make sure punctuation has a usable value
+        if (punctuation !== false && !/^[\.\?;!:]$/.test(punctuation)) {
+            punctuation = '.';
+        }
+        
+        // Add punctuation mark
+        if (punctuation) {
+            text += punctuation;
+        }
+
+        return text;
+    };
+
+    Chance.prototype.syllable = function (options) {
+        options = initOptions(options);
+
+        var length = options.length || this.natural({min: 2, max: 3}),
+            consonants = 'bcdfghjklmnprstvwz', // consonants except hard to speak ones
+            vowels = 'aeiou', // vowels
+            all = consonants + vowels, // all
+            text = '',
+            chr;
+
+        // I'm sure there's a more elegant way to do this, but this works
+        // decently well.
+        for (var i = 0; i < length; i++) {
+            if (i === 0) {
+                // First character can be anything
+                chr = this.character({pool: all});
+            } else if (consonants.indexOf(chr) === -1) {
+                // Last character was a vowel, now we want a consonant
+                chr = this.character({pool: consonants});
+            } else {
+                // Last character was a consonant, now we want a vowel
+                chr = this.character({pool: vowels});
+            }
+
+            text += chr;
+        }
+
+        return text;
+    };
+
+    Chance.prototype.word = function (options) {
+        options = initOptions(options);
+
+        testRange(
+            options.syllables && options.length,
+            "Chance: Cannot specify both syllables AND length."
+        );
+
+        var syllables = options.syllables || this.natural({min: 1, max: 3}),
+            text = '';
+
+        if (options.length) {
+            // Either bound word by length
+            do {
+                text += this.syllable();
+            } while (text.length < options.length);
+            text = text.substring(0, options.length);
+        } else {
+            // Or by number of syllables
+            for (var i = 0; i < syllables; i++) {
+                text += this.syllable();
+            }
+        }
+        return text;
+    };
+
+    // -- End Text --
+
+    // -- Person --
+
+    Chance.prototype.age = function (options) {
+        options = initOptions(options);
+        var ageRange;
+
+        switch (options.type) {
+            case 'child':
+                ageRange = {min: 1, max: 12};
+                break;
+            case 'teen':
+                ageRange = {min: 13, max: 19};
+                break;
+            case 'adult':
+                ageRange = {min: 18, max: 65};
+                break;
+            case 'senior':
+                ageRange = {min: 65, max: 100};
+                break;
+            case 'all':
+                ageRange = {min: 1, max: 100};
+                break;
+            default:
+                ageRange = {min: 18, max: 65};
+                break;
+        }
+
+        return this.natural(ageRange);
+    };
+
+    Chance.prototype.birthday = function (options) {
+        options = initOptions(options, {
+            year: (new Date().getFullYear() - this.age(options))
+        });
+
+        return this.date(options);
+    };
+
+    // CPF; ID to identify taxpayers in Brazil
+    Chance.prototype.cpf = function () {
+        var n = this.n(this.natural, 9, { max: 9 });
+        var d1 = n[8]*2+n[7]*3+n[6]*4+n[5]*5+n[4]*6+n[3]*7+n[2]*8+n[1]*9+n[0]*10;
+        d1 = 11 - (d1 % 11);
+        if (d1>=10) {
+            d1 = 0;
+        }
+        var d2 = d1*2+n[8]*3+n[7]*4+n[6]*5+n[5]*6+n[4]*7+n[3]*8+n[2]*9+n[1]*10+n[0]*11;
+        d2 = 11 - (d2 % 11);
+        if (d2>=10) {
+            d2 = 0;
+        }
+        return ''+n[0]+n[1]+n[2]+'.'+n[3]+n[4]+n[5]+'.'+n[6]+n[7]+n[8]+'-'+d1+d2;
+    };
+
+    Chance.prototype.first = function (options) {
+        options = initOptions(options, {gender: this.gender()});
+        return this.pick(this.get("firstNames")[options.gender.toLowerCase()]);
+    };
+
+    Chance.prototype.gender = function () {
+        return this.pick(['Male', 'Female']);
+    };
+
+    Chance.prototype.last = function () {
+        return this.pick(this.get("lastNames"));
+    };
+    
+    Chance.prototype.israelId=function(){
+        var x=this.string({pool: '0123456789',length:8});
+        var y=0;
+        for (var i=0;i<x.length;i++){
+            var thisDigit=  x[i] *  (i/2===parseInt(i/2) ? 1 : 2);
+            thisDigit=this.pad(thisDigit,2).toString();
+            thisDigit=parseInt(thisDigit[0]) + parseInt(thisDigit[1]);
+            y=y+thisDigit;
+        }
+        x=x+(10-parseInt(y.toString().slice(-1))).toString().slice(-1);
+        return x;
+    };
+
+    Chance.prototype.mrz = function (options) {
+        var checkDigit = function (input) {
+            var alpha = "<ABCDEFGHIJKLMNOPQRSTUVWXYXZ".split(''),
+                multipliers = [ 7, 3, 1 ],
+                runningTotal = 0;
+
+            if (typeof input !== 'string') {
+                input = input.toString();
+            }
+
+            input.split('').forEach(function(character, idx) {
+                var pos = alpha.indexOf(character);
+
+                if(pos !== -1) {
+                    character = pos === 0 ? 0 : pos + 9;
+                } else {
+                    character = parseInt(character, 10);
+                }
+                character *= multipliers[idx % multipliers.length];
+                runningTotal += character;
+            });
+            return runningTotal % 10;
+        };
+        var generate = function (opts) {
+            var pad = function (length) {
+                return new Array(length + 1).join('<');
+            };
+            var number = [ 'P<',
+                           opts.issuer,
+                           opts.last.toUpperCase(),
+                           '<<',
+                           opts.first.toUpperCase(),
+                           pad(39 - (opts.last.length + opts.first.length + 2)),
+                           opts.passportNumber,
+                           checkDigit(opts.passportNumber),
+                           opts.nationality,
+                           opts.dob,
+                           checkDigit(opts.dob),
+                           opts.gender,
+                           opts.expiry,
+                           checkDigit(opts.expiry),
+                           pad(14),
+                           checkDigit(pad(14)) ].join('');
+
+            return number +
+                (checkDigit(number.substr(44, 10) +
+                            number.substr(57, 7) +
+                            number.substr(65, 7)));
+        };
+
+        var that = this;
+
+        options = initOptions(options, {
+            first: this.first(),
+            last: this.last(),
+            passportNumber: this.integer({min: 100000000, max: 999999999}),
+            dob: (function () {
+                var date = that.birthday({type: 'adult'});
+                return [date.getFullYear().toString().substr(2),
+                        that.pad(date.getMonth() + 1, 2),
+                        that.pad(date.getDate(), 2)].join('');
+            }()),
+            expiry: (function () {
+                var date = new Date();
+                return [(date.getFullYear() + 5).toString().substr(2),
+                        that.pad(date.getMonth() + 1, 2),
+                        that.pad(date.getDate(), 2)].join('');
+            }()),
+            gender: this.gender() === 'Female' ? 'F': 'M',
+            issuer: 'GBR',
+            nationality: 'GBR'
+        });
+        return generate (options);
+    };
+
+    Chance.prototype.name = function (options) {
+        options = initOptions(options);
+
+        var first = this.first(options),
+            last = this.last(),
+            name;
+
+        if (options.middle) {
+            name = first + ' ' + this.first(options) + ' ' + last;
+        } else if (options.middle_initial) {
+            name = first + ' ' + this.character({alpha: true, casing: 'upper'}) + '. ' + last;
+        } else {
+            name = first + ' ' + last;
+        }
+
+        if (options.prefix) {
+            name = this.prefix(options) + ' ' + name;
+        }
+
+        if (options.suffix) {
+            name = name + ' ' + this.suffix(options);
+        }
+
+        return name;
+    };
+
+    // Return the list of available name prefixes based on supplied gender.
+    Chance.prototype.name_prefixes = function (gender) {
+        gender = gender || "all";
+        gender = gender.toLowerCase();
+
+        var prefixes = [
+            { name: 'Doctor', abbreviation: 'Dr.' }
+        ];
+
+        if (gender === "male" || gender === "all") {
+            prefixes.push({ name: 'Mister', abbreviation: 'Mr.' });
+        }
+
+        if (gender === "female" || gender === "all") {
+            prefixes.push({ name: 'Miss', abbreviation: 'Miss' });
+            prefixes.push({ name: 'Misses', abbreviation: 'Mrs.' });
+        }
+
+        return prefixes;
+    };
+
+    // Alias for name_prefix
+    Chance.prototype.prefix = function (options) {
+        return this.name_prefix(options);
+    };
+
+    Chance.prototype.name_prefix = function (options) {
+        options = initOptions(options, { gender: "all" });
+        return options.full ?
+            this.pick(this.name_prefixes(options.gender)).name :
+            this.pick(this.name_prefixes(options.gender)).abbreviation;
+    };
+
+    Chance.prototype.ssn = function (options) {
+        options = initOptions(options, {ssnFour: false, dashes: true});
+        var ssn_pool = "1234567890",
+            ssn,
+            dash = options.dashes ? '-' : '';
+
+        if(!options.ssnFour) {
+            ssn = this.string({pool: ssn_pool, length: 3}) + dash +
+            this.string({pool: ssn_pool, length: 2}) + dash +
+            this.string({pool: ssn_pool, length: 4});
+        } else {
+            ssn = this.string({pool: ssn_pool, length: 4});
+        }
+        return ssn;
+    };
+
+    // Return the list of available name suffixes
+    Chance.prototype.name_suffixes = function () {
+        var suffixes = [
+            { name: 'Doctor of Osteopathic Medicine', abbreviation: 'D.O.' },
+            { name: 'Doctor of Philosophy', abbreviation: 'Ph.D.' },
+            { name: 'Esquire', abbreviation: 'Esq.' },
+            { name: 'Junior', abbreviation: 'Jr.' },
+            { name: 'Juris Doctor', abbreviation: 'J.D.' },
+            { name: 'Master of Arts', abbreviation: 'M.A.' },
+            { name: 'Master of Business Administration', abbreviation: 'M.B.A.' },
+            { name: 'Master of Science', abbreviation: 'M.S.' },
+            { name: 'Medical Doctor', abbreviation: 'M.D.' },
+            { name: 'Senior', abbreviation: 'Sr.' },
+            { name: 'The Third', abbreviation: 'III' },
+            { name: 'The Fourth', abbreviation: 'IV' },
+            { name: 'Bachelor of Engineering', abbreviation: 'B.E' },
+            { name: 'Bachelor of Technology', abbreviation: 'B.TECH' }
+        ];
+        return suffixes;
+    };
+
+    // Alias for name_suffix
+    Chance.prototype.suffix = function (options) {
+        return this.name_suffix(options);
+    };
+
+    Chance.prototype.name_suffix = function (options) {
+        options = initOptions(options);
+        return options.full ?
+            this.pick(this.name_suffixes()).name :
+            this.pick(this.name_suffixes()).abbreviation;
+    };
+
+    // -- End Person --
+
+    // -- Mobile --
+    // Android GCM Registration ID
+    Chance.prototype.android_id = function () {
+        return "APA91" + this.string({ pool: "0123456789abcefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_", length: 178 });
+    };
+
+    // Apple Push Token
+    Chance.prototype.apple_token = function () {
+        return this.string({ pool: "abcdef1234567890", length: 64 });
+    };
+
+    // Windows Phone 8 ANID2
+    Chance.prototype.wp8_anid2 = function () {
+        return base64( this.hash( { length : 32 } ) );
+    };
+
+    // Windows Phone 7 ANID
+    Chance.prototype.wp7_anid = function () {
+        return 'A=' + this.guid().replace(/-/g, '').toUpperCase() + '&E=' + this.hash({ length:3 }) + '&W=' + this.integer({ min:0, max:9 });
+    };
+
+    // BlackBerry Device PIN
+    Chance.prototype.bb_pin = function () {
+        return this.hash({ length: 8 });
+    };
+
+    // -- End Mobile --
+
+    // -- Web --
+    Chance.prototype.avatar = function (options) {
+        var url = null;
+        var URL_BASE = '//www.gravatar.com/avatar/';
+        var PROTOCOLS = {
+            http: 'http',
+            https: 'https'
+        };
+        var FILE_TYPES = {
+            bmp: 'bmp',
+            gif: 'gif',
+            jpg: 'jpg',
+            png: 'png'
+        };
+        var FALLBACKS = {
+            '404': '404', // Return 404 if not found
+            mm: 'mm', // Mystery man
+            identicon: 'identicon', // Geometric pattern based on hash
+            monsterid: 'monsterid', // A generated monster icon
+            wavatar: 'wavatar', // A generated face
+            retro: 'retro', // 8-bit icon
+            blank: 'blank' // A transparent png
+        };
+        var RATINGS = {
+            g: 'g',
+            pg: 'pg',
+            r: 'r',
+            x: 'x'
+        };
+        var opts = {
+            protocol: null,
+            email: null,
+            fileExtension: null,
+            size: null,
+            fallback: null,
+            rating: null
+        };
+
+        if (!options) {
+            // Set to a random email
+            opts.email = this.email();
+            options = {};
+        }
+        else if (typeof options === 'string') {
+            opts.email = options;
+            options = {};
+        }
+        else if (typeof options !== 'object') {
+            return null;
+        }
+        else if (options.constructor === 'Array') {
+            return null;
+        }
+
+        opts = initOptions(options, opts);
+
+        if (!opts.email) {
+            // Set to a random email
+            opts.email = this.email();
+        }
+
+        // Safe checking for params
+        opts.protocol = PROTOCOLS[opts.protocol] ? opts.protocol + ':' : '';
+        opts.size = parseInt(opts.size, 0) ? opts.size : '';
+        opts.rating = RATINGS[opts.rating] ? opts.rating : '';
+        opts.fallback = FALLBACKS[opts.fallback] ? opts.fallback : '';
+        opts.fileExtension = FILE_TYPES[opts.fileExtension] ? opts.fileExtension : '';
+
+        url =
+            opts.protocol +
+            URL_BASE +
+            this.bimd5.md5(opts.email) +
+            (opts.fileExtension ? '.' + opts.fileExtension : '') +
+            (opts.size || opts.rating || opts.fallback ? '?' : '') +
+            (opts.size ? '&s=' + opts.size.toString() : '') +
+            (opts.rating ? '&r=' + opts.rating : '') +
+            (opts.fallback ? '&d=' + opts.fallback : '')
+            ;
+
+        return url;
+    };
+
+    Chance.prototype.color = function (options) {
+        function gray(value, delimiter) {
+            return [value, value, value].join(delimiter || '');
+        }
+
+        options = initOptions(options, {
+            format: this.pick(['hex', 'shorthex', 'rgb', 'rgba', '0x']),
+            grayscale: false,
+            casing: 'lower'
+        });
+
+        var isGrayscale = options.grayscale;
+        var colorValue;
+
+        if (options.format === 'hex') {
+            colorValue = '#' + (isGrayscale ? gray(this.hash({length: 2})) : this.hash({length: 6}));
+
+        } else if (options.format === 'shorthex') {
+            colorValue = '#' + (isGrayscale ? gray(this.hash({length: 1})) : this.hash({length: 3}));
+
+        } else if (options.format === 'rgb') {
+            if (isGrayscale) {
+                colorValue = 'rgb(' + gray(this.natural({max: 255}), ',') + ')';
+            } else {
+                colorValue = 'rgb(' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ')';
+            }
+        } else if (options.format === 'rgba') {
+            if (isGrayscale) {
+                colorValue = 'rgba(' + gray(this.natural({max: 255}), ',') + ',' + this.floating({min:0, max:1}) + ')';
+            } else {
+                colorValue = 'rgba(' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.floating({min:0, max:1}) + ')';
+            }
+        } else if (options.format === '0x') {
+            colorValue = '0x' + (isGrayscale ? gray(this.hash({length: 2})) : this.hash({length: 6}));
+        } else {
+            throw new RangeError('Invalid format provided. Please provide one of "hex", "shorthex", "rgb", "rgba", or "0x".');
+        }
+
+        if (options.casing === 'upper' ) {
+            colorValue = colorValue.toUpperCase();
+        }
+
+        return colorValue;
+    };
+
+    Chance.prototype.domain = function (options) {
+        options = initOptions(options);
+        return this.word() + '.' + (options.tld || this.tld());
+    };
+
+    Chance.prototype.email = function (options) {
+        options = initOptions(options);
+        return this.word({length: options.length}) + '@' + (options.domain || this.domain());
+    };
+
+    Chance.prototype.fbid = function () {
+        return parseInt('10000' + this.natural({max: 100000000000}), 10);
+    };
+
+    Chance.prototype.google_analytics = function () {
+        var account = this.pad(this.natural({max: 999999}), 6);
+        var property = this.pad(this.natural({max: 99}), 2);
+
+        return 'UA-' + account + '-' + property;
+    };
+
+    Chance.prototype.hashtag = function () {
+        return '#' + this.word();
+    };
+
+    Chance.prototype.ip = function () {
+        // Todo: This could return some reserved IPs. See http://vq.io/137dgYy
+        // this should probably be updated to account for that rare as it may be
+        return this.natural({max: 255}) + '.' +
+               this.natural({max: 255}) + '.' +
+               this.natural({max: 255}) + '.' +
+               this.natural({max: 255});
+    };
+
+    Chance.prototype.ipv6 = function () {
+        var ip_addr = this.n(this.hash, 8, {length: 4});
+
+        return ip_addr.join(":");
+    };
+
+    Chance.prototype.klout = function () {
+        return this.natural({min: 1, max: 99});
+    };
+
+    Chance.prototype.tlds = function () {
+        return ['com', 'org', 'edu', 'gov', 'co.uk', 'net', 'io'];
+    };
+
+    Chance.prototype.tld = function () {
+        return this.pick(this.tlds());
+    };
+
+    Chance.prototype.twitter = function () {
+        return '@' + this.word();
+    };
+
+    Chance.prototype.url = function (options) {
+        options = initOptions(options, { protocol: "http", domain: this.domain(options), domain_prefix: "", path: this.word(), extensions: []});
+
+        var extension = options.extensions.length > 0 ? "." + this.pick(options.extensions) : "";
+        var domain = options.domain_prefix ? options.domain_prefix + "." + options.domain : options.domain;
+
+        return options.protocol + "://" + domain + "/" + options.path + extension;
+    };
+
+    // -- End Web --
+
+    // -- Location --
+
+    Chance.prototype.address = function (options) {
+        options = initOptions(options);
+        return this.natural({min: 5, max: 2000}) + ' ' + this.street(options);
+    };
+
+    Chance.prototype.altitude = function (options) {
+        options = initOptions(options, {fixed: 5, min: 0, max: 8848});
+        return this.floating({
+            min: options.min,
+            max: options.max,
+            fixed: options.fixed
+        });
+    };
+
+    Chance.prototype.areacode = function (options) {
+        options = initOptions(options, {parens : true});
+        // Don't want area codes to start with 1, or have a 9 as the second digit
+        var areacode = this.natural({min: 2, max: 9}).toString() +
+                this.natural({min: 0, max: 8}).toString() +
+                this.natural({min: 0, max: 9}).toString();
+
+        return options.parens ? '(' + areacode + ')' : areacode;
+    };
+
+    Chance.prototype.city = function () {
+        return this.capitalize(this.word({syllables: 3}));
+    };
+
+    Chance.prototype.coordinates = function (options) {
+        return this.latitude(options) + ', ' + this.longitude(options);
+    };
+
+    Chance.prototype.countries = function () {
+        return this.get("countries");
+    };
+
+    Chance.prototype.country = function (options) {
+        options = initOptions(options);
+        var country = this.pick(this.countries());
+        return options.full ? country.name : country.abbreviation;
+    };
+
+    Chance.prototype.depth = function (options) {
+        options = initOptions(options, {fixed: 5, min: -10994, max: 0});
+        return this.floating({
+            min: options.min,
+            max: options.max,
+            fixed: options.fixed
+        });
+    };
+
+    Chance.prototype.geohash = function (options) {
+        options = initOptions(options, { length: 7 });
+        return this.string({ length: options.length, pool: '0123456789bcdefghjkmnpqrstuvwxyz' });
+    };
+
+    Chance.prototype.geojson = function (options) {
+        return this.latitude(options) + ', ' + this.longitude(options) + ', ' + this.altitude(options);
+    };
+
+    Chance.prototype.latitude = function (options) {
+        options = initOptions(options, {fixed: 5, min: -90, max: 90});
+        return this.floating({min: options.min, max: options.max, fixed: options.fixed});
+    };
+
+    Chance.prototype.longitude = function (options) {
+        options = initOptions(options, {fixed: 5, min: -180, max: 180});
+        return this.floating({min: options.min, max: options.max, fixed: options.fixed});
+    };
+
+    Chance.prototype.phone = function (options) {
+        var self = this,
+            numPick,
+            ukNum = function (parts) {
+                var section = [];
+                //fills the section part of the phone number with random numbers.
+                parts.sections.forEach(function(n) {
+                    section.push(self.string({ pool: '0123456789', length: n}));
+                });
+                return parts.area + section.join(' ');
+            };
+        options = initOptions(options, {
+            formatted: true,
+            country: 'us',
+            mobile: false
+        });
+        if (!options.formatted) {
+            options.parens = false;
+        }
+        var phone;
+        switch (options.country) {
+            case 'fr':
+                if (!options.mobile) {
+                    numPick = this.pick([
+                        // Valid zone and département codes.
+                        '01' + this.pick(['30', '34', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '53', '55', '56', '58', '60', '64', '69', '70', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83']) + self.string({ pool: '0123456789', length: 6}),
+                        '02' + this.pick(['14', '18', '22', '23', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '40', '41', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '56', '57', '61', '62', '69', '72', '76', '77', '78', '85', '90', '96', '97', '98', '99']) + self.string({ pool: '0123456789', length: 6}),
+                        '03' + this.pick(['10', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '39', '44', '45', '51', '52', '54', '55', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90']) + self.string({ pool: '0123456789', length: 6}),
+                        '04' + this.pick(['11', '13', '15', '20', '22', '26', '27', '30', '32', '34', '37', '42', '43', '44', '50', '56', '57', '63', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '88', '89', '90', '91', '92', '93', '94', '95', '97', '98']) + self.string({ pool: '0123456789', length: 6}),
+                        '05' + this.pick(['08', '16', '17', '19', '24', '31', '32', '33', '34', '35', '40', '45', '46', '47', '49', '53', '55', '56', '57', '58', '59', '61', '62', '63', '64', '65', '67', '79', '81', '82', '86', '87', '90', '94']) + self.string({ pool: '0123456789', length: 6}),
+                        '09' + self.string({ pool: '0123456789', length: 8}),
+                    ]);
+                    phone = options.formatted ? numPick.match(/../g).join(' ') : numPick;
+                } else {
+                    numPick = this.pick(['06', '07']) + self.string({ pool: '0123456789', length: 8});
+                    phone = options.formatted ? numPick.match(/../g).join(' ') : numPick;
+                }
+                break;
+            case 'uk':
+                if (!options.mobile) {
+                    numPick = this.pick([
+                        //valid area codes of major cities/counties followed by random numbers in required format.
+                        { area: '01' + this.character({ pool: '234569' }) + '1 ', sections: [3,4] },
+                        { area: '020 ' + this.character({ pool: '378' }), sections: [3,4] },
+                        { area: '023 ' + this.character({ pool: '89' }), sections: [3,4] },
+                        { area: '024 7', sections: [3,4] },
+                        { area: '028 ' + this.pick(['25','28','37','71','82','90','92','95']), sections: [2,4] },
+                        { area: '012' + this.pick(['04','08','54','76','97','98']) + ' ', sections: [5] },
+                        { area: '013' + this.pick(['63','64','84','86']) + ' ', sections: [5] },
+                        { area: '014' + this.pick(['04','20','60','61','80','88']) + ' ', sections: [5] },
+                        { area: '015' + this.pick(['24','27','62','66']) + ' ', sections: [5] },
+                        { area: '016' + this.pick(['06','29','35','47','59','95']) + ' ', sections: [5] },
+                        { area: '017' + this.pick(['26','44','50','68']) + ' ', sections: [5] },
+                        { area: '018' + this.pick(['27','37','84','97']) + ' ', sections: [5] },
+                        { area: '019' + this.pick(['00','05','35','46','49','63','95']) + ' ', sections: [5] }
+                    ]);
+                    phone = options.formatted ? ukNum(numPick) : ukNum(numPick).replace(' ', '', 'g');
+                } else {
+                    numPick = this.pick([
+                        { area: '07' + this.pick(['4','5','7','8','9']), sections: [2,6] },
+                        { area: '07624 ', sections: [6] }
+                    ]);
+                    phone = options.formatted ? ukNum(numPick) : ukNum(numPick).replace(' ', '');
+                }
+                break;
+            case 'us':
+                var areacode = this.areacode(options).toString();
+                var exchange = this.natural({ min: 2, max: 9 }).toString() +
+                    this.natural({ min: 0, max: 9 }).toString() +
+                    this.natural({ min: 0, max: 9 }).toString();
+                var subscriber = this.natural({ min: 1000, max: 9999 }).toString(); // this could be random [0-9]{4}
+                phone = options.formatted ? areacode + ' ' + exchange + '-' + subscriber : areacode + exchange + subscriber;
+        }
+        return phone;
+    };
+
+    Chance.prototype.postal = function () {
+        // Postal District
+        var pd = this.character({pool: "XVTSRPNKLMHJGECBA"});
+        // Forward Sortation Area (FSA)
+        var fsa = pd + this.natural({max: 9}) + this.character({alpha: true, casing: "upper"});
+        // Local Delivery Unut (LDU)
+        var ldu = this.natural({max: 9}) + this.character({alpha: true, casing: "upper"}) + this.natural({max: 9});
+
+        return fsa + " " + ldu;
+    };
+
+    Chance.prototype.provinces = function () {
+        return this.get("provinces");
+    };
+
+    Chance.prototype.province = function (options) {
+        return (options && options.full) ?
+            this.pick(this.provinces()).name :
+            this.pick(this.provinces()).abbreviation;
+    };
+
+    Chance.prototype.state = function (options) {
+        return (options && options.full) ?
+            this.pick(this.states(options)).name :
+            this.pick(this.states(options)).abbreviation;
+    };
+
+    Chance.prototype.states = function (options) {
+        options = initOptions(options, { us_states_and_dc: true });
+
+        var states,
+            us_states_and_dc = this.get("us_states_and_dc"),
+            territories = this.get("territories"),
+            armed_forces = this.get("armed_forces");
+
+        states = [];
+
+        if (options.us_states_and_dc) {
+            states = states.concat(us_states_and_dc);
+        }
+        if (options.territories) {
+            states = states.concat(territories);
+        }
+        if (options.armed_forces) {
+            states = states.concat(armed_forces);
+        }
+
+        return states;
+    };
+
+    Chance.prototype.street = function (options) {
+        options = initOptions(options);
+
+        var street = this.word({syllables: 2});
+        street = this.capitalize(street);
+        street += ' ';
+        street += options.short_suffix ?
+            this.street_suffix().abbreviation :
+            this.street_suffix().name;
+        return street;
+    };
+
+    Chance.prototype.street_suffix = function () {
+        return this.pick(this.street_suffixes());
+    };
+
+    Chance.prototype.street_suffixes = function () {
+        // These are the most common suffixes.
+        return this.get("street_suffixes");
+    };
+
+    // Note: only returning US zip codes, internationalization will be a whole
+    // other beast to tackle at some point.
+    Chance.prototype.zip = function (options) {
+        var zip = this.n(this.natural, 5, {max: 9});
+
+        if (options && options.plusfour === true) {
+            zip.push('-');
+            zip = zip.concat(this.n(this.natural, 4, {max: 9}));
+        }
+
+        return zip.join("");
+    };
+
+    // -- End Location --
+
+    // -- Time
+
+    Chance.prototype.ampm = function () {
+        return this.bool() ? 'am' : 'pm';
+    };
+
+    Chance.prototype.date = function (options) {
+        var date_string, date;
+
+        // If interval is specified we ignore preset
+        if(options && (options.min || options.max)) {
+            options = initOptions(options, {
+                american: true,
+                string: false
+            });
+            var min = typeof options.min !== "undefined" ? options.min.getTime() : 1;
+            // 100,000,000 days measured relative to midnight at the beginning of 01 January, 1970 UTC. http://es5.github.io/#x15.9.1.1
+            var max = typeof options.max !== "undefined" ? options.max.getTime() : 8640000000000000;
+
+            date = new Date(this.natural({min: min, max: max}));
+        } else {
+            var m = this.month({raw: true});
+            var daysInMonth = m.days;
+
+            if(options && options.month) {
+                // Mod 12 to allow months outside range of 0-11 (not encouraged, but also not prevented).
+                daysInMonth = this.get('months')[((options.month % 12) + 12) % 12].days;
+            }
+
+            options = initOptions(options, {
+                year: parseInt(this.year(), 10),
+                // Necessary to subtract 1 because Date() 0-indexes month but not day or year
+                // for some reason.
+                month: m.numeric - 1,
+                day: this.natural({min: 1, max: daysInMonth}),
+                hour: this.hour(),
+                minute: this.minute(),
+                second: this.second(),
+                millisecond: this.millisecond(),
+                american: true,
+                string: false
+            });
+
+            date = new Date(options.year, options.month, options.day, options.hour, options.minute, options.second, options.millisecond);
+        }
+
+        if (options.american) {
+            // Adding 1 to the month is necessary because Date() 0-indexes
+            // months but not day for some odd reason.
+            date_string = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+        } else {
+            date_string = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+        }
+
+        return options.string ? date_string : date;
+    };
+
+    Chance.prototype.hammertime = function (options) {
+        return this.date(options).getTime();
+    };
+
+    Chance.prototype.hour = function (options) {
+        options = initOptions(options, {min: 1, max: options && options.twentyfour ? 24 : 12});
+
+        testRange(options.min < 1, "Chance: Min cannot be less than 1.");
+        testRange(options.twentyfour && options.max > 24, "Chance: Max cannot be greater than 24 for twentyfour option.");
+        testRange(!options.twentyfour && options.max > 12, "Chance: Max cannot be greater than 12.");
+        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
+
+        return this.natural({min: options.min, max: options.max});
+    };
+
+    Chance.prototype.millisecond = function () {
+        return this.natural({max: 999});
+    };
+
+    Chance.prototype.minute = Chance.prototype.second = function (options) {
+        options = initOptions(options, {min: 0, max: 59});
+
+        testRange(options.min < 0, "Chance: Min cannot be less than 0.");
+        testRange(options.max > 59, "Chance: Max cannot be greater than 59.");
+        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
+
+        return this.natural({min: options.min, max: options.max});
+    };
+
+    Chance.prototype.month = function (options) {
+        options = initOptions(options, {min: 1, max: 12});
+
+        testRange(options.min < 1, "Chance: Min cannot be less than 1.");
+        testRange(options.max > 12, "Chance: Max cannot be greater than 12.");
+        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
+
+        var month = this.pick(this.months().slice(options.min - 1, options.max));
+        return options.raw ? month : month.name;
+    };
+
+    Chance.prototype.months = function () {
+        return this.get("months");
+    };
+
+    Chance.prototype.second = function () {
+        return this.natural({max: 59});
+    };
+
+    Chance.prototype.timestamp = function () {
+        return this.natural({min: 1, max: parseInt(new Date().getTime() / 1000, 10)});
+    };
+
+    Chance.prototype.year = function (options) {
+        // Default to current year as min if none specified
+        options = initOptions(options, {min: new Date().getFullYear()});
+
+        // Default to one century after current year as max if none specified
+        options.max = (typeof options.max !== "undefined") ? options.max : options.min + 100;
+
+        return this.natural(options).toString();
+    };
+
+    // -- End Time
+
+    // -- Finance --
+
+    Chance.prototype.cc = function (options) {
+        options = initOptions(options);
+
+        var type, number, to_generate;
+
+        type = (options.type) ?
+                    this.cc_type({ name: options.type, raw: true }) :
+                    this.cc_type({ raw: true });
+
+        number = type.prefix.split("");
+        to_generate = type.length - type.prefix.length - 1;
+
+        // Generates n - 1 digits
+        number = number.concat(this.n(this.integer, to_generate, {min: 0, max: 9}));
+
+        // Generates the last digit according to Luhn algorithm
+        number.push(this.luhn_calculate(number.join("")));
+
+        return number.join("");
+    };
+
+    Chance.prototype.cc_types = function () {
+        // http://en.wikipedia.org/wiki/Bank_card_number#Issuer_identification_number_.28IIN.29
+        return this.get("cc_types");
+    };
+
+    Chance.prototype.cc_type = function (options) {
+        options = initOptions(options);
+        var types = this.cc_types(),
+            type = null;
+
+        if (options.name) {
+            for (var i = 0; i < types.length; i++) {
+                // Accept either name or short_name to specify card type
+                if (types[i].name === options.name || types[i].short_name === options.name) {
+                    type = types[i];
+                    break;
+                }
+            }
+            if (type === null) {
+                throw new RangeError("Credit card type '" + options.name + "'' is not supported");
+            }
+        } else {
+            type = this.pick(types);
+        }
+
+        return options.raw ? type : type.name;
+    };
+
+    //return all world currency by ISO 4217
+    Chance.prototype.currency_types = function () {
+        return this.get("currency_types");
+    };
+
+    //return random world currency by ISO 4217
+    Chance.prototype.currency = function () {
+        return this.pick(this.currency_types());
+    };
+
+    //Return random correct currency exchange pair (e.g. EUR/USD) or array of currency code
+    Chance.prototype.currency_pair = function (returnAsString) {
+        var currencies = this.unique(this.currency, 2, {
+            comparator: function(arr, val) {
+
+                return arr.reduce(function(acc, item) {
+                    // If a match has been found, short circuit check and just return
+                    return acc || (item.code === val.code);
+                }, false);
+            }
+        });
+
+        if (returnAsString) {
+            return currencies[0].code + '/' + currencies[1].code;
+        } else {
+            return currencies;
+        }
+    };
+
+    Chance.prototype.dollar = function (options) {
+        // By default, a somewhat more sane max for dollar than all available numbers
+        options = initOptions(options, {max : 10000, min : 0});
+
+        var dollar = this.floating({min: options.min, max: options.max, fixed: 2}).toString(),
+            cents = dollar.split('.')[1];
+
+        if (cents === undefined) {
+            dollar += '.00';
+        } else if (cents.length < 2) {
+            dollar = dollar + '0';
+        }
+
+        if (dollar < 0) {
+            return '-$' + dollar.replace('-', '');
+        } else {
+            return '$' + dollar;
+        }
+    };
+
+    Chance.prototype.exp = function (options) {
+        options = initOptions(options);
+        var exp = {};
+
+        exp.year = this.exp_year();
+
+        // If the year is this year, need to ensure month is greater than the
+        // current month or this expiration will not be valid
+        if (exp.year === (new Date().getFullYear()).toString()) {
+            exp.month = this.exp_month({future: true});
+        } else {
+            exp.month = this.exp_month();
+        }
+
+        return options.raw ? exp : exp.month + '/' + exp.year;
+    };
+
+    Chance.prototype.exp_month = function (options) {
+        options = initOptions(options);
+        var month, month_int,
+            // Date object months are 0 indexed
+            curMonth = new Date().getMonth() + 1;
+
+        if (options.future) {
+            do {
+                month = this.month({raw: true}).numeric;
+                month_int = parseInt(month, 10);
+            } while (month_int <= curMonth);
+        } else {
+            month = this.month({raw: true}).numeric;
+        }
+
+        return month;
+    };
+
+    Chance.prototype.exp_year = function () {
+        return this.year({max: new Date().getFullYear() + 10});
+    };
+
+    // -- End Finance
+
+    // -- Regional
+
+    Chance.prototype.pl_pesel = function () {
+        var number = this.natural({min: 1, max: 9999999999});
+        var arr = this.pad(number, 10).split('');
+        for (var i = 0; i < arr.length; i++) {
+            arr[i] = parseInt(arr[i]);
+        }
+
+        var controlNumber = (1 * arr[0] + 3 * arr[1] + 7 * arr[2] + 9 * arr[3] + 1 * arr[4] + 3 * arr[5] + 7 * arr[6] + 9 * arr[7] + 1 * arr[8] + 3 * arr[9]) % 10;
+        if(controlNumber !== 0) {
+            controlNumber = 10 - controlNumber;
+        }
+
+        return arr.join('') + controlNumber;
+    };
+
+    Chance.prototype.pl_nip = function () {
+        var number = this.natural({min: 1, max: 999999999});
+        var arr = this.pad(number, 9).split('');
+        for (var i = 0; i < arr.length; i++) {
+            arr[i] = parseInt(arr[i]);
+        }
+
+        var controlNumber = (6 * arr[0] + 5 * arr[1] + 7 * arr[2] + 2 * arr[3] + 3 * arr[4] + 4 * arr[5] + 5 * arr[6] + 6 * arr[7] + 7 * arr[8]) % 11;
+        if(controlNumber === 10) {
+            return this.pl_nip();
+        }
+
+        return arr.join('') + controlNumber;
+    };
+
+    Chance.prototype.pl_regon = function () {
+        var number = this.natural({min: 1, max: 99999999});
+        var arr = this.pad(number, 8).split('');
+        for (var i = 0; i < arr.length; i++) {
+            arr[i] = parseInt(arr[i]);
+        }
+
+        var controlNumber = (8 * arr[0] + 9 * arr[1] + 2 * arr[2] + 3 * arr[3] + 4 * arr[4] + 5 * arr[5] + 6 * arr[6] + 7 * arr[7]) % 11;
+        if(controlNumber === 10) {
+            controlNumber = 0;
+        }
+
+        return arr.join('') + controlNumber;
+    };
+
+    // -- End Regional
+
+    // -- Miscellaneous --
+
+    // Dice - For all the board game geeks out there, myself included ;)
+    function diceFn (range) {
+        return function () {
+            return this.natural(range);
+        };
+    }
+    Chance.prototype.d4 = diceFn({min: 1, max: 4});
+    Chance.prototype.d6 = diceFn({min: 1, max: 6});
+    Chance.prototype.d8 = diceFn({min: 1, max: 8});
+    Chance.prototype.d10 = diceFn({min: 1, max: 10});
+    Chance.prototype.d12 = diceFn({min: 1, max: 12});
+    Chance.prototype.d20 = diceFn({min: 1, max: 20});
+    Chance.prototype.d30 = diceFn({min: 1, max: 30});
+    Chance.prototype.d100 = diceFn({min: 1, max: 100});
+
+    Chance.prototype.rpg = function (thrown, options) {
+        options = initOptions(options);
+        if (!thrown) {
+            throw new RangeError("A type of die roll must be included");
+        } else {
+            var bits = thrown.toLowerCase().split("d"),
+                rolls = [];
+
+            if (bits.length !== 2 || !parseInt(bits[0], 10) || !parseInt(bits[1], 10)) {
+                throw new Error("Invalid format provided. Please provide #d# where the first # is the number of dice to roll, the second # is the max of each die");
+            }
+            for (var i = bits[0]; i > 0; i--) {
+                rolls[i - 1] = this.natural({min: 1, max: bits[1]});
+            }
+            return (typeof options.sum !== 'undefined' && options.sum) ? rolls.reduce(function (p, c) { return p + c; }) : rolls;
+        }
+    };
+
+    // Guid
+    Chance.prototype.guid = function (options) {
+        options = initOptions(options, { version: 5 });
+
+        var guid_pool = "abcdef1234567890",
+            variant_pool = "ab89",
+            guid = this.string({ pool: guid_pool, length: 8 }) + '-' +
+                   this.string({ pool: guid_pool, length: 4 }) + '-' +
+                   // The Version
+                   options.version +
+                   this.string({ pool: guid_pool, length: 3 }) + '-' +
+                   // The Variant
+                   this.string({ pool: variant_pool, length: 1 }) +
+                   this.string({ pool: guid_pool, length: 3 }) + '-' +
+                   this.string({ pool: guid_pool, length: 12 });
+        return guid;
+    };
+
+    // Hash
+    Chance.prototype.hash = function (options) {
+        options = initOptions(options, {length : 40, casing: 'lower'});
+        var pool = options.casing === 'upper' ? HEX_POOL.toUpperCase() : HEX_POOL;
+        return this.string({pool: pool, length: options.length});
+    };
+
+    Chance.prototype.luhn_check = function (num) {
+        var str = num.toString();
+        var checkDigit = +str.substring(str.length - 1);
+        return checkDigit === this.luhn_calculate(+str.substring(0, str.length - 1));
+    };
+
+    Chance.prototype.luhn_calculate = function (num) {
+        var digits = num.toString().split("").reverse();
+        var sum = 0;
+        var digit;
+
+        for (var i = 0, l = digits.length; l > i; ++i) {
+            digit = +digits[i];
+            if (i % 2 === 0) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            sum += digit;
+        }
+        return (sum * 9) % 10;
+    };
+
+    // MD5 Hash
+    Chance.prototype.md5 = function(options) {
+        var opts = { str: '', key: null, raw: false };
+
+        if (!options) {
+            opts.str = this.string();
+            options = {};
+        }
+        else if (typeof options === 'string') {
+            opts.str = options;
+            options = {};
+        }
+        else if (typeof options !== 'object') {
+            return null;
+        }
+        else if(options.constructor === 'Array') {
+            return null;
+        }
+
+        opts = initOptions(options, opts);
+
+        if(!opts.str){
+            throw new Error('A parameter is required to return an md5 hash.');
+        }
+
+        return this.bimd5.md5(opts.str, opts.key, opts.raw);
+    };
+
+    var data = {
+
+        firstNames: {
+            "male": ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Charles", "Thomas", "Christopher", "Daniel", "Matthew", "George", "Donald", "Anthony", "Paul", "Mark", "Edward", "Steven", "Kenneth", "Andrew", "Brian", "Joshua", "Kevin", "Ronald", "Timothy", "Jason", "Jeffrey", "Frank", "Gary", "Ryan", "Nicholas", "Eric", "Stephen", "Jacob", "Larry", "Jonathan", "Scott", "Raymond", "Justin", "Brandon", "Gregory", "Samuel", "Benjamin", "Patrick", "Jack", "Henry", "Walter", "Dennis", "Jerry", "Alexander", "Peter", "Tyler", "Douglas", "Harold", "Aaron", "Jose", "Adam", "Arthur", "Zachary", "Carl", "Nathan", "Albert", "Kyle", "Lawrence", "Joe", "Willie", "Gerald", "Roger", "Keith", "Jeremy", "Terry", "Harry", "Ralph", "Sean", "Jesse", "Roy", "Louis", "Billy", "Austin", "Bruce", "Eugene", "Christian", "Bryan", "Wayne", "Russell", "Howard", "Fred", "Ethan", "Jordan", "Philip", "Alan", "Juan", "Randy", "Vincent", "Bobby", "Dylan", "Johnny", "Phillip", "Victor", "Clarence", "Ernest", "Martin", "Craig", "Stanley", "Shawn", "Travis", "Bradley", "Leonard", "Earl", "Gabriel", "Jimmy", "Francis", "Todd", "Noah", "Danny", "Dale", "Cody", "Carlos", "Allen", "Frederick", "Logan", "Curtis", "Alex", "Joel", "Luis", "Norman", "Marvin", "Glenn", "Tony", "Nathaniel", "Rodney", "Melvin", "Alfred", "Steve", "Cameron", "Chad", "Edwin", "Caleb", "Evan", "Antonio", "Lee", "Herbert", "Jeffery", "Isaac", "Derek", "Ricky", "Marcus", "Theodore", "Elijah", "Luke", "Jesus", "Eddie", "Troy", "Mike", "Dustin", "Ray", "Adrian", "Bernard", "Leroy", "Angel", "Randall", "Wesley", "Ian", "Jared", "Mason", "Hunter", "Calvin", "Oscar", "Clifford", "Jay", "Shane", "Ronnie", "Barry", "Lucas", "Corey", "Manuel", "Leo", "Tommy", "Warren", "Jackson", "Isaiah", "Connor", "Don", "Dean", "Jon", "Julian", "Miguel", "Bill", "Lloyd", "Charlie", "Mitchell", "Leon", "Jerome", "Darrell", "Jeremiah", "Alvin", "Brett", "Seth", "Floyd", "Jim", "Blake", "Micheal", "Gordon", "Trevor", "Lewis", "Erik", "Edgar", "Vernon", "Devin", "Gavin", "Jayden", "Chris", "Clyde", "Tom", "Derrick", "Mario", "Brent", "Marc", "Herman", "Chase", "Dominic", "Ricardo", "Franklin", "Maurice", "Max", "Aiden", "Owen", "Lester", "Gilbert", "Elmer", "Gene", "Francisco", "Glen", "Cory", "Garrett", "Clayton", "Sam", "Jorge", "Chester", "Alejandro", "Jeff", "Harvey", "Milton", "Cole", "Ivan", "Andre", "Duane", "Landon"],
+            "female": ["Mary", "Emma", "Elizabeth", "Minnie", "Margaret", "Ida", "Alice", "Bertha", "Sarah", "Annie", "Clara", "Ella", "Florence", "Cora", "Martha", "Laura", "Nellie", "Grace", "Carrie", "Maude", "Mabel", "Bessie", "Jennie", "Gertrude", "Julia", "Hattie", "Edith", "Mattie", "Rose", "Catherine", "Lillian", "Ada", "Lillie", "Helen", "Jessie", "Louise", "Ethel", "Lula", "Myrtle", "Eva", "Frances", "Lena", "Lucy", "Edna", "Maggie", "Pearl", "Daisy", "Fannie", "Josephine", "Dora", "Rosa", "Katherine", "Agnes", "Marie", "Nora", "May", "Mamie", "Blanche", "Stella", "Ellen", "Nancy", "Effie", "Sallie", "Nettie", "Della", "Lizzie", "Flora", "Susie", "Maud", "Mae", "Etta", "Harriet", "Sadie", "Caroline", "Katie", "Lydia", "Elsie", "Kate", "Susan", "Mollie", "Alma", "Addie", "Georgia", "Eliza", "Lulu", "Nannie", "Lottie", "Amanda", "Belle", "Charlotte", "Rebecca", "Ruth", "Viola", "Olive", "Amelia", "Hannah", "Jane", "Virginia", "Emily", "Matilda", "Irene", "Kathryn", "Esther", "Willie", "Henrietta", "Ollie", "Amy", "Rachel", "Sara", "Estella", "Theresa", "Augusta", "Ora", "Pauline", "Josie", "Lola", "Sophia", "Leona", "Anne", "Mildred", "Ann", "Beulah", "Callie", "Lou", "Delia", "Eleanor", "Barbara", "Iva", "Louisa", "Maria", "Mayme", "Evelyn", "Estelle", "Nina", "Betty", "Marion", "Bettie", "Dorothy", "Luella", "Inez", "Lela", "Rosie", "Allie", "Millie", "Janie", "Cornelia", "Victoria", "Ruby", "Winifred", "Alta", "Celia", "Christine", "Beatrice", "Birdie", "Harriett", "Mable", "Myra", "Sophie", "Tillie", "Isabel", "Sylvia", "Carolyn", "Isabelle", "Leila", "Sally", "Ina", "Essie", "Bertie", "Nell", "Alberta", "Katharine", "Lora", "Rena", "Mina", "Rhoda", "Mathilda", "Abbie", "Eula", "Dollie", "Hettie", "Eunice", "Fanny", "Ola", "Lenora", "Adelaide", "Christina", "Lelia", "Nelle", "Sue", "Johanna", "Lilly", "Lucinda", "Minerva", "Lettie", "Roxie", "Cynthia", "Helena", "Hilda", "Hulda", "Bernice", "Genevieve", "Jean", "Cordelia", "Marian", "Francis", "Jeanette", "Adeline", "Gussie", "Leah", "Lois", "Lura", "Mittie", "Hallie", "Isabella", "Olga", "Phoebe", "Teresa", "Hester", "Lida", "Lina", "Winnie", "Claudia", "Marguerite", "Vera", "Cecelia", "Bess", "Emilie", "John", "Rosetta", "Verna", "Myrtie", "Cecilia", "Elva", "Olivia", "Ophelia", "Georgie", "Elnora", "Violet", "Adele", "Lily", "Linnie", "Loretta", "Madge", "Polly", "Virgie", "Eugenia", "Lucile", "Lucille", "Mabelle", "Rosalie"]
+        },
+
+        lastNames: ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia', 'Martinez', 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker', 'Hall', 'Allen', 'Young', 'Hernandez', 'King', 'Wright', 'Lopez', 'Hill', 'Scott', 'Green', 'Adams', 'Baker', 'Gonzalez', 'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans', 'Edwards', 'Collins', 'Stewart', 'Sanchez', 'Morris', 'Rogers', 'Reed', 'Cook', 'Morgan', 'Bell', 'Murphy', 'Bailey', 'Rivera', 'Cooper', 'Richardson', 'Cox', 'Howard', 'Ward', 'Torres', 'Peterson', 'Gray', 'Ramirez', 'James', 'Watson', 'Brooks', 'Kelly', 'Sanders', 'Price', 'Bennett', 'Wood', 'Barnes', 'Ross', 'Henderson', 'Coleman', 'Jenkins', 'Perry', 'Powell', 'Long', 'Patterson', 'Hughes', 'Flores', 'Washington', 'Butler', 'Simmons', 'Foster', 'Gonzales', 'Bryant', 'Alexander', 'Russell', 'Griffin', 'Diaz', 'Hayes', 'Myers', 'Ford', 'Hamilton', 'Graham', 'Sullivan', 'Wallace', 'Woods', 'Cole', 'West', 'Jordan', 'Owens', 'Reynolds', 'Fisher', 'Ellis', 'Harrison', 'Gibson', 'McDonald', 'Cruz', 'Marshall', 'Ortiz', 'Gomez', 'Murray', 'Freeman', 'Wells', 'Webb', 'Simpson', 'Stevens', 'Tucker', 'Porter', 'Hunter', 'Hicks', 'Crawford', 'Henry', 'Boyd', 'Mason', 'Morales', 'Kennedy', 'Warren', 'Dixon', 'Ramos', 'Reyes', 'Burns', 'Gordon', 'Shaw', 'Holmes', 'Rice', 'Robertson', 'Hunt', 'Black', 'Daniels', 'Palmer', 'Mills', 'Nichols', 'Grant', 'Knight', 'Ferguson', 'Rose', 'Stone', 'Hawkins', 'Dunn', 'Perkins', 'Hudson', 'Spencer', 'Gardner', 'Stephens', 'Payne', 'Pierce', 'Berry', 'Matthews', 'Arnold', 'Wagner', 'Willis', 'Ray', 'Watkins', 'Olson', 'Carroll', 'Duncan', 'Snyder', 'Hart', 'Cunningham', 'Bradley', 'Lane', 'Andrews', 'Ruiz', 'Harper', 'Fox', 'Riley', 'Armstrong', 'Carpenter', 'Weaver', 'Greene', 'Lawrence', 'Elliott', 'Chavez', 'Sims', 'Austin', 'Peters', 'Kelley', 'Franklin', 'Lawson', 'Fields', 'Gutierrez', 'Ryan', 'Schmidt', 'Carr', 'Vasquez', 'Castillo', 'Wheeler', 'Chapman', 'Oliver', 'Montgomery', 'Richards', 'Williamson', 'Johnston', 'Banks', 'Meyer', 'Bishop', 'McCoy', 'Howell', 'Alvarez', 'Morrison', 'Hansen', 'Fernandez', 'Garza', 'Harvey', 'Little', 'Burton', 'Stanley', 'Nguyen', 'George', 'Jacobs', 'Reid', 'Kim', 'Fuller', 'Lynch', 'Dean', 'Gilbert', 'Garrett', 'Romero', 'Welch', 'Larson', 'Frazier', 'Burke', 'Hanson', 'Day', 'Mendoza', 'Moreno', 'Bowman', 'Medina', 'Fowler', 'Brewer', 'Hoffman', 'Carlson', 'Silva', 'Pearson', 'Holland', 'Douglas', 'Fleming', 'Jensen', 'Vargas', 'Byrd', 'Davidson', 'Hopkins', 'May', 'Terry', 'Herrera', 'Wade', 'Soto', 'Walters', 'Curtis', 'Neal', 'Caldwell', 'Lowe', 'Jennings', 'Barnett', 'Graves', 'Jimenez', 'Horton', 'Shelton', 'Barrett', 'Obrien', 'Castro', 'Sutton', 'Gregory', 'McKinney', 'Lucas', 'Miles', 'Craig', 'Rodriquez', 'Chambers', 'Holt', 'Lambert', 'Fletcher', 'Watts', 'Bates', 'Hale', 'Rhodes', 'Pena', 'Beck', 'Newman', 'Haynes', 'McDaniel', 'Mendez', 'Bush', 'Vaughn', 'Parks', 'Dawson', 'Santiago', 'Norris', 'Hardy', 'Love', 'Steele', 'Curry', 'Powers', 'Schultz', 'Barker', 'Guzman', 'Page', 'Munoz', 'Ball', 'Keller', 'Chandler', 'Weber', 'Leonard', 'Walsh', 'Lyons', 'Ramsey', 'Wolfe', 'Schneider', 'Mullins', 'Benson', 'Sharp', 'Bowen', 'Daniel', 'Barber', 'Cummings', 'Hines', 'Baldwin', 'Griffith', 'Valdez', 'Hubbard', 'Salazar', 'Reeves', 'Warner', 'Stevenson', 'Burgess', 'Santos', 'Tate', 'Cross', 'Garner', 'Mann', 'Mack', 'Moss', 'Thornton', 'Dennis', 'McGee', 'Farmer', 'Delgado', 'Aguilar', 'Vega', 'Glover', 'Manning', 'Cohen', 'Harmon', 'Rodgers', 'Robbins', 'Newton', 'Todd', 'Blair', 'Higgins', 'Ingram', 'Reese', 'Cannon', 'Strickland', 'Townsend', 'Potter', 'Goodwin', 'Walton', 'Rowe', 'Hampton', 'Ortega', 'Patton', 'Swanson', 'Joseph', 'Francis', 'Goodman', 'Maldonado', 'Yates', 'Becker', 'Erickson', 'Hodges', 'Rios', 'Conner', 'Adkins', 'Webster', 'Norman', 'Malone', 'Hammond', 'Flowers', 'Cobb', 'Moody', 'Quinn', 'Blake', 'Maxwell', 'Pope', 'Floyd', 'Osborne', 'Paul', 'McCarthy', 'Guerrero', 'Lindsey', 'Estrada', 'Sandoval', 'Gibbs', 'Tyler', 'Gross', 'Fitzgerald', 'Stokes', 'Doyle', 'Sherman', 'Saunders', 'Wise', 'Colon', 'Gill', 'Alvarado', 'Greer', 'Padilla', 'Simon', 'Waters', 'Nunez', 'Ballard', 'Schwartz', 'McBride', 'Houston', 'Christensen', 'Klein', 'Pratt', 'Briggs', 'Parsons', 'McLaughlin', 'Zimmerman', 'French', 'Buchanan', 'Moran', 'Copeland', 'Roy', 'Pittman', 'Brady', 'McCormick', 'Holloway', 'Brock', 'Poole', 'Frank', 'Logan', 'Owen', 'Bass', 'Marsh', 'Drake', 'Wong', 'Jefferson', 'Park', 'Morton', 'Abbott', 'Sparks', 'Patrick', 'Norton', 'Huff', 'Clayton', 'Massey', 'Lloyd', 'Figueroa', 'Carson', 'Bowers', 'Roberson', 'Barton', 'Tran', 'Lamb', 'Harrington', 'Casey', 'Boone', 'Cortez', 'Clarke', 'Mathis', 'Singleton', 'Wilkins', 'Cain', 'Bryan', 'Underwood', 'Hogan', 'McKenzie', 'Collier', 'Luna', 'Phelps', 'McGuire', 'Allison', 'Bridges', 'Wilkerson', 'Nash', 'Summers', 'Atkins'],
+
+        // Data taken from https://github.com/umpirsky/country-list/blob/master/country/cldr/en_US/country.json
+        countries: [{"name":"Afghanistan","abbreviation":"AF"},{"name":"Albania","abbreviation":"AL"},{"name":"Algeria","abbreviation":"DZ"},{"name":"American Samoa","abbreviation":"AS"},{"name":"Andorra","abbreviation":"AD"},{"name":"Angola","abbreviation":"AO"},{"name":"Anguilla","abbreviation":"AI"},{"name":"Antarctica","abbreviation":"AQ"},{"name":"Antigua and Barbuda","abbreviation":"AG"},{"name":"Argentina","abbreviation":"AR"},{"name":"Armenia","abbreviation":"AM"},{"name":"Aruba","abbreviation":"AW"},{"name":"Australia","abbreviation":"AU"},{"name":"Austria","abbreviation":"AT"},{"name":"Azerbaijan","abbreviation":"AZ"},{"name":"Bahamas","abbreviation":"BS"},{"name":"Bahrain","abbreviation":"BH"},{"name":"Bangladesh","abbreviation":"BD"},{"name":"Barbados","abbreviation":"BB"},{"name":"Belarus","abbreviation":"BY"},{"name":"Belgium","abbreviation":"BE"},{"name":"Belize","abbreviation":"BZ"},{"name":"Benin","abbreviation":"BJ"},{"name":"Bermuda","abbreviation":"BM"},{"name":"Bhutan","abbreviation":"BT"},{"name":"Bolivia","abbreviation":"BO"},{"name":"Bosnia and Herzegovina","abbreviation":"BA"},{"name":"Botswana","abbreviation":"BW"},{"name":"Bouvet Island","abbreviation":"BV"},{"name":"Brazil","abbreviation":"BR"},{"name":"British Antarctic Territory","abbreviation":"BQ"},{"name":"British Indian Ocean Territory","abbreviation":"IO"},{"name":"British Virgin Islands","abbreviation":"VG"},{"name":"Brunei","abbreviation":"BN"},{"name":"Bulgaria","abbreviation":"BG"},{"name":"Burkina Faso","abbreviation":"BF"},{"name":"Burundi","abbreviation":"BI"},{"name":"Cambodia","abbreviation":"KH"},{"name":"Cameroon","abbreviation":"CM"},{"name":"Canada","abbreviation":"CA"},{"name":"Canton and Enderbury Islands","abbreviation":"CT"},{"name":"Cape Verde","abbreviation":"CV"},{"name":"Cayman Islands","abbreviation":"KY"},{"name":"Central African Republic","abbreviation":"CF"},{"name":"Chad","abbreviation":"TD"},{"name":"Chile","abbreviation":"CL"},{"name":"China","abbreviation":"CN"},{"name":"Christmas Island","abbreviation":"CX"},{"name":"Cocos [Keeling] Islands","abbreviation":"CC"},{"name":"Colombia","abbreviation":"CO"},{"name":"Comoros","abbreviation":"KM"},{"name":"Congo - Brazzaville","abbreviation":"CG"},{"name":"Congo - Kinshasa","abbreviation":"CD"},{"name":"Cook Islands","abbreviation":"CK"},{"name":"Costa Rica","abbreviation":"CR"},{"name":"Croatia","abbreviation":"HR"},{"name":"Cuba","abbreviation":"CU"},{"name":"Cyprus","abbreviation":"CY"},{"name":"Czech Republic","abbreviation":"CZ"},{"name":"Côte d’Ivoire","abbreviation":"CI"},{"name":"Denmark","abbreviation":"DK"},{"name":"Djibouti","abbreviation":"DJ"},{"name":"Dominica","abbreviation":"DM"},{"name":"Dominican Republic","abbreviation":"DO"},{"name":"Dronning Maud Land","abbreviation":"NQ"},{"name":"East Germany","abbreviation":"DD"},{"name":"Ecuador","abbreviation":"EC"},{"name":"Egypt","abbreviation":"EG"},{"name":"El Salvador","abbreviation":"SV"},{"name":"Equatorial Guinea","abbreviation":"GQ"},{"name":"Eritrea","abbreviation":"ER"},{"name":"Estonia","abbreviation":"EE"},{"name":"Ethiopia","abbreviation":"ET"},{"name":"Falkland Islands","abbreviation":"FK"},{"name":"Faroe Islands","abbreviation":"FO"},{"name":"Fiji","abbreviation":"FJ"},{"name":"Finland","abbreviation":"FI"},{"name":"France","abbreviation":"FR"},{"name":"French Guiana","abbreviation":"GF"},{"name":"French Polynesia","abbreviation":"PF"},{"name":"French Southern Territories","abbreviation":"TF"},{"name":"French Southern and Antarctic Territories","abbreviation":"FQ"},{"name":"Gabon","abbreviation":"GA"},{"name":"Gambia","abbreviation":"GM"},{"name":"Georgia","abbreviation":"GE"},{"name":"Germany","abbreviation":"DE"},{"name":"Ghana","abbreviation":"GH"},{"name":"Gibraltar","abbreviation":"GI"},{"name":"Greece","abbreviation":"GR"},{"name":"Greenland","abbreviation":"GL"},{"name":"Grenada","abbreviation":"GD"},{"name":"Guadeloupe","abbreviation":"GP"},{"name":"Guam","abbreviation":"GU"},{"name":"Guatemala","abbreviation":"GT"},{"name":"Guernsey","abbreviation":"GG"},{"name":"Guinea","abbreviation":"GN"},{"name":"Guinea-Bissau","abbreviation":"GW"},{"name":"Guyana","abbreviation":"GY"},{"name":"Haiti","abbreviation":"HT"},{"name":"Heard Island and McDonald Islands","abbreviation":"HM"},{"name":"Honduras","abbreviation":"HN"},{"name":"Hong Kong SAR China","abbreviation":"HK"},{"name":"Hungary","abbreviation":"HU"},{"name":"Iceland","abbreviation":"IS"},{"name":"India","abbreviation":"IN"},{"name":"Indonesia","abbreviation":"ID"},{"name":"Iran","abbreviation":"IR"},{"name":"Iraq","abbreviation":"IQ"},{"name":"Ireland","abbreviation":"IE"},{"name":"Isle of Man","abbreviation":"IM"},{"name":"Israel","abbreviation":"IL"},{"name":"Italy","abbreviation":"IT"},{"name":"Jamaica","abbreviation":"JM"},{"name":"Japan","abbreviation":"JP"},{"name":"Jersey","abbreviation":"JE"},{"name":"Johnston Island","abbreviation":"JT"},{"name":"Jordan","abbreviation":"JO"},{"name":"Kazakhstan","abbreviation":"KZ"},{"name":"Kenya","abbreviation":"KE"},{"name":"Kiribati","abbreviation":"KI"},{"name":"Kuwait","abbreviation":"KW"},{"name":"Kyrgyzstan","abbreviation":"KG"},{"name":"Laos","abbreviation":"LA"},{"name":"Latvia","abbreviation":"LV"},{"name":"Lebanon","abbreviation":"LB"},{"name":"Lesotho","abbreviation":"LS"},{"name":"Liberia","abbreviation":"LR"},{"name":"Libya","abbreviation":"LY"},{"name":"Liechtenstein","abbreviation":"LI"},{"name":"Lithuania","abbreviation":"LT"},{"name":"Luxembourg","abbreviation":"LU"},{"name":"Macau SAR China","abbreviation":"MO"},{"name":"Macedonia","abbreviation":"MK"},{"name":"Madagascar","abbreviation":"MG"},{"name":"Malawi","abbreviation":"MW"},{"name":"Malaysia","abbreviation":"MY"},{"name":"Maldives","abbreviation":"MV"},{"name":"Mali","abbreviation":"ML"},{"name":"Malta","abbreviation":"MT"},{"name":"Marshall Islands","abbreviation":"MH"},{"name":"Martinique","abbreviation":"MQ"},{"name":"Mauritania","abbreviation":"MR"},{"name":"Mauritius","abbreviation":"MU"},{"name":"Mayotte","abbreviation":"YT"},{"name":"Metropolitan France","abbreviation":"FX"},{"name":"Mexico","abbreviation":"MX"},{"name":"Micronesia","abbreviation":"FM"},{"name":"Midway Islands","abbreviation":"MI"},{"name":"Moldova","abbreviation":"MD"},{"name":"Monaco","abbreviation":"MC"},{"name":"Mongolia","abbreviation":"MN"},{"name":"Montenegro","abbreviation":"ME"},{"name":"Montserrat","abbreviation":"MS"},{"name":"Morocco","abbreviation":"MA"},{"name":"Mozambique","abbreviation":"MZ"},{"name":"Myanmar [Burma]","abbreviation":"MM"},{"name":"Namibia","abbreviation":"NA"},{"name":"Nauru","abbreviation":"NR"},{"name":"Nepal","abbreviation":"NP"},{"name":"Netherlands","abbreviation":"NL"},{"name":"Netherlands Antilles","abbreviation":"AN"},{"name":"Neutral Zone","abbreviation":"NT"},{"name":"New Caledonia","abbreviation":"NC"},{"name":"New Zealand","abbreviation":"NZ"},{"name":"Nicaragua","abbreviation":"NI"},{"name":"Niger","abbreviation":"NE"},{"name":"Nigeria","abbreviation":"NG"},{"name":"Niue","abbreviation":"NU"},{"name":"Norfolk Island","abbreviation":"NF"},{"name":"North Korea","abbreviation":"KP"},{"name":"North Vietnam","abbreviation":"VD"},{"name":"Northern Mariana Islands","abbreviation":"MP"},{"name":"Norway","abbreviation":"NO"},{"name":"Oman","abbreviation":"OM"},{"name":"Pacific Islands Trust Territory","abbreviation":"PC"},{"name":"Pakistan","abbreviation":"PK"},{"name":"Palau","abbreviation":"PW"},{"name":"Palestinian Territories","abbreviation":"PS"},{"name":"Panama","abbreviation":"PA"},{"name":"Panama Canal Zone","abbreviation":"PZ"},{"name":"Papua New Guinea","abbreviation":"PG"},{"name":"Paraguay","abbreviation":"PY"},{"name":"People's Democratic Republic of Yemen","abbreviation":"YD"},{"name":"Peru","abbreviation":"PE"},{"name":"Philippines","abbreviation":"PH"},{"name":"Pitcairn Islands","abbreviation":"PN"},{"name":"Poland","abbreviation":"PL"},{"name":"Portugal","abbreviation":"PT"},{"name":"Puerto Rico","abbreviation":"PR"},{"name":"Qatar","abbreviation":"QA"},{"name":"Romania","abbreviation":"RO"},{"name":"Russia","abbreviation":"RU"},{"name":"Rwanda","abbreviation":"RW"},{"name":"Réunion","abbreviation":"RE"},{"name":"Saint Barthélemy","abbreviation":"BL"},{"name":"Saint Helena","abbreviation":"SH"},{"name":"Saint Kitts and Nevis","abbreviation":"KN"},{"name":"Saint Lucia","abbreviation":"LC"},{"name":"Saint Martin","abbreviation":"MF"},{"name":"Saint Pierre and Miquelon","abbreviation":"PM"},{"name":"Saint Vincent and the Grenadines","abbreviation":"VC"},{"name":"Samoa","abbreviation":"WS"},{"name":"San Marino","abbreviation":"SM"},{"name":"Saudi Arabia","abbreviation":"SA"},{"name":"Senegal","abbreviation":"SN"},{"name":"Serbia","abbreviation":"RS"},{"name":"Serbia and Montenegro","abbreviation":"CS"},{"name":"Seychelles","abbreviation":"SC"},{"name":"Sierra Leone","abbreviation":"SL"},{"name":"Singapore","abbreviation":"SG"},{"name":"Slovakia","abbreviation":"SK"},{"name":"Slovenia","abbreviation":"SI"},{"name":"Solomon Islands","abbreviation":"SB"},{"name":"Somalia","abbreviation":"SO"},{"name":"South Africa","abbreviation":"ZA"},{"name":"South Georgia and the South Sandwich Islands","abbreviation":"GS"},{"name":"South Korea","abbreviation":"KR"},{"name":"Spain","abbreviation":"ES"},{"name":"Sri Lanka","abbreviation":"LK"},{"name":"Sudan","abbreviation":"SD"},{"name":"Suriname","abbreviation":"SR"},{"name":"Svalbard and Jan Mayen","abbreviation":"SJ"},{"name":"Swaziland","abbreviation":"SZ"},{"name":"Sweden","abbreviation":"SE"},{"name":"Switzerland","abbreviation":"CH"},{"name":"Syria","abbreviation":"SY"},{"name":"São Tomé and Príncipe","abbreviation":"ST"},{"name":"Taiwan","abbreviation":"TW"},{"name":"Tajikistan","abbreviation":"TJ"},{"name":"Tanzania","abbreviation":"TZ"},{"name":"Thailand","abbreviation":"TH"},{"name":"Timor-Leste","abbreviation":"TL"},{"name":"Togo","abbreviation":"TG"},{"name":"Tokelau","abbreviation":"TK"},{"name":"Tonga","abbreviation":"TO"},{"name":"Trinidad and Tobago","abbreviation":"TT"},{"name":"Tunisia","abbreviation":"TN"},{"name":"Turkey","abbreviation":"TR"},{"name":"Turkmenistan","abbreviation":"TM"},{"name":"Turks and Caicos Islands","abbreviation":"TC"},{"name":"Tuvalu","abbreviation":"TV"},{"name":"U.S. Minor Outlying Islands","abbreviation":"UM"},{"name":"U.S. Miscellaneous Pacific Islands","abbreviation":"PU"},{"name":"U.S. Virgin Islands","abbreviation":"VI"},{"name":"Uganda","abbreviation":"UG"},{"name":"Ukraine","abbreviation":"UA"},{"name":"Union of Soviet Socialist Republics","abbreviation":"SU"},{"name":"United Arab Emirates","abbreviation":"AE"},{"name":"United Kingdom","abbreviation":"GB"},{"name":"United States","abbreviation":"US"},{"name":"Unknown or Invalid Region","abbreviation":"ZZ"},{"name":"Uruguay","abbreviation":"UY"},{"name":"Uzbekistan","abbreviation":"UZ"},{"name":"Vanuatu","abbreviation":"VU"},{"name":"Vatican City","abbreviation":"VA"},{"name":"Venezuela","abbreviation":"VE"},{"name":"Vietnam","abbreviation":"VN"},{"name":"Wake Island","abbreviation":"WK"},{"name":"Wallis and Futuna","abbreviation":"WF"},{"name":"Western Sahara","abbreviation":"EH"},{"name":"Yemen","abbreviation":"YE"},{"name":"Zambia","abbreviation":"ZM"},{"name":"Zimbabwe","abbreviation":"ZW"},{"name":"Åland Islands","abbreviation":"AX"}],
+
+        provinces: [
+            {name: 'Alberta', abbreviation: 'AB'},
+            {name: 'British Columbia', abbreviation: 'BC'},
+            {name: 'Manitoba', abbreviation: 'MB'},
+            {name: 'New Brunswick', abbreviation: 'NB'},
+            {name: 'Newfoundland and Labrador', abbreviation: 'NL'},
+            {name: 'Nova Scotia', abbreviation: 'NS'},
+            {name: 'Ontario', abbreviation: 'ON'},
+            {name: 'Prince Edward Island', abbreviation: 'PE'},
+            {name: 'Quebec', abbreviation: 'QC'},
+            {name: 'Saskatchewan', abbreviation: 'SK'},
+
+            // The case could be made that the following are not actually provinces
+            // since they are technically considered "territories" however they all
+            // look the same on an envelope!
+            {name: 'Northwest Territories', abbreviation: 'NT'},
+            {name: 'Nunavut', abbreviation: 'NU'},
+            {name: 'Yukon', abbreviation: 'YT'}
+        ],
+
+        us_states_and_dc: [
+            {name: 'Alabama', abbreviation: 'AL'},
+            {name: 'Alaska', abbreviation: 'AK'},
+            {name: 'Arizona', abbreviation: 'AZ'},
+            {name: 'Arkansas', abbreviation: 'AR'},
+            {name: 'California', abbreviation: 'CA'},
+            {name: 'Colorado', abbreviation: 'CO'},
+            {name: 'Connecticut', abbreviation: 'CT'},
+            {name: 'Delaware', abbreviation: 'DE'},
+            {name: 'District of Columbia', abbreviation: 'DC'},
+            {name: 'Florida', abbreviation: 'FL'},
+            {name: 'Georgia', abbreviation: 'GA'},
+            {name: 'Hawaii', abbreviation: 'HI'},
+            {name: 'Idaho', abbreviation: 'ID'},
+            {name: 'Illinois', abbreviation: 'IL'},
+            {name: 'Indiana', abbreviation: 'IN'},
+            {name: 'Iowa', abbreviation: 'IA'},
+            {name: 'Kansas', abbreviation: 'KS'},
+            {name: 'Kentucky', abbreviation: 'KY'},
+            {name: 'Louisiana', abbreviation: 'LA'},
+            {name: 'Maine', abbreviation: 'ME'},
+            {name: 'Maryland', abbreviation: 'MD'},
+            {name: 'Massachusetts', abbreviation: 'MA'},
+            {name: 'Michigan', abbreviation: 'MI'},
+            {name: 'Minnesota', abbreviation: 'MN'},
+            {name: 'Mississippi', abbreviation: 'MS'},
+            {name: 'Missouri', abbreviation: 'MO'},
+            {name: 'Montana', abbreviation: 'MT'},
+            {name: 'Nebraska', abbreviation: 'NE'},
+            {name: 'Nevada', abbreviation: 'NV'},
+            {name: 'New Hampshire', abbreviation: 'NH'},
+            {name: 'New Jersey', abbreviation: 'NJ'},
+            {name: 'New Mexico', abbreviation: 'NM'},
+            {name: 'New York', abbreviation: 'NY'},
+            {name: 'North Carolina', abbreviation: 'NC'},
+            {name: 'North Dakota', abbreviation: 'ND'},
+            {name: 'Ohio', abbreviation: 'OH'},
+            {name: 'Oklahoma', abbreviation: 'OK'},
+            {name: 'Oregon', abbreviation: 'OR'},
+            {name: 'Pennsylvania', abbreviation: 'PA'},
+            {name: 'Rhode Island', abbreviation: 'RI'},
+            {name: 'South Carolina', abbreviation: 'SC'},
+            {name: 'South Dakota', abbreviation: 'SD'},
+            {name: 'Tennessee', abbreviation: 'TN'},
+            {name: 'Texas', abbreviation: 'TX'},
+            {name: 'Utah', abbreviation: 'UT'},
+            {name: 'Vermont', abbreviation: 'VT'},
+            {name: 'Virginia', abbreviation: 'VA'},
+            {name: 'Washington', abbreviation: 'WA'},
+            {name: 'West Virginia', abbreviation: 'WV'},
+            {name: 'Wisconsin', abbreviation: 'WI'},
+            {name: 'Wyoming', abbreviation: 'WY'}
+        ],
+
+        territories: [
+            {name: 'American Samoa', abbreviation: 'AS'},
+            {name: 'Federated States of Micronesia', abbreviation: 'FM'},
+            {name: 'Guam', abbreviation: 'GU'},
+            {name: 'Marshall Islands', abbreviation: 'MH'},
+            {name: 'Northern Mariana Islands', abbreviation: 'MP'},
+            {name: 'Puerto Rico', abbreviation: 'PR'},
+            {name: 'Virgin Islands, U.S.', abbreviation: 'VI'}
+        ],
+
+        armed_forces: [
+            {name: 'Armed Forces Europe', abbreviation: 'AE'},
+            {name: 'Armed Forces Pacific', abbreviation: 'AP'},
+            {name: 'Armed Forces the Americas', abbreviation: 'AA'}
+        ],
+
+        street_suffixes: [
+            {name: 'Avenue', abbreviation: 'Ave'},
+            {name: 'Boulevard', abbreviation: 'Blvd'},
+            {name: 'Center', abbreviation: 'Ctr'},
+            {name: 'Circle', abbreviation: 'Cir'},
+            {name: 'Court', abbreviation: 'Ct'},
+            {name: 'Drive', abbreviation: 'Dr'},
+            {name: 'Extension', abbreviation: 'Ext'},
+            {name: 'Glen', abbreviation: 'Gln'},
+            {name: 'Grove', abbreviation: 'Grv'},
+            {name: 'Heights', abbreviation: 'Hts'},
+            {name: 'Highway', abbreviation: 'Hwy'},
+            {name: 'Junction', abbreviation: 'Jct'},
+            {name: 'Key', abbreviation: 'Key'},
+            {name: 'Lane', abbreviation: 'Ln'},
+            {name: 'Loop', abbreviation: 'Loop'},
+            {name: 'Manor', abbreviation: 'Mnr'},
+            {name: 'Mill', abbreviation: 'Mill'},
+            {name: 'Park', abbreviation: 'Park'},
+            {name: 'Parkway', abbreviation: 'Pkwy'},
+            {name: 'Pass', abbreviation: 'Pass'},
+            {name: 'Path', abbreviation: 'Path'},
+            {name: 'Pike', abbreviation: 'Pike'},
+            {name: 'Place', abbreviation: 'Pl'},
+            {name: 'Plaza', abbreviation: 'Plz'},
+            {name: 'Point', abbreviation: 'Pt'},
+            {name: 'Ridge', abbreviation: 'Rdg'},
+            {name: 'River', abbreviation: 'Riv'},
+            {name: 'Road', abbreviation: 'Rd'},
+            {name: 'Square', abbreviation: 'Sq'},
+            {name: 'Street', abbreviation: 'St'},
+            {name: 'Terrace', abbreviation: 'Ter'},
+            {name: 'Trail', abbreviation: 'Trl'},
+            {name: 'Turnpike', abbreviation: 'Tpke'},
+            {name: 'View', abbreviation: 'Vw'},
+            {name: 'Way', abbreviation: 'Way'}
+        ],
+
+        months: [
+            {name: 'January', short_name: 'Jan', numeric: '01', days: 31},
+            // Not messing with leap years...
+            {name: 'February', short_name: 'Feb', numeric: '02', days: 28},
+            {name: 'March', short_name: 'Mar', numeric: '03', days: 31},
+            {name: 'April', short_name: 'Apr', numeric: '04', days: 30},
+            {name: 'May', short_name: 'May', numeric: '05', days: 31},
+            {name: 'June', short_name: 'Jun', numeric: '06', days: 30},
+            {name: 'July', short_name: 'Jul', numeric: '07', days: 31},
+            {name: 'August', short_name: 'Aug', numeric: '08', days: 31},
+            {name: 'September', short_name: 'Sep', numeric: '09', days: 30},
+            {name: 'October', short_name: 'Oct', numeric: '10', days: 31},
+            {name: 'November', short_name: 'Nov', numeric: '11', days: 30},
+            {name: 'December', short_name: 'Dec', numeric: '12', days: 31}
+        ],
+
+        // http://en.wikipedia.org/wiki/Bank_card_number#Issuer_identification_number_.28IIN.29
+        cc_types: [
+            {name: "American Express", short_name: 'amex', prefix: '34', length: 15},
+            {name: "Bankcard", short_name: 'bankcard', prefix: '5610', length: 16},
+            {name: "China UnionPay", short_name: 'chinaunion', prefix: '62', length: 16},
+            {name: "Diners Club Carte Blanche", short_name: 'dccarte', prefix: '300', length: 14},
+            {name: "Diners Club enRoute", short_name: 'dcenroute', prefix: '2014', length: 15},
+            {name: "Diners Club International", short_name: 'dcintl', prefix: '36', length: 14},
+            {name: "Diners Club United States & Canada", short_name: 'dcusc', prefix: '54', length: 16},
+            {name: "Discover Card", short_name: 'discover', prefix: '6011', length: 16},
+            {name: "InstaPayment", short_name: 'instapay', prefix: '637', length: 16},
+            {name: "JCB", short_name: 'jcb', prefix: '3528', length: 16},
+            {name: "Laser", short_name: 'laser', prefix: '6304', length: 16},
+            {name: "Maestro", short_name: 'maestro', prefix: '5018', length: 16},
+            {name: "Mastercard", short_name: 'mc', prefix: '51', length: 16},
+            {name: "Solo", short_name: 'solo', prefix: '6334', length: 16},
+            {name: "Switch", short_name: 'switch', prefix: '4903', length: 16},
+            {name: "Visa", short_name: 'visa', prefix: '4', length: 16},
+            {name: "Visa Electron", short_name: 'electron', prefix: '4026', length: 16}
+        ],
+
+        //return all world currency by ISO 4217
+        currency_types: [
+            {'code' : 'AED', 'name' : 'United Arab Emirates Dirham'},
+            {'code' : 'AFN', 'name' : 'Afghanistan Afghani'},
+            {'code' : 'ALL', 'name' : 'Albania Lek'},
+            {'code' : 'AMD', 'name' : 'Armenia Dram'},
+            {'code' : 'ANG', 'name' : 'Netherlands Antilles Guilder'},
+            {'code' : 'AOA', 'name' : 'Angola Kwanza'},
+            {'code' : 'ARS', 'name' : 'Argentina Peso'},
+            {'code' : 'AUD', 'name' : 'Australia Dollar'},
+            {'code' : 'AWG', 'name' : 'Aruba Guilder'},
+            {'code' : 'AZN', 'name' : 'Azerbaijan New Manat'},
+            {'code' : 'BAM', 'name' : 'Bosnia and Herzegovina Convertible Marka'},
+            {'code' : 'BBD', 'name' : 'Barbados Dollar'},
+            {'code' : 'BDT', 'name' : 'Bangladesh Taka'},
+            {'code' : 'BGN', 'name' : 'Bulgaria Lev'},
+            {'code' : 'BHD', 'name' : 'Bahrain Dinar'},
+            {'code' : 'BIF', 'name' : 'Burundi Franc'},
+            {'code' : 'BMD', 'name' : 'Bermuda Dollar'},
+            {'code' : 'BND', 'name' : 'Brunei Darussalam Dollar'},
+            {'code' : 'BOB', 'name' : 'Bolivia Boliviano'},
+            {'code' : 'BRL', 'name' : 'Brazil Real'},
+            {'code' : 'BSD', 'name' : 'Bahamas Dollar'},
+            {'code' : 'BTN', 'name' : 'Bhutan Ngultrum'},
+            {'code' : 'BWP', 'name' : 'Botswana Pula'},
+            {'code' : 'BYR', 'name' : 'Belarus Ruble'},
+            {'code' : 'BZD', 'name' : 'Belize Dollar'},
+            {'code' : 'CAD', 'name' : 'Canada Dollar'},
+            {'code' : 'CDF', 'name' : 'Congo/Kinshasa Franc'},
+            {'code' : 'CHF', 'name' : 'Switzerland Franc'},
+            {'code' : 'CLP', 'name' : 'Chile Peso'},
+            {'code' : 'CNY', 'name' : 'China Yuan Renminbi'},
+            {'code' : 'COP', 'name' : 'Colombia Peso'},
+            {'code' : 'CRC', 'name' : 'Costa Rica Colon'},
+            {'code' : 'CUC', 'name' : 'Cuba Convertible Peso'},
+            {'code' : 'CUP', 'name' : 'Cuba Peso'},
+            {'code' : 'CVE', 'name' : 'Cape Verde Escudo'},
+            {'code' : 'CZK', 'name' : 'Czech Republic Koruna'},
+            {'code' : 'DJF', 'name' : 'Djibouti Franc'},
+            {'code' : 'DKK', 'name' : 'Denmark Krone'},
+            {'code' : 'DOP', 'name' : 'Dominican Republic Peso'},
+            {'code' : 'DZD', 'name' : 'Algeria Dinar'},
+            {'code' : 'EGP', 'name' : 'Egypt Pound'},
+            {'code' : 'ERN', 'name' : 'Eritrea Nakfa'},
+            {'code' : 'ETB', 'name' : 'Ethiopia Birr'},
+            {'code' : 'EUR', 'name' : 'Euro Member Countries'},
+            {'code' : 'FJD', 'name' : 'Fiji Dollar'},
+            {'code' : 'FKP', 'name' : 'Falkland Islands (Malvinas) Pound'},
+            {'code' : 'GBP', 'name' : 'United Kingdom Pound'},
+            {'code' : 'GEL', 'name' : 'Georgia Lari'},
+            {'code' : 'GGP', 'name' : 'Guernsey Pound'},
+            {'code' : 'GHS', 'name' : 'Ghana Cedi'},
+            {'code' : 'GIP', 'name' : 'Gibraltar Pound'},
+            {'code' : 'GMD', 'name' : 'Gambia Dalasi'},
+            {'code' : 'GNF', 'name' : 'Guinea Franc'},
+            {'code' : 'GTQ', 'name' : 'Guatemala Quetzal'},
+            {'code' : 'GYD', 'name' : 'Guyana Dollar'},
+            {'code' : 'HKD', 'name' : 'Hong Kong Dollar'},
+            {'code' : 'HNL', 'name' : 'Honduras Lempira'},
+            {'code' : 'HRK', 'name' : 'Croatia Kuna'},
+            {'code' : 'HTG', 'name' : 'Haiti Gourde'},
+            {'code' : 'HUF', 'name' : 'Hungary Forint'},
+            {'code' : 'IDR', 'name' : 'Indonesia Rupiah'},
+            {'code' : 'ILS', 'name' : 'Israel Shekel'},
+            {'code' : 'IMP', 'name' : 'Isle of Man Pound'},
+            {'code' : 'INR', 'name' : 'India Rupee'},
+            {'code' : 'IQD', 'name' : 'Iraq Dinar'},
+            {'code' : 'IRR', 'name' : 'Iran Rial'},
+            {'code' : 'ISK', 'name' : 'Iceland Krona'},
+            {'code' : 'JEP', 'name' : 'Jersey Pound'},
+            {'code' : 'JMD', 'name' : 'Jamaica Dollar'},
+            {'code' : 'JOD', 'name' : 'Jordan Dinar'},
+            {'code' : 'JPY', 'name' : 'Japan Yen'},
+            {'code' : 'KES', 'name' : 'Kenya Shilling'},
+            {'code' : 'KGS', 'name' : 'Kyrgyzstan Som'},
+            {'code' : 'KHR', 'name' : 'Cambodia Riel'},
+            {'code' : 'KMF', 'name' : 'Comoros Franc'},
+            {'code' : 'KPW', 'name' : 'Korea (North) Won'},
+            {'code' : 'KRW', 'name' : 'Korea (South) Won'},
+            {'code' : 'KWD', 'name' : 'Kuwait Dinar'},
+            {'code' : 'KYD', 'name' : 'Cayman Islands Dollar'},
+            {'code' : 'KZT', 'name' : 'Kazakhstan Tenge'},
+            {'code' : 'LAK', 'name' : 'Laos Kip'},
+            {'code' : 'LBP', 'name' : 'Lebanon Pound'},
+            {'code' : 'LKR', 'name' : 'Sri Lanka Rupee'},
+            {'code' : 'LRD', 'name' : 'Liberia Dollar'},
+            {'code' : 'LSL', 'name' : 'Lesotho Loti'},
+            {'code' : 'LTL', 'name' : 'Lithuania Litas'},
+            {'code' : 'LYD', 'name' : 'Libya Dinar'},
+            {'code' : 'MAD', 'name' : 'Morocco Dirham'},
+            {'code' : 'MDL', 'name' : 'Moldova Leu'},
+            {'code' : 'MGA', 'name' : 'Madagascar Ariary'},
+            {'code' : 'MKD', 'name' : 'Macedonia Denar'},
+            {'code' : 'MMK', 'name' : 'Myanmar (Burma) Kyat'},
+            {'code' : 'MNT', 'name' : 'Mongolia Tughrik'},
+            {'code' : 'MOP', 'name' : 'Macau Pataca'},
+            {'code' : 'MRO', 'name' : 'Mauritania Ouguiya'},
+            {'code' : 'MUR', 'name' : 'Mauritius Rupee'},
+            {'code' : 'MVR', 'name' : 'Maldives (Maldive Islands) Rufiyaa'},
+            {'code' : 'MWK', 'name' : 'Malawi Kwacha'},
+            {'code' : 'MXN', 'name' : 'Mexico Peso'},
+            {'code' : 'MYR', 'name' : 'Malaysia Ringgit'},
+            {'code' : 'MZN', 'name' : 'Mozambique Metical'},
+            {'code' : 'NAD', 'name' : 'Namibia Dollar'},
+            {'code' : 'NGN', 'name' : 'Nigeria Naira'},
+            {'code' : 'NIO', 'name' : 'Nicaragua Cordoba'},
+            {'code' : 'NOK', 'name' : 'Norway Krone'},
+            {'code' : 'NPR', 'name' : 'Nepal Rupee'},
+            {'code' : 'NZD', 'name' : 'New Zealand Dollar'},
+            {'code' : 'OMR', 'name' : 'Oman Rial'},
+            {'code' : 'PAB', 'name' : 'Panama Balboa'},
+            {'code' : 'PEN', 'name' : 'Peru Nuevo Sol'},
+            {'code' : 'PGK', 'name' : 'Papua New Guinea Kina'},
+            {'code' : 'PHP', 'name' : 'Philippines Peso'},
+            {'code' : 'PKR', 'name' : 'Pakistan Rupee'},
+            {'code' : 'PLN', 'name' : 'Poland Zloty'},
+            {'code' : 'PYG', 'name' : 'Paraguay Guarani'},
+            {'code' : 'QAR', 'name' : 'Qatar Riyal'},
+            {'code' : 'RON', 'name' : 'Romania New Leu'},
+            {'code' : 'RSD', 'name' : 'Serbia Dinar'},
+            {'code' : 'RUB', 'name' : 'Russia Ruble'},
+            {'code' : 'RWF', 'name' : 'Rwanda Franc'},
+            {'code' : 'SAR', 'name' : 'Saudi Arabia Riyal'},
+            {'code' : 'SBD', 'name' : 'Solomon Islands Dollar'},
+            {'code' : 'SCR', 'name' : 'Seychelles Rupee'},
+            {'code' : 'SDG', 'name' : 'Sudan Pound'},
+            {'code' : 'SEK', 'name' : 'Sweden Krona'},
+            {'code' : 'SGD', 'name' : 'Singapore Dollar'},
+            {'code' : 'SHP', 'name' : 'Saint Helena Pound'},
+            {'code' : 'SLL', 'name' : 'Sierra Leone Leone'},
+            {'code' : 'SOS', 'name' : 'Somalia Shilling'},
+            {'code' : 'SPL', 'name' : 'Seborga Luigino'},
+            {'code' : 'SRD', 'name' : 'Suriname Dollar'},
+            {'code' : 'STD', 'name' : 'São Tomé and Príncipe Dobra'},
+            {'code' : 'SVC', 'name' : 'El Salvador Colon'},
+            {'code' : 'SYP', 'name' : 'Syria Pound'},
+            {'code' : 'SZL', 'name' : 'Swaziland Lilangeni'},
+            {'code' : 'THB', 'name' : 'Thailand Baht'},
+            {'code' : 'TJS', 'name' : 'Tajikistan Somoni'},
+            {'code' : 'TMT', 'name' : 'Turkmenistan Manat'},
+            {'code' : 'TND', 'name' : 'Tunisia Dinar'},
+            {'code' : 'TOP', 'name' : 'Tonga Pa\'anga'},
+            {'code' : 'TRY', 'name' : 'Turkey Lira'},
+            {'code' : 'TTD', 'name' : 'Trinidad and Tobago Dollar'},
+            {'code' : 'TVD', 'name' : 'Tuvalu Dollar'},
+            {'code' : 'TWD', 'name' : 'Taiwan New Dollar'},
+            {'code' : 'TZS', 'name' : 'Tanzania Shilling'},
+            {'code' : 'UAH', 'name' : 'Ukraine Hryvnia'},
+            {'code' : 'UGX', 'name' : 'Uganda Shilling'},
+            {'code' : 'USD', 'name' : 'United States Dollar'},
+            {'code' : 'UYU', 'name' : 'Uruguay Peso'},
+            {'code' : 'UZS', 'name' : 'Uzbekistan Som'},
+            {'code' : 'VEF', 'name' : 'Venezuela Bolivar'},
+            {'code' : 'VND', 'name' : 'Viet Nam Dong'},
+            {'code' : 'VUV', 'name' : 'Vanuatu Vatu'},
+            {'code' : 'WST', 'name' : 'Samoa Tala'},
+            {'code' : 'XAF', 'name' : 'Communauté Financière Africaine (BEAC) CFA Franc BEAC'},
+            {'code' : 'XCD', 'name' : 'East Caribbean Dollar'},
+            {'code' : 'XDR', 'name' : 'International Monetary Fund (IMF) Special Drawing Rights'},
+            {'code' : 'XOF', 'name' : 'Communauté Financière Africaine (BCEAO) Franc'},
+            {'code' : 'XPF', 'name' : 'Comptoirs Français du Pacifique (CFP) Franc'},
+            {'code' : 'YER', 'name' : 'Yemen Rial'},
+            {'code' : 'ZAR', 'name' : 'South Africa Rand'},
+            {'code' : 'ZMW', 'name' : 'Zambia Kwacha'},
+            {'code' : 'ZWD', 'name' : 'Zimbabwe Dollar'}
+        ]
+    };
+
+    var o_hasOwnProperty = Object.prototype.hasOwnProperty;
+    var o_keys = (Object.keys || function(obj) {
+      var result = [];
+      for (var key in obj) {
+        if (o_hasOwnProperty.call(obj, key)) {
+          result.push(key);
+        }
+      }
+
+      return result;
+    });
+
+    function _copyObject(source, target) {
+      var keys = o_keys(source);
+      var key;
+
+      for (var i = 0, l = keys.length; i < l; i++) {
+        key = keys[i];
+        target[key] = source[key] || target[key];
+      }
+    }
+
+    function _copyArray(source, target) {
+      for (var i = 0, l = source.length; i < l; i++) {
+        target[i] = source[i];
+      }
+    }
+
+    function copyObject(source, _target) {
+        var isArray = Array.isArray(source);
+        var target = _target || (isArray ? new Array(source.length) : {});
+
+        if (isArray) {
+          _copyArray(source, target);
+        } else {
+          _copyObject(source, target);
+        }
+
+        return target;
+    }
+
+    /** Get the data based on key**/
+    Chance.prototype.get = function (name) {
+        return copyObject(data[name]);
+    };
+
+    // Mac Address
+    Chance.prototype.mac_address = function(options){
+        // typically mac addresses are separated by ":"
+        // however they can also be separated by "-"
+        // the network variant uses a dot every fourth byte
+
+        options = initOptions(options);
+        if(!options.separator) {
+            options.separator =  options.networkVersion ? "." : ":";
+        }
+
+        var mac_pool="ABCDEF1234567890",
+            mac = "";
+        if(!options.networkVersion) {
+            mac = this.n(this.string, 6, { pool: mac_pool, length:2 }).join(options.separator);
+        } else {
+            mac = this.n(this.string, 3, { pool: mac_pool, length:4 }).join(options.separator);
+        }
+
+        return mac;
+    };
+
+    Chance.prototype.normal = function (options) {
+        options = initOptions(options, {mean : 0, dev : 1});
+
+        // The Marsaglia Polar method
+        var s, u, v, norm,
+            mean = options.mean,
+            dev = options.dev;
+
+        do {
+            // U and V are from the uniform distribution on (-1, 1)
+            u = this.random() * 2 - 1;
+            v = this.random() * 2 - 1;
+
+            s = u * u + v * v;
+        } while (s >= 1);
+
+        // Compute the standard normal variate
+        norm = u * Math.sqrt(-2 * Math.log(s) / s);
+
+        // Shape and scale
+        return dev * norm + mean;
+    };
+
+    Chance.prototype.radio = function (options) {
+        // Initial Letter (Typically Designated by Side of Mississippi River)
+        options = initOptions(options, {side : "?"});
+        var fl = "";
+        switch (options.side.toLowerCase()) {
+        case "east":
+        case "e":
+            fl = "W";
+            break;
+        case "west":
+        case "w":
+            fl = "K";
+            break;
+        default:
+            fl = this.character({pool: "KW"});
+            break;
+        }
+
+        return fl + this.character({alpha: true, casing: "upper"}) +
+                this.character({alpha: true, casing: "upper"}) +
+                this.character({alpha: true, casing: "upper"});
+    };
+
+    // Set the data as key and data or the data map
+    Chance.prototype.set = function (name, values) {
+        if (typeof name === "string") {
+            data[name] = values;
+        } else {
+            data = copyObject(name, data);
+        }
+    };
+
+    Chance.prototype.tv = function (options) {
+        return this.radio(options);
+    };
+
+    // ID number for Brazil companies
+    Chance.prototype.cnpj = function () {
+        var n = this.n(this.natural, 8, { max: 9 });
+        var d1 = 2+n[7]*6+n[6]*7+n[5]*8+n[4]*9+n[3]*2+n[2]*3+n[1]*4+n[0]*5;
+        d1 = 11 - (d1 % 11);
+        if (d1>=10){
+            d1 = 0;
+        }
+        var d2 = d1*2+3+n[7]*7+n[6]*8+n[5]*9+n[4]*2+n[3]*3+n[2]*4+n[1]*5+n[0]*6;
+        d2 = 11 - (d2 % 11);
+        if (d2>=10){
+            d2 = 0;
+        }
+        return ''+n[0]+n[1]+'.'+n[2]+n[3]+n[4]+'.'+n[5]+n[6]+n[7]+'/0001-'+d1+d2;
+    };
+
+    // -- End Miscellaneous --
+
+    Chance.prototype.mersenne_twister = function (seed) {
+        return new MersenneTwister(seed);
+    };
+
+    Chance.prototype.blueimp_md5 = function () {
+        return new BlueImpMD5();
+    };
+
+    // Mersenne Twister from https://gist.github.com/banksean/300494
+    var MersenneTwister = function (seed) {
+        if (seed === undefined) {
+            // kept random number same size as time used previously to ensure no unexpected results downstream
+            seed = Math.floor(Math.random()*Math.pow(10,13));
+        }
+        /* Period parameters */
+        this.N = 624;
+        this.M = 397;
+        this.MATRIX_A = 0x9908b0df;   /* constant vector a */
+        this.UPPER_MASK = 0x80000000; /* most significant w-r bits */
+        this.LOWER_MASK = 0x7fffffff; /* least significant r bits */
+
+        this.mt = new Array(this.N); /* the array for the state vector */
+        this.mti = this.N + 1; /* mti==N + 1 means mt[N] is not initialized */
+
+        this.init_genrand(seed);
+    };
+
+    /* initializes mt[N] with a seed */
+    MersenneTwister.prototype.init_genrand = function (s) {
+        this.mt[0] = s >>> 0;
+        for (this.mti = 1; this.mti < this.N; this.mti++) {
+            s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
+            this.mt[this.mti] = (((((s & 0xffff0000) >>> 16) * 1812433253) << 16) + (s & 0x0000ffff) * 1812433253) + this.mti;
+            /* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
+            /* In the previous versions, MSBs of the seed affect   */
+            /* only MSBs of the array mt[].                        */
+            /* 2002/01/09 modified by Makoto Matsumoto             */
+            this.mt[this.mti] >>>= 0;
+            /* for >32 bit machines */
+        }
+    };
+
+    /* initialize by an array with array-length */
+    /* init_key is the array for initializing keys */
+    /* key_length is its length */
+    /* slight change for C++, 2004/2/26 */
+    MersenneTwister.prototype.init_by_array = function (init_key, key_length) {
+        var i = 1, j = 0, k, s;
+        this.init_genrand(19650218);
+        k = (this.N > key_length ? this.N : key_length);
+        for (; k; k--) {
+            s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
+            this.mt[i] = (this.mt[i] ^ (((((s & 0xffff0000) >>> 16) * 1664525) << 16) + ((s & 0x0000ffff) * 1664525))) + init_key[j] + j; /* non linear */
+            this.mt[i] >>>= 0; /* for WORDSIZE > 32 machines */
+            i++;
+            j++;
+            if (i >= this.N) { this.mt[0] = this.mt[this.N - 1]; i = 1; }
+            if (j >= key_length) { j = 0; }
+        }
+        for (k = this.N - 1; k; k--) {
+            s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
+            this.mt[i] = (this.mt[i] ^ (((((s & 0xffff0000) >>> 16) * 1566083941) << 16) + (s & 0x0000ffff) * 1566083941)) - i; /* non linear */
+            this.mt[i] >>>= 0; /* for WORDSIZE > 32 machines */
+            i++;
+            if (i >= this.N) { this.mt[0] = this.mt[this.N - 1]; i = 1; }
+        }
+
+        this.mt[0] = 0x80000000; /* MSB is 1; assuring non-zero initial array */
+    };
+
+    /* generates a random number on [0,0xffffffff]-interval */
+    MersenneTwister.prototype.genrand_int32 = function () {
+        var y;
+        var mag01 = new Array(0x0, this.MATRIX_A);
+        /* mag01[x] = x * MATRIX_A  for x=0,1 */
+
+        if (this.mti >= this.N) { /* generate N words at one time */
+            var kk;
+
+            if (this.mti === this.N + 1) {   /* if init_genrand() has not been called, */
+                this.init_genrand(5489); /* a default initial seed is used */
+            }
+            for (kk = 0; kk < this.N - this.M; kk++) {
+                y = (this.mt[kk]&this.UPPER_MASK)|(this.mt[kk + 1]&this.LOWER_MASK);
+                this.mt[kk] = this.mt[kk + this.M] ^ (y >>> 1) ^ mag01[y & 0x1];
+            }
+            for (;kk < this.N - 1; kk++) {
+                y = (this.mt[kk]&this.UPPER_MASK)|(this.mt[kk + 1]&this.LOWER_MASK);
+                this.mt[kk] = this.mt[kk + (this.M - this.N)] ^ (y >>> 1) ^ mag01[y & 0x1];
+            }
+            y = (this.mt[this.N - 1]&this.UPPER_MASK)|(this.mt[0]&this.LOWER_MASK);
+            this.mt[this.N - 1] = this.mt[this.M - 1] ^ (y >>> 1) ^ mag01[y & 0x1];
+
+            this.mti = 0;
+        }
+
+        y = this.mt[this.mti++];
+
+        /* Tempering */
+        y ^= (y >>> 11);
+        y ^= (y << 7) & 0x9d2c5680;
+        y ^= (y << 15) & 0xefc60000;
+        y ^= (y >>> 18);
+
+        return y >>> 0;
+    };
+
+    /* generates a random number on [0,0x7fffffff]-interval */
+    MersenneTwister.prototype.genrand_int31 = function () {
+        return (this.genrand_int32() >>> 1);
+    };
+
+    /* generates a random number on [0,1]-real-interval */
+    MersenneTwister.prototype.genrand_real1 = function () {
+        return this.genrand_int32() * (1.0 / 4294967295.0);
+        /* divided by 2^32-1 */
+    };
+
+    /* generates a random number on [0,1)-real-interval */
+    MersenneTwister.prototype.random = function () {
+        return this.genrand_int32() * (1.0 / 4294967296.0);
+        /* divided by 2^32 */
+    };
+
+    /* generates a random number on (0,1)-real-interval */
+    MersenneTwister.prototype.genrand_real3 = function () {
+        return (this.genrand_int32() + 0.5) * (1.0 / 4294967296.0);
+        /* divided by 2^32 */
+    };
+
+    /* generates a random number on [0,1) with 53-bit resolution*/
+    MersenneTwister.prototype.genrand_res53 = function () {
+        var a = this.genrand_int32()>>>5, b = this.genrand_int32()>>>6;
+        return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
+    };
+
+    // BlueImp MD5 hashing algorithm from https://github.com/blueimp/JavaScript-MD5
+    var BlueImpMD5 = function () {};
+
+    BlueImpMD5.prototype.VERSION = '1.0.1';
+
+    /*
+    * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+    * to work around bugs in some JS interpreters.
+    */
+    BlueImpMD5.prototype.safe_add = function safe_add(x, y) {
+        var lsw = (x & 0xFFFF) + (y & 0xFFFF),
+            msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+        return (msw << 16) | (lsw & 0xFFFF);
+    };
+
+    /*
+    * Bitwise rotate a 32-bit number to the left.
+    */
+    BlueImpMD5.prototype.bit_roll = function (num, cnt) {
+        return (num << cnt) | (num >>> (32 - cnt));
+    };
+
+    /*
+    * These functions implement the five basic operations the algorithm uses.
+    */
+    BlueImpMD5.prototype.md5_cmn = function (q, a, b, x, s, t) {
+        return this.safe_add(this.bit_roll(this.safe_add(this.safe_add(a, q), this.safe_add(x, t)), s), b);
+    };
+    BlueImpMD5.prototype.md5_ff = function (a, b, c, d, x, s, t) {
+        return this.md5_cmn((b & c) | ((~b) & d), a, b, x, s, t);
+    };
+    BlueImpMD5.prototype.md5_gg = function (a, b, c, d, x, s, t) {
+        return this.md5_cmn((b & d) | (c & (~d)), a, b, x, s, t);
+    };
+    BlueImpMD5.prototype.md5_hh = function (a, b, c, d, x, s, t) {
+        return this.md5_cmn(b ^ c ^ d, a, b, x, s, t);
+    };
+    BlueImpMD5.prototype.md5_ii = function (a, b, c, d, x, s, t) {
+        return this.md5_cmn(c ^ (b | (~d)), a, b, x, s, t);
+    };
+
+    /*
+    * Calculate the MD5 of an array of little-endian words, and a bit length.
+    */
+    BlueImpMD5.prototype.binl_md5 = function (x, len) {
+        /* append padding */
+        x[len >> 5] |= 0x80 << (len % 32);
+        x[(((len + 64) >>> 9) << 4) + 14] = len;
+
+        var i, olda, oldb, oldc, oldd,
+            a =  1732584193,
+            b = -271733879,
+            c = -1732584194,
+            d =  271733878;
+
+        for (i = 0; i < x.length; i += 16) {
+            olda = a;
+            oldb = b;
+            oldc = c;
+            oldd = d;
+
+            a = this.md5_ff(a, b, c, d, x[i],       7, -680876936);
+            d = this.md5_ff(d, a, b, c, x[i +  1], 12, -389564586);
+            c = this.md5_ff(c, d, a, b, x[i +  2], 17,  606105819);
+            b = this.md5_ff(b, c, d, a, x[i +  3], 22, -1044525330);
+            a = this.md5_ff(a, b, c, d, x[i +  4],  7, -176418897);
+            d = this.md5_ff(d, a, b, c, x[i +  5], 12,  1200080426);
+            c = this.md5_ff(c, d, a, b, x[i +  6], 17, -1473231341);
+            b = this.md5_ff(b, c, d, a, x[i +  7], 22, -45705983);
+            a = this.md5_ff(a, b, c, d, x[i +  8],  7,  1770035416);
+            d = this.md5_ff(d, a, b, c, x[i +  9], 12, -1958414417);
+            c = this.md5_ff(c, d, a, b, x[i + 10], 17, -42063);
+            b = this.md5_ff(b, c, d, a, x[i + 11], 22, -1990404162);
+            a = this.md5_ff(a, b, c, d, x[i + 12],  7,  1804603682);
+            d = this.md5_ff(d, a, b, c, x[i + 13], 12, -40341101);
+            c = this.md5_ff(c, d, a, b, x[i + 14], 17, -1502002290);
+            b = this.md5_ff(b, c, d, a, x[i + 15], 22,  1236535329);
+
+            a = this.md5_gg(a, b, c, d, x[i +  1],  5, -165796510);
+            d = this.md5_gg(d, a, b, c, x[i +  6],  9, -1069501632);
+            c = this.md5_gg(c, d, a, b, x[i + 11], 14,  643717713);
+            b = this.md5_gg(b, c, d, a, x[i],      20, -373897302);
+            a = this.md5_gg(a, b, c, d, x[i +  5],  5, -701558691);
+            d = this.md5_gg(d, a, b, c, x[i + 10],  9,  38016083);
+            c = this.md5_gg(c, d, a, b, x[i + 15], 14, -660478335);
+            b = this.md5_gg(b, c, d, a, x[i +  4], 20, -405537848);
+            a = this.md5_gg(a, b, c, d, x[i +  9],  5,  568446438);
+            d = this.md5_gg(d, a, b, c, x[i + 14],  9, -1019803690);
+            c = this.md5_gg(c, d, a, b, x[i +  3], 14, -187363961);
+            b = this.md5_gg(b, c, d, a, x[i +  8], 20,  1163531501);
+            a = this.md5_gg(a, b, c, d, x[i + 13],  5, -1444681467);
+            d = this.md5_gg(d, a, b, c, x[i +  2],  9, -51403784);
+            c = this.md5_gg(c, d, a, b, x[i +  7], 14,  1735328473);
+            b = this.md5_gg(b, c, d, a, x[i + 12], 20, -1926607734);
+
+            a = this.md5_hh(a, b, c, d, x[i +  5],  4, -378558);
+            d = this.md5_hh(d, a, b, c, x[i +  8], 11, -2022574463);
+            c = this.md5_hh(c, d, a, b, x[i + 11], 16,  1839030562);
+            b = this.md5_hh(b, c, d, a, x[i + 14], 23, -35309556);
+            a = this.md5_hh(a, b, c, d, x[i +  1],  4, -1530992060);
+            d = this.md5_hh(d, a, b, c, x[i +  4], 11,  1272893353);
+            c = this.md5_hh(c, d, a, b, x[i +  7], 16, -155497632);
+            b = this.md5_hh(b, c, d, a, x[i + 10], 23, -1094730640);
+            a = this.md5_hh(a, b, c, d, x[i + 13],  4,  681279174);
+            d = this.md5_hh(d, a, b, c, x[i],      11, -358537222);
+            c = this.md5_hh(c, d, a, b, x[i +  3], 16, -722521979);
+            b = this.md5_hh(b, c, d, a, x[i +  6], 23,  76029189);
+            a = this.md5_hh(a, b, c, d, x[i +  9],  4, -640364487);
+            d = this.md5_hh(d, a, b, c, x[i + 12], 11, -421815835);
+            c = this.md5_hh(c, d, a, b, x[i + 15], 16,  530742520);
+            b = this.md5_hh(b, c, d, a, x[i +  2], 23, -995338651);
+
+            a = this.md5_ii(a, b, c, d, x[i],       6, -198630844);
+            d = this.md5_ii(d, a, b, c, x[i +  7], 10,  1126891415);
+            c = this.md5_ii(c, d, a, b, x[i + 14], 15, -1416354905);
+            b = this.md5_ii(b, c, d, a, x[i +  5], 21, -57434055);
+            a = this.md5_ii(a, b, c, d, x[i + 12],  6,  1700485571);
+            d = this.md5_ii(d, a, b, c, x[i +  3], 10, -1894986606);
+            c = this.md5_ii(c, d, a, b, x[i + 10], 15, -1051523);
+            b = this.md5_ii(b, c, d, a, x[i +  1], 21, -2054922799);
+            a = this.md5_ii(a, b, c, d, x[i +  8],  6,  1873313359);
+            d = this.md5_ii(d, a, b, c, x[i + 15], 10, -30611744);
+            c = this.md5_ii(c, d, a, b, x[i +  6], 15, -1560198380);
+            b = this.md5_ii(b, c, d, a, x[i + 13], 21,  1309151649);
+            a = this.md5_ii(a, b, c, d, x[i +  4],  6, -145523070);
+            d = this.md5_ii(d, a, b, c, x[i + 11], 10, -1120210379);
+            c = this.md5_ii(c, d, a, b, x[i +  2], 15,  718787259);
+            b = this.md5_ii(b, c, d, a, x[i +  9], 21, -343485551);
+
+            a = this.safe_add(a, olda);
+            b = this.safe_add(b, oldb);
+            c = this.safe_add(c, oldc);
+            d = this.safe_add(d, oldd);
+        }
+        return [a, b, c, d];
+    };
+
+    /*
+    * Convert an array of little-endian words to a string
+    */
+    BlueImpMD5.prototype.binl2rstr = function (input) {
+        var i,
+            output = '';
+        for (i = 0; i < input.length * 32; i += 8) {
+            output += String.fromCharCode((input[i >> 5] >>> (i % 32)) & 0xFF);
+        }
+        return output;
+    };
+
+    /*
+    * Convert a raw string to an array of little-endian words
+    * Characters >255 have their high-byte silently ignored.
+    */
+    BlueImpMD5.prototype.rstr2binl = function (input) {
+        var i,
+            output = [];
+        output[(input.length >> 2) - 1] = undefined;
+        for (i = 0; i < output.length; i += 1) {
+            output[i] = 0;
+        }
+        for (i = 0; i < input.length * 8; i += 8) {
+            output[i >> 5] |= (input.charCodeAt(i / 8) & 0xFF) << (i % 32);
+        }
+        return output;
+    };
+
+    /*
+    * Calculate the MD5 of a raw string
+    */
+    BlueImpMD5.prototype.rstr_md5 = function (s) {
+        return this.binl2rstr(this.binl_md5(this.rstr2binl(s), s.length * 8));
+    };
+
+    /*
+    * Calculate the HMAC-MD5, of a key and some data (raw strings)
+    */
+    BlueImpMD5.prototype.rstr_hmac_md5 = function (key, data) {
+        var i,
+            bkey = this.rstr2binl(key),
+            ipad = [],
+            opad = [],
+            hash;
+        ipad[15] = opad[15] = undefined;
+        if (bkey.length > 16) {
+            bkey = this.binl_md5(bkey, key.length * 8);
+        }
+        for (i = 0; i < 16; i += 1) {
+            ipad[i] = bkey[i] ^ 0x36363636;
+            opad[i] = bkey[i] ^ 0x5C5C5C5C;
+        }
+        hash = this.binl_md5(ipad.concat(this.rstr2binl(data)), 512 + data.length * 8);
+        return this.binl2rstr(this.binl_md5(opad.concat(hash), 512 + 128));
+    };
+
+    /*
+    * Convert a raw string to a hex string
+    */
+    BlueImpMD5.prototype.rstr2hex = function (input) {
+        var hex_tab = '0123456789abcdef',
+            output = '',
+            x,
+            i;
+        for (i = 0; i < input.length; i += 1) {
+            x = input.charCodeAt(i);
+            output += hex_tab.charAt((x >>> 4) & 0x0F) +
+                hex_tab.charAt(x & 0x0F);
+        }
+        return output;
+    };
+
+    /*
+    * Encode a string as utf-8
+    */
+    BlueImpMD5.prototype.str2rstr_utf8 = function (input) {
+        return unescape(encodeURIComponent(input));
+    };
+
+    /*
+    * Take string arguments and return either raw or hex encoded strings
+    */
+    BlueImpMD5.prototype.raw_md5 = function (s) {
+        return this.rstr_md5(this.str2rstr_utf8(s));
+    };
+    BlueImpMD5.prototype.hex_md5 = function (s) {
+        return this.rstr2hex(this.raw_md5(s));
+    };
+    BlueImpMD5.prototype.raw_hmac_md5 = function (k, d) {
+        return this.rstr_hmac_md5(this.str2rstr_utf8(k), this.str2rstr_utf8(d));
+    };
+    BlueImpMD5.prototype.hex_hmac_md5 = function (k, d) {
+        return this.rstr2hex(this.raw_hmac_md5(k, d));
+    };
+
+    BlueImpMD5.prototype.md5 = function (string, key, raw) {
+        if (!key) {
+            if (!raw) {
+                return this.hex_md5(string);
+            }
+
+            return this.raw_md5(string);
+        }
+
+        if (!raw) {
+            return this.hex_hmac_md5(key, string);
+        }
+
+        return this.raw_hmac_md5(key, string);
+    };
+
+    // CommonJS module
+    if (typeof exports !== 'undefined') {
+        if (typeof module !== 'undefined' && module.exports) {
+            exports = module.exports = Chance;
+        }
+        exports.Chance = Chance;
+    }
+
+    // Register as an anonymous AMD module
+    if (typeof define === 'function' && define.amd) {
+        define([], function () {
+            return Chance;
+        });
+    }
+
+    // if there is a importsScrips object define chance for worker
+    if (typeof importScripts !== 'undefined') {
+        chance = new Chance();
+    }
+
+    // If there is a window object, that at least has a document property,
+    // instantiate and define chance on the window
+    if (typeof window === "object" && typeof window.document === "object") {
+        window.Chance = Chance;
+        window.chance = new Chance();
+    }
+})();
+
 /**
  * @license AngularJS v1.4.9
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -45506,2600 +48104,5502 @@ angular.module('ngQuantum', [
   'ngQuantum.switchButton',
   'ngQuantum.slider'
     ]);
-//  Chance.js 0.8.0
-//  http://chancejs.com
-//  (c) 2013 Victor Quinn
-//  Chance may be freely distributed or modified under the MIT license.
-
-(function () {
-
-    // Constants
-    var MAX_INT = 9007199254740992;
-    var MIN_INT = -MAX_INT;
-    var NUMBERS = '0123456789';
-    var CHARS_LOWER = 'abcdefghijklmnopqrstuvwxyz';
-    var CHARS_UPPER = CHARS_LOWER.toUpperCase();
-    var HEX_POOL  = NUMBERS + "abcdef";
-
-    // Cached array helpers
-    var slice = Array.prototype.slice;
-
-    // Constructor
-    function Chance (seed) {
-        if (!(this instanceof Chance)) {
-            return seed == null ? new Chance() : new Chance(seed);
-        }
-
-        // if user has provided a function, use that as the generator
-        if (typeof seed === 'function') {
-            this.random = seed;
-            return this;
-        }
-
-        if (arguments.length) {
-            // set a starting value of zero so we can add to it
-            this.seed = 0;
-        }
-
-        // otherwise, leave this.seed blank so that MT will receive a blank
-
-        for (var i = 0; i < arguments.length; i++) {
-            var seedling = 0;
-            if (Object.prototype.toString.call(arguments[i]) === '[object String]') {
-                for (var j = 0; j < arguments[i].length; j++) {
-                    // create a numeric hash for each argument, add to seedling
-                    var hash = 0;
-                    for (var k = 0; k < arguments[i].length; k++) {
-                        hash = arguments[i].charCodeAt(k) + (hash << 6) + (hash << 16) - hash;
-                    }
-                    seedling += hash;
-                }
-            } else {
-                seedling = arguments[i];
+/**
+ * angular-strap
+ * @version v2.3.7 - 2016-01-16
+ * @link http://mgcrea.github.io/angular-strap
+ * @author Olivier Louvignes <olivier@mg-crea.com> (https://github.com/mgcrea)
+ * @license MIT License, http://www.opensource.org/licenses/MIT
+ */
+(function(window, document, undefined) {
+  'use strict';
+  bsCompilerService.$inject = [ '$q', '$http', '$injector', '$compile', '$controller', '$templateCache' ];
+  angular.module('mgcrea.ngStrap.typeahead', [ 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.helpers.parseOptions' ]).provider('$typeahead', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      prefixClass: 'typeahead',
+      prefixEvent: '$typeahead',
+      placement: 'bottom-left',
+      templateUrl: 'typeahead/typeahead.tpl.html',
+      trigger: 'focus',
+      container: false,
+      keyboard: true,
+      html: false,
+      delay: 0,
+      minLength: 1,
+      filter: 'bsAsyncFilter',
+      limit: 6,
+      autoSelect: false,
+      comparator: '',
+      trimValue: true
+    };
+    this.$get = [ '$window', '$rootScope', '$tooltip', '$$rAF', '$timeout', function($window, $rootScope, $tooltip, $$rAF, $timeout) {
+      function TypeaheadFactory(element, controller, config) {
+        var $typeahead = {};
+        var options = angular.extend({}, defaults, config);
+        $typeahead = $tooltip(element, options);
+        var parentScope = config.scope;
+        var scope = $typeahead.$scope;
+        scope.$resetMatches = function() {
+          scope.$matches = [];
+          scope.$activeIndex = options.autoSelect ? 0 : -1;
+        };
+        scope.$resetMatches();
+        scope.$activate = function(index) {
+          scope.$$postDigest(function() {
+            $typeahead.activate(index);
+          });
+        };
+        scope.$select = function(index, evt) {
+          scope.$$postDigest(function() {
+            $typeahead.select(index);
+          });
+        };
+        scope.$isVisible = function() {
+          return $typeahead.$isVisible();
+        };
+        $typeahead.update = function(matches) {
+          scope.$matches = matches;
+          if (scope.$activeIndex >= matches.length) {
+            scope.$activeIndex = options.autoSelect ? 0 : -1;
+          }
+          safeDigest(scope);
+          $$rAF($typeahead.$applyPlacement);
+        };
+        $typeahead.activate = function(index) {
+          scope.$activeIndex = index;
+        };
+        $typeahead.select = function(index) {
+          if (index === -1) return;
+          var value = scope.$matches[index].value;
+          controller.$setViewValue(value);
+          controller.$render();
+          scope.$resetMatches();
+          if (parentScope) parentScope.$digest();
+          scope.$emit(options.prefixEvent + '.select', value, index, $typeahead);
+        };
+        $typeahead.$isVisible = function() {
+          if (!options.minLength || !controller) {
+            return !!scope.$matches.length;
+          }
+          return scope.$matches.length && angular.isString(controller.$viewValue) && controller.$viewValue.length >= options.minLength;
+        };
+        $typeahead.$getIndex = function(value) {
+          var index;
+          for (index = scope.$matches.length; index--; ) {
+            if (angular.equals(scope.$matches[index].value, value)) break;
+          }
+          return index;
+        };
+        $typeahead.$onMouseDown = function(evt) {
+          evt.preventDefault();
+          evt.stopPropagation();
+        };
+        $typeahead.$onKeyDown = function(evt) {
+          if (!/(38|40|13)/.test(evt.keyCode)) return;
+          if ($typeahead.$isVisible() && !(evt.keyCode === 13 && scope.$activeIndex === -1)) {
+            evt.preventDefault();
+            evt.stopPropagation();
+          }
+          if (evt.keyCode === 13 && scope.$matches.length) {
+            $typeahead.select(scope.$activeIndex);
+          } else if (evt.keyCode === 38 && scope.$activeIndex > 0) scope.$activeIndex--; else if (evt.keyCode === 40 && scope.$activeIndex < scope.$matches.length - 1) scope.$activeIndex++; else if (angular.isUndefined(scope.$activeIndex)) scope.$activeIndex = 0;
+          scope.$digest();
+        };
+        var show = $typeahead.show;
+        $typeahead.show = function() {
+          show();
+          $timeout(function() {
+            if ($typeahead.$element) {
+              $typeahead.$element.on('mousedown', $typeahead.$onMouseDown);
+              if (options.keyboard) {
+                if (element) element.on('keydown', $typeahead.$onKeyDown);
+              }
             }
-            this.seed += (arguments.length - i) * seedling;
+          }, 0, false);
+        };
+        var hide = $typeahead.hide;
+        $typeahead.hide = function() {
+          if ($typeahead.$element) $typeahead.$element.off('mousedown', $typeahead.$onMouseDown);
+          if (options.keyboard) {
+            if (element) element.off('keydown', $typeahead.$onKeyDown);
+          }
+          if (!options.autoSelect) {
+            $typeahead.activate(-1);
+          }
+          hide();
+        };
+        return $typeahead;
+      }
+      function safeDigest(scope) {
+        scope.$$phase || scope.$root && scope.$root.$$phase || scope.$digest();
+      }
+      TypeaheadFactory.defaults = defaults;
+      return TypeaheadFactory;
+    } ];
+  }).filter('bsAsyncFilter', [ '$filter', function($filter) {
+    return function(array, expression, comparator) {
+      if (array && angular.isFunction(array.then)) {
+        return array.then(function(results) {
+          return $filter('filter')(results, expression, comparator);
+        });
+      }
+      return $filter('filter')(array, expression, comparator);
+    };
+  } ]).directive('bsTypeahead', [ '$window', '$parse', '$q', '$typeahead', '$parseOptions', function($window, $parse, $q, $typeahead, $parseOptions) {
+    var defaults = $typeahead.defaults;
+    return {
+      restrict: 'EAC',
+      require: 'ngModel',
+      link: function postLink(scope, element, attr, controller) {
+        var options = {
+          scope: scope
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'container', 'delay', 'trigger', 'keyboard', 'html', 'animation', 'filter', 'limit', 'minLength', 'watchOptions', 'selectMode', 'autoSelect', 'comparator', 'id', 'prefixEvent', 'prefixClass' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'html', 'container', 'trimValue' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+        });
+        if (!element.attr('autocomplete')) element.attr('autocomplete', 'off');
+        var filter = options.filter || defaults.filter;
+        var limit = options.limit || defaults.limit;
+        var comparator = options.comparator || defaults.comparator;
+        var bsOptions = attr.bsOptions;
+        if (filter) bsOptions += ' | ' + filter + ':$viewValue';
+        if (comparator) bsOptions += ':' + comparator;
+        if (limit) bsOptions += ' | limitTo:' + limit;
+        var parsedOptions = $parseOptions(bsOptions);
+        var typeahead = $typeahead(element, controller, options);
+        if (options.watchOptions) {
+          var watchedOptions = parsedOptions.$match[7].replace(/\|.+/, '').replace(/\(.*\)/g, '').trim();
+          scope.$watchCollection(watchedOptions, function(newValue, oldValue) {
+            parsedOptions.valuesFn(scope, controller).then(function(values) {
+              typeahead.update(values);
+              controller.$render();
+            });
+          });
         }
+        scope.$watch(attr.ngModel, function(newValue, oldValue) {
+          scope.$modelValue = newValue;
+          parsedOptions.valuesFn(scope, controller).then(function(values) {
+            if (options.selectMode && !values.length && newValue.length > 0) {
+              controller.$setViewValue(controller.$viewValue.substring(0, controller.$viewValue.length - 1));
+              return;
+            }
+            if (values.length > limit) values = values.slice(0, limit);
+            typeahead.update(values);
+            controller.$render();
+          });
+        });
+        controller.$formatters.push(function(modelValue) {
+          var displayValue = parsedOptions.displayValue(modelValue);
+          if (displayValue) {
+            return displayValue;
+          }
+          if (modelValue && typeof modelValue !== 'object') {
+            return modelValue;
+          }
+          return '';
+        });
+        controller.$render = function() {
+          if (controller.$isEmpty(controller.$viewValue)) {
+            return element.val('');
+          }
+          var index = typeahead.$getIndex(controller.$modelValue);
+          var selected = index !== -1 ? typeahead.$scope.$matches[index].label : controller.$viewValue;
+          selected = angular.isObject(selected) ? parsedOptions.displayValue(selected) : selected;
+          var value = selected ? selected.toString().replace(/<(?:.|\n)*?>/gm, '') : '';
+          element.val(options.trimValue === false ? value : value.trim());
+        };
+        scope.$on('$destroy', function() {
+          if (typeahead) typeahead.destroy();
+          options = null;
+          typeahead = null;
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.tooltip', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$tooltip', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      customClass: '',
+      prefixClass: 'tooltip',
+      prefixEvent: 'tooltip',
+      container: false,
+      target: false,
+      placement: 'top',
+      templateUrl: 'tooltip/tooltip.tpl.html',
+      template: '',
+      contentTemplate: false,
+      trigger: 'hover focus',
+      keyboard: false,
+      html: false,
+      show: false,
+      title: '',
+      type: '',
+      delay: 0,
+      autoClose: false,
+      bsEnabled: true,
+      viewport: {
+        selector: 'body',
+        padding: 0
+      }
+    };
+    this.$get = [ '$window', '$rootScope', '$bsCompiler', '$q', '$templateCache', '$http', '$animate', '$sce', 'dimensions', '$$rAF', '$timeout', function($window, $rootScope, $bsCompiler, $q, $templateCache, $http, $animate, $sce, dimensions, $$rAF, $timeout) {
+      var isTouch = 'createTouch' in $window.document;
+      var $body = angular.element($window.document);
+      function TooltipFactory(element, config) {
+        var $tooltip = {};
+        var options = $tooltip.$options = angular.extend({}, defaults, config);
+        var promise = $tooltip.$promise = $bsCompiler.compile(options);
+        var scope = $tooltip.$scope = options.scope && options.scope.$new() || $rootScope.$new();
+        var nodeName = element[0].nodeName.toLowerCase();
+        if (options.delay && angular.isString(options.delay)) {
+          var split = options.delay.split(',').map(parseFloat);
+          options.delay = split.length > 1 ? {
+            show: split[0],
+            hide: split[1]
+          } : split[0];
+        }
+        $tooltip.$id = options.id || element.attr('id') || '';
+        if (options.title) {
+          scope.title = $sce.trustAsHtml(options.title);
+        }
+        scope.$setEnabled = function(isEnabled) {
+          scope.$$postDigest(function() {
+            $tooltip.setEnabled(isEnabled);
+          });
+        };
+        scope.$hide = function() {
+          scope.$$postDigest(function() {
+            $tooltip.hide();
+          });
+        };
+        scope.$show = function() {
+          scope.$$postDigest(function() {
+            $tooltip.show();
+          });
+        };
+        scope.$toggle = function() {
+          scope.$$postDigest(function() {
+            $tooltip.toggle();
+          });
+        };
+        $tooltip.$isShown = scope.$isShown = false;
+        var timeout;
+        var hoverState;
+        var compileData;
+        var tipElement;
+        var tipContainer;
+        var tipScope;
+        promise.then(function(data) {
+          compileData = data;
+          $tooltip.init();
+        });
+        $tooltip.init = function() {
+          if (options.delay && angular.isNumber(options.delay)) {
+            options.delay = {
+              show: options.delay,
+              hide: options.delay
+            };
+          }
+          if (options.container === 'self') {
+            tipContainer = element;
+          } else if (angular.isElement(options.container)) {
+            tipContainer = options.container;
+          } else if (options.container) {
+            tipContainer = findElement(options.container);
+          }
+          bindTriggerEvents();
+          if (options.target) {
+            options.target = angular.isElement(options.target) ? options.target : findElement(options.target);
+          }
+          if (options.show) {
+            scope.$$postDigest(function() {
+              if (options.trigger === 'focus') {
+                element[0].focus();
+              } else {
+                $tooltip.show();
+              }
+            });
+          }
+        };
+        $tooltip.destroy = function() {
+          unbindTriggerEvents();
+          destroyTipElement();
+          scope.$destroy();
+        };
+        $tooltip.enter = function() {
+          clearTimeout(timeout);
+          hoverState = 'in';
+          if (!options.delay || !options.delay.show) {
+            return $tooltip.show();
+          }
+          timeout = setTimeout(function() {
+            if (hoverState === 'in') $tooltip.show();
+          }, options.delay.show);
+        };
+        $tooltip.show = function() {
+          if (!options.bsEnabled || $tooltip.$isShown) return;
+          scope.$emit(options.prefixEvent + '.show.before', $tooltip);
+          var parent;
+          var after;
+          if (options.container) {
+            parent = tipContainer;
+            if (tipContainer[0].lastChild) {
+              after = angular.element(tipContainer[0].lastChild);
+            } else {
+              after = null;
+            }
+          } else {
+            parent = null;
+            after = element;
+          }
+          if (tipElement) destroyTipElement();
+          tipScope = $tooltip.$scope.$new();
+          tipElement = $tooltip.$element = compileData.link(tipScope, function(clonedElement, scope) {});
+          tipElement.css({
+            top: '-9999px',
+            left: '-9999px',
+            right: 'auto',
+            display: 'block',
+            visibility: 'hidden'
+          });
+          if (options.animation) tipElement.addClass(options.animation);
+          if (options.type) tipElement.addClass(options.prefixClass + '-' + options.type);
+          if (options.customClass) tipElement.addClass(options.customClass);
+          if (after) {
+            after.after(tipElement);
+          } else {
+            parent.prepend(tipElement);
+          }
+          $tooltip.$isShown = scope.$isShown = true;
+          safeDigest(scope);
+          $tooltip.$applyPlacement();
+          if (angular.version.minor <= 2) {
+            $animate.enter(tipElement, parent, after, enterAnimateCallback);
+          } else {
+            $animate.enter(tipElement, parent, after).then(enterAnimateCallback);
+          }
+          safeDigest(scope);
+          $$rAF(function() {
+            if (tipElement) tipElement.css({
+              visibility: 'visible'
+            });
+            if (options.keyboard) {
+              if (options.trigger !== 'focus') {
+                $tooltip.focus();
+              }
+              bindKeyboardEvents();
+            }
+          });
+          if (options.autoClose) {
+            bindAutoCloseEvents();
+          }
+        };
+        function enterAnimateCallback() {
+          scope.$emit(options.prefixEvent + '.show', $tooltip);
+        }
+        $tooltip.leave = function() {
+          clearTimeout(timeout);
+          hoverState = 'out';
+          if (!options.delay || !options.delay.hide) {
+            return $tooltip.hide();
+          }
+          timeout = setTimeout(function() {
+            if (hoverState === 'out') {
+              $tooltip.hide();
+            }
+          }, options.delay.hide);
+        };
+        var _blur;
+        var _tipToHide;
+        $tooltip.hide = function(blur) {
+          if (!$tooltip.$isShown) return;
+          scope.$emit(options.prefixEvent + '.hide.before', $tooltip);
+          _blur = blur;
+          _tipToHide = tipElement;
+          if (angular.version.minor <= 2) {
+            $animate.leave(tipElement, leaveAnimateCallback);
+          } else {
+            $animate.leave(tipElement).then(leaveAnimateCallback);
+          }
+          $tooltip.$isShown = scope.$isShown = false;
+          safeDigest(scope);
+          if (options.keyboard && tipElement !== null) {
+            unbindKeyboardEvents();
+          }
+          if (options.autoClose && tipElement !== null) {
+            unbindAutoCloseEvents();
+          }
+        };
+        function leaveAnimateCallback() {
+          scope.$emit(options.prefixEvent + '.hide', $tooltip);
+          if (tipElement === _tipToHide) {
+            if (_blur && options.trigger === 'focus') {
+              return element[0].blur();
+            }
+            destroyTipElement();
+          }
+        }
+        $tooltip.toggle = function() {
+          if ($tooltip.$isShown) {
+            $tooltip.leave();
+          } else {
+            $tooltip.enter();
+          }
+        };
+        $tooltip.focus = function() {
+          tipElement[0].focus();
+        };
+        $tooltip.setEnabled = function(isEnabled) {
+          options.bsEnabled = isEnabled;
+        };
+        $tooltip.setViewport = function(viewport) {
+          options.viewport = viewport;
+        };
+        $tooltip.$applyPlacement = function() {
+          if (!tipElement) return;
+          var placement = options.placement;
+          var autoToken = /\s?auto?\s?/i;
+          var autoPlace = autoToken.test(placement);
+          if (autoPlace) {
+            placement = placement.replace(autoToken, '') || defaults.placement;
+          }
+          tipElement.addClass(options.placement);
+          var elementPosition = getPosition();
+          var tipWidth = tipElement.prop('offsetWidth');
+          var tipHeight = tipElement.prop('offsetHeight');
+          $tooltip.$viewport = options.viewport && findElement(options.viewport.selector || options.viewport);
+          if (autoPlace) {
+            var originalPlacement = placement;
+            var viewportPosition = getPosition($tooltip.$viewport);
+            if (/bottom/.test(originalPlacement) && elementPosition.bottom + tipHeight > viewportPosition.bottom) {
+              placement = originalPlacement.replace('bottom', 'top');
+            } else if (/top/.test(originalPlacement) && elementPosition.top - tipHeight < viewportPosition.top) {
+              placement = originalPlacement.replace('top', 'bottom');
+            }
+            if (/left/.test(originalPlacement) && elementPosition.left - tipWidth < viewportPosition.left) {
+              placement = placement.replace('left', 'right');
+            } else if (/right/.test(originalPlacement) && elementPosition.right + tipWidth > viewportPosition.width) {
+              placement = placement.replace('right', 'left');
+            }
+            tipElement.removeClass(originalPlacement).addClass(placement);
+          }
+          var tipPosition = getCalculatedOffset(placement, elementPosition, tipWidth, tipHeight);
+          applyPlacement(tipPosition, placement);
+        };
+        $tooltip.$onKeyUp = function(evt) {
+          if (evt.which === 27 && $tooltip.$isShown) {
+            $tooltip.hide();
+            evt.stopPropagation();
+          }
+        };
+        $tooltip.$onFocusKeyUp = function(evt) {
+          if (evt.which === 27) {
+            element[0].blur();
+            evt.stopPropagation();
+          }
+        };
+        $tooltip.$onFocusElementMouseDown = function(evt) {
+          evt.preventDefault();
+          evt.stopPropagation();
+          if ($tooltip.$isShown) {
+            element[0].blur();
+          } else {
+            element[0].focus();
+          }
+        };
+        function bindTriggerEvents() {
+          var triggers = options.trigger.split(' ');
+          angular.forEach(triggers, function(trigger) {
+            if (trigger === 'click') {
+              element.on('click', $tooltip.toggle);
+            } else if (trigger !== 'manual') {
+              element.on(trigger === 'hover' ? 'mouseenter' : 'focus', $tooltip.enter);
+              element.on(trigger === 'hover' ? 'mouseleave' : 'blur', $tooltip.leave);
+              if (nodeName === 'button' && trigger !== 'hover') {
+                element.on(isTouch ? 'touchstart' : 'mousedown', $tooltip.$onFocusElementMouseDown);
+              }
+            }
+          });
+        }
+        function unbindTriggerEvents() {
+          var triggers = options.trigger.split(' ');
+          for (var i = triggers.length; i--; ) {
+            var trigger = triggers[i];
+            if (trigger === 'click') {
+              element.off('click', $tooltip.toggle);
+            } else if (trigger !== 'manual') {
+              element.off(trigger === 'hover' ? 'mouseenter' : 'focus', $tooltip.enter);
+              element.off(trigger === 'hover' ? 'mouseleave' : 'blur', $tooltip.leave);
+              if (nodeName === 'button' && trigger !== 'hover') {
+                element.off(isTouch ? 'touchstart' : 'mousedown', $tooltip.$onFocusElementMouseDown);
+              }
+            }
+          }
+        }
+        function bindKeyboardEvents() {
+          if (options.trigger !== 'focus') {
+            tipElement.on('keyup', $tooltip.$onKeyUp);
+          } else {
+            element.on('keyup', $tooltip.$onFocusKeyUp);
+          }
+        }
+        function unbindKeyboardEvents() {
+          if (options.trigger !== 'focus') {
+            tipElement.off('keyup', $tooltip.$onKeyUp);
+          } else {
+            element.off('keyup', $tooltip.$onFocusKeyUp);
+          }
+        }
+        var _autoCloseEventsBinded = false;
+        function bindAutoCloseEvents() {
+          $timeout(function() {
+            tipElement.on('click', stopEventPropagation);
+            $body.on('click', $tooltip.hide);
+            _autoCloseEventsBinded = true;
+          }, 0, false);
+        }
+        function unbindAutoCloseEvents() {
+          if (_autoCloseEventsBinded) {
+            tipElement.off('click', stopEventPropagation);
+            $body.off('click', $tooltip.hide);
+            _autoCloseEventsBinded = false;
+          }
+        }
+        function stopEventPropagation(event) {
+          event.stopPropagation();
+        }
+        function getPosition($element) {
+          $element = $element || (options.target || element);
+          var el = $element[0];
+          var isBody = el.tagName === 'BODY';
+          var elRect = el.getBoundingClientRect();
+          var rect = {};
+          for (var p in elRect) {
+            rect[p] = elRect[p];
+          }
+          if (rect.width === null) {
+            rect = angular.extend({}, rect, {
+              width: elRect.right - elRect.left,
+              height: elRect.bottom - elRect.top
+            });
+          }
+          var elOffset = isBody ? {
+            top: 0,
+            left: 0
+          } : dimensions.offset(el);
+          var scroll = {
+            scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.prop('scrollTop') || 0
+          };
+          var outerDims = isBody ? {
+            width: document.documentElement.clientWidth,
+            height: $window.innerHeight
+          } : null;
+          return angular.extend({}, rect, scroll, outerDims, elOffset);
+        }
+        function getCalculatedOffset(placement, position, actualWidth, actualHeight) {
+          var offset;
+          var split = placement.split('-');
+          switch (split[0]) {
+           case 'right':
+            offset = {
+              top: position.top + position.height / 2 - actualHeight / 2,
+              left: position.left + position.width
+            };
+            break;
 
-        // If no generator function was provided, use our MT
-        this.mt = this.mersenne_twister(this.seed);
-        this.bimd5 = this.blueimp_md5();
-        this.random = function () {
-            return this.mt.random(this.seed);
+           case 'bottom':
+            offset = {
+              top: position.top + position.height,
+              left: position.left + position.width / 2 - actualWidth / 2
+            };
+            break;
+
+           case 'left':
+            offset = {
+              top: position.top + position.height / 2 - actualHeight / 2,
+              left: position.left - actualWidth
+            };
+            break;
+
+           default:
+            offset = {
+              top: position.top - actualHeight,
+              left: position.left + position.width / 2 - actualWidth / 2
+            };
+            break;
+          }
+          if (!split[1]) {
+            return offset;
+          }
+          if (split[0] === 'top' || split[0] === 'bottom') {
+            switch (split[1]) {
+             case 'left':
+              offset.left = position.left;
+              break;
+
+             case 'right':
+              offset.left = position.left + position.width - actualWidth;
+              break;
+
+             default:
+              break;
+            }
+          } else if (split[0] === 'left' || split[0] === 'right') {
+            switch (split[1]) {
+             case 'top':
+              offset.top = position.top - actualHeight + position.height;
+              break;
+
+             case 'bottom':
+              offset.top = position.top;
+              break;
+
+             default:
+              break;
+            }
+          }
+          return offset;
+        }
+        function applyPlacement(offset, placement) {
+          var tip = tipElement[0];
+          var width = tip.offsetWidth;
+          var height = tip.offsetHeight;
+          var marginTop = parseInt(dimensions.css(tip, 'margin-top'), 10);
+          var marginLeft = parseInt(dimensions.css(tip, 'margin-left'), 10);
+          if (isNaN(marginTop)) marginTop = 0;
+          if (isNaN(marginLeft)) marginLeft = 0;
+          offset.top = offset.top + marginTop;
+          offset.left = offset.left + marginLeft;
+          dimensions.setOffset(tip, angular.extend({
+            using: function(props) {
+              tipElement.css({
+                top: Math.round(props.top) + 'px',
+                left: Math.round(props.left) + 'px',
+                right: ''
+              });
+            }
+          }, offset), 0);
+          var actualWidth = tip.offsetWidth;
+          var actualHeight = tip.offsetHeight;
+          if (placement === 'top' && actualHeight !== height) {
+            offset.top = offset.top + height - actualHeight;
+          }
+          if (/top-left|top-right|bottom-left|bottom-right/.test(placement)) return;
+          var delta = getViewportAdjustedDelta(placement, offset, actualWidth, actualHeight);
+          if (delta.left) {
+            offset.left += delta.left;
+          } else {
+            offset.top += delta.top;
+          }
+          dimensions.setOffset(tip, offset);
+          if (/top|right|bottom|left/.test(placement)) {
+            var isVertical = /top|bottom/.test(placement);
+            var arrowDelta = isVertical ? delta.left * 2 - width + actualWidth : delta.top * 2 - height + actualHeight;
+            var arrowOffsetPosition = isVertical ? 'offsetWidth' : 'offsetHeight';
+            replaceArrow(arrowDelta, tip[arrowOffsetPosition], isVertical);
+          }
+        }
+        function getViewportAdjustedDelta(placement, position, actualWidth, actualHeight) {
+          var delta = {
+            top: 0,
+            left: 0
+          };
+          if (!$tooltip.$viewport) return delta;
+          var viewportPadding = options.viewport && options.viewport.padding || 0;
+          var viewportDimensions = getPosition($tooltip.$viewport);
+          if (/right|left/.test(placement)) {
+            var topEdgeOffset = position.top - viewportPadding - viewportDimensions.scroll;
+            var bottomEdgeOffset = position.top + viewportPadding - viewportDimensions.scroll + actualHeight;
+            if (topEdgeOffset < viewportDimensions.top) {
+              delta.top = viewportDimensions.top - topEdgeOffset;
+            } else if (bottomEdgeOffset > viewportDimensions.top + viewportDimensions.height) {
+              delta.top = viewportDimensions.top + viewportDimensions.height - bottomEdgeOffset;
+            }
+          } else {
+            var leftEdgeOffset = position.left - viewportPadding;
+            var rightEdgeOffset = position.left + viewportPadding + actualWidth;
+            if (leftEdgeOffset < viewportDimensions.left) {
+              delta.left = viewportDimensions.left - leftEdgeOffset;
+            } else if (rightEdgeOffset > viewportDimensions.right) {
+              delta.left = viewportDimensions.left + viewportDimensions.width - rightEdgeOffset;
+            }
+          }
+          return delta;
+        }
+        function replaceArrow(delta, dimension, isHorizontal) {
+          var $arrow = findElement('.tooltip-arrow, .arrow', tipElement[0]);
+          $arrow.css(isHorizontal ? 'left' : 'top', 50 * (1 - delta / dimension) + '%').css(isHorizontal ? 'top' : 'left', '');
+        }
+        function destroyTipElement() {
+          clearTimeout(timeout);
+          if ($tooltip.$isShown && tipElement !== null) {
+            if (options.autoClose) {
+              unbindAutoCloseEvents();
+            }
+            if (options.keyboard) {
+              unbindKeyboardEvents();
+            }
+          }
+          if (tipScope) {
+            tipScope.$destroy();
+            tipScope = null;
+          }
+          if (tipElement) {
+            tipElement.remove();
+            tipElement = $tooltip.$element = null;
+          }
+        }
+        return $tooltip;
+      }
+      function safeDigest(scope) {
+        scope.$$phase || scope.$root && scope.$root.$$phase || scope.$digest();
+      }
+      function findElement(query, element) {
+        return angular.element((element || document).querySelectorAll(query));
+      }
+      return TooltipFactory;
+    } ];
+  }).directive('bsTooltip', [ '$window', '$location', '$sce', '$tooltip', '$$rAF', function($window, $location, $sce, $tooltip, $$rAF) {
+    return {
+      restrict: 'EAC',
+      scope: true,
+      link: function postLink(scope, element, attr, transclusion) {
+        var tooltip;
+        var options = {
+          scope: scope
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'contentTemplate', 'placement', 'container', 'delay', 'trigger', 'html', 'animation', 'backdropAnimation', 'type', 'customClass', 'id' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'html', 'container' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) {
+            options[key] = false;
+          }
+        });
+        var dataTarget = element.attr('data-target');
+        if (angular.isDefined(dataTarget)) {
+          if (falseValueRegExp.test(dataTarget)) {
+            options.target = false;
+          } else {
+            options.target = dataTarget;
+          }
+        }
+        if (!scope.hasOwnProperty('title')) {
+          scope.title = '';
+        }
+        attr.$observe('title', function(newValue) {
+          if (angular.isDefined(newValue) || !scope.hasOwnProperty('title')) {
+            var oldValue = scope.title;
+            scope.title = $sce.trustAsHtml(newValue);
+            if (angular.isDefined(oldValue)) {
+              $$rAF(function() {
+                if (tooltip) tooltip.$applyPlacement();
+              });
+            }
+          }
+        });
+        if (attr.bsTooltip) {
+          scope.$watch(attr.bsTooltip, function(newValue, oldValue) {
+            if (angular.isObject(newValue)) {
+              angular.extend(scope, newValue);
+            } else {
+              scope.title = newValue;
+            }
+            if (angular.isDefined(oldValue)) {
+              $$rAF(function() {
+                if (tooltip) tooltip.$applyPlacement();
+              });
+            }
+          }, true);
+        }
+        if (attr.bsShow) {
+          scope.$watch(attr.bsShow, function(newValue, oldValue) {
+            if (!tooltip || !angular.isDefined(newValue)) return;
+            if (angular.isString(newValue)) newValue = !!newValue.match(/true|,?(tooltip),?/i);
+            if (newValue === true) {
+              tooltip.show();
+            } else {
+              tooltip.hide();
+            }
+          });
+        }
+        if (attr.bsEnabled) {
+          scope.$watch(attr.bsEnabled, function(newValue, oldValue) {
+            if (!tooltip || !angular.isDefined(newValue)) return;
+            if (angular.isString(newValue)) newValue = !!newValue.match(/true|1|,?(tooltip),?/i);
+            if (newValue === false) {
+              tooltip.setEnabled(false);
+            } else {
+              tooltip.setEnabled(true);
+            }
+          });
+        }
+        if (attr.viewport) {
+          scope.$watch(attr.viewport, function(newValue) {
+            if (!tooltip || !angular.isDefined(newValue)) return;
+            tooltip.setViewport(newValue);
+          });
+        }
+        tooltip = $tooltip(element, options);
+        scope.$on('$destroy', function() {
+          if (tooltip) tooltip.destroy();
+          options = null;
+          tooltip = null;
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.timepicker', [ 'mgcrea.ngStrap.helpers.dateParser', 'mgcrea.ngStrap.helpers.dateFormatter', 'mgcrea.ngStrap.tooltip' ]).provider('$timepicker', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      prefixClass: 'timepicker',
+      placement: 'bottom-left',
+      templateUrl: 'timepicker/timepicker.tpl.html',
+      trigger: 'focus',
+      container: false,
+      keyboard: true,
+      html: false,
+      delay: 0,
+      useNative: true,
+      timeType: 'date',
+      timeFormat: 'shortTime',
+      timezone: null,
+      modelTimeFormat: null,
+      autoclose: false,
+      minTime: -Infinity,
+      maxTime: +Infinity,
+      length: 5,
+      hourStep: 1,
+      minuteStep: 5,
+      secondStep: 5,
+      roundDisplay: false,
+      iconUp: 'glyphicon glyphicon-chevron-up',
+      iconDown: 'glyphicon glyphicon-chevron-down',
+      arrowBehavior: 'pager'
+    };
+    this.$get = [ '$window', '$document', '$rootScope', '$sce', '$dateFormatter', '$tooltip', '$timeout', function($window, $document, $rootScope, $sce, $dateFormatter, $tooltip, $timeout) {
+      var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
+      var isTouch = 'createTouch' in $window.document && isNative;
+      if (!defaults.lang) {
+        defaults.lang = $dateFormatter.getDefaultLocale();
+      }
+      function timepickerFactory(element, controller, config) {
+        var $timepicker = $tooltip(element, angular.extend({}, defaults, config));
+        var parentScope = config.scope;
+        var options = $timepicker.$options;
+        var scope = $timepicker.$scope;
+        var lang = options.lang;
+        var formatDate = function(date, format, timezone) {
+          return $dateFormatter.formatDate(date, format, lang, timezone);
+        };
+        function floorMinutes(time) {
+          var coeff = 1e3 * 60 * options.minuteStep;
+          return new Date(Math.floor(time.getTime() / coeff) * coeff);
+        }
+        var selectedIndex = 0;
+        var defaultDate = options.roundDisplay ? floorMinutes(new Date()) : new Date();
+        var startDate = controller.$dateValue || defaultDate;
+        var viewDate = {
+          hour: startDate.getHours(),
+          meridian: startDate.getHours() < 12,
+          minute: startDate.getMinutes(),
+          second: startDate.getSeconds(),
+          millisecond: startDate.getMilliseconds()
+        };
+        var format = $dateFormatter.getDatetimeFormat(options.timeFormat, lang);
+        var hoursFormat = $dateFormatter.hoursFormat(format);
+        var timeSeparator = $dateFormatter.timeSeparator(format);
+        var minutesFormat = $dateFormatter.minutesFormat(format);
+        var secondsFormat = $dateFormatter.secondsFormat(format);
+        var showSeconds = $dateFormatter.showSeconds(format);
+        var showAM = $dateFormatter.showAM(format);
+        scope.$iconUp = options.iconUp;
+        scope.$iconDown = options.iconDown;
+        scope.$select = function(date, index) {
+          $timepicker.select(date, index);
+        };
+        scope.$moveIndex = function(value, index) {
+          $timepicker.$moveIndex(value, index);
+        };
+        scope.$switchMeridian = function(date) {
+          $timepicker.switchMeridian(date);
+        };
+        $timepicker.update = function(date) {
+          if (angular.isDate(date) && !isNaN(date.getTime())) {
+            $timepicker.$date = date;
+            angular.extend(viewDate, {
+              hour: date.getHours(),
+              minute: date.getMinutes(),
+              second: date.getSeconds(),
+              millisecond: date.getMilliseconds()
+            });
+            $timepicker.$build();
+          } else if (!$timepicker.$isBuilt) {
+            $timepicker.$build();
+          }
+        };
+        $timepicker.select = function(date, index, keep) {
+          if (!controller.$dateValue || isNaN(controller.$dateValue.getTime())) controller.$dateValue = new Date(1970, 0, 1);
+          if (!angular.isDate(date)) date = new Date(date);
+          if (index === 0) controller.$dateValue.setHours(date.getHours()); else if (index === 1) controller.$dateValue.setMinutes(date.getMinutes()); else if (index === 2) controller.$dateValue.setSeconds(date.getSeconds());
+          controller.$setViewValue(angular.copy(controller.$dateValue));
+          controller.$render();
+          if (options.autoclose && !keep) {
+            $timeout(function() {
+              $timepicker.hide(true);
+            });
+          }
+        };
+        $timepicker.switchMeridian = function(date) {
+          if (!controller.$dateValue || isNaN(controller.$dateValue.getTime())) {
+            return;
+          }
+          var hours = (date || controller.$dateValue).getHours();
+          controller.$dateValue.setHours(hours < 12 ? hours + 12 : hours - 12);
+          controller.$setViewValue(angular.copy(controller.$dateValue));
+          controller.$render();
+        };
+        $timepicker.$build = function() {
+          var i;
+          var midIndex = scope.midIndex = parseInt(options.length / 2, 10);
+          var hours = [];
+          var hour;
+          for (i = 0; i < options.length; i++) {
+            hour = new Date(1970, 0, 1, viewDate.hour - (midIndex - i) * options.hourStep);
+            hours.push({
+              date: hour,
+              label: formatDate(hour, hoursFormat),
+              selected: $timepicker.$date && $timepicker.$isSelected(hour, 0),
+              disabled: $timepicker.$isDisabled(hour, 0)
+            });
+          }
+          var minutes = [];
+          var minute;
+          for (i = 0; i < options.length; i++) {
+            minute = new Date(1970, 0, 1, 0, viewDate.minute - (midIndex - i) * options.minuteStep);
+            minutes.push({
+              date: minute,
+              label: formatDate(minute, minutesFormat),
+              selected: $timepicker.$date && $timepicker.$isSelected(minute, 1),
+              disabled: $timepicker.$isDisabled(minute, 1)
+            });
+          }
+          var seconds = [];
+          var second;
+          for (i = 0; i < options.length; i++) {
+            second = new Date(1970, 0, 1, 0, 0, viewDate.second - (midIndex - i) * options.secondStep);
+            seconds.push({
+              date: second,
+              label: formatDate(second, secondsFormat),
+              selected: $timepicker.$date && $timepicker.$isSelected(second, 2),
+              disabled: $timepicker.$isDisabled(second, 2)
+            });
+          }
+          var rows = [];
+          for (i = 0; i < options.length; i++) {
+            if (showSeconds) {
+              rows.push([ hours[i], minutes[i], seconds[i] ]);
+            } else {
+              rows.push([ hours[i], minutes[i] ]);
+            }
+          }
+          scope.rows = rows;
+          scope.showSeconds = showSeconds;
+          scope.showAM = showAM;
+          scope.isAM = ($timepicker.$date || hours[midIndex].date).getHours() < 12;
+          scope.timeSeparator = timeSeparator;
+          $timepicker.$isBuilt = true;
+        };
+        $timepicker.$isSelected = function(date, index) {
+          if (!$timepicker.$date) return false; else if (index === 0) {
+            return date.getHours() === $timepicker.$date.getHours();
+          } else if (index === 1) {
+            return date.getMinutes() === $timepicker.$date.getMinutes();
+          } else if (index === 2) {
+            return date.getSeconds() === $timepicker.$date.getSeconds();
+          }
+        };
+        $timepicker.$isDisabled = function(date, index) {
+          var selectedTime;
+          if (index === 0) {
+            selectedTime = date.getTime() + viewDate.minute * 6e4 + viewDate.second * 1e3;
+          } else if (index === 1) {
+            selectedTime = date.getTime() + viewDate.hour * 36e5 + viewDate.second * 1e3;
+          } else if (index === 2) {
+            selectedTime = date.getTime() + viewDate.hour * 36e5 + viewDate.minute * 6e4;
+          }
+          return selectedTime < options.minTime * 1 || selectedTime > options.maxTime * 1;
+        };
+        scope.$arrowAction = function(value, index) {
+          if (options.arrowBehavior === 'picker') {
+            $timepicker.$setTimeByStep(value, index);
+          } else {
+            $timepicker.$moveIndex(value, index);
+          }
+        };
+        $timepicker.$setTimeByStep = function(value, index) {
+          var newDate = new Date($timepicker.$date || startDate);
+          var hours = newDate.getHours();
+          var minutes = newDate.getMinutes();
+          var seconds = newDate.getSeconds();
+          if (index === 0) {
+            newDate.setHours(hours - parseInt(options.hourStep, 10) * value);
+          } else if (index === 1) {
+            newDate.setMinutes(minutes - parseInt(options.minuteStep, 10) * value);
+          } else if (index === 2) {
+            newDate.setSeconds(seconds - parseInt(options.secondStep, 10) * value);
+          }
+          $timepicker.select(newDate, index, true);
+        };
+        $timepicker.$moveIndex = function(value, index) {
+          var targetDate;
+          if (index === 0) {
+            targetDate = new Date(1970, 0, 1, viewDate.hour + value * options.length, viewDate.minute, viewDate.second);
+            angular.extend(viewDate, {
+              hour: targetDate.getHours()
+            });
+          } else if (index === 1) {
+            targetDate = new Date(1970, 0, 1, viewDate.hour, viewDate.minute + value * options.length * options.minuteStep, viewDate.second);
+            angular.extend(viewDate, {
+              minute: targetDate.getMinutes()
+            });
+          } else if (index === 2) {
+            targetDate = new Date(1970, 0, 1, viewDate.hour, viewDate.minute, viewDate.second + value * options.length * options.secondStep);
+            angular.extend(viewDate, {
+              second: targetDate.getSeconds()
+            });
+          }
+          $timepicker.$build();
+        };
+        $timepicker.$onMouseDown = function(evt) {
+          if (evt.target.nodeName.toLowerCase() !== 'input') evt.preventDefault();
+          evt.stopPropagation();
+          if (isTouch) {
+            var targetEl = angular.element(evt.target);
+            if (targetEl[0].nodeName.toLowerCase() !== 'button') {
+              targetEl = targetEl.parent();
+            }
+            targetEl.triggerHandler('click');
+          }
+        };
+        $timepicker.$onKeyDown = function(evt) {
+          if (!/(38|37|39|40|13)/.test(evt.keyCode) || evt.shiftKey || evt.altKey) return;
+          evt.preventDefault();
+          evt.stopPropagation();
+          if (evt.keyCode === 13) {
+            $timepicker.hide(true);
+            return;
+          }
+          var newDate = new Date($timepicker.$date);
+          var hours = newDate.getHours();
+          var hoursLength = formatDate(newDate, hoursFormat).length;
+          var minutes = newDate.getMinutes();
+          var minutesLength = formatDate(newDate, minutesFormat).length;
+          var seconds = newDate.getSeconds();
+          var secondsLength = formatDate(newDate, secondsFormat).length;
+          var sepLength = 1;
+          var lateralMove = /(37|39)/.test(evt.keyCode);
+          var count = 2 + showSeconds * 1 + showAM * 1;
+          if (lateralMove) {
+            if (evt.keyCode === 37) selectedIndex = selectedIndex < 1 ? count - 1 : selectedIndex - 1; else if (evt.keyCode === 39) selectedIndex = selectedIndex < count - 1 ? selectedIndex + 1 : 0;
+          }
+          var selectRange = [ 0, hoursLength ];
+          var incr = 0;
+          if (evt.keyCode === 38) incr = -1;
+          if (evt.keyCode === 40) incr = +1;
+          var isSeconds = selectedIndex === 2 && showSeconds;
+          var isMeridian = selectedIndex === 2 && !showSeconds || selectedIndex === 3 && showSeconds;
+          if (selectedIndex === 0) {
+            newDate.setHours(hours + incr * parseInt(options.hourStep, 10));
+            hoursLength = formatDate(newDate, hoursFormat).length;
+            selectRange = [ 0, hoursLength ];
+          } else if (selectedIndex === 1) {
+            newDate.setMinutes(minutes + incr * parseInt(options.minuteStep, 10));
+            minutesLength = formatDate(newDate, minutesFormat).length;
+            selectRange = [ hoursLength + sepLength, minutesLength ];
+          } else if (isSeconds) {
+            newDate.setSeconds(seconds + incr * parseInt(options.secondStep, 10));
+            secondsLength = formatDate(newDate, secondsFormat).length;
+            selectRange = [ hoursLength + sepLength + minutesLength + sepLength, secondsLength ];
+          } else if (isMeridian) {
+            if (!lateralMove) $timepicker.switchMeridian();
+            selectRange = [ hoursLength + sepLength + minutesLength + sepLength + (secondsLength + sepLength) * showSeconds, 2 ];
+          }
+          $timepicker.select(newDate, selectedIndex, true);
+          createSelection(selectRange[0], selectRange[1]);
+          parentScope.$digest();
+        };
+        function createSelection(start, length) {
+          var end = start + length;
+          if (element[0].createTextRange) {
+            var selRange = element[0].createTextRange();
+            selRange.collapse(true);
+            selRange.moveStart('character', start);
+            selRange.moveEnd('character', end);
+            selRange.select();
+          } else if (element[0].setSelectionRange) {
+            element[0].setSelectionRange(start, end);
+          } else if (angular.isUndefined(element[0].selectionStart)) {
+            element[0].selectionStart = start;
+            element[0].selectionEnd = end;
+          }
+        }
+        function focusElement() {
+          element[0].focus();
+        }
+        var _init = $timepicker.init;
+        $timepicker.init = function() {
+          if (isNative && options.useNative) {
+            element.prop('type', 'time');
+            element.css('-webkit-appearance', 'textfield');
+            return;
+          } else if (isTouch) {
+            element.prop('type', 'text');
+            element.attr('readonly', 'true');
+            element.on('click', focusElement);
+          }
+          _init();
+        };
+        var _destroy = $timepicker.destroy;
+        $timepicker.destroy = function() {
+          if (isNative && options.useNative) {
+            element.off('click', focusElement);
+          }
+          _destroy();
+        };
+        var _show = $timepicker.show;
+        $timepicker.show = function() {
+          if (!isTouch && element.attr('readonly') || element.attr('disabled')) return;
+          _show();
+          $timeout(function() {
+            if ($timepicker.$element) $timepicker.$element.on(isTouch ? 'touchstart' : 'mousedown', $timepicker.$onMouseDown);
+            if (options.keyboard) {
+              if (element) element.on('keydown', $timepicker.$onKeyDown);
+            }
+          }, 0, false);
+        };
+        var _hide = $timepicker.hide;
+        $timepicker.hide = function(blur) {
+          if (!$timepicker.$isShown) return;
+          if ($timepicker.$element) $timepicker.$element.off(isTouch ? 'touchstart' : 'mousedown', $timepicker.$onMouseDown);
+          if (options.keyboard) {
+            if (element) element.off('keydown', $timepicker.$onKeyDown);
+          }
+          _hide(blur);
+        };
+        return $timepicker;
+      }
+      timepickerFactory.defaults = defaults;
+      return timepickerFactory;
+    } ];
+  }).directive('bsTimepicker', [ '$window', '$parse', '$q', '$dateFormatter', '$dateParser', '$timepicker', function($window, $parse, $q, $dateFormatter, $dateParser, $timepicker) {
+    var defaults = $timepicker.defaults;
+    var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
+    return {
+      restrict: 'EAC',
+      require: 'ngModel',
+      link: function postLink(scope, element, attr, controller) {
+        var options = {
+          scope: scope
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'container', 'delay', 'trigger', 'keyboard', 'html', 'animation', 'autoclose', 'timeType', 'timeFormat', 'timezone', 'modelTimeFormat', 'useNative', 'hourStep', 'minuteStep', 'secondStep', 'length', 'arrowBehavior', 'iconUp', 'iconDown', 'roundDisplay', 'id', 'prefixClass', 'prefixEvent' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'html', 'container', 'autoclose', 'useNative', 'roundDisplay' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) {
+            options[key] = false;
+          }
+        });
+        if (isNative && (options.useNative || defaults.useNative)) options.timeFormat = 'HH:mm';
+        var timepicker = $timepicker(element, controller, options);
+        options = timepicker.$options;
+        var lang = options.lang;
+        var formatDate = function(date, format, timezone) {
+          return $dateFormatter.formatDate(date, format, lang, timezone);
+        };
+        if (attr.bsShow) {
+          scope.$watch(attr.bsShow, function(newValue, oldValue) {
+            if (!timepicker || !angular.isDefined(newValue)) return;
+            if (angular.isString(newValue)) newValue = !!newValue.match(/true|,?(timepicker),?/i);
+            if (newValue === true) {
+              timepicker.show();
+            } else {
+              timepicker.hide();
+            }
+          });
+        }
+        var dateParser = $dateParser({
+          format: options.timeFormat,
+          lang: lang
+        });
+        angular.forEach([ 'minTime', 'maxTime' ], function(key) {
+          if (angular.isDefined(attr[key])) {
+            attr.$observe(key, function(newValue) {
+              timepicker.$options[key] = dateParser.getTimeForAttribute(key, newValue);
+              if (!isNaN(timepicker.$options[key])) timepicker.$build();
+              validateAgainstMinMaxTime(controller.$dateValue);
+            });
+          }
+        });
+        scope.$watch(attr.ngModel, function(newValue, oldValue) {
+          timepicker.update(controller.$dateValue);
+        }, true);
+        function validateAgainstMinMaxTime(parsedTime) {
+          if (!angular.isDate(parsedTime)) return;
+          var isMinValid = isNaN(options.minTime) || new Date(parsedTime.getTime()).setFullYear(1970, 0, 1) >= options.minTime;
+          var isMaxValid = isNaN(options.maxTime) || new Date(parsedTime.getTime()).setFullYear(1970, 0, 1) <= options.maxTime;
+          var isValid = isMinValid && isMaxValid;
+          controller.$setValidity('date', isValid);
+          controller.$setValidity('min', isMinValid);
+          controller.$setValidity('max', isMaxValid);
+          if (!isValid) {
+            return;
+          }
+          controller.$dateValue = parsedTime;
+        }
+        controller.$parsers.unshift(function(viewValue) {
+          var date;
+          if (!viewValue) {
+            controller.$setValidity('date', true);
+            return null;
+          }
+          var parsedTime = angular.isDate(viewValue) ? viewValue : dateParser.parse(viewValue, controller.$dateValue);
+          if (!parsedTime || isNaN(parsedTime.getTime())) {
+            controller.$setValidity('date', false);
+            return undefined;
+          }
+          validateAgainstMinMaxTime(parsedTime);
+          if (options.timeType === 'string') {
+            date = dateParser.timezoneOffsetAdjust(parsedTime, options.timezone, true);
+            return formatDate(date, options.modelTimeFormat || options.timeFormat);
+          }
+          date = dateParser.timezoneOffsetAdjust(controller.$dateValue, options.timezone, true);
+          if (options.timeType === 'number') {
+            return date.getTime();
+          } else if (options.timeType === 'unix') {
+            return date.getTime() / 1e3;
+          } else if (options.timeType === 'iso') {
+            return date.toISOString();
+          }
+          return new Date(date);
+        });
+        controller.$formatters.push(function(modelValue) {
+          var date;
+          if (angular.isUndefined(modelValue) || modelValue === null) {
+            date = NaN;
+          } else if (angular.isDate(modelValue)) {
+            date = modelValue;
+          } else if (options.timeType === 'string') {
+            date = dateParser.parse(modelValue, null, options.modelTimeFormat);
+          } else if (options.timeType === 'unix') {
+            date = new Date(modelValue * 1e3);
+          } else {
+            date = new Date(modelValue);
+          }
+          controller.$dateValue = dateParser.timezoneOffsetAdjust(date, options.timezone);
+          return getTimeFormattedString();
+        });
+        controller.$render = function() {
+          element.val(getTimeFormattedString());
+        };
+        function getTimeFormattedString() {
+          return !controller.$dateValue || isNaN(controller.$dateValue.getTime()) ? '' : formatDate(controller.$dateValue, options.timeFormat);
+        }
+        scope.$on('$destroy', function() {
+          if (timepicker) timepicker.destroy();
+          options = null;
+          timepicker = null;
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.tab', []).provider('$tab', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      template: 'tab/tab.tpl.html',
+      navClass: 'nav-tabs',
+      activeClass: 'active'
+    };
+    var controller = this.controller = function($scope, $element, $attrs) {
+      var self = this;
+      self.$options = angular.copy(defaults);
+      angular.forEach([ 'animation', 'navClass', 'activeClass' ], function(key) {
+        if (angular.isDefined($attrs[key])) self.$options[key] = $attrs[key];
+      });
+      $scope.$navClass = self.$options.navClass;
+      $scope.$activeClass = self.$options.activeClass;
+      self.$panes = $scope.$panes = [];
+      self.$activePaneChangeListeners = self.$viewChangeListeners = [];
+      self.$push = function(pane) {
+        if (angular.isUndefined(self.$panes.$active)) {
+          $scope.$setActive(pane.name || 0);
+        }
+        self.$panes.push(pane);
+      };
+      self.$remove = function(pane) {
+        var index = self.$panes.indexOf(pane);
+        var active = self.$panes.$active;
+        var activeIndex;
+        if (angular.isString(active)) {
+          activeIndex = self.$panes.map(function(pane) {
+            return pane.name;
+          }).indexOf(active);
+        } else {
+          activeIndex = self.$panes.$active;
+        }
+        self.$panes.splice(index, 1);
+        if (index < activeIndex) {
+          activeIndex--;
+        } else if (index === activeIndex && activeIndex === self.$panes.length) {
+          activeIndex--;
+        }
+        if (activeIndex >= 0 && activeIndex < self.$panes.length) {
+          self.$setActive(self.$panes[activeIndex].name || activeIndex);
+        } else {
+          self.$setActive();
+        }
+      };
+      self.$setActive = $scope.$setActive = function(value) {
+        self.$panes.$active = value;
+        self.$activePaneChangeListeners.forEach(function(fn) {
+          fn();
+        });
+      };
+      self.$isActive = $scope.$isActive = function($pane, $index) {
+        return self.$panes.$active === $pane.name || self.$panes.$active === $index;
+      };
+    };
+    this.$get = function() {
+      var $tab = {};
+      $tab.defaults = defaults;
+      $tab.controller = controller;
+      return $tab;
+    };
+  }).directive('bsTabs', [ '$window', '$animate', '$tab', '$parse', function($window, $animate, $tab, $parse) {
+    var defaults = $tab.defaults;
+    return {
+      require: [ '?ngModel', 'bsTabs' ],
+      transclude: true,
+      scope: true,
+      controller: [ '$scope', '$element', '$attrs', $tab.controller ],
+      templateUrl: function(element, attr) {
+        return attr.template || defaults.template;
+      },
+      link: function postLink(scope, element, attrs, controllers) {
+        var ngModelCtrl = controllers[0];
+        var bsTabsCtrl = controllers[1];
+        if (ngModelCtrl) {
+          bsTabsCtrl.$activePaneChangeListeners.push(function() {
+            ngModelCtrl.$setViewValue(bsTabsCtrl.$panes.$active);
+          });
+          ngModelCtrl.$formatters.push(function(modelValue) {
+            bsTabsCtrl.$setActive(modelValue);
+            return modelValue;
+          });
+        }
+        if (attrs.bsActivePane) {
+          var parsedBsActivePane = $parse(attrs.bsActivePane);
+          bsTabsCtrl.$activePaneChangeListeners.push(function() {
+            parsedBsActivePane.assign(scope, bsTabsCtrl.$panes.$active);
+          });
+          scope.$watch(attrs.bsActivePane, function(newValue, oldValue) {
+            bsTabsCtrl.$setActive(newValue);
+          }, true);
+        }
+      }
+    };
+  } ]).directive('bsPane', [ '$window', '$animate', '$sce', function($window, $animate, $sce) {
+    return {
+      require: [ '^?ngModel', '^bsTabs' ],
+      scope: true,
+      link: function postLink(scope, element, attrs, controllers) {
+        var bsTabsCtrl = controllers[1];
+        element.addClass('tab-pane');
+        attrs.$observe('title', function(newValue, oldValue) {
+          scope.title = $sce.trustAsHtml(newValue);
+        });
+        scope.name = attrs.name;
+        if (bsTabsCtrl.$options.animation) {
+          element.addClass(bsTabsCtrl.$options.animation);
+        }
+        attrs.$observe('disabled', function(newValue, oldValue) {
+          scope.disabled = scope.$eval(newValue);
+        });
+        bsTabsCtrl.$push(scope);
+        scope.$on('$destroy', function() {
+          bsTabsCtrl.$remove(scope);
+        });
+        function render() {
+          var index = bsTabsCtrl.$panes.indexOf(scope);
+          $animate[bsTabsCtrl.$isActive(scope, index) ? 'addClass' : 'removeClass'](element, bsTabsCtrl.$options.activeClass);
+        }
+        bsTabsCtrl.$activePaneChangeListeners.push(function() {
+          render();
+        });
+        render();
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.select', [ 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.helpers.parseOptions' ]).provider('$select', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      prefixClass: 'select',
+      prefixEvent: '$select',
+      placement: 'bottom-left',
+      templateUrl: 'select/select.tpl.html',
+      trigger: 'focus',
+      container: false,
+      keyboard: true,
+      html: false,
+      delay: 0,
+      multiple: false,
+      allNoneButtons: false,
+      sort: true,
+      caretHtml: '&nbsp;<span class="caret"></span>',
+      placeholder: 'Choose among the following...',
+      allText: 'All',
+      noneText: 'None',
+      maxLength: 3,
+      maxLengthHtml: 'selected',
+      iconCheckmark: 'glyphicon glyphicon-ok'
+    };
+    this.$get = [ '$window', '$document', '$rootScope', '$tooltip', '$timeout', function($window, $document, $rootScope, $tooltip, $timeout) {
+      var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
+      var isTouch = 'createTouch' in $window.document && isNative;
+      function SelectFactory(element, controller, config) {
+        var $select = {};
+        var options = angular.extend({}, defaults, config);
+        $select = $tooltip(element, options);
+        var scope = $select.$scope;
+        scope.$matches = [];
+        if (options.multiple) {
+          scope.$activeIndex = [];
+        } else {
+          scope.$activeIndex = -1;
+        }
+        scope.$isMultiple = options.multiple;
+        scope.$showAllNoneButtons = options.allNoneButtons && options.multiple;
+        scope.$iconCheckmark = options.iconCheckmark;
+        scope.$allText = options.allText;
+        scope.$noneText = options.noneText;
+        scope.$activate = function(index) {
+          scope.$$postDigest(function() {
+            $select.activate(index);
+          });
+        };
+        scope.$select = function(index, evt) {
+          scope.$$postDigest(function() {
+            $select.select(index);
+          });
+        };
+        scope.$isVisible = function() {
+          return $select.$isVisible();
+        };
+        scope.$isActive = function(index) {
+          return $select.$isActive(index);
+        };
+        scope.$selectAll = function() {
+          for (var i = 0; i < scope.$matches.length; i++) {
+            if (!scope.$isActive(i)) {
+              scope.$select(i);
+            }
+          }
+        };
+        scope.$selectNone = function() {
+          for (var i = 0; i < scope.$matches.length; i++) {
+            if (scope.$isActive(i)) {
+              scope.$select(i);
+            }
+          }
+        };
+        $select.update = function(matches) {
+          scope.$matches = matches;
+          $select.$updateActiveIndex();
+        };
+        $select.activate = function(index) {
+          if (options.multiple) {
+            if ($select.$isActive(index)) {
+              scope.$activeIndex.splice(scope.$activeIndex.indexOf(index), 1);
+            } else {
+              scope.$activeIndex.push(index);
+            }
+            if (options.sort) scope.$activeIndex.sort(function(a, b) {
+              return a - b;
+            });
+          } else {
+            scope.$activeIndex = index;
+          }
+          return scope.$activeIndex;
+        };
+        $select.select = function(index) {
+          var value = scope.$matches[index].value;
+          scope.$apply(function() {
+            $select.activate(index);
+            if (options.multiple) {
+              controller.$setViewValue(scope.$activeIndex.map(function(index) {
+                if (angular.isUndefined(scope.$matches[index])) {
+                  return null;
+                }
+                return scope.$matches[index].value;
+              }));
+            } else {
+              controller.$setViewValue(value);
+              $select.hide();
+            }
+          });
+          scope.$emit(options.prefixEvent + '.select', value, index, $select);
+        };
+        $select.$updateActiveIndex = function() {
+          if (options.multiple) {
+            if (angular.isArray(controller.$modelValue)) {
+              scope.$activeIndex = controller.$modelValue.map(function(value) {
+                return $select.$getIndex(value);
+              });
+            } else {
+              scope.$activeIndex = [];
+            }
+          } else {
+            if (angular.isDefined(controller.$modelValue) && scope.$matches.length) {
+              scope.$activeIndex = $select.$getIndex(controller.$modelValue);
+            } else {
+              scope.$activeIndex = -1;
+            }
+          }
+        };
+        $select.$isVisible = function() {
+          if (!options.minLength || !controller) {
+            return scope.$matches.length;
+          }
+          return scope.$matches.length && controller.$viewValue.length >= options.minLength;
+        };
+        $select.$isActive = function(index) {
+          if (options.multiple) {
+            return scope.$activeIndex.indexOf(index) !== -1;
+          }
+          return scope.$activeIndex === index;
+        };
+        $select.$getIndex = function(value) {
+          var index;
+          for (index = scope.$matches.length; index--; ) {
+            if (angular.equals(scope.$matches[index].value, value)) break;
+          }
+          return index;
+        };
+        $select.$onMouseDown = function(evt) {
+          evt.preventDefault();
+          evt.stopPropagation();
+          if (isTouch) {
+            var targetEl = angular.element(evt.target);
+            targetEl.triggerHandler('click');
+          }
+        };
+        $select.$onKeyDown = function(evt) {
+          if (!/(9|13|38|40)/.test(evt.keyCode)) return;
+          if (evt.keyCode !== 9) {
+            evt.preventDefault();
+            evt.stopPropagation();
+          }
+          if (options.multiple && evt.keyCode === 9) {
+            return $select.hide();
+          }
+          if (!options.multiple && (evt.keyCode === 13 || evt.keyCode === 9)) {
+            return $select.select(scope.$activeIndex);
+          }
+          if (!options.multiple) {
+            if (evt.keyCode === 38 && scope.$activeIndex > 0) scope.$activeIndex--; else if (evt.keyCode === 38 && scope.$activeIndex < 0) scope.$activeIndex = scope.$matches.length - 1; else if (evt.keyCode === 40 && scope.$activeIndex < scope.$matches.length - 1) scope.$activeIndex++; else if (angular.isUndefined(scope.$activeIndex)) scope.$activeIndex = 0;
+            scope.$digest();
+          }
+        };
+        $select.$isIE = function() {
+          var ua = $window.navigator.userAgent;
+          return ua.indexOf('MSIE ') > 0 || ua.indexOf('Trident/') > 0 || ua.indexOf('Edge/') > 0;
+        };
+        $select.$selectScrollFix = function(e) {
+          if ($document[0].activeElement.tagName === 'UL') {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.target.focus();
+          }
+        };
+        var _show = $select.show;
+        $select.show = function() {
+          _show();
+          if (options.multiple) {
+            $select.$element.addClass('select-multiple');
+          }
+          $timeout(function() {
+            $select.$element.on(isTouch ? 'touchstart' : 'mousedown', $select.$onMouseDown);
+            if (options.keyboard) {
+              element.on('keydown', $select.$onKeyDown);
+            }
+          }, 0, false);
+        };
+        var _hide = $select.hide;
+        $select.hide = function() {
+          if (!options.multiple && angular.isUndefined(controller.$modelValue)) {
+            scope.$activeIndex = -1;
+          }
+          $select.$element.off(isTouch ? 'touchstart' : 'mousedown', $select.$onMouseDown);
+          if (options.keyboard) {
+            element.off('keydown', $select.$onKeyDown);
+          }
+          _hide(true);
+        };
+        return $select;
+      }
+      SelectFactory.defaults = defaults;
+      return SelectFactory;
+    } ];
+  }).directive('bsSelect', [ '$window', '$parse', '$q', '$select', '$parseOptions', function($window, $parse, $q, $select, $parseOptions) {
+    var defaults = $select.defaults;
+    return {
+      restrict: 'EAC',
+      require: 'ngModel',
+      link: function postLink(scope, element, attr, controller) {
+        var options = {
+          scope: scope,
+          placeholder: defaults.placeholder
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'container', 'delay', 'trigger', 'keyboard', 'html', 'animation', 'placeholder', 'allNoneButtons', 'maxLength', 'maxLengthHtml', 'allText', 'noneText', 'iconCheckmark', 'autoClose', 'id', 'sort', 'caretHtml', 'prefixClass', 'prefixEvent' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'html', 'container', 'allNoneButtons', 'sort' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) {
+            options[key] = false;
+          }
+        });
+        var dataMultiple = element.attr('data-multiple');
+        if (angular.isDefined(dataMultiple)) {
+          if (falseValueRegExp.test(dataMultiple)) {
+            options.multiple = false;
+          } else {
+            options.multiple = dataMultiple;
+          }
+        }
+        if (element[0].nodeName.toLowerCase() === 'select') {
+          var inputEl = element;
+          inputEl.css('display', 'none');
+          element = angular.element('<button type="button" class="btn btn-default"></button>');
+          inputEl.after(element);
+        }
+        var parsedOptions = $parseOptions(attr.bsOptions);
+        var select = $select(element, controller, options);
+        if (select.$isIE()) {
+          element[0].addEventListener('blur', select.$selectScrollFix);
+        }
+        var watchedOptions = parsedOptions.$match[7].replace(/\|.+/, '').trim();
+        scope.$watch(watchedOptions, function(newValue, oldValue) {
+          parsedOptions.valuesFn(scope, controller).then(function(values) {
+            select.update(values);
+            controller.$render();
+          });
+        }, true);
+        scope.$watch(attr.ngModel, function(newValue, oldValue) {
+          select.$updateActiveIndex();
+          controller.$render();
+        }, true);
+        controller.$render = function() {
+          var selected;
+          var index;
+          if (options.multiple && angular.isArray(controller.$modelValue)) {
+            selected = controller.$modelValue.map(function(value) {
+              index = select.$getIndex(value);
+              return index !== -1 ? select.$scope.$matches[index].label : false;
+            }).filter(angular.isDefined);
+            if (selected.length > (options.maxLength || defaults.maxLength)) {
+              selected = selected.length + ' ' + (options.maxLengthHtml || defaults.maxLengthHtml);
+            } else {
+              selected = selected.join(', ');
+            }
+          } else {
+            index = select.$getIndex(controller.$modelValue);
+            selected = index !== -1 ? select.$scope.$matches[index].label : false;
+          }
+          element.html((selected ? selected : options.placeholder) + (options.caretHtml ? options.caretHtml : defaults.caretHtml));
+        };
+        if (options.multiple) {
+          controller.$isEmpty = function(value) {
+            return !value || value.length === 0;
+          };
+        }
+        scope.$on('$destroy', function() {
+          if (select) select.destroy();
+          options = null;
+          select = null;
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.popover', [ 'mgcrea.ngStrap.tooltip' ]).provider('$popover', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      customClass: '',
+      container: false,
+      target: false,
+      placement: 'right',
+      templateUrl: 'popover/popover.tpl.html',
+      contentTemplate: false,
+      trigger: 'click',
+      keyboard: true,
+      html: false,
+      title: '',
+      content: '',
+      delay: 0,
+      autoClose: false
+    };
+    this.$get = [ '$tooltip', function($tooltip) {
+      function PopoverFactory(element, config) {
+        var options = angular.extend({}, defaults, config);
+        var $popover = $tooltip(element, options);
+        if (options.content) {
+          $popover.$scope.content = options.content;
+        }
+        return $popover;
+      }
+      return PopoverFactory;
+    } ];
+  }).directive('bsPopover', [ '$window', '$sce', '$popover', function($window, $sce, $popover) {
+    var requestAnimationFrame = $window.requestAnimationFrame || $window.setTimeout;
+    return {
+      restrict: 'EAC',
+      scope: true,
+      link: function postLink(scope, element, attr) {
+        var popover;
+        var options = {
+          scope: scope
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'contentTemplate', 'placement', 'container', 'delay', 'trigger', 'html', 'animation', 'customClass', 'autoClose', 'id', 'prefixClass', 'prefixEvent' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'html', 'container', 'autoClose' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+        });
+        var dataTarget = element.attr('data-target');
+        if (angular.isDefined(dataTarget)) {
+          if (falseValueRegExp.test(dataTarget)) {
+            options.target = false;
+          } else {
+            options.target = dataTarget;
+          }
+        }
+        angular.forEach([ 'title', 'content' ], function(key) {
+          if (attr[key]) {
+            attr.$observe(key, function(newValue, oldValue) {
+              scope[key] = $sce.trustAsHtml(newValue);
+              if (angular.isDefined(oldValue)) {
+                requestAnimationFrame(function() {
+                  if (popover) popover.$applyPlacement();
+                });
+              }
+            });
+          }
+        });
+        if (attr.bsPopover) {
+          scope.$watch(attr.bsPopover, function(newValue, oldValue) {
+            if (angular.isObject(newValue)) {
+              angular.extend(scope, newValue);
+            } else {
+              scope.content = newValue;
+            }
+            if (angular.isDefined(oldValue)) {
+              requestAnimationFrame(function() {
+                if (popover) popover.$applyPlacement();
+              });
+            }
+          }, true);
+        }
+        if (attr.bsShow) {
+          scope.$watch(attr.bsShow, function(newValue, oldValue) {
+            if (!popover || !angular.isDefined(newValue)) return;
+            if (angular.isString(newValue)) newValue = !!newValue.match(/true|,?(popover),?/i);
+            if (newValue === true) {
+              popover.show();
+            } else {
+              popover.hide();
+            }
+          });
+        }
+        if (attr.viewport) {
+          scope.$watch(attr.viewport, function(newValue) {
+            if (!popover || !angular.isDefined(newValue)) return;
+            popover.setViewport(newValue);
+          });
+        }
+        popover = $popover(element, options);
+        scope.$on('$destroy', function() {
+          if (popover) popover.destroy();
+          options = null;
+          popover = null;
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.scrollspy', [ 'mgcrea.ngStrap.helpers.debounce', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$scrollspy', function() {
+    var spies = this.$$spies = {};
+    var defaults = this.defaults = {
+      debounce: 150,
+      throttle: 100,
+      offset: 100
+    };
+    this.$get = [ '$window', '$document', '$rootScope', 'dimensions', 'debounce', 'throttle', function($window, $document, $rootScope, dimensions, debounce, throttle) {
+      var windowEl = angular.element($window);
+      var docEl = angular.element($document.prop('documentElement'));
+      var bodyEl = angular.element($window.document.body);
+      function nodeName(element, name) {
+        return element[0].nodeName && element[0].nodeName.toLowerCase() === name.toLowerCase();
+      }
+      function ScrollSpyFactory(config) {
+        var options = angular.extend({}, defaults, config);
+        if (!options.element) options.element = bodyEl;
+        var isWindowSpy = nodeName(options.element, 'body');
+        var scrollEl = isWindowSpy ? windowEl : options.element;
+        var scrollId = isWindowSpy ? 'window' : options.id;
+        if (spies[scrollId]) {
+          spies[scrollId].$$count++;
+          return spies[scrollId];
+        }
+        var $scrollspy = {};
+        var unbindViewContentLoaded;
+        var unbindIncludeContentLoaded;
+        var trackedElements = $scrollspy.$trackedElements = [];
+        var sortedElements = [];
+        var activeTarget;
+        var debouncedCheckPosition;
+        var throttledCheckPosition;
+        var debouncedCheckOffsets;
+        var viewportHeight;
+        var scrollTop;
+        $scrollspy.init = function() {
+          this.$$count = 1;
+          debouncedCheckPosition = debounce(this.checkPosition, options.debounce);
+          throttledCheckPosition = throttle(this.checkPosition, options.throttle);
+          scrollEl.on('click', this.checkPositionWithEventLoop);
+          windowEl.on('resize', debouncedCheckPosition);
+          scrollEl.on('scroll', throttledCheckPosition);
+          debouncedCheckOffsets = debounce(this.checkOffsets, options.debounce);
+          unbindViewContentLoaded = $rootScope.$on('$viewContentLoaded', debouncedCheckOffsets);
+          unbindIncludeContentLoaded = $rootScope.$on('$includeContentLoaded', debouncedCheckOffsets);
+          debouncedCheckOffsets();
+          if (scrollId) {
+            spies[scrollId] = $scrollspy;
+          }
+        };
+        $scrollspy.destroy = function() {
+          this.$$count--;
+          if (this.$$count > 0) {
+            return;
+          }
+          scrollEl.off('click', this.checkPositionWithEventLoop);
+          windowEl.off('resize', debouncedCheckPosition);
+          scrollEl.off('scroll', throttledCheckPosition);
+          unbindViewContentLoaded();
+          unbindIncludeContentLoaded();
+          if (scrollId) {
+            delete spies[scrollId];
+          }
+        };
+        $scrollspy.checkPosition = function() {
+          if (!sortedElements.length) return;
+          scrollTop = (isWindowSpy ? $window.pageYOffset : scrollEl.prop('scrollTop')) || 0;
+          viewportHeight = Math.max($window.innerHeight, docEl.prop('clientHeight'));
+          if (scrollTop < sortedElements[0].offsetTop && activeTarget !== sortedElements[0].target) {
+            return $scrollspy.$activateElement(sortedElements[0]);
+          }
+          for (var i = sortedElements.length; i--; ) {
+            if (angular.isUndefined(sortedElements[i].offsetTop) || sortedElements[i].offsetTop === null) continue;
+            if (activeTarget === sortedElements[i].target) continue;
+            if (scrollTop < sortedElements[i].offsetTop) continue;
+            if (sortedElements[i + 1] && scrollTop > sortedElements[i + 1].offsetTop) continue;
+            return $scrollspy.$activateElement(sortedElements[i]);
+          }
+        };
+        $scrollspy.checkPositionWithEventLoop = function() {
+          setTimeout($scrollspy.checkPosition, 1);
+        };
+        $scrollspy.$activateElement = function(element) {
+          if (activeTarget) {
+            var activeElement = $scrollspy.$getTrackedElement(activeTarget);
+            if (activeElement) {
+              activeElement.source.removeClass('active');
+              if (nodeName(activeElement.source, 'li') && nodeName(activeElement.source.parent().parent(), 'li')) {
+                activeElement.source.parent().parent().removeClass('active');
+              }
+            }
+          }
+          activeTarget = element.target;
+          element.source.addClass('active');
+          if (nodeName(element.source, 'li') && nodeName(element.source.parent().parent(), 'li')) {
+            element.source.parent().parent().addClass('active');
+          }
+        };
+        $scrollspy.$getTrackedElement = function(target) {
+          return trackedElements.filter(function(obj) {
+            return obj.target === target;
+          })[0];
+        };
+        $scrollspy.checkOffsets = function() {
+          angular.forEach(trackedElements, function(trackedElement) {
+            var targetElement = document.querySelector(trackedElement.target);
+            trackedElement.offsetTop = targetElement ? dimensions.offset(targetElement).top : null;
+            if (options.offset && trackedElement.offsetTop !== null) trackedElement.offsetTop -= options.offset * 1;
+          });
+          sortedElements = trackedElements.filter(function(el) {
+            return el.offsetTop !== null;
+          }).sort(function(a, b) {
+            return a.offsetTop - b.offsetTop;
+          });
+          debouncedCheckPosition();
+        };
+        $scrollspy.trackElement = function(target, source) {
+          trackedElements.push({
+            target: target,
+            source: source
+          });
+        };
+        $scrollspy.untrackElement = function(target, source) {
+          var toDelete;
+          for (var i = trackedElements.length; i--; ) {
+            if (trackedElements[i].target === target && trackedElements[i].source === source) {
+              toDelete = i;
+              break;
+            }
+          }
+          trackedElements = trackedElements.splice(toDelete, 1);
+        };
+        $scrollspy.activate = function(i) {
+          trackedElements[i].addClass('active');
+        };
+        $scrollspy.init();
+        return $scrollspy;
+      }
+      return ScrollSpyFactory;
+    } ];
+  }).directive('bsScrollspy', [ '$rootScope', 'debounce', 'dimensions', '$scrollspy', function($rootScope, debounce, dimensions, $scrollspy) {
+    return {
+      restrict: 'EAC',
+      link: function postLink(scope, element, attr) {
+        var options = {
+          scope: scope
+        };
+        angular.forEach([ 'offset', 'target' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var scrollspy = $scrollspy(options);
+        scrollspy.trackElement(options.target, element);
+        scope.$on('$destroy', function() {
+          if (scrollspy) {
+            scrollspy.untrackElement(options.target, element);
+            scrollspy.destroy();
+          }
+          options = null;
+          scrollspy = null;
+        });
+      }
+    };
+  } ]).directive('bsScrollspyList', [ '$rootScope', 'debounce', 'dimensions', '$scrollspy', function($rootScope, debounce, dimensions, $scrollspy) {
+    return {
+      restrict: 'A',
+      compile: function postLink(element, attr) {
+        var children = element[0].querySelectorAll('li > a[href]');
+        angular.forEach(children, function(child) {
+          var childEl = angular.element(child);
+          childEl.parent().attr('bs-scrollspy', '').attr('data-target', childEl.attr('href'));
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.navbar', []).provider('$navbar', function() {
+    var defaults = this.defaults = {
+      activeClass: 'active',
+      routeAttr: 'data-match-route',
+      strict: false
+    };
+    this.$get = function() {
+      return {
+        defaults: defaults
+      };
+    };
+  }).directive('bsNavbar', [ '$window', '$location', '$navbar', function($window, $location, $navbar) {
+    var defaults = $navbar.defaults;
+    return {
+      restrict: 'A',
+      link: function postLink(scope, element, attr, controller) {
+        var options = angular.copy(defaults);
+        angular.forEach(Object.keys(defaults), function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        scope.$watch(function() {
+          return $location.path();
+        }, function(newValue, oldValue) {
+          var liElements = element[0].querySelectorAll('li[' + options.routeAttr + ']');
+          angular.forEach(liElements, function(li) {
+            var liElement = angular.element(li);
+            var pattern = liElement.attr(options.routeAttr).replace('/', '\\/');
+            if (options.strict) {
+              pattern = '^' + pattern + '$';
+            }
+            var regexp = new RegExp(pattern, 'i');
+            if (regexp.test(newValue)) {
+              liElement.addClass(options.activeClass);
+            } else {
+              liElement.removeClass(options.activeClass);
+            }
+          });
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.modal', [ 'mgcrea.ngStrap.core', 'mgcrea.ngStrap.helpers.dimensions' ]).provider('$modal', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      backdropAnimation: 'am-fade',
+      customClass: '',
+      prefixClass: 'modal',
+      prefixEvent: 'modal',
+      placement: 'top',
+      templateUrl: 'modal/modal.tpl.html',
+      template: '',
+      contentTemplate: false,
+      container: false,
+      element: null,
+      backdrop: true,
+      keyboard: true,
+      html: false,
+      show: true
+    };
+    this.$get = [ '$window', '$rootScope', '$bsCompiler', '$animate', '$timeout', '$sce', 'dimensions', function($window, $rootScope, $bsCompiler, $animate, $timeout, $sce, dimensions) {
+      var forEach = angular.forEach;
+      var requestAnimationFrame = $window.requestAnimationFrame || $window.setTimeout;
+      var bodyElement = angular.element($window.document.body);
+      var backdropCount = 0;
+      var dialogBaseZindex = 1050;
+      var backdropBaseZindex = 1040;
+      function ModalFactory(config) {
+        var $modal = {};
+        var options = $modal.$options = angular.extend({}, defaults, config);
+        var promise = $modal.$promise = $bsCompiler.compile(options);
+        var scope = $modal.$scope = options.scope && options.scope.$new() || $rootScope.$new();
+        if (!options.element && !options.container) {
+          options.container = 'body';
+        }
+        $modal.$id = options.id || options.element && options.element.attr('id') || '';
+        forEach([ 'title', 'content' ], function(key) {
+          if (options[key]) scope[key] = $sce.trustAsHtml(options[key]);
+        });
+        scope.$hide = function() {
+          scope.$$postDigest(function() {
+            $modal.hide();
+          });
+        };
+        scope.$show = function() {
+          scope.$$postDigest(function() {
+            $modal.show();
+          });
+        };
+        scope.$toggle = function() {
+          scope.$$postDigest(function() {
+            $modal.toggle();
+          });
+        };
+        $modal.$isShown = scope.$isShown = false;
+        var compileData;
+        var modalElement;
+        var modalScope;
+        var backdropElement = angular.element('<div class="' + options.prefixClass + '-backdrop"/>');
+        backdropElement.css({
+          position: 'fixed',
+          top: '0px',
+          left: '0px',
+          bottom: '0px',
+          right: '0px'
+        });
+        promise.then(function(data) {
+          compileData = data;
+          $modal.init();
+        });
+        $modal.init = function() {
+          if (options.show) {
+            scope.$$postDigest(function() {
+              $modal.show();
+            });
+          }
+        };
+        $modal.destroy = function() {
+          destroyModalElement();
+          if (backdropElement) {
+            backdropElement.remove();
+            backdropElement = null;
+          }
+          scope.$destroy();
+        };
+        $modal.show = function() {
+          if ($modal.$isShown) return;
+          var parent;
+          var after;
+          if (angular.isElement(options.container)) {
+            parent = options.container;
+            after = options.container[0].lastChild ? angular.element(options.container[0].lastChild) : null;
+          } else {
+            if (options.container) {
+              parent = findElement(options.container);
+              after = parent[0] && parent[0].lastChild ? angular.element(parent[0].lastChild) : null;
+            } else {
+              parent = null;
+              after = options.element;
+            }
+          }
+          if (modalElement) destroyModalElement();
+          modalScope = $modal.$scope.$new();
+          modalElement = $modal.$element = compileData.link(modalScope, function(clonedElement, scope) {});
+          if (options.backdrop) {
+            modalElement.css({
+              'z-index': dialogBaseZindex + backdropCount * 20
+            });
+            backdropElement.css({
+              'z-index': backdropBaseZindex + backdropCount * 20
+            });
+            backdropCount++;
+          }
+          if (scope.$emit(options.prefixEvent + '.show.before', $modal).defaultPrevented) {
+            return;
+          }
+          modalElement.css({
+            display: 'block'
+          }).addClass(options.placement);
+          if (options.customClass) {
+            modalElement.addClass(options.customClass);
+          }
+          if (options.animation) {
+            if (options.backdrop) {
+              backdropElement.addClass(options.backdropAnimation);
+            }
+            modalElement.addClass(options.animation);
+          }
+          if (options.backdrop) {
+            $animate.enter(backdropElement, bodyElement, null);
+          }
+          if (angular.version.minor <= 2) {
+            $animate.enter(modalElement, parent, after, enterAnimateCallback);
+          } else {
+            $animate.enter(modalElement, parent, after).then(enterAnimateCallback);
+          }
+          $modal.$isShown = scope.$isShown = true;
+          safeDigest(scope);
+          var el = modalElement[0];
+          requestAnimationFrame(function() {
+            el.focus();
+          });
+          bodyElement.addClass(options.prefixClass + '-open');
+          if (options.animation) {
+            bodyElement.addClass(options.prefixClass + '-with-' + options.animation);
+          }
+          bindBackdropEvents();
+          bindKeyboardEvents();
+        };
+        function enterAnimateCallback() {
+          scope.$emit(options.prefixEvent + '.show', $modal);
+        }
+        $modal.hide = function() {
+          if (!$modal.$isShown) return;
+          if (options.backdrop) {
+            backdropCount--;
+          }
+          if (scope.$emit(options.prefixEvent + '.hide.before', $modal).defaultPrevented) {
+            return;
+          }
+          if (angular.version.minor <= 2) {
+            $animate.leave(modalElement, leaveAnimateCallback);
+          } else {
+            $animate.leave(modalElement).then(leaveAnimateCallback);
+          }
+          if (options.backdrop) {
+            $animate.leave(backdropElement);
+          }
+          $modal.$isShown = scope.$isShown = false;
+          safeDigest(scope);
+          unbindBackdropEvents();
+          unbindKeyboardEvents();
+        };
+        function leaveAnimateCallback() {
+          scope.$emit(options.prefixEvent + '.hide', $modal);
+          bodyElement.removeClass(options.prefixClass + '-open');
+          if (options.animation) {
+            bodyElement.removeClass(options.prefixClass + '-with-' + options.animation);
+          }
+        }
+        $modal.toggle = function() {
+          if ($modal.$isShown) {
+            $modal.hide();
+          } else {
+            $modal.show();
+          }
+        };
+        $modal.focus = function() {
+          modalElement[0].focus();
+        };
+        $modal.$onKeyUp = function(evt) {
+          if (evt.which === 27 && $modal.$isShown) {
+            $modal.hide();
+            evt.stopPropagation();
+          }
+        };
+        function bindBackdropEvents() {
+          if (options.backdrop) {
+            modalElement.on('click', hideOnBackdropClick);
+            backdropElement.on('click', hideOnBackdropClick);
+            backdropElement.on('wheel', preventEventDefault);
+          }
+        }
+        function unbindBackdropEvents() {
+          if (options.backdrop) {
+            modalElement.off('click', hideOnBackdropClick);
+            backdropElement.off('click', hideOnBackdropClick);
+            backdropElement.off('wheel', preventEventDefault);
+          }
+        }
+        function bindKeyboardEvents() {
+          if (options.keyboard) {
+            modalElement.on('keyup', $modal.$onKeyUp);
+          }
+        }
+        function unbindKeyboardEvents() {
+          if (options.keyboard) {
+            modalElement.off('keyup', $modal.$onKeyUp);
+          }
+        }
+        function hideOnBackdropClick(evt) {
+          if (evt.target !== evt.currentTarget) return;
+          if (options.backdrop === 'static') {
+            $modal.focus();
+          } else {
+            $modal.hide();
+          }
+        }
+        function preventEventDefault(evt) {
+          evt.preventDefault();
+        }
+        function destroyModalElement() {
+          if ($modal.$isShown && modalElement !== null) {
+            unbindBackdropEvents();
+            unbindKeyboardEvents();
+          }
+          if (modalScope) {
+            modalScope.$destroy();
+            modalScope = null;
+          }
+          if (modalElement) {
+            modalElement.remove();
+            modalElement = $modal.$element = null;
+          }
+        }
+        return $modal;
+      }
+      function safeDigest(scope) {
+        scope.$$phase || scope.$root && scope.$root.$$phase || scope.$digest();
+      }
+      function findElement(query, element) {
+        return angular.element((element || document).querySelectorAll(query));
+      }
+      return ModalFactory;
+    } ];
+  }).directive('bsModal', [ '$window', '$sce', '$modal', function($window, $sce, $modal) {
+    return {
+      restrict: 'EAC',
+      scope: true,
+      link: function postLink(scope, element, attr, transclusion) {
+        var options = {
+          scope: scope,
+          element: element,
+          show: false
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'contentTemplate', 'placement', 'backdrop', 'keyboard', 'html', 'container', 'animation', 'backdropAnimation', 'id', 'prefixEvent', 'prefixClass', 'customClass', 'modalClass' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        if (options.modalClass) {
+          options.customClass = options.modalClass;
+        }
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'backdrop', 'keyboard', 'html', 'container' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+        });
+        angular.forEach([ 'title', 'content' ], function(key) {
+          if (attr[key]) {
+            attr.$observe(key, function(newValue, oldValue) {
+              scope[key] = $sce.trustAsHtml(newValue);
+            });
+          }
+        });
+        if (attr.bsModal) {
+          scope.$watch(attr.bsModal, function(newValue, oldValue) {
+            if (angular.isObject(newValue)) {
+              angular.extend(scope, newValue);
+            } else {
+              scope.content = newValue;
+            }
+          }, true);
+        }
+        var modal = $modal(options);
+        element.on(attr.trigger || 'click', modal.toggle);
+        scope.$on('$destroy', function() {
+          if (modal) modal.destroy();
+          options = null;
+          modal = null;
+        });
+      }
+    };
+  } ]);
+  if (angular.version.minor < 3 && angular.version.dot < 14) {
+    angular.module('ng').factory('$$rAF', [ '$window', '$timeout', function($window, $timeout) {
+      var requestAnimationFrame = $window.requestAnimationFrame || $window.webkitRequestAnimationFrame || $window.mozRequestAnimationFrame;
+      var cancelAnimationFrame = $window.cancelAnimationFrame || $window.webkitCancelAnimationFrame || $window.mozCancelAnimationFrame || $window.webkitCancelRequestAnimationFrame;
+      var rafSupported = !!requestAnimationFrame;
+      var raf = rafSupported ? function(fn) {
+        var id = requestAnimationFrame(fn);
+        return function() {
+          cancelAnimationFrame(id);
+        };
+      } : function(fn) {
+        var timer = $timeout(fn, 16.66, false);
+        return function() {
+          $timeout.cancel(timer);
+        };
+      };
+      raf.supported = rafSupported;
+      return raf;
+    } ]);
+  }
+  angular.module('mgcrea.ngStrap.helpers.parseOptions', []).provider('$parseOptions', function() {
+    var defaults = this.defaults = {
+      regexp: /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+(.*?)(?:\s+track\s+by\s+(.*?))?$/
+    };
+    this.$get = [ '$parse', '$q', function($parse, $q) {
+      function ParseOptionsFactory(attr, config) {
+        var $parseOptions = {};
+        var options = angular.extend({}, defaults, config);
+        $parseOptions.$values = [];
+        var match;
+        var displayFn;
+        var valueName;
+        var keyName;
+        var groupByFn;
+        var valueFn;
+        var valuesFn;
+        $parseOptions.init = function() {
+          $parseOptions.$match = match = attr.match(options.regexp);
+          displayFn = $parse(match[2] || match[1]);
+          valueName = match[4] || match[6];
+          keyName = match[5];
+          groupByFn = $parse(match[3] || '');
+          valueFn = $parse(match[2] ? match[1] : valueName);
+          valuesFn = $parse(match[7]);
+        };
+        $parseOptions.valuesFn = function(scope, controller) {
+          return $q.when(valuesFn(scope, controller)).then(function(values) {
+            if (!angular.isArray(values)) {
+              values = [];
+            }
+            $parseOptions.$values = values.length ? parseValues(values, scope) : [];
+            return $parseOptions.$values;
+          });
+        };
+        $parseOptions.displayValue = function(modelValue) {
+          var scope = {};
+          scope[valueName] = modelValue;
+          return displayFn(scope);
+        };
+        function parseValues(values, scope) {
+          return values.map(function(match, index) {
+            var locals = {};
+            var label;
+            var value;
+            locals[valueName] = match;
+            label = displayFn(scope, locals);
+            value = valueFn(scope, locals);
+            return {
+              label: label,
+              value: value,
+              index: index
+            };
+          });
+        }
+        $parseOptions.init();
+        return $parseOptions;
+      }
+      return ParseOptionsFactory;
+    } ];
+  });
+  angular.module('mgcrea.ngStrap.helpers.dimensions', []).factory('dimensions', function() {
+    var fn = {};
+    var nodeName = fn.nodeName = function(element, name) {
+      return element.nodeName && element.nodeName.toLowerCase() === name.toLowerCase();
+    };
+    fn.css = function(element, prop, extra) {
+      var value;
+      if (element.currentStyle) {
+        value = element.currentStyle[prop];
+      } else if (window.getComputedStyle) {
+        value = window.getComputedStyle(element)[prop];
+      } else {
+        value = element.style[prop];
+      }
+      return extra === true ? parseFloat(value) || 0 : value;
+    };
+    fn.offset = function(element) {
+      var boxRect = element.getBoundingClientRect();
+      var docElement = element.ownerDocument;
+      return {
+        width: boxRect.width || element.offsetWidth,
+        height: boxRect.height || element.offsetHeight,
+        top: boxRect.top + (window.pageYOffset || docElement.documentElement.scrollTop) - (docElement.documentElement.clientTop || 0),
+        left: boxRect.left + (window.pageXOffset || docElement.documentElement.scrollLeft) - (docElement.documentElement.clientLeft || 0)
+      };
+    };
+    fn.setOffset = function(element, options, i) {
+      var curPosition;
+      var curLeft;
+      var curCSSTop;
+      var curTop;
+      var curOffset;
+      var curCSSLeft;
+      var calculatePosition;
+      var position = fn.css(element, 'position');
+      var curElem = angular.element(element);
+      var props = {};
+      if (position === 'static') {
+        element.style.position = 'relative';
+      }
+      curOffset = fn.offset(element);
+      curCSSTop = fn.css(element, 'top');
+      curCSSLeft = fn.css(element, 'left');
+      calculatePosition = (position === 'absolute' || position === 'fixed') && (curCSSTop + curCSSLeft).indexOf('auto') > -1;
+      if (calculatePosition) {
+        curPosition = fn.position(element);
+        curTop = curPosition.top;
+        curLeft = curPosition.left;
+      } else {
+        curTop = parseFloat(curCSSTop) || 0;
+        curLeft = parseFloat(curCSSLeft) || 0;
+      }
+      if (angular.isFunction(options)) {
+        options = options.call(element, i, curOffset);
+      }
+      if (options.top !== null) {
+        props.top = options.top - curOffset.top + curTop;
+      }
+      if (options.left !== null) {
+        props.left = options.left - curOffset.left + curLeft;
+      }
+      if ('using' in options) {
+        options.using.call(curElem, props);
+      } else {
+        curElem.css({
+          top: props.top + 'px',
+          left: props.left + 'px'
+        });
+      }
+    };
+    fn.position = function(element) {
+      var offsetParentRect = {
+        top: 0,
+        left: 0
+      };
+      var offsetParentEl;
+      var offset;
+      if (fn.css(element, 'position') === 'fixed') {
+        offset = element.getBoundingClientRect();
+      } else {
+        offsetParentEl = offsetParentElement(element);
+        offset = fn.offset(element);
+        if (!nodeName(offsetParentEl, 'html')) {
+          offsetParentRect = fn.offset(offsetParentEl);
+        }
+        offsetParentRect.top += fn.css(offsetParentEl, 'borderTopWidth', true);
+        offsetParentRect.left += fn.css(offsetParentEl, 'borderLeftWidth', true);
+      }
+      return {
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        top: offset.top - offsetParentRect.top - fn.css(element, 'marginTop', true),
+        left: offset.left - offsetParentRect.left - fn.css(element, 'marginLeft', true)
+      };
+    };
+    function offsetParentElement(element) {
+      var docElement = element.ownerDocument;
+      var offsetParent = element.offsetParent || docElement;
+      if (nodeName(offsetParent, '#document')) return docElement.documentElement;
+      while (offsetParent && !nodeName(offsetParent, 'html') && fn.css(offsetParent, 'position') === 'static') {
+        offsetParent = offsetParent.offsetParent;
+      }
+      return offsetParent || docElement.documentElement;
+    }
+    fn.height = function(element, outer) {
+      var value = element.offsetHeight;
+      if (outer) {
+        value += fn.css(element, 'marginTop', true) + fn.css(element, 'marginBottom', true);
+      } else {
+        value -= fn.css(element, 'paddingTop', true) + fn.css(element, 'paddingBottom', true) + fn.css(element, 'borderTopWidth', true) + fn.css(element, 'borderBottomWidth', true);
+      }
+      return value;
+    };
+    fn.width = function(element, outer) {
+      var value = element.offsetWidth;
+      if (outer) {
+        value += fn.css(element, 'marginLeft', true) + fn.css(element, 'marginRight', true);
+      } else {
+        value -= fn.css(element, 'paddingLeft', true) + fn.css(element, 'paddingRight', true) + fn.css(element, 'borderLeftWidth', true) + fn.css(element, 'borderRightWidth', true);
+      }
+      return value;
+    };
+    return fn;
+  });
+  angular.module('mgcrea.ngStrap.helpers.debounce', []).factory('debounce', [ '$timeout', function($timeout) {
+    return function(func, wait, immediate) {
+      var timeout = null;
+      return function() {
+        var context = this;
+        var args = arguments;
+        var callNow = immediate && !timeout;
+        if (timeout) {
+          $timeout.cancel(timeout);
+        }
+        timeout = $timeout(function later() {
+          timeout = null;
+          if (!immediate) {
+            func.apply(context, args);
+          }
+        }, wait, false);
+        if (callNow) {
+          func.apply(context, args);
+        }
+        return timeout;
+      };
+    };
+  } ]).factory('throttle', [ '$timeout', function($timeout) {
+    return function(func, wait, options) {
+      var timeout = null;
+      if (!options) options = {};
+      return function() {
+        var context = this;
+        var args = arguments;
+        if (!timeout) {
+          if (options.leading !== false) {
+            func.apply(context, args);
+          }
+          timeout = $timeout(function later() {
+            timeout = null;
+            if (options.trailing !== false) {
+              func.apply(context, args);
+            }
+          }, wait, false);
+        }
+      };
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.helpers.dateParser', []).provider('$dateParser', [ '$localeProvider', function($localeProvider) {
+    function ParseDate() {
+      this.year = 1970;
+      this.month = 0;
+      this.day = 1;
+      this.hours = 0;
+      this.minutes = 0;
+      this.seconds = 0;
+      this.milliseconds = 0;
+    }
+    ParseDate.prototype.setMilliseconds = function(value) {
+      this.milliseconds = value;
+    };
+    ParseDate.prototype.setSeconds = function(value) {
+      this.seconds = value;
+    };
+    ParseDate.prototype.setMinutes = function(value) {
+      this.minutes = value;
+    };
+    ParseDate.prototype.setHours = function(value) {
+      this.hours = value;
+    };
+    ParseDate.prototype.getHours = function() {
+      return this.hours;
+    };
+    ParseDate.prototype.setDate = function(value) {
+      this.day = value;
+    };
+    ParseDate.prototype.setMonth = function(value) {
+      this.month = value;
+    };
+    ParseDate.prototype.setFullYear = function(value) {
+      this.year = value;
+    };
+    ParseDate.prototype.fromDate = function(value) {
+      this.year = value.getFullYear();
+      this.month = value.getMonth();
+      this.day = value.getDate();
+      this.hours = value.getHours();
+      this.minutes = value.getMinutes();
+      this.seconds = value.getSeconds();
+      this.milliseconds = value.getMilliseconds();
+      return this;
+    };
+    ParseDate.prototype.toDate = function() {
+      return new Date(this.year, this.month, this.day, this.hours, this.minutes, this.seconds, this.milliseconds);
+    };
+    var proto = ParseDate.prototype;
+    function noop() {}
+    function isNumeric(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+    function indexOfCaseInsensitive(array, value) {
+      var len = array.length;
+      var str = value.toString().toLowerCase();
+      for (var i = 0; i < len; i++) {
+        if (array[i].toLowerCase() === str) {
+          return i;
+        }
+      }
+      return -1;
+    }
+    var defaults = this.defaults = {
+      format: 'shortDate',
+      strict: false
+    };
+    this.$get = [ '$locale', 'dateFilter', function($locale, dateFilter) {
+      var DateParserFactory = function(config) {
+        var options = angular.extend({}, defaults, config);
+        var $dateParser = {};
+        var regExpMap = {
+          sss: '[0-9]{3}',
+          ss: '[0-5][0-9]',
+          s: options.strict ? '[1-5]?[0-9]' : '[0-9]|[0-5][0-9]',
+          mm: '[0-5][0-9]',
+          m: options.strict ? '[1-5]?[0-9]' : '[0-9]|[0-5][0-9]',
+          HH: '[01][0-9]|2[0-3]',
+          H: options.strict ? '1?[0-9]|2[0-3]' : '[01]?[0-9]|2[0-3]',
+          hh: '[0][1-9]|[1][012]',
+          h: options.strict ? '[1-9]|1[012]' : '0?[1-9]|1[012]',
+          a: 'AM|PM',
+          EEEE: $locale.DATETIME_FORMATS.DAY.join('|'),
+          EEE: $locale.DATETIME_FORMATS.SHORTDAY.join('|'),
+          dd: '0[1-9]|[12][0-9]|3[01]',
+          d: options.strict ? '[1-9]|[1-2][0-9]|3[01]' : '0?[1-9]|[1-2][0-9]|3[01]',
+          MMMM: $locale.DATETIME_FORMATS.MONTH.join('|'),
+          MMM: $locale.DATETIME_FORMATS.SHORTMONTH.join('|'),
+          MM: '0[1-9]|1[012]',
+          M: options.strict ? '[1-9]|1[012]' : '0?[1-9]|1[012]',
+          yyyy: '[1]{1}[0-9]{3}|[2]{1}[0-9]{3}',
+          yy: '[0-9]{2}',
+          y: options.strict ? '-?(0|[1-9][0-9]{0,3})' : '-?0*[0-9]{1,4}'
+        };
+        var setFnMap = {
+          sss: proto.setMilliseconds,
+          ss: proto.setSeconds,
+          s: proto.setSeconds,
+          mm: proto.setMinutes,
+          m: proto.setMinutes,
+          HH: proto.setHours,
+          H: proto.setHours,
+          hh: proto.setHours,
+          h: proto.setHours,
+          EEEE: noop,
+          EEE: noop,
+          dd: proto.setDate,
+          d: proto.setDate,
+          a: function(value) {
+            var hours = this.getHours() % 12;
+            return this.setHours(value.match(/pm/i) ? hours + 12 : hours);
+          },
+          MMMM: function(value) {
+            return this.setMonth(indexOfCaseInsensitive($locale.DATETIME_FORMATS.MONTH, value));
+          },
+          MMM: function(value) {
+            return this.setMonth(indexOfCaseInsensitive($locale.DATETIME_FORMATS.SHORTMONTH, value));
+          },
+          MM: function(value) {
+            return this.setMonth(1 * value - 1);
+          },
+          M: function(value) {
+            return this.setMonth(1 * value - 1);
+          },
+          yyyy: proto.setFullYear,
+          yy: function(value) {
+            return this.setFullYear(2e3 + 1 * value);
+          },
+          y: function(value) {
+            return 1 * value <= 50 && value.length === 2 ? this.setFullYear(2e3 + 1 * value) : this.setFullYear(1 * value);
+          }
+        };
+        var regex;
+        var setMap;
+        $dateParser.init = function() {
+          $dateParser.$format = $locale.DATETIME_FORMATS[options.format] || options.format;
+          regex = regExpForFormat($dateParser.$format);
+          setMap = setMapForFormat($dateParser.$format);
+        };
+        $dateParser.isValid = function(date) {
+          if (angular.isDate(date)) return !isNaN(date.getTime());
+          return regex.test(date);
+        };
+        $dateParser.parse = function(value, baseDate, format, timezone) {
+          if (format) format = $locale.DATETIME_FORMATS[format] || format;
+          if (angular.isDate(value)) value = dateFilter(value, format || $dateParser.$format, timezone);
+          var formatRegex = format ? regExpForFormat(format) : regex;
+          var formatSetMap = format ? setMapForFormat(format) : setMap;
+          var matches = formatRegex.exec(value);
+          if (!matches) return false;
+          var date = baseDate && !isNaN(baseDate.getTime()) ? new ParseDate().fromDate(baseDate) : new ParseDate().fromDate(new Date(1970, 0, 1, 0));
+          for (var i = 0; i < matches.length - 1; i++) {
+            if (formatSetMap[i]) formatSetMap[i].call(date, matches[i + 1]);
+          }
+          var newDate = date.toDate();
+          if (parseInt(date.day, 10) !== newDate.getDate()) {
+            return false;
+          }
+          return newDate;
+        };
+        $dateParser.getDateForAttribute = function(key, value) {
+          var date;
+          if (value === 'today') {
+            var today = new Date();
+            date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (key === 'maxDate' ? 1 : 0), 0, 0, 0, key === 'minDate' ? 0 : -1);
+          } else if (angular.isString(value) && value.match(/^".+"$/)) {
+            date = new Date(value.substr(1, value.length - 2));
+          } else if (isNumeric(value)) {
+            date = new Date(parseInt(value, 10));
+          } else if (angular.isString(value) && value.length === 0) {
+            date = key === 'minDate' ? -Infinity : +Infinity;
+          } else {
+            date = new Date(value);
+          }
+          return date;
+        };
+        $dateParser.getTimeForAttribute = function(key, value) {
+          var time;
+          if (value === 'now') {
+            time = new Date().setFullYear(1970, 0, 1);
+          } else if (angular.isString(value) && value.match(/^".+"$/)) {
+            time = new Date(value.substr(1, value.length - 2)).setFullYear(1970, 0, 1);
+          } else if (isNumeric(value)) {
+            time = new Date(parseInt(value, 10)).setFullYear(1970, 0, 1);
+          } else if (angular.isString(value) && value.length === 0) {
+            time = key === 'minTime' ? -Infinity : +Infinity;
+          } else {
+            time = $dateParser.parse(value, new Date(1970, 0, 1, 0));
+          }
+          return time;
+        };
+        $dateParser.daylightSavingAdjust = function(date) {
+          if (!date) {
+            return null;
+          }
+          date.setHours(date.getHours() > 12 ? date.getHours() + 2 : 0);
+          return date;
+        };
+        $dateParser.timezoneOffsetAdjust = function(date, timezone, undo) {
+          if (!date) {
+            return null;
+          }
+          if (timezone && timezone === 'UTC') {
+            date = new Date(date.getTime());
+            date.setMinutes(date.getMinutes() + (undo ? -1 : 1) * date.getTimezoneOffset());
+          }
+          return date;
+        };
+        function regExpForFormat(format) {
+          var re = buildDateAbstractRegex(format);
+          return buildDateParseRegex(re);
+        }
+        function buildDateAbstractRegex(format) {
+          var escapedFormat = escapeReservedSymbols(format);
+          var escapedLiteralFormat = escapedFormat.replace(/''/g, '\\\'');
+          var literalRegex = /('(?:\\'|.)*?')/;
+          var formatParts = escapedLiteralFormat.split(literalRegex);
+          var dateElements = Object.keys(regExpMap);
+          var dateRegexParts = [];
+          angular.forEach(formatParts, function(part) {
+            if (isFormatStringLiteral(part)) {
+              part = trimLiteralEscapeChars(part);
+            } else {
+              for (var i = 0; i < dateElements.length; i++) {
+                part = part.split(dateElements[i]).join('${' + i + '}');
+              }
+            }
+            dateRegexParts.push(part);
+          });
+          return dateRegexParts.join('');
+        }
+        function escapeReservedSymbols(text) {
+          return text.replace(/\\/g, '[\\\\]').replace(/-/g, '[-]').replace(/\./g, '[.]').replace(/\*/g, '[*]').replace(/\+/g, '[+]').replace(/\?/g, '[?]').replace(/\$/g, '[$]').replace(/\^/g, '[^]').replace(/\//g, '[/]').replace(/\\s/g, '[\\s]');
+        }
+        function isFormatStringLiteral(text) {
+          return /^'.*'$/.test(text);
+        }
+        function trimLiteralEscapeChars(text) {
+          return text.replace(/^'(.*)'$/, '$1');
+        }
+        function buildDateParseRegex(abstractRegex) {
+          var dateElements = Object.keys(regExpMap);
+          var re = abstractRegex;
+          for (var i = 0; i < dateElements.length; i++) {
+            re = re.split('${' + i + '}').join('(' + regExpMap[dateElements[i]] + ')');
+          }
+          return new RegExp('^' + re + '$', [ 'i' ]);
+        }
+        function setMapForFormat(format) {
+          var re = buildDateAbstractRegex(format);
+          return buildDateParseValuesMap(re);
+        }
+        function buildDateParseValuesMap(abstractRegex) {
+          var dateElements = Object.keys(regExpMap);
+          var valuesRegex = new RegExp('\\${(\\d+)}', 'g');
+          var valuesMatch;
+          var keyIndex;
+          var valueKey;
+          var valueFunction;
+          var valuesFunctionMap = [];
+          while ((valuesMatch = valuesRegex.exec(abstractRegex)) !== null) {
+            keyIndex = valuesMatch[1];
+            valueKey = dateElements[keyIndex];
+            valueFunction = setFnMap[valueKey];
+            valuesFunctionMap.push(valueFunction);
+          }
+          return valuesFunctionMap;
+        }
+        $dateParser.init();
+        return $dateParser;
+      };
+      return DateParserFactory;
+    } ];
+  } ]);
+  angular.module('mgcrea.ngStrap.helpers.dateFormatter', []).service('$dateFormatter', [ '$locale', 'dateFilter', function($locale, dateFilter) {
+    this.getDefaultLocale = function() {
+      return $locale.id;
+    };
+    this.getDatetimeFormat = function(format, lang) {
+      return $locale.DATETIME_FORMATS[format] || format;
+    };
+    this.weekdaysShort = function(lang) {
+      return $locale.DATETIME_FORMATS.SHORTDAY;
+    };
+    function splitTimeFormat(format) {
+      return /(h+)([:\.])?(m+)([:\.])?(s*)[ ]?(a?)/i.exec(format).slice(1);
+    }
+    this.hoursFormat = function(timeFormat) {
+      return splitTimeFormat(timeFormat)[0];
+    };
+    this.minutesFormat = function(timeFormat) {
+      return splitTimeFormat(timeFormat)[2];
+    };
+    this.secondsFormat = function(timeFormat) {
+      return splitTimeFormat(timeFormat)[4];
+    };
+    this.timeSeparator = function(timeFormat) {
+      return splitTimeFormat(timeFormat)[1];
+    };
+    this.showSeconds = function(timeFormat) {
+      return !!splitTimeFormat(timeFormat)[4];
+    };
+    this.showAM = function(timeFormat) {
+      return !!splitTimeFormat(timeFormat)[5];
+    };
+    this.formatDate = function(date, format, lang, timezone) {
+      return dateFilter(date, format, timezone);
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.core', []).service('$bsCompiler', bsCompilerService);
+  function bsCompilerService($q, $http, $injector, $compile, $controller, $templateCache) {
+    this.compile = function(options) {
+      if (options.template && /\.html$/.test(options.template)) {
+        console.warn('Deprecated use of `template` option to pass a file. Please use the `templateUrl` option instead.');
+        options.templateUrl = options.template;
+        options.template = '';
+      }
+      var templateUrl = options.templateUrl;
+      var template = options.template || '';
+      var controller = options.controller;
+      var controllerAs = options.controllerAs;
+      var resolve = angular.copy(options.resolve || {});
+      var locals = angular.copy(options.locals || {});
+      var transformTemplate = options.transformTemplate || angular.identity;
+      var bindToController = options.bindToController;
+      angular.forEach(resolve, function(value, key) {
+        if (angular.isString(value)) {
+          resolve[key] = $injector.get(value);
+        } else {
+          resolve[key] = $injector.invoke(value);
+        }
+      });
+      angular.extend(resolve, locals);
+      if (template) {
+        resolve.$template = $q.when(template);
+      } else if (templateUrl) {
+        resolve.$template = fetchTemplate(templateUrl);
+      } else {
+        throw new Error('Missing `template` / `templateUrl` option.');
+      }
+      if (options.contentTemplate) {
+        resolve.$template = $q.all([ resolve.$template, fetchTemplate(options.contentTemplate) ]).then(function(templates) {
+          var templateEl = angular.element(templates[0]);
+          var contentEl = findElement('[ng-bind="content"], [ng-bind="title"]', templateEl[0]).removeAttr('ng-bind').html(templates[1]);
+          if (!options.templateUrl) contentEl.next().remove();
+          return templateEl[0].outerHTML;
+        });
+      }
+      return $q.all(resolve).then(function(locals) {
+        var template = transformTemplate(locals.$template);
+        if (options.html) {
+          template = template.replace(/ng-bind="/gi, 'ng-bind-html="');
+        }
+        var element = angular.element('<div>').html(template.trim()).contents();
+        var linkFn = $compile(element);
+        return {
+          locals: locals,
+          element: element,
+          link: function link(scope) {
+            locals.$scope = scope;
+            if (controller) {
+              var invokeCtrl = $controller(controller, locals, true);
+              if (bindToController) {
+                angular.extend(invokeCtrl.instance, locals);
+              }
+              var ctrl = angular.isObject(invokeCtrl) ? invokeCtrl : invokeCtrl();
+              element.data('$ngControllerController', ctrl);
+              element.children().data('$ngControllerController', ctrl);
+              if (controllerAs) {
+                scope[controllerAs] = ctrl;
+              }
+            }
+            return linkFn.apply(null, arguments);
+          }
+        };
+      });
+    };
+    function findElement(query, element) {
+      return angular.element((element || document).querySelectorAll(query));
+    }
+    var fetchPromises = {};
+    function fetchTemplate(template) {
+      if (fetchPromises[template]) return fetchPromises[template];
+      return fetchPromises[template] = $http.get(template, {
+        cache: $templateCache
+      }).then(function(res) {
+        return res.data;
+      });
+    }
+  }
+  angular.module('mgcrea.ngStrap.dropdown', [ 'mgcrea.ngStrap.tooltip' ]).provider('$dropdown', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      prefixClass: 'dropdown',
+      prefixEvent: 'dropdown',
+      placement: 'bottom-left',
+      templateUrl: 'dropdown/dropdown.tpl.html',
+      trigger: 'click',
+      container: false,
+      keyboard: true,
+      html: false,
+      delay: 0
+    };
+    this.$get = [ '$window', '$rootScope', '$tooltip', '$timeout', function($window, $rootScope, $tooltip, $timeout) {
+      var bodyEl = angular.element($window.document.body);
+      var matchesSelector = Element.prototype.matchesSelector || Element.prototype.webkitMatchesSelector || Element.prototype.mozMatchesSelector || Element.prototype.msMatchesSelector || Element.prototype.oMatchesSelector;
+      function DropdownFactory(element, config) {
+        var $dropdown = {};
+        var options = angular.extend({}, defaults, config);
+        $dropdown.$scope = options.scope && options.scope.$new() || $rootScope.$new();
+        $dropdown = $tooltip(element, options);
+        var parentEl = element.parent();
+        $dropdown.$onKeyDown = function(evt) {
+          if (!/(38|40)/.test(evt.keyCode)) return;
+          evt.preventDefault();
+          evt.stopPropagation();
+          var items = angular.element($dropdown.$element[0].querySelectorAll('li:not(.divider) a'));
+          if (!items.length) return;
+          var index;
+          angular.forEach(items, function(el, i) {
+            if (matchesSelector && matchesSelector.call(el, ':focus')) index = i;
+          });
+          if (evt.keyCode === 38 && index > 0) index--; else if (evt.keyCode === 40 && index < items.length - 1) index++; else if (angular.isUndefined(index)) index = 0;
+          items.eq(index)[0].focus();
+        };
+        var show = $dropdown.show;
+        $dropdown.show = function() {
+          show();
+          $timeout(function() {
+            if (options.keyboard && $dropdown.$element) $dropdown.$element.on('keydown', $dropdown.$onKeyDown);
+            bodyEl.on('click', onBodyClick);
+          }, 0, false);
+          if (parentEl.hasClass('dropdown')) parentEl.addClass('open');
+        };
+        var hide = $dropdown.hide;
+        $dropdown.hide = function() {
+          if (!$dropdown.$isShown) return;
+          if (options.keyboard && $dropdown.$element) $dropdown.$element.off('keydown', $dropdown.$onKeyDown);
+          bodyEl.off('click', onBodyClick);
+          if (parentEl.hasClass('dropdown')) parentEl.removeClass('open');
+          hide();
+        };
+        var destroy = $dropdown.destroy;
+        $dropdown.destroy = function() {
+          bodyEl.off('click', onBodyClick);
+          destroy();
+        };
+        function onBodyClick(evt) {
+          if (evt.target === element[0]) return;
+          return evt.target !== element[0] && $dropdown.hide();
+        }
+        return $dropdown;
+      }
+      return DropdownFactory;
+    } ];
+  }).directive('bsDropdown', [ '$window', '$sce', '$dropdown', function($window, $sce, $dropdown) {
+    return {
+      restrict: 'EAC',
+      scope: true,
+      compile: function(tElement, tAttrs) {
+        if (!tAttrs.bsDropdown) {
+          var nextSibling = tElement[0].nextSibling;
+          while (nextSibling && nextSibling.nodeType !== 1) {
+            nextSibling = nextSibling.nextSibling;
+          }
+          if (nextSibling && nextSibling.classList.contains('dropdown-menu')) {
+            tAttrs.template = nextSibling.outerHTML;
+            tAttrs.templateUrl = undefined;
+            nextSibling.parentNode.removeChild(nextSibling);
+          }
+        }
+        return function postLink(scope, element, attr) {
+          var options = {
+            scope: scope
+          };
+          angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'container', 'delay', 'trigger', 'keyboard', 'html', 'animation', 'id', 'autoClose' ], function(key) {
+            if (angular.isDefined(tAttrs[key])) options[key] = tAttrs[key];
+          });
+          var falseValueRegExp = /^(false|0|)$/i;
+          angular.forEach([ 'html', 'container' ], function(key) {
+            if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+          });
+          if (attr.bsDropdown) {
+            scope.$watch(attr.bsDropdown, function(newValue, oldValue) {
+              scope.content = newValue;
+            }, true);
+          }
+          var dropdown = $dropdown(element, options);
+          if (attr.bsShow) {
+            scope.$watch(attr.bsShow, function(newValue, oldValue) {
+              if (!dropdown || !angular.isDefined(newValue)) return;
+              if (angular.isString(newValue)) newValue = !!newValue.match(/true|,?(dropdown),?/i);
+              if (newValue === true) {
+                dropdown.show();
+              } else {
+                dropdown.hide();
+              }
+            });
+          }
+          scope.$on('$destroy', function() {
+            if (dropdown) dropdown.destroy();
+            options = null;
+            dropdown = null;
+          });
+        };
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.datepicker', [ 'mgcrea.ngStrap.helpers.dateParser', 'mgcrea.ngStrap.helpers.dateFormatter', 'mgcrea.ngStrap.tooltip' ]).provider('$datepicker', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      prefixClass: 'datepicker',
+      placement: 'bottom-left',
+      templateUrl: 'datepicker/datepicker.tpl.html',
+      trigger: 'focus',
+      container: false,
+      keyboard: true,
+      html: false,
+      delay: 0,
+      useNative: false,
+      dateType: 'date',
+      dateFormat: 'shortDate',
+      timezone: null,
+      modelDateFormat: null,
+      dayFormat: 'dd',
+      monthFormat: 'MMM',
+      yearFormat: 'yyyy',
+      monthTitleFormat: 'MMMM yyyy',
+      yearTitleFormat: 'yyyy',
+      strictFormat: false,
+      autoclose: false,
+      minDate: -Infinity,
+      maxDate: +Infinity,
+      startView: 0,
+      minView: 0,
+      startWeek: 0,
+      daysOfWeekDisabled: '',
+      iconLeft: 'glyphicon glyphicon-chevron-left',
+      iconRight: 'glyphicon glyphicon-chevron-right'
+    };
+    this.$get = [ '$window', '$document', '$rootScope', '$sce', '$dateFormatter', 'datepickerViews', '$tooltip', '$timeout', function($window, $document, $rootScope, $sce, $dateFormatter, datepickerViews, $tooltip, $timeout) {
+      var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
+      var isTouch = 'createTouch' in $window.document && isNative;
+      if (!defaults.lang) defaults.lang = $dateFormatter.getDefaultLocale();
+      function DatepickerFactory(element, controller, config) {
+        var $datepicker = $tooltip(element, angular.extend({}, defaults, config));
+        var parentScope = config.scope;
+        var options = $datepicker.$options;
+        var scope = $datepicker.$scope;
+        if (options.startView) options.startView -= options.minView;
+        var pickerViews = datepickerViews($datepicker);
+        $datepicker.$views = pickerViews.views;
+        var viewDate = pickerViews.viewDate;
+        scope.$mode = options.startView;
+        scope.$iconLeft = options.iconLeft;
+        scope.$iconRight = options.iconRight;
+        var $picker = $datepicker.$views[scope.$mode];
+        scope.$select = function(date) {
+          $datepicker.select(date);
+        };
+        scope.$selectPane = function(value) {
+          $datepicker.$selectPane(value);
+        };
+        scope.$toggleMode = function() {
+          $datepicker.setMode((scope.$mode + 1) % $datepicker.$views.length);
+        };
+        $datepicker.update = function(date) {
+          if (angular.isDate(date) && !isNaN(date.getTime())) {
+            $datepicker.$date = date;
+            $picker.update.call($picker, date);
+          }
+          $datepicker.$build(true);
+        };
+        $datepicker.updateDisabledDates = function(dateRanges) {
+          options.disabledDateRanges = dateRanges;
+          for (var i = 0, l = scope.rows.length; i < l; i++) {
+            angular.forEach(scope.rows[i], $datepicker.$setDisabledEl);
+          }
+        };
+        $datepicker.select = function(date, keep) {
+          if (!angular.isDate(controller.$dateValue)) controller.$dateValue = new Date(date);
+          if (!scope.$mode || keep) {
+            controller.$setViewValue(angular.copy(date));
+            controller.$render();
+            if (options.autoclose && !keep) {
+              $timeout(function() {
+                $datepicker.hide(true);
+              });
+            }
+          } else {
+            angular.extend(viewDate, {
+              year: date.getFullYear(),
+              month: date.getMonth(),
+              date: date.getDate()
+            });
+            $datepicker.setMode(scope.$mode - 1);
+            $datepicker.$build();
+          }
+        };
+        $datepicker.setMode = function(mode) {
+          scope.$mode = mode;
+          $picker = $datepicker.$views[scope.$mode];
+          $datepicker.$build();
+        };
+        $datepicker.$build = function(pristine) {
+          if (pristine === true && $picker.built) return;
+          if (pristine === false && !$picker.built) return;
+          $picker.build.call($picker);
+        };
+        $datepicker.$updateSelected = function() {
+          for (var i = 0, l = scope.rows.length; i < l; i++) {
+            angular.forEach(scope.rows[i], updateSelected);
+          }
+        };
+        $datepicker.$isSelected = function(date) {
+          return $picker.isSelected(date);
+        };
+        $datepicker.$setDisabledEl = function(el) {
+          el.disabled = $picker.isDisabled(el.date);
+        };
+        $datepicker.$selectPane = function(value) {
+          var steps = $picker.steps;
+          var targetDate = new Date(Date.UTC(viewDate.year + (steps.year || 0) * value, viewDate.month + (steps.month || 0) * value, 1));
+          angular.extend(viewDate, {
+            year: targetDate.getUTCFullYear(),
+            month: targetDate.getUTCMonth(),
+            date: targetDate.getUTCDate()
+          });
+          $datepicker.$build();
+        };
+        $datepicker.$onMouseDown = function(evt) {
+          evt.preventDefault();
+          evt.stopPropagation();
+          if (isTouch) {
+            var targetEl = angular.element(evt.target);
+            if (targetEl[0].nodeName.toLowerCase() !== 'button') {
+              targetEl = targetEl.parent();
+            }
+            targetEl.triggerHandler('click');
+          }
+        };
+        $datepicker.$onKeyDown = function(evt) {
+          if (!/(38|37|39|40|13)/.test(evt.keyCode) || evt.shiftKey || evt.altKey) return;
+          evt.preventDefault();
+          evt.stopPropagation();
+          if (evt.keyCode === 13) {
+            if (!scope.$mode) {
+              $datepicker.hide(true);
+            } else {
+              scope.$apply(function() {
+                $datepicker.setMode(scope.$mode - 1);
+              });
+            }
+            return;
+          }
+          $picker.onKeyDown(evt);
+          parentScope.$digest();
+        };
+        function updateSelected(el) {
+          el.selected = $datepicker.$isSelected(el.date);
+        }
+        function focusElement() {
+          element[0].focus();
+        }
+        var _init = $datepicker.init;
+        $datepicker.init = function() {
+          if (isNative && options.useNative) {
+            element.prop('type', 'date');
+            element.css('-webkit-appearance', 'textfield');
+            return;
+          } else if (isTouch) {
+            element.prop('type', 'text');
+            element.attr('readonly', 'true');
+            element.on('click', focusElement);
+          }
+          _init();
+        };
+        var _destroy = $datepicker.destroy;
+        $datepicker.destroy = function() {
+          if (isNative && options.useNative) {
+            element.off('click', focusElement);
+          }
+          _destroy();
+        };
+        var _show = $datepicker.show;
+        $datepicker.show = function() {
+          if (!isTouch && element.attr('readonly') || element.attr('disabled')) return;
+          _show();
+          $timeout(function() {
+            if (!$datepicker.$isShown) return;
+            $datepicker.$element.on(isTouch ? 'touchstart' : 'mousedown', $datepicker.$onMouseDown);
+            if (options.keyboard) {
+              element.on('keydown', $datepicker.$onKeyDown);
+            }
+          }, 0, false);
+        };
+        var _hide = $datepicker.hide;
+        $datepicker.hide = function(blur) {
+          if (!$datepicker.$isShown) return;
+          $datepicker.$element.off(isTouch ? 'touchstart' : 'mousedown', $datepicker.$onMouseDown);
+          if (options.keyboard) {
+            element.off('keydown', $datepicker.$onKeyDown);
+          }
+          _hide(blur);
+        };
+        return $datepicker;
+      }
+      DatepickerFactory.defaults = defaults;
+      return DatepickerFactory;
+    } ];
+  }).directive('bsDatepicker', [ '$window', '$parse', '$q', '$dateFormatter', '$dateParser', '$datepicker', function($window, $parse, $q, $dateFormatter, $dateParser, $datepicker) {
+    var isNative = /(ip[ao]d|iphone|android)/gi.test($window.navigator.userAgent);
+    return {
+      restrict: 'EAC',
+      require: 'ngModel',
+      link: function postLink(scope, element, attr, controller) {
+        var options = {
+          scope: scope
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'container', 'delay', 'trigger', 'html', 'animation', 'autoclose', 'dateType', 'dateFormat', 'timezone', 'modelDateFormat', 'dayFormat', 'strictFormat', 'startWeek', 'startDate', 'useNative', 'lang', 'startView', 'minView', 'iconLeft', 'iconRight', 'daysOfWeekDisabled', 'id', 'prefixClass', 'prefixEvent' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'html', 'container', 'autoclose', 'useNative' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) {
+            options[key] = false;
+          }
+        });
+        var datepicker = $datepicker(element, controller, options);
+        options = datepicker.$options;
+        if (isNative && options.useNative) options.dateFormat = 'yyyy-MM-dd';
+        var lang = options.lang;
+        var formatDate = function(date, format) {
+          return $dateFormatter.formatDate(date, format, lang);
+        };
+        var dateParser = $dateParser({
+          format: options.dateFormat,
+          lang: lang,
+          strict: options.strictFormat
+        });
+        if (attr.bsShow) {
+          scope.$watch(attr.bsShow, function(newValue, oldValue) {
+            if (!datepicker || !angular.isDefined(newValue)) return;
+            if (angular.isString(newValue)) newValue = !!newValue.match(/true|,?(datepicker),?/i);
+            if (newValue === true) {
+              datepicker.show();
+            } else {
+              datepicker.hide();
+            }
+          });
+        }
+        angular.forEach([ 'minDate', 'maxDate' ], function(key) {
+          if (angular.isDefined(attr[key])) {
+            attr.$observe(key, function(newValue) {
+              datepicker.$options[key] = dateParser.getDateForAttribute(key, newValue);
+              if (!isNaN(datepicker.$options[key])) datepicker.$build(false);
+              validateAgainstMinMaxDate(controller.$dateValue);
+            });
+          }
+        });
+        if (angular.isDefined(attr.dateFormat)) {
+          attr.$observe('dateFormat', function(newValue) {
+            datepicker.$options.dateFormat = newValue;
+          });
+        }
+        scope.$watch(attr.ngModel, function(newValue, oldValue) {
+          datepicker.update(controller.$dateValue);
+        }, true);
+        function normalizeDateRanges(ranges) {
+          if (!ranges || !ranges.length) return null;
+          return ranges;
+        }
+        if (angular.isDefined(attr.disabledDates)) {
+          scope.$watch(attr.disabledDates, function(disabledRanges, previousValue) {
+            disabledRanges = normalizeDateRanges(disabledRanges);
+            previousValue = normalizeDateRanges(previousValue);
+            if (disabledRanges) {
+              datepicker.updateDisabledDates(disabledRanges);
+            }
+          });
+        }
+        function validateAgainstMinMaxDate(parsedDate) {
+          if (!angular.isDate(parsedDate)) return;
+          var isMinValid = isNaN(datepicker.$options.minDate) || parsedDate.getTime() >= datepicker.$options.minDate;
+          var isMaxValid = isNaN(datepicker.$options.maxDate) || parsedDate.getTime() <= datepicker.$options.maxDate;
+          var isValid = isMinValid && isMaxValid;
+          controller.$setValidity('date', isValid);
+          controller.$setValidity('min', isMinValid);
+          controller.$setValidity('max', isMaxValid);
+          if (isValid) controller.$dateValue = parsedDate;
+        }
+        controller.$parsers.unshift(function(viewValue) {
+          var date;
+          if (!viewValue) {
+            controller.$setValidity('date', true);
+            return null;
+          }
+          var parsedDate = dateParser.parse(viewValue, controller.$dateValue);
+          if (!parsedDate || isNaN(parsedDate.getTime())) {
+            controller.$setValidity('date', false);
+            return;
+          }
+          validateAgainstMinMaxDate(parsedDate);
+          if (options.dateType === 'string') {
+            date = dateParser.timezoneOffsetAdjust(parsedDate, options.timezone, true);
+            return formatDate(date, options.modelDateFormat || options.dateFormat);
+          }
+          date = dateParser.timezoneOffsetAdjust(controller.$dateValue, options.timezone, true);
+          if (options.dateType === 'number') {
+            return date.getTime();
+          } else if (options.dateType === 'unix') {
+            return date.getTime() / 1e3;
+          } else if (options.dateType === 'iso') {
+            return date.toISOString();
+          }
+          return new Date(date);
+        });
+        controller.$formatters.push(function(modelValue) {
+          var date;
+          if (angular.isUndefined(modelValue) || modelValue === null) {
+            date = NaN;
+          } else if (angular.isDate(modelValue)) {
+            date = modelValue;
+          } else if (options.dateType === 'string') {
+            date = dateParser.parse(modelValue, null, options.modelDateFormat);
+          } else if (options.dateType === 'unix') {
+            date = new Date(modelValue * 1e3);
+          } else {
+            date = new Date(modelValue);
+          }
+          controller.$dateValue = dateParser.timezoneOffsetAdjust(date, options.timezone);
+          return getDateFormattedString();
+        });
+        controller.$render = function() {
+          element.val(getDateFormattedString());
+        };
+        function getDateFormattedString() {
+          return !controller.$dateValue || isNaN(controller.$dateValue.getTime()) ? '' : formatDate(controller.$dateValue, options.dateFormat);
+        }
+        scope.$on('$destroy', function() {
+          if (datepicker) datepicker.destroy();
+          options = null;
+          datepicker = null;
+        });
+      }
+    };
+  } ]).provider('datepickerViews', function() {
+    function split(arr, size) {
+      var arrays = [];
+      while (arr.length > 0) {
+        arrays.push(arr.splice(0, size));
+      }
+      return arrays;
+    }
+    function mod(n, m) {
+      return (n % m + m) % m;
+    }
+    this.$get = [ '$dateFormatter', '$dateParser', '$sce', function($dateFormatter, $dateParser, $sce) {
+      return function(picker) {
+        var scope = picker.$scope;
+        var options = picker.$options;
+        var lang = options.lang;
+        var formatDate = function(date, format) {
+          return $dateFormatter.formatDate(date, format, lang);
+        };
+        var dateParser = $dateParser({
+          format: options.dateFormat,
+          lang: lang,
+          strict: options.strictFormat
+        });
+        var weekDaysMin = $dateFormatter.weekdaysShort(lang);
+        var weekDaysLabels = weekDaysMin.slice(options.startWeek).concat(weekDaysMin.slice(0, options.startWeek));
+        var weekDaysLabelsHtml = $sce.trustAsHtml('<th class="dow text-center">' + weekDaysLabels.join('</th><th class="dow text-center">') + '</th>');
+        var startDate = picker.$date || (options.startDate ? dateParser.getDateForAttribute('startDate', options.startDate) : new Date());
+        var viewDate = {
+          year: startDate.getFullYear(),
+          month: startDate.getMonth(),
+          date: startDate.getDate()
+        };
+        var views = [ {
+          format: options.dayFormat,
+          split: 7,
+          steps: {
+            month: 1
+          },
+          update: function(date, force) {
+            if (!this.built || force || date.getFullYear() !== viewDate.year || date.getMonth() !== viewDate.month) {
+              angular.extend(viewDate, {
+                year: picker.$date.getFullYear(),
+                month: picker.$date.getMonth(),
+                date: picker.$date.getDate()
+              });
+              picker.$build();
+            } else if (date.getDate() !== viewDate.date || date.getDate() === 1) {
+              viewDate.date = picker.$date.getDate();
+              picker.$updateSelected();
+            }
+          },
+          build: function() {
+            var firstDayOfMonth = new Date(viewDate.year, viewDate.month, 1);
+            var firstDayOfMonthOffset = firstDayOfMonth.getTimezoneOffset();
+            var firstDate = new Date(+firstDayOfMonth - mod(firstDayOfMonth.getDay() - options.startWeek, 7) * 864e5);
+            var firstDateOffset = firstDate.getTimezoneOffset();
+            var today = dateParser.timezoneOffsetAdjust(new Date(), options.timezone).toDateString();
+            if (firstDateOffset !== firstDayOfMonthOffset) firstDate = new Date(+firstDate + (firstDateOffset - firstDayOfMonthOffset) * 6e4);
+            var days = [];
+            var day;
+            for (var i = 0; i < 42; i++) {
+              day = dateParser.daylightSavingAdjust(new Date(firstDate.getFullYear(), firstDate.getMonth(), firstDate.getDate() + i));
+              days.push({
+                date: day,
+                isToday: day.toDateString() === today,
+                label: formatDate(day, this.format),
+                selected: picker.$date && this.isSelected(day),
+                muted: day.getMonth() !== viewDate.month,
+                disabled: this.isDisabled(day)
+              });
+            }
+            scope.title = formatDate(firstDayOfMonth, options.monthTitleFormat);
+            scope.showLabels = true;
+            scope.labels = weekDaysLabelsHtml;
+            scope.rows = split(days, this.split);
+            this.built = true;
+          },
+          isSelected: function(date) {
+            return picker.$date && date.getFullYear() === picker.$date.getFullYear() && date.getMonth() === picker.$date.getMonth() && date.getDate() === picker.$date.getDate();
+          },
+          isDisabled: function(date) {
+            var time = date.getTime();
+            if (time < options.minDate || time > options.maxDate) return true;
+            if (options.daysOfWeekDisabled.indexOf(date.getDay()) !== -1) return true;
+            if (options.disabledDateRanges) {
+              for (var i = 0; i < options.disabledDateRanges.length; i++) {
+                if (time >= options.disabledDateRanges[i].start && time <= options.disabledDateRanges[i].end) {
+                  return true;
+                }
+              }
+            }
+            return false;
+          },
+          onKeyDown: function(evt) {
+            if (!picker.$date) {
+              return;
+            }
+            var actualTime = picker.$date.getTime();
+            var newDate;
+            if (evt.keyCode === 37) newDate = new Date(actualTime - 1 * 864e5); else if (evt.keyCode === 38) newDate = new Date(actualTime - 7 * 864e5); else if (evt.keyCode === 39) newDate = new Date(actualTime + 1 * 864e5); else if (evt.keyCode === 40) newDate = new Date(actualTime + 7 * 864e5);
+            if (!this.isDisabled(newDate)) picker.select(newDate, true);
+          }
+        }, {
+          name: 'month',
+          format: options.monthFormat,
+          split: 4,
+          steps: {
+            year: 1
+          },
+          update: function(date, force) {
+            if (!this.built || date.getFullYear() !== viewDate.year) {
+              angular.extend(viewDate, {
+                year: picker.$date.getFullYear(),
+                month: picker.$date.getMonth(),
+                date: picker.$date.getDate()
+              });
+              picker.$build();
+            } else if (date.getMonth() !== viewDate.month) {
+              angular.extend(viewDate, {
+                month: picker.$date.getMonth(),
+                date: picker.$date.getDate()
+              });
+              picker.$updateSelected();
+            }
+          },
+          build: function() {
+            var months = [];
+            var month;
+            for (var i = 0; i < 12; i++) {
+              month = new Date(viewDate.year, i, 1);
+              months.push({
+                date: month,
+                label: formatDate(month, this.format),
+                selected: picker.$isSelected(month),
+                disabled: this.isDisabled(month)
+              });
+            }
+            scope.title = formatDate(month, options.yearTitleFormat);
+            scope.showLabels = false;
+            scope.rows = split(months, this.split);
+            this.built = true;
+          },
+          isSelected: function(date) {
+            return picker.$date && date.getFullYear() === picker.$date.getFullYear() && date.getMonth() === picker.$date.getMonth();
+          },
+          isDisabled: function(date) {
+            var lastDate = +new Date(date.getFullYear(), date.getMonth() + 1, 0);
+            return lastDate < options.minDate || date.getTime() > options.maxDate;
+          },
+          onKeyDown: function(evt) {
+            if (!picker.$date) {
+              return;
+            }
+            var actualMonth = picker.$date.getMonth();
+            var newDate = new Date(picker.$date);
+            if (evt.keyCode === 37) newDate.setMonth(actualMonth - 1); else if (evt.keyCode === 38) newDate.setMonth(actualMonth - 4); else if (evt.keyCode === 39) newDate.setMonth(actualMonth + 1); else if (evt.keyCode === 40) newDate.setMonth(actualMonth + 4);
+            if (!this.isDisabled(newDate)) picker.select(newDate, true);
+          }
+        }, {
+          name: 'year',
+          format: options.yearFormat,
+          split: 4,
+          steps: {
+            year: 12
+          },
+          update: function(date, force) {
+            if (!this.built || force || parseInt(date.getFullYear() / 20, 10) !== parseInt(viewDate.year / 20, 10)) {
+              angular.extend(viewDate, {
+                year: picker.$date.getFullYear(),
+                month: picker.$date.getMonth(),
+                date: picker.$date.getDate()
+              });
+              picker.$build();
+            } else if (date.getFullYear() !== viewDate.year) {
+              angular.extend(viewDate, {
+                year: picker.$date.getFullYear(),
+                month: picker.$date.getMonth(),
+                date: picker.$date.getDate()
+              });
+              picker.$updateSelected();
+            }
+          },
+          build: function() {
+            var firstYear = viewDate.year - viewDate.year % (this.split * 3);
+            var years = [];
+            var year;
+            for (var i = 0; i < 12; i++) {
+              year = new Date(firstYear + i, 0, 1);
+              years.push({
+                date: year,
+                label: formatDate(year, this.format),
+                selected: picker.$isSelected(year),
+                disabled: this.isDisabled(year)
+              });
+            }
+            scope.title = years[0].label + '-' + years[years.length - 1].label;
+            scope.showLabels = false;
+            scope.rows = split(years, this.split);
+            this.built = true;
+          },
+          isSelected: function(date) {
+            return picker.$date && date.getFullYear() === picker.$date.getFullYear();
+          },
+          isDisabled: function(date) {
+            var lastDate = +new Date(date.getFullYear() + 1, 0, 0);
+            return lastDate < options.minDate || date.getTime() > options.maxDate;
+          },
+          onKeyDown: function(evt) {
+            if (!picker.$date) {
+              return;
+            }
+            var actualYear = picker.$date.getFullYear();
+            var newDate = new Date(picker.$date);
+            if (evt.keyCode === 37) newDate.setYear(actualYear - 1); else if (evt.keyCode === 38) newDate.setYear(actualYear - 4); else if (evt.keyCode === 39) newDate.setYear(actualYear + 1); else if (evt.keyCode === 40) newDate.setYear(actualYear + 4);
+            if (!this.isDisabled(newDate)) picker.select(newDate, true);
+          }
+        } ];
+        return {
+          views: options.minView ? Array.prototype.slice.call(views, options.minView) : views,
+          viewDate: viewDate
+        };
+      };
+    } ];
+  });
+  angular.module('mgcrea.ngStrap.collapse', []).provider('$collapse', function() {
+    var defaults = this.defaults = {
+      animation: 'am-collapse',
+      disallowToggle: false,
+      activeClass: 'in',
+      startCollapsed: false,
+      allowMultiple: false
+    };
+    var controller = this.controller = function($scope, $element, $attrs) {
+      var self = this;
+      self.$options = angular.copy(defaults);
+      angular.forEach([ 'animation', 'disallowToggle', 'activeClass', 'startCollapsed', 'allowMultiple' ], function(key) {
+        if (angular.isDefined($attrs[key])) self.$options[key] = $attrs[key];
+      });
+      var falseValueRegExp = /^(false|0|)$/i;
+      angular.forEach([ 'disallowToggle', 'startCollapsed', 'allowMultiple' ], function(key) {
+        if (angular.isDefined($attrs[key]) && falseValueRegExp.test($attrs[key])) {
+          self.$options[key] = false;
+        }
+      });
+      self.$toggles = [];
+      self.$targets = [];
+      self.$viewChangeListeners = [];
+      self.$registerToggle = function(element) {
+        self.$toggles.push(element);
+      };
+      self.$registerTarget = function(element) {
+        self.$targets.push(element);
+      };
+      self.$unregisterToggle = function(element) {
+        var index = self.$toggles.indexOf(element);
+        self.$toggles.splice(index, 1);
+      };
+      self.$unregisterTarget = function(element) {
+        var index = self.$targets.indexOf(element);
+        self.$targets.splice(index, 1);
+        if (self.$options.allowMultiple) {
+          deactivateItem(element);
+        }
+        fixActiveItemIndexes(index);
+        self.$viewChangeListeners.forEach(function(fn) {
+          fn();
+        });
+      };
+      self.$targets.$active = !self.$options.startCollapsed ? [ 0 ] : [];
+      self.$setActive = $scope.$setActive = function(value) {
+        if (angular.isArray(value)) {
+          self.$targets.$active = value;
+        } else if (!self.$options.disallowToggle && isActive(value)) {
+          deactivateItem(value);
+        } else {
+          activateItem(value);
+        }
+        self.$viewChangeListeners.forEach(function(fn) {
+          fn();
+        });
+      };
+      self.$activeIndexes = function() {
+        if (self.$options.allowMultiple) {
+          return self.$targets.$active;
+        }
+        return self.$targets.$active.length === 1 ? self.$targets.$active[0] : -1;
+      };
+      function fixActiveItemIndexes(index) {
+        var activeIndexes = self.$targets.$active;
+        for (var i = 0; i < activeIndexes.length; i++) {
+          if (index < activeIndexes[i]) {
+            activeIndexes[i] = activeIndexes[i] - 1;
+          }
+          if (activeIndexes[i] === self.$targets.length) {
+            activeIndexes[i] = self.$targets.length - 1;
+          }
+        }
+      }
+      function isActive(value) {
+        var activeItems = self.$targets.$active;
+        return activeItems.indexOf(value) === -1 ? false : true;
+      }
+      function deactivateItem(value) {
+        var index = self.$targets.$active.indexOf(value);
+        if (index !== -1) {
+          self.$targets.$active.splice(index, 1);
+        }
+      }
+      function activateItem(value) {
+        if (!self.$options.allowMultiple) {
+          self.$targets.$active.splice(0, 1);
+        }
+        if (self.$targets.$active.indexOf(value) === -1) {
+          self.$targets.$active.push(value);
+        }
+      }
+    };
+    this.$get = function() {
+      var $collapse = {};
+      $collapse.defaults = defaults;
+      $collapse.controller = controller;
+      return $collapse;
+    };
+  }).directive('bsCollapse', [ '$window', '$animate', '$collapse', function($window, $animate, $collapse) {
+    return {
+      require: [ '?ngModel', 'bsCollapse' ],
+      controller: [ '$scope', '$element', '$attrs', $collapse.controller ],
+      link: function postLink(scope, element, attrs, controllers) {
+        var ngModelCtrl = controllers[0];
+        var bsCollapseCtrl = controllers[1];
+        if (ngModelCtrl) {
+          bsCollapseCtrl.$viewChangeListeners.push(function() {
+            ngModelCtrl.$setViewValue(bsCollapseCtrl.$activeIndexes());
+          });
+          ngModelCtrl.$formatters.push(function(modelValue) {
+            if (angular.isArray(modelValue)) {
+              bsCollapseCtrl.$setActive(modelValue);
+            } else {
+              var activeIndexes = bsCollapseCtrl.$activeIndexes();
+              if (angular.isArray(activeIndexes)) {
+                if (activeIndexes.indexOf(modelValue * 1) === -1) {
+                  bsCollapseCtrl.$setActive(modelValue * 1);
+                }
+              } else if (activeIndexes !== modelValue * 1) {
+                bsCollapseCtrl.$setActive(modelValue * 1);
+              }
+            }
+            return modelValue;
+          });
+        }
+      }
+    };
+  } ]).directive('bsCollapseToggle', function() {
+    return {
+      require: [ '^?ngModel', '^bsCollapse' ],
+      link: function postLink(scope, element, attrs, controllers) {
+        var bsCollapseCtrl = controllers[1];
+        element.attr('data-toggle', 'collapse');
+        bsCollapseCtrl.$registerToggle(element);
+        scope.$on('$destroy', function() {
+          bsCollapseCtrl.$unregisterToggle(element);
+        });
+        element.on('click', function() {
+          if (!attrs.disabled) {
+            var index = attrs.bsCollapseToggle && attrs.bsCollapseToggle !== 'bs-collapse-toggle' ? attrs.bsCollapseToggle : bsCollapseCtrl.$toggles.indexOf(element);
+            bsCollapseCtrl.$setActive(index * 1);
+            scope.$apply();
+          }
+        });
+      }
+    };
+  }).directive('bsCollapseTarget', [ '$animate', function($animate) {
+    return {
+      require: [ '^?ngModel', '^bsCollapse' ],
+      link: function postLink(scope, element, attrs, controllers) {
+        var bsCollapseCtrl = controllers[1];
+        element.addClass('collapse');
+        if (bsCollapseCtrl.$options.animation) {
+          element.addClass(bsCollapseCtrl.$options.animation);
+        }
+        bsCollapseCtrl.$registerTarget(element);
+        scope.$on('$destroy', function() {
+          bsCollapseCtrl.$unregisterTarget(element);
+        });
+        function render() {
+          var index = bsCollapseCtrl.$targets.indexOf(element);
+          var active = bsCollapseCtrl.$activeIndexes();
+          var action = 'removeClass';
+          if (angular.isArray(active)) {
+            if (active.indexOf(index) !== -1) {
+              action = 'addClass';
+            }
+          } else if (index === active) {
+            action = 'addClass';
+          }
+          $animate[action](element, bsCollapseCtrl.$options.activeClass);
+        }
+        bsCollapseCtrl.$viewChangeListeners.push(function() {
+          render();
+        });
+        render();
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.button', []).provider('$button', function() {
+    var defaults = this.defaults = {
+      activeClass: 'active',
+      toggleEvent: 'click'
+    };
+    this.$get = function() {
+      return {
+        defaults: defaults
+      };
+    };
+  }).directive('bsCheckboxGroup', function() {
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      compile: function postLink(element, attr) {
+        element.attr('data-toggle', 'buttons');
+        element.removeAttr('ng-model');
+        var children = element[0].querySelectorAll('input[type="checkbox"]');
+        angular.forEach(children, function(child) {
+          var childEl = angular.element(child);
+          childEl.attr('bs-checkbox', '');
+          childEl.attr('ng-model', attr.ngModel + '.' + childEl.attr('value'));
+        });
+      }
+    };
+  }).directive('bsCheckbox', [ '$button', '$$rAF', function($button, $$rAF) {
+    var defaults = $button.defaults;
+    var constantValueRegExp = /^(true|false|\d+)$/;
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function postLink(scope, element, attr, controller) {
+        var options = defaults;
+        var isInput = element[0].nodeName === 'INPUT';
+        var activeElement = isInput ? element.parent() : element;
+        var trueValue = angular.isDefined(attr.trueValue) ? attr.trueValue : true;
+        if (constantValueRegExp.test(attr.trueValue)) {
+          trueValue = scope.$eval(attr.trueValue);
+        }
+        var falseValue = angular.isDefined(attr.falseValue) ? attr.falseValue : false;
+        if (constantValueRegExp.test(attr.falseValue)) {
+          falseValue = scope.$eval(attr.falseValue);
+        }
+        var hasExoticValues = typeof trueValue !== 'boolean' || typeof falseValue !== 'boolean';
+        if (hasExoticValues) {
+          controller.$parsers.push(function(viewValue) {
+            return viewValue ? trueValue : falseValue;
+          });
+          controller.$formatters.push(function(modelValue) {
+            return angular.equals(modelValue, trueValue);
+          });
+          scope.$watch(attr.ngModel, function(newValue, oldValue) {
+            controller.$render();
+          });
+        }
+        controller.$render = function() {
+          var isActive = angular.equals(controller.$modelValue, trueValue);
+          $$rAF(function() {
+            if (isInput) element[0].checked = isActive;
+            activeElement.toggleClass(options.activeClass, isActive);
+          });
+        };
+        element.bind(options.toggleEvent, function() {
+          scope.$apply(function() {
+            if (!isInput) {
+              controller.$setViewValue(!activeElement.hasClass('active'));
+            }
+            if (!hasExoticValues) {
+              controller.$render();
+            }
+          });
+        });
+      }
+    };
+  } ]).directive('bsRadioGroup', function() {
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      compile: function postLink(element, attr) {
+        element.attr('data-toggle', 'buttons');
+        element.removeAttr('ng-model');
+        var children = element[0].querySelectorAll('input[type="radio"]');
+        angular.forEach(children, function(child) {
+          angular.element(child).attr('bs-radio', '');
+          angular.element(child).attr('ng-model', attr.ngModel);
+        });
+      }
+    };
+  }).directive('bsRadio', [ '$button', '$$rAF', function($button, $$rAF) {
+    var defaults = $button.defaults;
+    var constantValueRegExp = /^(true|false|\d+)$/;
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function postLink(scope, element, attr, controller) {
+        var options = defaults;
+        var isInput = element[0].nodeName === 'INPUT';
+        var activeElement = isInput ? element.parent() : element;
+        var value;
+        attr.$observe('value', function(v) {
+          value = constantValueRegExp.test(v) ? scope.$eval(v) : v;
+          controller.$render();
+        });
+        controller.$render = function() {
+          var isActive = angular.equals(controller.$modelValue, value);
+          $$rAF(function() {
+            if (isInput) element[0].checked = isActive;
+            activeElement.toggleClass(options.activeClass, isActive);
+          });
+        };
+        element.bind(options.toggleEvent, function() {
+          scope.$apply(function() {
+            controller.$setViewValue(value);
+            controller.$render();
+          });
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.aside', [ 'mgcrea.ngStrap.modal' ]).provider('$aside', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade-and-slide-right',
+      prefixClass: 'aside',
+      prefixEvent: 'aside',
+      placement: 'right',
+      templateUrl: 'aside/aside.tpl.html',
+      contentTemplate: false,
+      container: false,
+      element: null,
+      backdrop: true,
+      keyboard: true,
+      html: false,
+      show: true
+    };
+    this.$get = [ '$modal', function($modal) {
+      function AsideFactory(config) {
+        var $aside = {};
+        var options = angular.extend({}, defaults, config);
+        $aside = $modal(options);
+        return $aside;
+      }
+      return AsideFactory;
+    } ];
+  }).directive('bsAside', [ '$window', '$sce', '$aside', function($window, $sce, $aside) {
+    return {
+      restrict: 'EAC',
+      scope: true,
+      link: function postLink(scope, element, attr, transclusion) {
+        var options = {
+          scope: scope,
+          element: element,
+          show: false
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'contentTemplate', 'placement', 'backdrop', 'keyboard', 'html', 'container', 'animation' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'backdrop', 'keyboard', 'html', 'container' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+        });
+        angular.forEach([ 'title', 'content' ], function(key) {
+          if (attr[key]) {
+            attr.$observe(key, function(newValue, oldValue) {
+              scope[key] = $sce.trustAsHtml(newValue);
+            });
+          }
+        });
+        if (attr.bsAside) {
+          scope.$watch(attr.bsAside, function(newValue, oldValue) {
+            if (angular.isObject(newValue)) {
+              angular.extend(scope, newValue);
+            } else {
+              scope.content = newValue;
+            }
+          }, true);
+        }
+        var aside = $aside(options);
+        element.on(attr.trigger || 'click', aside.toggle);
+        scope.$on('$destroy', function() {
+          if (aside) aside.destroy();
+          options = null;
+          aside = null;
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.alert', [ 'mgcrea.ngStrap.modal' ]).provider('$alert', function() {
+    var defaults = this.defaults = {
+      animation: 'am-fade',
+      prefixClass: 'alert',
+      prefixEvent: 'alert',
+      placement: null,
+      templateUrl: 'alert/alert.tpl.html',
+      container: false,
+      element: null,
+      backdrop: false,
+      keyboard: true,
+      show: true,
+      duration: false,
+      type: false,
+      dismissable: true
+    };
+    this.$get = [ '$modal', '$timeout', function($modal, $timeout) {
+      function AlertFactory(config) {
+        var $alert = {};
+        var options = angular.extend({}, defaults, config);
+        $alert = $modal(options);
+        $alert.$scope.dismissable = !!options.dismissable;
+        if (options.type) {
+          $alert.$scope.type = options.type;
+        }
+        var show = $alert.show;
+        if (options.duration) {
+          $alert.show = function() {
+            show();
+            $timeout(function() {
+              $alert.hide();
+            }, options.duration * 1e3);
+          };
+        }
+        return $alert;
+      }
+      return AlertFactory;
+    } ];
+  }).directive('bsAlert', [ '$window', '$sce', '$alert', function($window, $sce, $alert) {
+    return {
+      restrict: 'EAC',
+      scope: true,
+      link: function postLink(scope, element, attr, transclusion) {
+        var options = {
+          scope: scope,
+          element: element,
+          show: false
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'keyboard', 'html', 'container', 'animation', 'duration', 'dismissable' ], function(key) {
+          if (angular.isDefined(attr[key])) options[key] = attr[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'keyboard', 'html', 'container', 'dismissable' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+        });
+        if (!scope.hasOwnProperty('title')) {
+          scope.title = '';
+        }
+        angular.forEach([ 'title', 'content', 'type' ], function(key) {
+          if (attr[key]) {
+            attr.$observe(key, function(newValue, oldValue) {
+              scope[key] = $sce.trustAsHtml(newValue);
+            });
+          }
+        });
+        if (attr.bsAlert) {
+          scope.$watch(attr.bsAlert, function(newValue, oldValue) {
+            if (angular.isObject(newValue)) {
+              angular.extend(scope, newValue);
+            } else {
+              scope.content = newValue;
+            }
+          }, true);
+        }
+        var alert = $alert(options);
+        element.on(attr.trigger || 'click', alert.toggle);
+        scope.$on('$destroy', function() {
+          if (alert) alert.destroy();
+          options = null;
+          alert = null;
+        });
+      }
+    };
+  } ]);
+  angular.module('mgcrea.ngStrap.affix', [ 'mgcrea.ngStrap.helpers.dimensions', 'mgcrea.ngStrap.helpers.debounce' ]).provider('$affix', function() {
+    var defaults = this.defaults = {
+      offsetTop: 'auto',
+      inlineStyles: true
+    };
+    this.$get = [ '$window', 'debounce', 'dimensions', function($window, debounce, dimensions) {
+      var bodyEl = angular.element($window.document.body);
+      var windowEl = angular.element($window);
+      function AffixFactory(element, config) {
+        var $affix = {};
+        var options = angular.extend({}, defaults, config);
+        var targetEl = options.target;
+        var reset = 'affix affix-top affix-bottom';
+        var setWidth = false;
+        var initialAffixTop = 0;
+        var initialOffsetTop = 0;
+        var offsetTop = 0;
+        var offsetBottom = 0;
+        var affixed = null;
+        var unpin = null;
+        var parent = element.parent();
+        if (options.offsetParent) {
+          if (options.offsetParent.match(/^\d+$/)) {
+            for (var i = 0; i < options.offsetParent * 1 - 1; i++) {
+              parent = parent.parent();
+            }
+          } else {
+            parent = angular.element(options.offsetParent);
+          }
+        }
+        $affix.init = function() {
+          this.$parseOffsets();
+          initialOffsetTop = dimensions.offset(element[0]).top + initialAffixTop;
+          setWidth = !element[0].style.width;
+          targetEl.on('scroll', this.checkPosition);
+          targetEl.on('click', this.checkPositionWithEventLoop);
+          windowEl.on('resize', this.$debouncedOnResize);
+          this.checkPosition();
+          this.checkPositionWithEventLoop();
+        };
+        $affix.destroy = function() {
+          targetEl.off('scroll', this.checkPosition);
+          targetEl.off('click', this.checkPositionWithEventLoop);
+          windowEl.off('resize', this.$debouncedOnResize);
+        };
+        $affix.checkPositionWithEventLoop = function() {
+          setTimeout($affix.checkPosition, 1);
+        };
+        $affix.checkPosition = function() {
+          var scrollTop = getScrollTop();
+          var position = dimensions.offset(element[0]);
+          var elementHeight = dimensions.height(element[0]);
+          var affix = getRequiredAffixClass(unpin, position, elementHeight);
+          if (affixed === affix) return;
+          affixed = affix;
+          if (affix === 'top') {
+            unpin = null;
+            if (setWidth) {
+              element.css('width', '');
+            }
+            if (options.inlineStyles) {
+              element.css('position', options.offsetParent ? '' : 'relative');
+              element.css('top', '');
+            }
+          } else if (affix === 'bottom') {
+            if (options.offsetUnpin) {
+              unpin = -(options.offsetUnpin * 1);
+            } else {
+              unpin = position.top - scrollTop;
+            }
+            if (setWidth) {
+              element.css('width', '');
+            }
+            if (options.inlineStyles) {
+              element.css('position', options.offsetParent ? '' : 'relative');
+              element.css('top', options.offsetParent ? '' : bodyEl[0].offsetHeight - offsetBottom - elementHeight - initialOffsetTop + 'px');
+            }
+          } else {
+            unpin = null;
+            if (setWidth) {
+              element.css('width', element[0].offsetWidth + 'px');
+            }
+            if (options.inlineStyles) {
+              element.css('position', 'fixed');
+              element.css('top', initialAffixTop + 'px');
+            }
+          }
+          element.removeClass(reset).addClass('affix' + (affix !== 'middle' ? '-' + affix : ''));
+        };
+        $affix.$onResize = function() {
+          $affix.$parseOffsets();
+          $affix.checkPosition();
+        };
+        $affix.$debouncedOnResize = debounce($affix.$onResize, 50);
+        $affix.$parseOffsets = function() {
+          var initialPosition = element.css('position');
+          if (options.inlineStyles) {
+            element.css('position', options.offsetParent ? '' : 'relative');
+          }
+          if (options.offsetTop) {
+            if (options.offsetTop === 'auto') {
+              options.offsetTop = '+0';
+            }
+            if (options.offsetTop.match(/^[-+]\d+$/)) {
+              initialAffixTop = -options.offsetTop * 1;
+              if (options.offsetParent) {
+                offsetTop = dimensions.offset(parent[0]).top + options.offsetTop * 1;
+              } else {
+                offsetTop = dimensions.offset(element[0]).top - dimensions.css(element[0], 'marginTop', true) + options.offsetTop * 1;
+              }
+            } else {
+              offsetTop = options.offsetTop * 1;
+            }
+          }
+          if (options.offsetBottom) {
+            if (options.offsetParent && options.offsetBottom.match(/^[-+]\d+$/)) {
+              offsetBottom = getScrollHeight() - (dimensions.offset(parent[0]).top + dimensions.height(parent[0])) + options.offsetBottom * 1 + 1;
+            } else {
+              offsetBottom = options.offsetBottom * 1;
+            }
+          }
+          if (options.inlineStyles) {
+            element.css('position', initialPosition);
+          }
+        };
+        function getRequiredAffixClass(_unpin, position, elementHeight) {
+          var scrollTop = getScrollTop();
+          var scrollHeight = getScrollHeight();
+          if (scrollTop <= offsetTop) {
+            return 'top';
+          } else if (_unpin !== null && scrollTop + _unpin <= position.top) {
+            return 'middle';
+          } else if (offsetBottom !== null && position.top + elementHeight + initialAffixTop >= scrollHeight - offsetBottom) {
+            return 'bottom';
+          }
+          return 'middle';
+        }
+        function getScrollTop() {
+          return targetEl[0] === $window ? $window.pageYOffset : targetEl[0].scrollTop;
+        }
+        function getScrollHeight() {
+          return targetEl[0] === $window ? $window.document.body.scrollHeight : targetEl[0].scrollHeight;
+        }
+        $affix.init();
+        return $affix;
+      }
+      return AffixFactory;
+    } ];
+  }).directive('bsAffix', [ '$affix', '$window', function($affix, $window) {
+    return {
+      restrict: 'EAC',
+      require: '^?bsAffixTarget',
+      link: function postLink(scope, element, attr, affixTarget) {
+        var options = {
+          scope: scope,
+          target: affixTarget ? affixTarget.$element : angular.element($window)
+        };
+        angular.forEach([ 'offsetTop', 'offsetBottom', 'offsetParent', 'offsetUnpin', 'inlineStyles' ], function(key) {
+          if (angular.isDefined(attr[key])) {
+            var option = attr[key];
+            if (/true/i.test(option)) option = true;
+            if (/false/i.test(option)) option = false;
+            options[key] = option;
+          }
+        });
+        var affix = $affix(element, options);
+        scope.$on('$destroy', function() {
+          if (affix) affix.destroy();
+          options = null;
+          affix = null;
+        });
+      }
+    };
+  } ]).directive('bsAffixTarget', function() {
+    return {
+      controller: [ '$element', function($element) {
+        this.$element = $element;
+      } ]
+    };
+  });
+  angular.module('mgcrea.ngStrap', [ 'mgcrea.ngStrap.modal', 'mgcrea.ngStrap.aside', 'mgcrea.ngStrap.alert', 'mgcrea.ngStrap.button', 'mgcrea.ngStrap.select', 'mgcrea.ngStrap.datepicker', 'mgcrea.ngStrap.timepicker', 'mgcrea.ngStrap.navbar', 'mgcrea.ngStrap.tooltip', 'mgcrea.ngStrap.popover', 'mgcrea.ngStrap.dropdown', 'mgcrea.ngStrap.typeahead', 'mgcrea.ngStrap.scrollspy', 'mgcrea.ngStrap.affix', 'mgcrea.ngStrap.tab', 'mgcrea.ngStrap.collapse' ]);
+})(window, document);
+/**
+ * angular-strap
+ * @version v2.3.7 - 2016-01-16
+ * @link http://mgcrea.github.io/angular-strap
+ * @author Olivier Louvignes <olivier@mg-crea.com> (https://github.com/mgcrea)
+ * @license MIT License, http://www.opensource.org/licenses/MIT
+ */
+(function(window, document, undefined) {
+  'use strict';
+  angular.module('mgcrea.ngStrap.alert').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('alert/alert.tpl.html', '<div class="alert" ng-class="[type ? \'alert-\' + type : null]"><button type="button" class="close" ng-if="dismissable" ng-click="$hide()">&times;</button> <strong ng-bind="title"></strong>&nbsp;<span ng-bind-html="content"></span></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.aside').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('aside/aside.tpl.html', '<div class="aside" tabindex="-1" role="dialog"><div class="aside-dialog"><div class="aside-content"><div class="aside-header" ng-show="title"><button type="button" class="close" ng-click="$hide()">&times;</button><h4 class="aside-title" ng-bind="title"></h4></div><div class="aside-body" ng-bind="content"></div><div class="aside-footer"><button type="button" class="btn btn-default" ng-click="$hide()">Close</button></div></div></div></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.datepicker').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('datepicker/datepicker.tpl.html', '<div class="dropdown-menu datepicker" ng-class="\'datepicker-mode-\' + $mode" style="max-width: 320px"><table style="table-layout: fixed; height: 100%; width: 100%"><thead><tr class="text-center"><th><button tabindex="-1" type="button" class="btn btn-default pull-left" ng-click="$selectPane(-1)"><i class="{{$iconLeft}}"></i></button></th><th colspan="{{ rows[0].length - 2 }}"><button tabindex="-1" type="button" class="btn btn-default btn-block text-strong" ng-click="$toggleMode()"><strong style="text-transform: capitalize" ng-bind="title"></strong></button></th><th><button tabindex="-1" type="button" class="btn btn-default pull-right" ng-click="$selectPane(+1)"><i class="{{$iconRight}}"></i></button></th></tr><tr ng-if="showLabels" ng-bind-html="labels"></tr></thead><tbody><tr ng-repeat="(i, row) in rows" height="{{ 100 / rows.length }}%"><td class="text-center" ng-repeat="(j, el) in row"><button tabindex="-1" type="button" class="btn btn-default" style="width: 100%" ng-class="{\'btn-primary\': el.selected, \'btn-info btn-today\': el.isToday && !el.selected}" ng-click="$select(el.date)" ng-disabled="el.disabled"><span ng-class="{\'text-muted\': el.muted}" ng-bind="el.label"></span></button></td></tr></tbody></table></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.dropdown').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('dropdown/dropdown.tpl.html', '<ul tabindex="-1" class="dropdown-menu" role="menu" ng-show="content && content.length"><li role="presentation" ng-class="{divider: item.divider, active: item.active}" ng-repeat="item in content"><a role="menuitem" tabindex="-1" ng-href="{{item.href}}" ng-if="!item.divider && item.href" target="{{item.target || \'\'}}" ng-bind="item.text"></a> <a role="menuitem" tabindex="-1" href="javascript:void(0)" ng-if="!item.divider && item.click" ng-click="$eval(item.click);$hide()" ng-bind="item.text"></a></li></ul>');
+  } ]);
+  angular.module('mgcrea.ngStrap.modal').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('modal/modal.tpl.html', '<div class="modal" tabindex="-1" role="dialog" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header" ng-show="title"><button type="button" class="close" aria-label="Close" ng-click="$hide()"><span aria-hidden="true">&times;</span></button><h4 class="modal-title" ng-bind="title"></h4></div><div class="modal-body" ng-bind="content"></div><div class="modal-footer"><button type="button" class="btn btn-default" ng-click="$hide()">Close</button></div></div></div></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.popover').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('popover/popover.tpl.html', '<div class="popover" tabindex="-1"><div class="arrow"></div><h3 class="popover-title" ng-bind="title" ng-show="title"></h3><div class="popover-content" ng-bind="content"></div></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.select').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('select/select.tpl.html', '<ul tabindex="-1" class="select dropdown-menu" ng-show="$isVisible()" role="select"><li ng-if="$showAllNoneButtons"><div class="btn-group" style="margin-bottom: 5px; margin-left: 5px"><button type="button" class="btn btn-default btn-xs" ng-click="$selectAll()">{{$allText}}</button> <button type="button" class="btn btn-default btn-xs" ng-click="$selectNone()">{{$noneText}}</button></div></li><li role="presentation" ng-repeat="match in $matches" ng-class="{active: $isActive($index)}"><a style="cursor: default" role="menuitem" tabindex="-1" ng-click="$select($index, $event)"><i class="{{$iconCheckmark}} pull-right" ng-if="$isMultiple && $isActive($index)"></i> <span ng-bind="match.label"></span></a></li></ul>');
+  } ]);
+  angular.module('mgcrea.ngStrap.tab').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('tab/tab.tpl.html', '<ul class="nav" ng-class="$navClass" role="tablist"><li role="presentation" ng-repeat="$pane in $panes track by $index" ng-class="[ $isActive($pane, $index) ? $activeClass : \'\', $pane.disabled ? \'disabled\' : \'\' ]"><a role="tab" data-toggle="tab" ng-click="!$pane.disabled && $setActive($pane.name || $index)" data-index="{{ $index }}" ng-bind-html="$pane.title" aria-controls="$pane.title"></a></li></ul><div ng-transclude class="tab-content"></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.timepicker').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('timepicker/timepicker.tpl.html', '<div class="dropdown-menu timepicker" style="min-width: 0px;width: auto"><table height="100%"><thead><tr class="text-center"><th><button tabindex="-1" type="button" class="btn btn-default pull-left" ng-click="$arrowAction(-1, 0)"><i class="{{ $iconUp }}"></i></button></th><th>&nbsp;</th><th><button tabindex="-1" type="button" class="btn btn-default pull-left" ng-click="$arrowAction(-1, 1)"><i class="{{ $iconUp }}"></i></button></th><th>&nbsp;</th><th><button ng-if="showSeconds" tabindex="-1" type="button" class="btn btn-default pull-left" ng-click="$arrowAction(-1, 2)"><i class="{{ $iconUp }}"></i></button></th></tr></thead><tbody><tr ng-repeat="(i, row) in rows"><td class="text-center"><button tabindex="-1" style="width: 100%" type="button" class="btn btn-default" ng-class="{\'btn-primary\': row[0].selected}" ng-click="$select(row[0].date, 0)" ng-disabled="row[0].disabled"><span ng-class="{\'text-muted\': row[0].muted}" ng-bind="row[0].label"></span></button></td><td><span ng-bind="i == midIndex ? timeSeparator : \' \'"></span></td><td class="text-center"><button tabindex="-1" ng-if="row[1].date" style="width: 100%" type="button" class="btn btn-default" ng-class="{\'btn-primary\': row[1].selected}" ng-click="$select(row[1].date, 1)" ng-disabled="row[1].disabled"><span ng-class="{\'text-muted\': row[1].muted}" ng-bind="row[1].label"></span></button></td><td><span ng-bind="i == midIndex ? timeSeparator : \' \'"></span></td><td class="text-center"><button tabindex="-1" ng-if="showSeconds && row[2].date" style="width: 100%" type="button" class="btn btn-default" ng-class="{\'btn-primary\': row[2].selected}" ng-click="$select(row[2].date, 2)" ng-disabled="row[2].disabled"><span ng-class="{\'text-muted\': row[2].muted}" ng-bind="row[2].label"></span></button></td><td ng-if="showAM">&nbsp;</td><td ng-if="showAM"><button tabindex="-1" ng-show="i == midIndex - !isAM * 1" style="width: 100%" type="button" ng-class="{\'btn-primary\': !!isAM}" class="btn btn-default" ng-click="$switchMeridian()" ng-disabled="el.disabled">AM</button> <button tabindex="-1" ng-show="i == midIndex + 1 - !isAM * 1" style="width: 100%" type="button" ng-class="{\'btn-primary\': !isAM}" class="btn btn-default" ng-click="$switchMeridian()" ng-disabled="el.disabled">PM</button></td></tr></tbody><tfoot><tr class="text-center"><th><button tabindex="-1" type="button" class="btn btn-default pull-left" ng-click="$arrowAction(1, 0)"><i class="{{ $iconDown }}"></i></button></th><th>&nbsp;</th><th><button tabindex="-1" type="button" class="btn btn-default pull-left" ng-click="$arrowAction(1, 1)"><i class="{{ $iconDown }}"></i></button></th><th>&nbsp;</th><th><button ng-if="showSeconds" tabindex="-1" type="button" class="btn btn-default pull-left" ng-click="$arrowAction(1, 2)"><i class="{{ $iconDown }}"></i></button></th></tr></tfoot></table></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.tooltip').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('tooltip/tooltip.tpl.html', '<div class="tooltip in" ng-show="title"><div class="tooltip-arrow"></div><div class="tooltip-inner" ng-bind="title"></div></div>');
+  } ]);
+  angular.module('mgcrea.ngStrap.typeahead').run([ '$templateCache', function($templateCache) {
+    $templateCache.put('typeahead/typeahead.tpl.html', '<ul tabindex="-1" class="typeahead dropdown-menu" ng-show="$isVisible()" role="select"><li role="presentation" ng-repeat="match in $matches" ng-class="{active: $index == $activeIndex}"><a role="menuitem" tabindex="-1" ng-click="$select($index, $event)" ng-bind="match.label"></a></li></ul>');
+  } ]);
+})(window, document);
+/*!
+ * ngTagsInput v3.0.0
+ * http://mbenford.github.io/ngTagsInput
+ *
+ * Copyright (c) 2013-2015 Michael Benford
+ * License: MIT
+ *
+ * Generated at 2015-07-13 02:08:11 -0300
+ */
+(function() {
+'use strict';
+
+var KEYS = {
+    backspace: 8,
+    tab: 9,
+    enter: 13,
+    escape: 27,
+    space: 32,
+    up: 38,
+    down: 40,
+    left: 37,
+    right: 39,
+    delete: 46,
+    comma: 188
+};
+
+var MAX_SAFE_INTEGER = 9007199254740991;
+var SUPPORTED_INPUT_TYPES = ['text', 'email', 'url'];
+
+var tagsInput = angular.module('ngTagsInput', []);
+
+/**
+ * @ngdoc directive
+ * @name tagsInput
+ * @module ngTagsInput
+ *
+ * @description
+ * Renders an input box with tag editing support.
+ *
+ * @param {string} ngModel Assignable Angular expression to data-bind to.
+ * @param {string=} [template=NA] URL or id of a custom template for rendering each tag.
+ * @param {string=} [displayProperty=text] Property to be rendered as the tag label.
+ * @param {string=} [keyProperty=text] Property to be used as a unique identifier for the tag.
+ * @param {string=} [type=text] Type of the input element. Only 'text', 'email' and 'url' are supported values.
+ * @param {string=} [text=NA] Assignable Angular expression for data-binding to the element's text.
+ * @param {number=} tabindex Tab order of the control.
+ * @param {string=} [placeholder=Add a tag] Placeholder text for the control.
+ * @param {number=} [minLength=3] Minimum length for a new tag.
+ * @param {number=} [maxLength=MAX_SAFE_INTEGER] Maximum length allowed for a new tag.
+ * @param {number=} [minTags=0] Sets minTags validation error key if the number of tags added is less than minTags.
+ * @param {number=} [maxTags=MAX_SAFE_INTEGER] Sets maxTags validation error key if the number of tags added is greater
+ *    than maxTags.
+ * @param {boolean=} [allowLeftoverText=false] Sets leftoverText validation error key if there is any leftover text in
+ *    the input element when the directive loses focus.
+ * @param {string=} [removeTagSymbol=×] (Obsolete) Symbol character for the remove tag button.
+ * @param {boolean=} [addOnEnter=true] Flag indicating that a new tag will be added on pressing the ENTER key.
+ * @param {boolean=} [addOnSpace=false] Flag indicating that a new tag will be added on pressing the SPACE key.
+ * @param {boolean=} [addOnComma=true] Flag indicating that a new tag will be added on pressing the COMMA key.
+ * @param {boolean=} [addOnBlur=true] Flag indicating that a new tag will be added when the input field loses focus.
+ * @param {boolean=} [addOnPaste=false] Flag indicating that the text pasted into the input field will be split into tags.
+ * @param {string=} [pasteSplitPattern=,] Regular expression used to split the pasted text into tags.
+ * @param {boolean=} [replaceSpacesWithDashes=true] Flag indicating that spaces will be replaced with dashes.
+ * @param {string=} [allowedTagsPattern=.+] Regular expression that determines whether a new tag is valid.
+ * @param {boolean=} [enableEditingLastTag=false] Flag indicating that the last tag will be moved back into the new tag
+ *    input box instead of being removed when the backspace key is pressed and the input box is empty.
+ * @param {boolean=} [addFromAutocompleteOnly=false] Flag indicating that only tags coming from the autocomplete list
+ *    will be allowed. When this flag is true, addOnEnter, addOnComma, addOnSpace and addOnBlur values are ignored.
+ * @param {boolean=} [spellcheck=true] Flag indicating whether the browser's spellcheck is enabled for the input field or not.
+ * @param {expression=} [onTagAdding=NA] Expression to evaluate that will be invoked before adding a new tag. The new
+ *    tag is available as $tag. This method must return either true or false. If false, the tag will not be added.
+ * @param {expression=} [onTagAdded=NA] Expression to evaluate upon adding a new tag. The new tag is available as $tag.
+ * @param {expression=} [onInvalidTag=NA] Expression to evaluate when a tag is invalid. The invalid tag is available as $tag.
+ * @param {expression=} [onTagRemoving=NA] Expression to evaluate that will be invoked before removing a tag. The tag
+ *    is available as $tag. This method must return either true or false. If false, the tag will not be removed.
+ * @param {expression=} [onTagRemoved=NA] Expression to evaluate upon removing an existing tag. The removed tag is
+ *    available as $tag.
+ * @param {expression=} [onTagClicked=NA] Expression to evaluate upon clicking an existing tag. The clicked tag is available as $tag.
+ */
+tagsInput.directive('tagsInput', ["$timeout", "$document", "$window", "tagsInputConfig", "tiUtil", function($timeout, $document, $window, tagsInputConfig, tiUtil) {
+    function TagList(options, events, onTagAdding, onTagRemoving) {
+        var self = {}, getTagText, setTagText, tagIsValid;
+
+        getTagText = function(tag) {
+            return tiUtil.safeToString(tag[options.displayProperty]);
         };
 
-        return this;
-    }
+        setTagText = function(tag, text) {
+            tag[options.displayProperty] = text;
+        };
 
-    Chance.prototype.VERSION = "0.8.0";
+        tagIsValid = function(tag) {
+            var tagText = getTagText(tag);
 
-    // Random helper functions
-    function initOptions(options, defaults) {
-        options || (options = {});
+            return tagText &&
+                   tagText.length >= options.minLength &&
+                   tagText.length <= options.maxLength &&
+                   options.allowedTagsPattern.test(tagText) &&
+                   !tiUtil.findInObjectArray(self.items, tag, options.keyProperty || options.displayProperty) &&
+                   onTagAdding({ $tag: tag });
+        };
 
-        if (defaults) {
-            for (var i in defaults) {
-                if (typeof options[i] === 'undefined') {
-                    options[i] = defaults[i];
-                }
+        self.items = [];
+
+        self.addText = function(text) {
+            var tag = {};
+            setTagText(tag, text);
+            return self.add(tag);
+        };
+
+        self.add = function(tag) {
+            var tagText = getTagText(tag);
+
+            if (options.replaceSpacesWithDashes) {
+                tagText = tiUtil.replaceSpacesWithDashes(tagText);
             }
-        }
 
-        return options;
+            setTagText(tag, tagText);
+
+            if (tagIsValid(tag)) {
+                self.items.push(tag);
+                events.trigger('tag-added', { $tag: tag });
+            }
+            else if (tagText) {
+                events.trigger('invalid-tag', { $tag: tag });
+            }
+
+            return tag;
+        };
+
+        self.remove = function(index) {
+            var tag = self.items[index];
+
+            if (onTagRemoving({ $tag: tag }))  {
+                self.items.splice(index, 1);
+                self.clearSelection();
+                events.trigger('tag-removed', { $tag: tag });
+                return tag;
+            }
+        };
+
+        self.select = function(index) {
+            if (index < 0) {
+                index = self.items.length - 1;
+            }
+            else if (index >= self.items.length) {
+                index = 0;
+            }
+
+            self.index = index;
+            self.selected = self.items[index];
+        };
+
+        self.selectPrior = function() {
+            self.select(--self.index);
+        };
+
+        self.selectNext = function() {
+            self.select(++self.index);
+        };
+
+        self.removeSelected = function() {
+            return self.remove(self.index);
+        };
+
+        self.clearSelection = function() {
+            self.selected = null;
+            self.index = -1;
+        };
+
+        self.clearSelection();
+
+        return self;
     }
 
-    function testRange(test, errorMessage) {
-        if (test) {
-            throw new RangeError(errorMessage);
-        }
+    function validateType(type) {
+        return SUPPORTED_INPUT_TYPES.indexOf(type) !== -1;
     }
 
-    /**
-     * Encode the input string with Base64.
-     */
-    var base64 = function() {
-        throw new Error('No Base64 encoder available.');
-    };
+    return {
+        restrict: 'E',
+        require: 'ngModel',
+        scope: {
+            tags: '=ngModel',
+            text: '=?',
+            onTagAdding: '&',
+            onTagAdded: '&',
+            onInvalidTag: '&',
+            onTagRemoving: '&',
+            onTagRemoved: '&',
+            onTagClicked: '&'
+        },
+        replace: false,
+        transclude: true,
+        templateUrl: 'ngTagsInput/tags-input.html',
+        controller: ["$scope", "$attrs", "$element", function($scope, $attrs, $element) {
+            $scope.events = tiUtil.simplePubSub();
 
-    // Select proper Base64 encoder.
-    (function determineBase64Encoder() {
-        if (typeof btoa === 'function') {
-            base64 = btoa;
-        } else if (typeof Buffer === 'function') {
-            base64 = function(input) {
-                return new Buffer(input).toString('base64');
+            tagsInputConfig.load('tagsInput', $scope, $attrs, {
+                template: [String, 'ngTagsInput/tag-item.html'],
+                type: [String, 'text', validateType],
+                placeholder: [String, 'Add a tag'],
+                tabindex: [Number, null],
+                removeTagSymbol: [String, String.fromCharCode(215)],
+                replaceSpacesWithDashes: [Boolean, true],
+                minLength: [Number, 3],
+                maxLength: [Number, MAX_SAFE_INTEGER],
+                addOnEnter: [Boolean, true],
+                addOnSpace: [Boolean, false],
+                addOnComma: [Boolean, true],
+                addOnBlur: [Boolean, true],
+                addOnPaste: [Boolean, false],
+                pasteSplitPattern: [RegExp, /,/],
+                allowedTagsPattern: [RegExp, /.+/],
+                enableEditingLastTag: [Boolean, false],
+                minTags: [Number, 0],
+                maxTags: [Number, MAX_SAFE_INTEGER],
+                displayProperty: [String, 'text'],
+                keyProperty: [String, ''],
+                allowLeftoverText: [Boolean, false],
+                addFromAutocompleteOnly: [Boolean, false],
+                spellcheck: [Boolean, true]
+            });
+
+            $scope.tagList = new TagList($scope.options, $scope.events,
+                tiUtil.handleUndefinedResult($scope.onTagAdding, true),
+                tiUtil.handleUndefinedResult($scope.onTagRemoving, true));
+
+            this.registerAutocomplete = function() {
+                var input = $element.find('input');
+
+                return {
+                    addTag: function(tag) {
+                        return $scope.tagList.add(tag);
+                    },
+                    focusInput: function() {
+                        input[0].focus();
+                    },
+                    getTags: function() {
+                        return $scope.tagList.items;
+                    },
+                    getCurrentTagText: function() {
+                        return $scope.newTag.text();
+                    },
+                    getOptions: function() {
+                        return $scope.options;
+                    },
+                    on: function(name, handler) {
+                        $scope.events.on(name, handler);
+                        return this;
+                    }
+                };
             };
-        }
-    })();
 
-    // -- Basics --
+            this.registerTagItem = function() {
+                return {
+                    getOptions: function() {
+                        return $scope.options;
+                    },
+                    removeTag: function(index) {
+                        if ($scope.disabled) {
+                            return;
+                        }
+                        $scope.tagList.remove(index);
+                    }
+                };
+            };
+        }],
+        link: function(scope, element, attrs, ngModelCtrl) {
+            var hotkeys = [KEYS.enter, KEYS.comma, KEYS.space, KEYS.backspace, KEYS.delete, KEYS.left, KEYS.right],
+                tagList = scope.tagList,
+                events = scope.events,
+                options = scope.options,
+                input = element.find('input'),
+                validationOptions = ['minTags', 'maxTags', 'allowLeftoverText'],
+                setElementValidity;
 
-    /**
-     *  Return a random bool, either true or false
-     *
-     *  @param {Object} [options={ likelihood: 50 }] alter the likelihood of
-     *    receiving a true or false value back.
-     *  @throws {RangeError} if the likelihood is out of bounds
-     *  @returns {Bool} either true or false
-     */
-    Chance.prototype.bool = function (options) {
-        // likelihood of success (true)
-        options = initOptions(options, {likelihood : 50});
+            setElementValidity = function() {
+                ngModelCtrl.$setValidity('maxTags', tagList.items.length <= options.maxTags);
+                ngModelCtrl.$setValidity('minTags', tagList.items.length >= options.minTags);
+                ngModelCtrl.$setValidity('leftoverText', scope.hasFocus || options.allowLeftoverText ? true : !scope.newTag.text());
+            };
 
-        // Note, we could get some minor perf optimizations by checking range
-        // prior to initializing defaults, but that makes code a bit messier
-        // and the check more complicated as we have to check existence of
-        // the object then existence of the key before checking constraints.
-        // Since the options initialization should be minor computationally,
-        // decision made for code cleanliness intentionally. This is mentioned
-        // here as it's the first occurrence, will not be mentioned again.
-        testRange(
-            options.likelihood < 0 || options.likelihood > 100,
-            "Chance: Likelihood accepts values from 0 to 100."
-        );
+            ngModelCtrl.$isEmpty = function(value) {
+                return !value || !value.length;
+            };
 
-        return this.random() * 100 < options.likelihood;
-    };
+            scope.newTag = {
+                text: function(value) {
+                    if (angular.isDefined(value)) {
+                        scope.text = value;
+                        events.trigger('input-change', value);
+                    }
+                    else {
+                        return scope.text || '';
+                    }
+                },
+                invalid: null
+            };
 
-    /**
-     *  Return a random character.
-     *
-     *  @param {Object} [options={}] can specify a character pool, only alpha,
-     *    only symbols, and casing (lower or upper)
-     *  @returns {String} a single random character
-     *  @throws {RangeError} Can only specify alpha or symbols, not both
-     */
-    Chance.prototype.character = function (options) {
-        options = initOptions(options);
-        testRange(
-            options.alpha && options.symbols,
-            "Chance: Cannot specify both alpha and symbols."
-        );
+            scope.track = function(tag) {
+                return tag[options.keyProperty || options.displayProperty];
+            };
 
-        var symbols = "!@#$%^&*()[]",
-            letters, pool;
+            scope.$watch('tags', function(value) {
+                if (value) {
+                    tagList.items = tiUtil.makeObjectArray(value, options.displayProperty);
+                    scope.tags = tagList.items;
+                }
+                else {
+                    tagList.items = [];
+                }
+            });
 
-        if (options.casing === 'lower') {
-            letters = CHARS_LOWER;
-        } else if (options.casing === 'upper') {
-            letters = CHARS_UPPER;
-        } else {
-            letters = CHARS_LOWER + CHARS_UPPER;
-        }
+            scope.$watch('tags.length', function() {
+                setElementValidity();
 
-        if (options.pool) {
-            pool = options.pool;
-        } else if (options.alpha) {
-            pool = letters;
-        } else if (options.symbols) {
-            pool = symbols;
-        } else {
-            pool = letters + NUMBERS + symbols;
-        }
+                // ngModelController won't trigger validators when the model changes (because it's an array),
+                // so we need to do it ourselves. Unfortunately this won't trigger any registered formatter.
+                ngModelCtrl.$validate();
+            });
 
-        return pool.charAt(this.natural({max: (pool.length - 1)}));
-    };
+            attrs.$observe('disabled', function(value) {
+                scope.disabled = value;
+            });
 
-    // Note, wanted to use "float" or "double" but those are both JS reserved words.
+            scope.eventHandlers = {
+                input: {
+                    keydown: function($event) {
+                        events.trigger('input-keydown', $event);
+                    },
+                    focus: function() {
+                        if (scope.hasFocus) {
+                            return;
+                        }
 
-    // Note, fixed means N OR LESS digits after the decimal. This because
-    // It could be 14.9000 but in JavaScript, when this is cast as a number,
-    // the trailing zeroes are dropped. Left to the consumer if trailing zeroes are
-    // needed
-    /**
-     *  Return a random floating point number
-     *
-     *  @param {Object} [options={}] can specify a fixed precision, min, max
-     *  @returns {Number} a single floating point number
-     *  @throws {RangeError} Can only specify fixed or precision, not both. Also
-     *    min cannot be greater than max
-     */
-    Chance.prototype.floating = function (options) {
-        options = initOptions(options, {fixed : 4});
-        testRange(
-            options.fixed && options.precision,
-            "Chance: Cannot specify both fixed and precision."
-        );
+                        scope.hasFocus = true;
+                        events.trigger('input-focus');
+                    },
+                    blur: function() {
+                        $timeout(function() {
+                            var activeElement = $document.prop('activeElement'),
+                                lostFocusToBrowserWindow = activeElement === input[0],
+                                lostFocusToChildElement = element[0].contains(activeElement);
 
-        var num;
-        var fixed = Math.pow(10, options.fixed);
+                            if (lostFocusToBrowserWindow || !lostFocusToChildElement) {
+                                scope.hasFocus = false;
+                                events.trigger('input-blur');
+                            }
+                        });
+                    },
+                    paste: function($event) {
+                        $event.getTextData = function() {
+                            var clipboardData = $event.clipboardData || ($event.originalEvent && $event.originalEvent.clipboardData);
+                            return clipboardData ? clipboardData.getData('text/plain') : $window.clipboardData.getData('Text');
+                        };
+                        events.trigger('input-paste', $event);
+                    }
+                },
+                host: {
+                    click: function() {
+                        if (scope.disabled) {
+                            return;
+                        }
+                        input[0].focus();
+                    }
+                },
+                tag: {
+                    click: function(tag) {
+                        events.trigger('tag-clicked', { $tag: tag });
+                    }
+                }
+            };
 
-        var max = MAX_INT / fixed;
-        var min = -max;
+            events
+                .on('tag-added', scope.onTagAdded)
+                .on('invalid-tag', scope.onInvalidTag)
+                .on('tag-removed', scope.onTagRemoved)
+                .on('tag-clicked', scope.onTagClicked)
+                .on('tag-added', function() {
+                    scope.newTag.text('');
+                })
+                .on('tag-added tag-removed', function() {
+                    scope.tags = tagList.items;
+                    // Ideally we should be able call $setViewValue here and let it in turn call $setDirty and $validate
+                    // automatically, but since the model is an array, $setViewValue does nothing and it's up to us to do it.
+                    // Unfortunately this won't trigger any registered $parser and there's no safe way to do it.
+                    ngModelCtrl.$setDirty();
+                })
+                .on('invalid-tag', function() {
+                    scope.newTag.invalid = true;
+                })
+                .on('option-change', function(e) {
+                    if (validationOptions.indexOf(e.name) !== -1) {
+                        setElementValidity();
+                    }
+                })
+                .on('input-change', function() {
+                    tagList.clearSelection();
+                    scope.newTag.invalid = null;
+                })
+                .on('input-focus', function() {
+                    element.triggerHandler('focus');
+                    ngModelCtrl.$setValidity('leftoverText', true);
+                })
+                .on('input-blur', function() {
+                    if (options.addOnBlur && !options.addFromAutocompleteOnly) {
+                        tagList.addText(scope.newTag.text());
+                    }
+                    element.triggerHandler('blur');
+                    setElementValidity();
+                })
+                .on('input-keydown', function(event) {
+                    var key = event.keyCode,
+                        addKeys = {},
+                        shouldAdd, shouldRemove, shouldSelect, shouldEditLastTag;
 
-        testRange(
-            options.min && options.fixed && options.min < min,
-            "Chance: Min specified is out of range with fixed. Min should be, at least, " + min
-        );
-        testRange(
-            options.max && options.fixed && options.max > max,
-            "Chance: Max specified is out of range with fixed. Max should be, at most, " + max
-        );
+                    if (tiUtil.isModifierOn(event) || hotkeys.indexOf(key) === -1) {
+                        return;
+                    }
 
-        options = initOptions(options, { min : min, max : max });
+                    addKeys[KEYS.enter] = options.addOnEnter;
+                    addKeys[KEYS.comma] = options.addOnComma;
+                    addKeys[KEYS.space] = options.addOnSpace;
 
-        // Todo - Make this work!
-        // options.precision = (typeof options.precision !== "undefined") ? options.precision : false;
+                    shouldAdd = !options.addFromAutocompleteOnly && addKeys[key];
+                    shouldRemove = (key === KEYS.backspace || key === KEYS.delete) && tagList.selected;
+                    shouldEditLastTag = key === KEYS.backspace && scope.newTag.text().length === 0 && options.enableEditingLastTag;
+                    shouldSelect = (key === KEYS.backspace || key === KEYS.left || key === KEYS.right) && scope.newTag.text().length === 0 && !options.enableEditingLastTag;
 
-        num = this.integer({min: options.min * fixed, max: options.max * fixed});
-        var num_fixed = (num / fixed).toFixed(options.fixed);
+                    if (shouldAdd) {
+                        tagList.addText(scope.newTag.text());
+                    }
+                    else if (shouldEditLastTag) {
+                        var tag;
 
-        return parseFloat(num_fixed);
-    };
+                        tagList.selectPrior();
+                        tag = tagList.removeSelected();
 
-    /**
-     *  Return a random integer
-     *
-     *  NOTE the max and min are INCLUDED in the range. So:
-     *  chance.integer({min: 1, max: 3});
-     *  would return either 1, 2, or 3.
-     *
-     *  @param {Object} [options={}] can specify a min and/or max
-     *  @returns {Number} a single random integer number
-     *  @throws {RangeError} min cannot be greater than max
-     */
-    Chance.prototype.integer = function (options) {
-        // 9007199254740992 (2^53) is the max integer number in JavaScript
-        // See: http://vq.io/132sa2j
-        options = initOptions(options, {min: MIN_INT, max: MAX_INT});
-        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
+                        if (tag) {
+                            scope.newTag.text(tag[options.displayProperty]);
+                        }
+                    }
+                    else if (shouldRemove) {
+                        tagList.removeSelected();
+                    }
+                    else if (shouldSelect) {
+                        if (key === KEYS.left || key === KEYS.backspace) {
+                            tagList.selectPrior();
+                        }
+                        else if (key === KEYS.right) {
+                            tagList.selectNext();
+                        }
+                    }
 
-        return Math.floor(this.random() * (options.max - options.min + 1) + options.min);
-    };
+                    if (shouldAdd || shouldSelect || shouldRemove || shouldEditLastTag) {
+                        event.preventDefault();
+                    }
+                })
+                .on('input-paste', function(event) {
+                    if (options.addOnPaste) {
+                        var data = event.getTextData();
+                        var tags = data.split(options.pasteSplitPattern);
 
-    /**
-     *  Return a random natural
-     *
-     *  NOTE the max and min are INCLUDED in the range. So:
-     *  chance.natural({min: 1, max: 3});
-     *  would return either 1, 2, or 3.
-     *
-     *  @param {Object} [options={}] can specify a min and/or max
-     *  @returns {Number} a single random integer number
-     *  @throws {RangeError} min cannot be greater than max
-     */
-    Chance.prototype.natural = function (options) {
-        options = initOptions(options, {min: 0, max: MAX_INT});
-        testRange(options.min < 0, "Chance: Min cannot be less than zero.");
-        return this.integer(options);
-    };
-
-    /**
-     *  Return a random string
-     *
-     *  @param {Object} [options={}] can specify a length
-     *  @returns {String} a string of random length
-     *  @throws {RangeError} length cannot be less than zero
-     */
-    Chance.prototype.string = function (options) {
-        options = initOptions(options, { length: this.natural({min: 5, max: 20}) });
-        testRange(options.length < 0, "Chance: Length cannot be less than zero.");
-        var length = options.length,
-            text = this.n(this.character, length, options);
-
-        return text.join("");
-    };
-
-    // -- End Basics --
-
-    // -- Helpers --
-
-    Chance.prototype.capitalize = function (word) {
-        return word.charAt(0).toUpperCase() + word.substr(1);
-    };
-
-    Chance.prototype.mixin = function (obj) {
-        for (var func_name in obj) {
-            Chance.prototype[func_name] = obj[func_name];
-        }
-        return this;
-    };
-
-    /**
-     *  Given a function that generates something random and a number of items to generate,
-     *    return an array of items where none repeat.
-     *
-     *  @param {Function} fn the function that generates something random
-     *  @param {Number} num number of terms to generate
-     *  @param {Object} options any options to pass on to the generator function
-     *  @returns {Array} an array of length `num` with every item generated by `fn` and unique
-     *
-     *  There can be more parameters after these. All additional parameters are provided to the given function
-     */
-    Chance.prototype.unique = function(fn, num, options) {
-        testRange(
-            typeof fn !== "function",
-            "Chance: The first argument must be a function."
-        );
-
-        options = initOptions(options, {
-            // Default comparator to check that val is not already in arr.
-            // Should return `false` if item not in array, `true` otherwise
-            comparator: function(arr, val) {
-                return arr.indexOf(val) !== -1;
-            }
-        });
-
-        var arr = [], count = 0, result, MAX_DUPLICATES = num * 50, params = slice.call(arguments, 2);
-
-        while (arr.length < num) {
-            result = fn.apply(this, params);
-            if (!options.comparator(arr, result)) {
-                arr.push(result);
-                // reset count when unique found
-                count = 0;
-            }
-
-            if (++count > MAX_DUPLICATES) {
-                throw new RangeError("Chance: num is likely too large for sample set");
-            }
-        }
-        return arr;
-    };
-
-    /**
-     *  Gives an array of n random terms
-     *
-     *  @param {Function} fn the function that generates something random
-     *  @param {Number} n number of terms to generate
-     *  @returns {Array} an array of length `n` with items generated by `fn`
-     *
-     *  There can be more parameters after these. All additional parameters are provided to the given function
-     */
-    Chance.prototype.n = function(fn, n) {
-        testRange(
-            typeof fn !== "function",
-            "Chance: The first argument must be a function."
-        );
-
-        if (typeof n === 'undefined') {
-            n = 1;
-        }
-        var i = n, arr = [], params = slice.call(arguments, 2);
-
-        // Providing a negative count should result in a noop.
-        i = Math.max( 0, i );
-
-        for (null; i--; null) {
-            arr.push(fn.apply(this, params));
-        }
-
-        return arr;
-    };
-
-    // H/T to SO for this one: http://vq.io/OtUrZ5
-    Chance.prototype.pad = function (number, width, pad) {
-        // Default pad to 0 if none provided
-        pad = pad || '0';
-        // Convert number to a string
-        number = number + '';
-        return number.length >= width ? number : new Array(width - number.length + 1).join(pad) + number;
-    };
-
-    Chance.prototype.pick = function (arr, count) {
-        if (arr.length === 0) {
-            throw new RangeError("Chance: Cannot pick() from an empty array");
-        }
-        if (!count || count === 1) {
-            return arr[this.natural({max: arr.length - 1})];
-        } else {
-            return this.shuffle(arr).slice(0, count);
+                        if (tags.length > 1) {
+                            tags.forEach(function(tag) {
+                                tagList.addText(tag);
+                            });
+                            event.preventDefault();
+                        }
+                    }
+                });
         }
     };
+}]);
 
-    Chance.prototype.shuffle = function (arr) {
-        var old_array = arr.slice(0),
-            new_array = [],
-            j = 0,
-            length = Number(old_array.length);
 
-        for (var i = 0; i < length; i++) {
-            // Pick a random index from the array
-            j = this.natural({max: old_array.length - 1});
-            // Add it to the new array
-            new_array[i] = old_array[j];
-            // Remove that element from the original array
-            old_array.splice(j, 1);
-        }
+/**
+ * @ngdoc directive
+ * @name tiTagItem
+ * @module ngTagsInput
+ *
+ * @description
+ * Represents a tag item. Used internally by the tagsInput directive.
+ */
+tagsInput.directive('tiTagItem', ["tiUtil", function(tiUtil) {
+    return {
+        restrict: 'E',
+        require: '^tagsInput',
+        template: '<ng-include src="$$template"></ng-include>',
+        scope: { data: '=' },
+        link: function(scope, element, attrs, tagsInputCtrl) {
+            var tagsInput = tagsInputCtrl.registerTagItem(),
+                options = tagsInput.getOptions();
 
-        return new_array;
-    };
+            scope.$$template = options.template;
+            scope.$$removeTagSymbol = options.removeTagSymbol;
 
-    // Returns a single item from an array with relative weighting of odds
-    Chance.prototype.weighted = function(arr, weights) {
-        if (arr.length !== weights.length) {
-            throw new RangeError("Chance: length of array and weights must match");
-        }
+            scope.$getDisplayText = function() {
+                return tiUtil.safeToString(scope.data[options.displayProperty]);
+            };
+            scope.$removeTag = function() {
+                tagsInput.removeTag(scope.$index);
+            };
 
-        // Handle weights that are less or equal to zero.
-        for (var weightIndex = weights.length - 1; weightIndex >= 0; --weightIndex) {
-            // If the weight is less or equal to zero, remove it and the value.
-            if (weights[weightIndex] <= 0) {
-                arr.splice(weightIndex,1);
-                weights.splice(weightIndex,1);
-            }
-        }
-
-        // If any of the weights are less than 1, we want to scale them up to whole
-        //   numbers for the rest of this logic to work
-        if (weights.some(function(weight) { return weight < 1; })) {
-            var min = weights.reduce(function(min, weight) {
-                return (weight < min) ? weight : min;
-            }, weights[0]);
-
-            var scaling_factor = 1 / min;
-
-            weights = weights.map(function(weight) {
-                return weight * scaling_factor;
+            scope.$watch('$parent.$index', function(value) {
+                scope.$index = value;
             });
         }
+    };
+}]);
 
-        var sum = weights.reduce(function(total, weight) {
-            return total + weight;
-        }, 0);
 
-        // get an index
-        var selected = this.natural({ min: 1, max: sum });
+/**
+ * @ngdoc directive
+ * @name autoComplete
+ * @module ngTagsInput
+ *
+ * @description
+ * Provides autocomplete support for the tagsInput directive.
+ *
+ * @param {expression} source Expression to evaluate upon changing the input content. The input value is available as
+ *    $query. The result of the expression must be a promise that eventually resolves to an array of strings.
+ * @param {string=} [template=NA] URL or id of a custom template for rendering each element of the autocomplete list.
+ * @param {string=} [displayProperty=tagsInput.displayText] Property to be rendered as the autocomplete label.
+ * @param {number=} [debounceDelay=100] Amount of time, in milliseconds, to wait before evaluating the expression in
+ *    the source option after the last keystroke.
+ * @param {number=} [minLength=3] Minimum number of characters that must be entered before evaluating the expression
+ *    in the source option.
+ * @param {boolean=} [highlightMatchedText=true] Flag indicating that the matched text will be highlighted in the
+ *    suggestions list.
+ * @param {number=} [maxResultsToShow=10] Maximum number of results to be displayed at a time.
+ * @param {boolean=} [loadOnDownArrow=false] Flag indicating that the source option will be evaluated when the down arrow
+ *    key is pressed and the suggestion list is closed. The current input value is available as $query.
+ * @param {boolean=} [loadOnEmpty=false] Flag indicating that the source option will be evaluated when the input content
+ *    becomes empty. The $query variable will be passed to the expression as an empty string.
+ * @param {boolean=} [loadOnFocus=false] Flag indicating that the source option will be evaluated when the input element
+ *    gains focus. The current input value is available as $query.
+ * @param {boolean=} [selectFirstMatch=true] Flag indicating that the first match will be automatically selected once
+ *    the suggestion list is shown.
+ */
+tagsInput.directive('autoComplete', ["$document", "$timeout", "$sce", "$q", "tagsInputConfig", "tiUtil", function($document, $timeout, $sce, $q, tagsInputConfig, tiUtil) {
+    function SuggestionList(loadFn, options, events) {
+        var self = {}, getDifference, lastPromise, getTagId;
 
-        var total = 0;
-        var chosen;
-        // Using some() here so we can bail as soon as we get our match
-        weights.some(function(weight, index) {
-            if (selected <= total + weight) {
-                chosen = arr[index];
+        getTagId = function() {
+            return options.tagsInput.keyProperty || options.tagsInput.displayProperty;
+        };
+
+        getDifference = function(array1, array2) {
+            return array1.filter(function(item) {
+                return !tiUtil.findInObjectArray(array2, item, getTagId(), function(a, b) {
+                    if (options.tagsInput.replaceSpacesWithDashes) {
+                        a = tiUtil.replaceSpacesWithDashes(a);
+                        b = tiUtil.replaceSpacesWithDashes(b);
+                    }
+                    return tiUtil.defaultComparer(a, b);
+                });
+            });
+        };
+
+        self.reset = function() {
+            lastPromise = null;
+
+            self.items = [];
+            self.visible = false;
+            self.index = -1;
+            self.selected = null;
+            self.query = null;
+        };
+        self.show = function() {
+            if (options.selectFirstMatch) {
+                self.select(0);
+            }
+            else {
+                self.selected = null;
+            }
+            self.visible = true;
+        };
+        self.load = tiUtil.debounce(function(query, tags) {
+            self.query = query;
+
+            var promise = $q.when(loadFn({ $query: query }));
+            lastPromise = promise;
+
+            promise.then(function(items) {
+                if (promise !== lastPromise) {
+                    return;
+                }
+
+                items = tiUtil.makeObjectArray(items.data || items, getTagId());
+                items = getDifference(items, tags);
+                self.items = items.slice(0, options.maxResultsToShow);
+
+                if (self.items.length > 0) {
+                    self.show();
+                }
+                else {
+                    self.reset();
+                }
+            });
+        }, options.debounceDelay);
+
+        self.selectNext = function() {
+            self.select(++self.index);
+        };
+        self.selectPrior = function() {
+            self.select(--self.index);
+        };
+        self.select = function(index) {
+            if (index < 0) {
+                index = self.items.length - 1;
+            }
+            else if (index >= self.items.length) {
+                index = 0;
+            }
+            self.index = index;
+            self.selected = self.items[index];
+            events.trigger('suggestion-selected', index);
+        };
+
+        self.reset();
+
+        return self;
+    }
+
+    function scrollToElement(root, index) {
+        var element = root.find('li').eq(index),
+            parent = element.parent(),
+            elementTop = element.prop('offsetTop'),
+            elementHeight = element.prop('offsetHeight'),
+            parentHeight = parent.prop('clientHeight'),
+            parentScrollTop = parent.prop('scrollTop');
+
+        if (elementTop < parentScrollTop) {
+            parent.prop('scrollTop', elementTop);
+        }
+        else if (elementTop + elementHeight > parentHeight + parentScrollTop) {
+            parent.prop('scrollTop', elementTop + elementHeight - parentHeight);
+        }
+    }
+
+    return {
+        restrict: 'E',
+        require: '^tagsInput',
+        scope: { source: '&' },
+        templateUrl: 'ngTagsInput/auto-complete.html',
+        controller: ["$scope", "$element", "$attrs", function($scope, $element, $attrs) {
+            $scope.events = tiUtil.simplePubSub();
+
+            tagsInputConfig.load('autoComplete', $scope, $attrs, {
+                template: [String, 'ngTagsInput/auto-complete-match.html'],
+                debounceDelay: [Number, 100],
+                minLength: [Number, 3],
+                highlightMatchedText: [Boolean, true],
+                maxResultsToShow: [Number, 10],
+                loadOnDownArrow: [Boolean, false],
+                loadOnEmpty: [Boolean, false],
+                loadOnFocus: [Boolean, false],
+                selectFirstMatch: [Boolean, true],
+                displayProperty: [String, '']
+            });
+
+            $scope.suggestionList = new SuggestionList($scope.source, $scope.options, $scope.events);
+
+            this.registerAutocompleteMatch = function() {
+                return {
+                    getOptions: function() {
+                        return $scope.options;
+                    },
+                    getQuery: function() {
+                        return $scope.suggestionList.query;
+                    }
+                };
+            };
+        }],
+        link: function(scope, element, attrs, tagsInputCtrl) {
+            var hotkeys = [KEYS.enter, KEYS.tab, KEYS.escape, KEYS.up, KEYS.down],
+                suggestionList = scope.suggestionList,
+                tagsInput = tagsInputCtrl.registerAutocomplete(),
+                options = scope.options,
+                events = scope.events,
+                shouldLoadSuggestions;
+
+            options.tagsInput = tagsInput.getOptions();
+
+            shouldLoadSuggestions = function(value) {
+                return value && value.length >= options.minLength || !value && options.loadOnEmpty;
+            };
+
+            scope.addSuggestionByIndex = function(index) {
+                suggestionList.select(index);
+                scope.addSuggestion();
+            };
+
+            scope.addSuggestion = function() {
+                var added = false;
+
+                if (suggestionList.selected) {
+                    tagsInput.addTag(angular.copy(suggestionList.selected));
+                    suggestionList.reset();
+                    tagsInput.focusInput();
+
+                    added = true;
+                }
+                return added;
+            };
+
+            scope.track = function(item) {
+                return item[options.tagsInput.keyProperty || options.tagsInput.displayProperty];
+            };
+
+            tagsInput
+                .on('tag-added tag-removed invalid-tag input-blur', function() {
+                    suggestionList.reset();
+                })
+                .on('input-change', function(value) {
+                    if (shouldLoadSuggestions(value)) {
+                        suggestionList.load(value, tagsInput.getTags());
+                    }
+                    else {
+                        suggestionList.reset();
+                    }
+                })
+                .on('input-focus', function() {
+                    var value = tagsInput.getCurrentTagText();
+                    if (options.loadOnFocus && shouldLoadSuggestions(value)) {
+                        suggestionList.load(value, tagsInput.getTags());
+                    }
+                })
+                .on('input-keydown', function(event) {
+                    var key = event.keyCode,
+                        handled = false;
+
+                    if (tiUtil.isModifierOn(event) || hotkeys.indexOf(key) === -1) {
+                        return;
+                    }
+
+                    if (suggestionList.visible) {
+
+                        if (key === KEYS.down) {
+                            suggestionList.selectNext();
+                            handled = true;
+                        }
+                        else if (key === KEYS.up) {
+                            suggestionList.selectPrior();
+                            handled = true;
+                        }
+                        else if (key === KEYS.escape) {
+                            suggestionList.reset();
+                            handled = true;
+                        }
+                        else if (key === KEYS.enter || key === KEYS.tab) {
+                            handled = scope.addSuggestion();
+                        }
+                    }
+                    else {
+                        if (key === KEYS.down && scope.options.loadOnDownArrow) {
+                            suggestionList.load(tagsInput.getCurrentTagText(), tagsInput.getTags());
+                            handled = true;
+                        }
+                    }
+
+                    if (handled) {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        return false;
+                    }
+                });
+
+            events.on('suggestion-selected', function(index) {
+                scrollToElement(element, index);
+            });
+        }
+    };
+}]);
+
+
+/**
+ * @ngdoc directive
+ * @name tiAutocompleteMatch
+ * @module ngTagsInput
+ *
+ * @description
+ * Represents an autocomplete match. Used internally by the autoComplete directive.
+ */
+tagsInput.directive('tiAutocompleteMatch', ["$sce", "tiUtil", function($sce, tiUtil) {
+    return {
+        restrict: 'E',
+        require: '^autoComplete',
+        template: '<ng-include src="$$template"></ng-include>',
+        scope: { data: '=' },
+        link: function(scope, element, attrs, autoCompleteCtrl) {
+            var autoComplete = autoCompleteCtrl.registerAutocompleteMatch(),
+                options = autoComplete.getOptions();
+
+            scope.$$template = options.template;
+            scope.$index = scope.$parent.$index;
+
+            scope.$highlight = function(text) {
+                if (options.highlightMatchedText) {
+                    text = tiUtil.safeHighlight(text, autoComplete.getQuery());
+                }
+                return $sce.trustAsHtml(text);
+            };
+            scope.$getDisplayText =  function() {
+                return tiUtil.safeToString(scope.data[options.displayProperty || options.tagsInput.displayProperty]);
+            };
+        }
+    };
+}]);
+
+
+/**
+ * @ngdoc directive
+ * @name tiTranscludeAppend
+ * @module ngTagsInput
+ *
+ * @description
+ * Re-creates the old behavior of ng-transclude. Used internally by tagsInput directive.
+ */
+tagsInput.directive('tiTranscludeAppend', function() {
+    return function(scope, element, attrs, ctrl, transcludeFn) {
+        transcludeFn(function(clone) {
+            element.append(clone);
+        });
+    };
+});
+
+/**
+ * @ngdoc directive
+ * @name tiAutosize
+ * @module ngTagsInput
+ *
+ * @description
+ * Automatically sets the input's width so its content is always visible. Used internally by tagsInput directive.
+ */
+tagsInput.directive('tiAutosize', ["tagsInputConfig", function(tagsInputConfig) {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attrs, ctrl) {
+            var threshold = tagsInputConfig.getTextAutosizeThreshold(),
+                span, resize;
+
+            span = angular.element('<span class="input"></span>');
+            span.css('display', 'none')
+                .css('visibility', 'hidden')
+                .css('width', 'auto')
+                .css('white-space', 'pre');
+
+            element.parent().append(span);
+
+            resize = function(originalValue) {
+                var value = originalValue, width;
+
+                if (angular.isString(value) && value.length === 0) {
+                    value = attrs.placeholder;
+                }
+
+                if (value) {
+                    span.text(value);
+                    span.css('display', '');
+                    width = span.prop('offsetWidth');
+                    span.css('display', 'none');
+                }
+
+                element.css('width', width ? width + threshold + 'px' : '');
+
+                return originalValue;
+            };
+
+            ctrl.$parsers.unshift(resize);
+            ctrl.$formatters.unshift(resize);
+
+            attrs.$observe('placeholder', function(value) {
+                if (!ctrl.$modelValue) {
+                    resize(value);
+                }
+            });
+        }
+    };
+}]);
+
+/**
+ * @ngdoc directive
+ * @name tiBindAttrs
+ * @module ngTagsInput
+ *
+ * @description
+ * Binds attributes to expressions. Used internally by tagsInput directive.
+ */
+tagsInput.directive('tiBindAttrs', function() {
+    return function(scope, element, attrs) {
+        scope.$watch(attrs.tiBindAttrs, function(value) {
+            angular.forEach(value, function(value, key) {
+                attrs.$set(key, value);
+            });
+        }, true);
+    };
+});
+
+/**
+ * @ngdoc service
+ * @name tagsInputConfig
+ * @module ngTagsInput
+ *
+ * @description
+ * Sets global configuration settings for both tagsInput and autoComplete directives. It's also used internally to parse and
+ *  initialize options from HTML attributes.
+ */
+tagsInput.provider('tagsInputConfig', function() {
+    var globalDefaults = {},
+        interpolationStatus = {},
+        autosizeThreshold = 3;
+
+    /**
+     * @ngdoc method
+     * @name tagsInputConfig#setDefaults
+     * @description Sets the default configuration option for a directive.
+     *
+     * @param {string} directive Name of the directive to be configured. Must be either 'tagsInput' or 'autoComplete'.
+     * @param {object} defaults Object containing options and their values.
+     *
+     * @returns {object} The service itself for chaining purposes.
+     */
+    this.setDefaults = function(directive, defaults) {
+        globalDefaults[directive] = defaults;
+        return this;
+    };
+
+    /**
+     * @ngdoc method
+     * @name tagsInputConfig#setActiveInterpolation
+     * @description Sets active interpolation for a set of options.
+     *
+     * @param {string} directive Name of the directive to be configured. Must be either 'tagsInput' or 'autoComplete'.
+     * @param {object} options Object containing which options should have interpolation turned on at all times.
+     *
+     * @returns {object} The service itself for chaining purposes.
+     */
+    this.setActiveInterpolation = function(directive, options) {
+        interpolationStatus[directive] = options;
+        return this;
+    };
+
+    /**
+     * @ngdoc method
+     * @name tagsInputConfig#setTextAutosizeThreshold
+     * @description Sets the threshold used by the tagsInput directive to re-size the inner input field element based on its contents.
+     *
+     * @param {number} threshold Threshold value, in pixels.
+     *
+     * @returns {object} The service itself for chaining purposes.
+     */
+    this.setTextAutosizeThreshold = function(threshold) {
+        autosizeThreshold = threshold;
+        return this;
+    };
+
+    this.$get = ["$interpolate", function($interpolate) {
+        var converters = {};
+        converters[String] = function(value) { return value; };
+        converters[Number] = function(value) { return parseInt(value, 10); };
+        converters[Boolean] = function(value) { return value.toLowerCase() === 'true'; };
+        converters[RegExp] = function(value) { return new RegExp(value); };
+
+        return {
+            load: function(directive, scope, attrs, options) {
+                var defaultValidator = function() { return true; };
+
+                scope.options = {};
+
+                angular.forEach(options, function(value, key) {
+                    var type, localDefault, validator, converter, getDefault, updateValue;
+
+                    type = value[0];
+                    localDefault = value[1];
+                    validator = value[2] || defaultValidator;
+                    converter = converters[type];
+
+                    getDefault = function() {
+                        var globalValue = globalDefaults[directive] && globalDefaults[directive][key];
+                        return angular.isDefined(globalValue) ? globalValue : localDefault;
+                    };
+
+                    updateValue = function(value) {
+                        scope.options[key] = value && validator(value) ? converter(value) : getDefault();
+                    };
+
+                    if (interpolationStatus[directive] && interpolationStatus[directive][key]) {
+                        attrs.$observe(key, function(value) {
+                            updateValue(value);
+                            scope.events.trigger('option-change', { name: key, newValue: value });
+                        });
+                    }
+                    else {
+                        updateValue(attrs[key] && $interpolate(attrs[key])(scope.$parent));
+                    }
+                });
+            },
+            getTextAutosizeThreshold: function() {
+                return autosizeThreshold;
+            }
+        };
+    }];
+});
+
+
+/***
+ * @ngdoc service
+ * @name tiUtil
+ * @module ngTagsInput
+ *
+ * @description
+ * Helper methods used internally by the directive. Should not be called directly from user code.
+ */
+tagsInput.factory('tiUtil', ["$timeout", function($timeout) {
+    var self = {};
+
+    self.debounce = function(fn, delay) {
+        var timeoutId;
+        return function() {
+            var args = arguments;
+            $timeout.cancel(timeoutId);
+            timeoutId = $timeout(function() { fn.apply(null, args); }, delay);
+        };
+    };
+
+    self.makeObjectArray = function(array, key) {
+        if (!angular.isArray(array) || array.length === 0 || angular.isObject(array[0])) {
+            return array;
+        }
+
+        var newArray = [];
+        array.forEach(function(item) {
+            var obj = {};
+            obj[key] = item;
+            newArray.push(obj);
+        });
+        return newArray;
+    };
+
+    self.findInObjectArray = function(array, obj, key, comparer) {
+        var item = null;
+        comparer = comparer || self.defaultComparer;
+
+        array.some(function(element) {
+            if (comparer(element[key], obj[key])) {
+                item = element;
                 return true;
             }
-            total += weight;
-            return false;
         });
 
-        return chosen;
+        return item;
     };
 
-    // -- End Helpers --
-
-    // -- Text --
-
-    Chance.prototype.paragraph = function (options) {
-        options = initOptions(options);
-
-        var sentences = options.sentences || this.natural({min: 3, max: 7}),
-            sentence_array = this.n(this.sentence, sentences);
-
-        return sentence_array.join(' ');
+    self.defaultComparer = function(a, b) {
+        // I'm aware of the internationalization issues regarding toLowerCase()
+        // but I couldn't come up with a better solution right now
+        return self.safeToString(a).toLowerCase() === self.safeToString(b).toLowerCase();
     };
 
-    // Could get smarter about this than generating random words and
-    // chaining them together. Such as: http://vq.io/1a5ceOh
-    Chance.prototype.sentence = function (options) {
-        options = initOptions(options);
-
-        var words = options.words || this.natural({min: 12, max: 18}),
-            punctuation = options.punctuation,
-            text, word_array = this.n(this.word, words);
-
-        text = word_array.join(' ');
-        
-        // Capitalize first letter of sentence
-        text = this.capitalize(text);
-        
-        // Make sure punctuation has a usable value
-        if (punctuation !== false && !/^[\.\?;!:]$/.test(punctuation)) {
-            punctuation = '.';
-        }
-        
-        // Add punctuation mark
-        if (punctuation) {
-            text += punctuation;
+    self.safeHighlight = function(str, value) {
+        if (!value) {
+            return str;
         }
 
-        return text;
-    };
-
-    Chance.prototype.syllable = function (options) {
-        options = initOptions(options);
-
-        var length = options.length || this.natural({min: 2, max: 3}),
-            consonants = 'bcdfghjklmnprstvwz', // consonants except hard to speak ones
-            vowels = 'aeiou', // vowels
-            all = consonants + vowels, // all
-            text = '',
-            chr;
-
-        // I'm sure there's a more elegant way to do this, but this works
-        // decently well.
-        for (var i = 0; i < length; i++) {
-            if (i === 0) {
-                // First character can be anything
-                chr = this.character({pool: all});
-            } else if (consonants.indexOf(chr) === -1) {
-                // Last character was a vowel, now we want a consonant
-                chr = this.character({pool: consonants});
-            } else {
-                // Last character was a consonant, now we want a vowel
-                chr = this.character({pool: vowels});
-            }
-
-            text += chr;
+        function escapeRegexChars(str) {
+            return str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
         }
 
-        return text;
-    };
-
-    Chance.prototype.word = function (options) {
-        options = initOptions(options);
-
-        testRange(
-            options.syllables && options.length,
-            "Chance: Cannot specify both syllables AND length."
-        );
-
-        var syllables = options.syllables || this.natural({min: 1, max: 3}),
-            text = '';
-
-        if (options.length) {
-            // Either bound word by length
-            do {
-                text += this.syllable();
-            } while (text.length < options.length);
-            text = text.substring(0, options.length);
-        } else {
-            // Or by number of syllables
-            for (var i = 0; i < syllables; i++) {
-                text += this.syllable();
-            }
-        }
-        return text;
-    };
-
-    // -- End Text --
-
-    // -- Person --
-
-    Chance.prototype.age = function (options) {
-        options = initOptions(options);
-        var ageRange;
-
-        switch (options.type) {
-            case 'child':
-                ageRange = {min: 1, max: 12};
-                break;
-            case 'teen':
-                ageRange = {min: 13, max: 19};
-                break;
-            case 'adult':
-                ageRange = {min: 18, max: 65};
-                break;
-            case 'senior':
-                ageRange = {min: 65, max: 100};
-                break;
-            case 'all':
-                ageRange = {min: 1, max: 100};
-                break;
-            default:
-                ageRange = {min: 18, max: 65};
-                break;
-        }
-
-        return this.natural(ageRange);
-    };
-
-    Chance.prototype.birthday = function (options) {
-        options = initOptions(options, {
-            year: (new Date().getFullYear() - this.age(options))
-        });
-
-        return this.date(options);
-    };
-
-    // CPF; ID to identify taxpayers in Brazil
-    Chance.prototype.cpf = function () {
-        var n = this.n(this.natural, 9, { max: 9 });
-        var d1 = n[8]*2+n[7]*3+n[6]*4+n[5]*5+n[4]*6+n[3]*7+n[2]*8+n[1]*9+n[0]*10;
-        d1 = 11 - (d1 % 11);
-        if (d1>=10) {
-            d1 = 0;
-        }
-        var d2 = d1*2+n[8]*3+n[7]*4+n[6]*5+n[5]*6+n[4]*7+n[3]*8+n[2]*9+n[1]*10+n[0]*11;
-        d2 = 11 - (d2 % 11);
-        if (d2>=10) {
-            d2 = 0;
-        }
-        return ''+n[0]+n[1]+n[2]+'.'+n[3]+n[4]+n[5]+'.'+n[6]+n[7]+n[8]+'-'+d1+d2;
-    };
-
-    Chance.prototype.first = function (options) {
-        options = initOptions(options, {gender: this.gender()});
-        return this.pick(this.get("firstNames")[options.gender.toLowerCase()]);
-    };
-
-    Chance.prototype.gender = function () {
-        return this.pick(['Male', 'Female']);
-    };
-
-    Chance.prototype.last = function () {
-        return this.pick(this.get("lastNames"));
-    };
-    
-    Chance.prototype.israelId=function(){
-        var x=this.string({pool: '0123456789',length:8});
-        var y=0;
-        for (var i=0;i<x.length;i++){
-            var thisDigit=  x[i] *  (i/2===parseInt(i/2) ? 1 : 2);
-            thisDigit=this.pad(thisDigit,2).toString();
-            thisDigit=parseInt(thisDigit[0]) + parseInt(thisDigit[1]);
-            y=y+thisDigit;
-        }
-        x=x+(10-parseInt(y.toString().slice(-1))).toString().slice(-1);
-        return x;
-    };
-
-    Chance.prototype.mrz = function (options) {
-        var checkDigit = function (input) {
-            var alpha = "<ABCDEFGHIJKLMNOPQRSTUVWXYXZ".split(''),
-                multipliers = [ 7, 3, 1 ],
-                runningTotal = 0;
-
-            if (typeof input !== 'string') {
-                input = input.toString();
-            }
-
-            input.split('').forEach(function(character, idx) {
-                var pos = alpha.indexOf(character);
-
-                if(pos !== -1) {
-                    character = pos === 0 ? 0 : pos + 9;
-                } else {
-                    character = parseInt(character, 10);
-                }
-                character *= multipliers[idx % multipliers.length];
-                runningTotal += character;
-            });
-            return runningTotal % 10;
-        };
-        var generate = function (opts) {
-            var pad = function (length) {
-                return new Array(length + 1).join('<');
-            };
-            var number = [ 'P<',
-                           opts.issuer,
-                           opts.last.toUpperCase(),
-                           '<<',
-                           opts.first.toUpperCase(),
-                           pad(39 - (opts.last.length + opts.first.length + 2)),
-                           opts.passportNumber,
-                           checkDigit(opts.passportNumber),
-                           opts.nationality,
-                           opts.dob,
-                           checkDigit(opts.dob),
-                           opts.gender,
-                           opts.expiry,
-                           checkDigit(opts.expiry),
-                           pad(14),
-                           checkDigit(pad(14)) ].join('');
-
-            return number +
-                (checkDigit(number.substr(44, 10) +
-                            number.substr(57, 7) +
-                            number.substr(65, 7)));
-        };
-
-        var that = this;
-
-        options = initOptions(options, {
-            first: this.first(),
-            last: this.last(),
-            passportNumber: this.integer({min: 100000000, max: 999999999}),
-            dob: (function () {
-                var date = that.birthday({type: 'adult'});
-                return [date.getFullYear().toString().substr(2),
-                        that.pad(date.getMonth() + 1, 2),
-                        that.pad(date.getDate(), 2)].join('');
-            }()),
-            expiry: (function () {
-                var date = new Date();
-                return [(date.getFullYear() + 5).toString().substr(2),
-                        that.pad(date.getMonth() + 1, 2),
-                        that.pad(date.getDate(), 2)].join('');
-            }()),
-            gender: this.gender() === 'Female' ? 'F': 'M',
-            issuer: 'GBR',
-            nationality: 'GBR'
-        });
-        return generate (options);
-    };
-
-    Chance.prototype.name = function (options) {
-        options = initOptions(options);
-
-        var first = this.first(options),
-            last = this.last(),
-            name;
-
-        if (options.middle) {
-            name = first + ' ' + this.first(options) + ' ' + last;
-        } else if (options.middle_initial) {
-            name = first + ' ' + this.character({alpha: true, casing: 'upper'}) + '. ' + last;
-        } else {
-            name = first + ' ' + last;
-        }
-
-        if (options.prefix) {
-            name = this.prefix(options) + ' ' + name;
-        }
-
-        if (options.suffix) {
-            name = name + ' ' + this.suffix(options);
-        }
-
-        return name;
-    };
-
-    // Return the list of available name prefixes based on supplied gender.
-    Chance.prototype.name_prefixes = function (gender) {
-        gender = gender || "all";
-        gender = gender.toLowerCase();
-
-        var prefixes = [
-            { name: 'Doctor', abbreviation: 'Dr.' }
-        ];
-
-        if (gender === "male" || gender === "all") {
-            prefixes.push({ name: 'Mister', abbreviation: 'Mr.' });
-        }
-
-        if (gender === "female" || gender === "all") {
-            prefixes.push({ name: 'Miss', abbreviation: 'Miss' });
-            prefixes.push({ name: 'Misses', abbreviation: 'Mrs.' });
-        }
-
-        return prefixes;
-    };
-
-    // Alias for name_prefix
-    Chance.prototype.prefix = function (options) {
-        return this.name_prefix(options);
-    };
-
-    Chance.prototype.name_prefix = function (options) {
-        options = initOptions(options, { gender: "all" });
-        return options.full ?
-            this.pick(this.name_prefixes(options.gender)).name :
-            this.pick(this.name_prefixes(options.gender)).abbreviation;
-    };
-
-    Chance.prototype.ssn = function (options) {
-        options = initOptions(options, {ssnFour: false, dashes: true});
-        var ssn_pool = "1234567890",
-            ssn,
-            dash = options.dashes ? '-' : '';
-
-        if(!options.ssnFour) {
-            ssn = this.string({pool: ssn_pool, length: 3}) + dash +
-            this.string({pool: ssn_pool, length: 2}) + dash +
-            this.string({pool: ssn_pool, length: 4});
-        } else {
-            ssn = this.string({pool: ssn_pool, length: 4});
-        }
-        return ssn;
-    };
-
-    // Return the list of available name suffixes
-    Chance.prototype.name_suffixes = function () {
-        var suffixes = [
-            { name: 'Doctor of Osteopathic Medicine', abbreviation: 'D.O.' },
-            { name: 'Doctor of Philosophy', abbreviation: 'Ph.D.' },
-            { name: 'Esquire', abbreviation: 'Esq.' },
-            { name: 'Junior', abbreviation: 'Jr.' },
-            { name: 'Juris Doctor', abbreviation: 'J.D.' },
-            { name: 'Master of Arts', abbreviation: 'M.A.' },
-            { name: 'Master of Business Administration', abbreviation: 'M.B.A.' },
-            { name: 'Master of Science', abbreviation: 'M.S.' },
-            { name: 'Medical Doctor', abbreviation: 'M.D.' },
-            { name: 'Senior', abbreviation: 'Sr.' },
-            { name: 'The Third', abbreviation: 'III' },
-            { name: 'The Fourth', abbreviation: 'IV' },
-            { name: 'Bachelor of Engineering', abbreviation: 'B.E' },
-            { name: 'Bachelor of Technology', abbreviation: 'B.TECH' }
-        ];
-        return suffixes;
-    };
-
-    // Alias for name_suffix
-    Chance.prototype.suffix = function (options) {
-        return this.name_suffix(options);
-    };
-
-    Chance.prototype.name_suffix = function (options) {
-        options = initOptions(options);
-        return options.full ?
-            this.pick(this.name_suffixes()).name :
-            this.pick(this.name_suffixes()).abbreviation;
-    };
-
-    // -- End Person --
-
-    // -- Mobile --
-    // Android GCM Registration ID
-    Chance.prototype.android_id = function () {
-        return "APA91" + this.string({ pool: "0123456789abcefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_", length: 178 });
-    };
-
-    // Apple Push Token
-    Chance.prototype.apple_token = function () {
-        return this.string({ pool: "abcdef1234567890", length: 64 });
-    };
-
-    // Windows Phone 8 ANID2
-    Chance.prototype.wp8_anid2 = function () {
-        return base64( this.hash( { length : 32 } ) );
-    };
-
-    // Windows Phone 7 ANID
-    Chance.prototype.wp7_anid = function () {
-        return 'A=' + this.guid().replace(/-/g, '').toUpperCase() + '&E=' + this.hash({ length:3 }) + '&W=' + this.integer({ min:0, max:9 });
-    };
-
-    // BlackBerry Device PIN
-    Chance.prototype.bb_pin = function () {
-        return this.hash({ length: 8 });
-    };
-
-    // -- End Mobile --
-
-    // -- Web --
-    Chance.prototype.avatar = function (options) {
-        var url = null;
-        var URL_BASE = '//www.gravatar.com/avatar/';
-        var PROTOCOLS = {
-            http: 'http',
-            https: 'https'
-        };
-        var FILE_TYPES = {
-            bmp: 'bmp',
-            gif: 'gif',
-            jpg: 'jpg',
-            png: 'png'
-        };
-        var FALLBACKS = {
-            '404': '404', // Return 404 if not found
-            mm: 'mm', // Mystery man
-            identicon: 'identicon', // Geometric pattern based on hash
-            monsterid: 'monsterid', // A generated monster icon
-            wavatar: 'wavatar', // A generated face
-            retro: 'retro', // 8-bit icon
-            blank: 'blank' // A transparent png
-        };
-        var RATINGS = {
-            g: 'g',
-            pg: 'pg',
-            r: 'r',
-            x: 'x'
-        };
-        var opts = {
-            protocol: null,
-            email: null,
-            fileExtension: null,
-            size: null,
-            fallback: null,
-            rating: null
-        };
-
-        if (!options) {
-            // Set to a random email
-            opts.email = this.email();
-            options = {};
-        }
-        else if (typeof options === 'string') {
-            opts.email = options;
-            options = {};
-        }
-        else if (typeof options !== 'object') {
-            return null;
-        }
-        else if (options.constructor === 'Array') {
-            return null;
-        }
-
-        opts = initOptions(options, opts);
-
-        if (!opts.email) {
-            // Set to a random email
-            opts.email = this.email();
-        }
-
-        // Safe checking for params
-        opts.protocol = PROTOCOLS[opts.protocol] ? opts.protocol + ':' : '';
-        opts.size = parseInt(opts.size, 0) ? opts.size : '';
-        opts.rating = RATINGS[opts.rating] ? opts.rating : '';
-        opts.fallback = FALLBACKS[opts.fallback] ? opts.fallback : '';
-        opts.fileExtension = FILE_TYPES[opts.fileExtension] ? opts.fileExtension : '';
-
-        url =
-            opts.protocol +
-            URL_BASE +
-            this.bimd5.md5(opts.email) +
-            (opts.fileExtension ? '.' + opts.fileExtension : '') +
-            (opts.size || opts.rating || opts.fallback ? '?' : '') +
-            (opts.size ? '&s=' + opts.size.toString() : '') +
-            (opts.rating ? '&r=' + opts.rating : '') +
-            (opts.fallback ? '&d=' + opts.fallback : '')
-            ;
-
-        return url;
-    };
-
-    Chance.prototype.color = function (options) {
-        function gray(value, delimiter) {
-            return [value, value, value].join(delimiter || '');
-        }
-
-        options = initOptions(options, {
-            format: this.pick(['hex', 'shorthex', 'rgb', 'rgba', '0x']),
-            grayscale: false,
-            casing: 'lower'
-        });
-
-        var isGrayscale = options.grayscale;
-        var colorValue;
-
-        if (options.format === 'hex') {
-            colorValue = '#' + (isGrayscale ? gray(this.hash({length: 2})) : this.hash({length: 6}));
-
-        } else if (options.format === 'shorthex') {
-            colorValue = '#' + (isGrayscale ? gray(this.hash({length: 1})) : this.hash({length: 3}));
-
-        } else if (options.format === 'rgb') {
-            if (isGrayscale) {
-                colorValue = 'rgb(' + gray(this.natural({max: 255}), ',') + ')';
-            } else {
-                colorValue = 'rgb(' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ')';
-            }
-        } else if (options.format === 'rgba') {
-            if (isGrayscale) {
-                colorValue = 'rgba(' + gray(this.natural({max: 255}), ',') + ',' + this.floating({min:0, max:1}) + ')';
-            } else {
-                colorValue = 'rgba(' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.floating({min:0, max:1}) + ')';
-            }
-        } else if (options.format === '0x') {
-            colorValue = '0x' + (isGrayscale ? gray(this.hash({length: 2})) : this.hash({length: 6}));
-        } else {
-            throw new RangeError('Invalid format provided. Please provide one of "hex", "shorthex", "rgb", "rgba", or "0x".');
-        }
-
-        if (options.casing === 'upper' ) {
-            colorValue = colorValue.toUpperCase();
-        }
-
-        return colorValue;
-    };
-
-    Chance.prototype.domain = function (options) {
-        options = initOptions(options);
-        return this.word() + '.' + (options.tld || this.tld());
-    };
-
-    Chance.prototype.email = function (options) {
-        options = initOptions(options);
-        return this.word({length: options.length}) + '@' + (options.domain || this.domain());
-    };
-
-    Chance.prototype.fbid = function () {
-        return parseInt('10000' + this.natural({max: 100000000000}), 10);
-    };
-
-    Chance.prototype.google_analytics = function () {
-        var account = this.pad(this.natural({max: 999999}), 6);
-        var property = this.pad(this.natural({max: 99}), 2);
-
-        return 'UA-' + account + '-' + property;
-    };
-
-    Chance.prototype.hashtag = function () {
-        return '#' + this.word();
-    };
-
-    Chance.prototype.ip = function () {
-        // Todo: This could return some reserved IPs. See http://vq.io/137dgYy
-        // this should probably be updated to account for that rare as it may be
-        return this.natural({max: 255}) + '.' +
-               this.natural({max: 255}) + '.' +
-               this.natural({max: 255}) + '.' +
-               this.natural({max: 255});
-    };
-
-    Chance.prototype.ipv6 = function () {
-        var ip_addr = this.n(this.hash, 8, {length: 4});
-
-        return ip_addr.join(":");
-    };
-
-    Chance.prototype.klout = function () {
-        return this.natural({min: 1, max: 99});
-    };
-
-    Chance.prototype.tlds = function () {
-        return ['com', 'org', 'edu', 'gov', 'co.uk', 'net', 'io'];
-    };
-
-    Chance.prototype.tld = function () {
-        return this.pick(this.tlds());
-    };
-
-    Chance.prototype.twitter = function () {
-        return '@' + this.word();
-    };
-
-    Chance.prototype.url = function (options) {
-        options = initOptions(options, { protocol: "http", domain: this.domain(options), domain_prefix: "", path: this.word(), extensions: []});
-
-        var extension = options.extensions.length > 0 ? "." + this.pick(options.extensions) : "";
-        var domain = options.domain_prefix ? options.domain_prefix + "." + options.domain : options.domain;
-
-        return options.protocol + "://" + domain + "/" + options.path + extension;
-    };
-
-    // -- End Web --
-
-    // -- Location --
-
-    Chance.prototype.address = function (options) {
-        options = initOptions(options);
-        return this.natural({min: 5, max: 2000}) + ' ' + this.street(options);
-    };
-
-    Chance.prototype.altitude = function (options) {
-        options = initOptions(options, {fixed: 5, min: 0, max: 8848});
-        return this.floating({
-            min: options.min,
-            max: options.max,
-            fixed: options.fixed
+        str = self.encodeHTML(str);
+        value = self.encodeHTML(value);
+
+        var expression = new RegExp('&[^;]+;|' + escapeRegexChars(value), 'gi');
+        return str.replace(expression, function(match) {
+            return match.toLowerCase() === value.toLowerCase() ? '<em>' + match + '</em>' : match;
         });
     };
 
-    Chance.prototype.areacode = function (options) {
-        options = initOptions(options, {parens : true});
-        // Don't want area codes to start with 1, or have a 9 as the second digit
-        var areacode = this.natural({min: 2, max: 9}).toString() +
-                this.natural({min: 0, max: 8}).toString() +
-                this.natural({min: 0, max: 9}).toString();
-
-        return options.parens ? '(' + areacode + ')' : areacode;
+    self.safeToString = function(value) {
+        return angular.isUndefined(value) || value == null ? '' : value.toString().trim();
     };
 
-    Chance.prototype.city = function () {
-        return this.capitalize(this.word({syllables: 3}));
+    self.encodeHTML = function(value) {
+        return self.safeToString(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
     };
 
-    Chance.prototype.coordinates = function (options) {
-        return this.latitude(options) + ', ' + this.longitude(options);
+    self.handleUndefinedResult = function(fn, valueIfUndefined) {
+        return function() {
+            var result = fn.apply(null, arguments);
+            return angular.isUndefined(result) ? valueIfUndefined : result;
+        };
     };
 
-    Chance.prototype.countries = function () {
-        return this.get("countries");
+    self.replaceSpacesWithDashes = function(str) {
+        return self.safeToString(str).replace(/\s/g, '-');
     };
 
-    Chance.prototype.country = function (options) {
-        options = initOptions(options);
-        var country = this.pick(this.countries());
-        return options.full ? country.name : country.abbreviation;
+    self.isModifierOn = function(event) {
+        return event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
     };
 
-    Chance.prototype.depth = function (options) {
-        options = initOptions(options, {fixed: 5, min: -10994, max: 0});
-        return this.floating({
-            min: options.min,
-            max: options.max,
-            fixed: options.fixed
-        });
-    };
-
-    Chance.prototype.geohash = function (options) {
-        options = initOptions(options, { length: 7 });
-        return this.string({ length: options.length, pool: '0123456789bcdefghjkmnpqrstuvwxyz' });
-    };
-
-    Chance.prototype.geojson = function (options) {
-        return this.latitude(options) + ', ' + this.longitude(options) + ', ' + this.altitude(options);
-    };
-
-    Chance.prototype.latitude = function (options) {
-        options = initOptions(options, {fixed: 5, min: -90, max: 90});
-        return this.floating({min: options.min, max: options.max, fixed: options.fixed});
-    };
-
-    Chance.prototype.longitude = function (options) {
-        options = initOptions(options, {fixed: 5, min: -180, max: 180});
-        return this.floating({min: options.min, max: options.max, fixed: options.fixed});
-    };
-
-    Chance.prototype.phone = function (options) {
-        var self = this,
-            numPick,
-            ukNum = function (parts) {
-                var section = [];
-                //fills the section part of the phone number with random numbers.
-                parts.sections.forEach(function(n) {
-                    section.push(self.string({ pool: '0123456789', length: n}));
+    self.simplePubSub = function() {
+        var events = {};
+        return {
+            on: function(names, handler) {
+                names.split(' ').forEach(function(name) {
+                    if (!events[name]) {
+                        events[name] = [];
+                    }
+                    events[name].push(handler);
                 });
-                return parts.area + section.join(' ');
-            };
-        options = initOptions(options, {
-            formatted: true,
-            country: 'us',
-            mobile: false
-        });
-        if (!options.formatted) {
-            options.parens = false;
-        }
-        var phone;
-        switch (options.country) {
-            case 'fr':
-                if (!options.mobile) {
-                    numPick = this.pick([
-                        // Valid zone and département codes.
-                        '01' + this.pick(['30', '34', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '53', '55', '56', '58', '60', '64', '69', '70', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83']) + self.string({ pool: '0123456789', length: 6}),
-                        '02' + this.pick(['14', '18', '22', '23', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '40', '41', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '56', '57', '61', '62', '69', '72', '76', '77', '78', '85', '90', '96', '97', '98', '99']) + self.string({ pool: '0123456789', length: 6}),
-                        '03' + this.pick(['10', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '39', '44', '45', '51', '52', '54', '55', '57', '58', '59', '60', '61', '62', '63', '64', '65', '66', '67', '68', '69', '70', '71', '72', '73', '80', '81', '82', '83', '84', '85', '86', '87', '88', '89', '90']) + self.string({ pool: '0123456789', length: 6}),
-                        '04' + this.pick(['11', '13', '15', '20', '22', '26', '27', '30', '32', '34', '37', '42', '43', '44', '50', '56', '57', '63', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79', '80', '81', '82', '83', '84', '85', '86', '88', '89', '90', '91', '92', '93', '94', '95', '97', '98']) + self.string({ pool: '0123456789', length: 6}),
-                        '05' + this.pick(['08', '16', '17', '19', '24', '31', '32', '33', '34', '35', '40', '45', '46', '47', '49', '53', '55', '56', '57', '58', '59', '61', '62', '63', '64', '65', '67', '79', '81', '82', '86', '87', '90', '94']) + self.string({ pool: '0123456789', length: 6}),
-                        '09' + self.string({ pool: '0123456789', length: 8}),
-                    ]);
-                    phone = options.formatted ? numPick.match(/../g).join(' ') : numPick;
-                } else {
-                    numPick = this.pick(['06', '07']) + self.string({ pool: '0123456789', length: 8});
-                    phone = options.formatted ? numPick.match(/../g).join(' ') : numPick;
-                }
-                break;
-            case 'uk':
-                if (!options.mobile) {
-                    numPick = this.pick([
-                        //valid area codes of major cities/counties followed by random numbers in required format.
-                        { area: '01' + this.character({ pool: '234569' }) + '1 ', sections: [3,4] },
-                        { area: '020 ' + this.character({ pool: '378' }), sections: [3,4] },
-                        { area: '023 ' + this.character({ pool: '89' }), sections: [3,4] },
-                        { area: '024 7', sections: [3,4] },
-                        { area: '028 ' + this.pick(['25','28','37','71','82','90','92','95']), sections: [2,4] },
-                        { area: '012' + this.pick(['04','08','54','76','97','98']) + ' ', sections: [5] },
-                        { area: '013' + this.pick(['63','64','84','86']) + ' ', sections: [5] },
-                        { area: '014' + this.pick(['04','20','60','61','80','88']) + ' ', sections: [5] },
-                        { area: '015' + this.pick(['24','27','62','66']) + ' ', sections: [5] },
-                        { area: '016' + this.pick(['06','29','35','47','59','95']) + ' ', sections: [5] },
-                        { area: '017' + this.pick(['26','44','50','68']) + ' ', sections: [5] },
-                        { area: '018' + this.pick(['27','37','84','97']) + ' ', sections: [5] },
-                        { area: '019' + this.pick(['00','05','35','46','49','63','95']) + ' ', sections: [5] }
-                    ]);
-                    phone = options.formatted ? ukNum(numPick) : ukNum(numPick).replace(' ', '', 'g');
-                } else {
-                    numPick = this.pick([
-                        { area: '07' + this.pick(['4','5','7','8','9']), sections: [2,6] },
-                        { area: '07624 ', sections: [6] }
-                    ]);
-                    phone = options.formatted ? ukNum(numPick) : ukNum(numPick).replace(' ', '');
-                }
-                break;
-            case 'us':
-                var areacode = this.areacode(options).toString();
-                var exchange = this.natural({ min: 2, max: 9 }).toString() +
-                    this.natural({ min: 0, max: 9 }).toString() +
-                    this.natural({ min: 0, max: 9 }).toString();
-                var subscriber = this.natural({ min: 1000, max: 9999 }).toString(); // this could be random [0-9]{4}
-                phone = options.formatted ? areacode + ' ' + exchange + '-' + subscriber : areacode + exchange + subscriber;
-        }
-        return phone;
-    };
-
-    Chance.prototype.postal = function () {
-        // Postal District
-        var pd = this.character({pool: "XVTSRPNKLMHJGECBA"});
-        // Forward Sortation Area (FSA)
-        var fsa = pd + this.natural({max: 9}) + this.character({alpha: true, casing: "upper"});
-        // Local Delivery Unut (LDU)
-        var ldu = this.natural({max: 9}) + this.character({alpha: true, casing: "upper"}) + this.natural({max: 9});
-
-        return fsa + " " + ldu;
-    };
-
-    Chance.prototype.provinces = function () {
-        return this.get("provinces");
-    };
-
-    Chance.prototype.province = function (options) {
-        return (options && options.full) ?
-            this.pick(this.provinces()).name :
-            this.pick(this.provinces()).abbreviation;
-    };
-
-    Chance.prototype.state = function (options) {
-        return (options && options.full) ?
-            this.pick(this.states(options)).name :
-            this.pick(this.states(options)).abbreviation;
-    };
-
-    Chance.prototype.states = function (options) {
-        options = initOptions(options, { us_states_and_dc: true });
-
-        var states,
-            us_states_and_dc = this.get("us_states_and_dc"),
-            territories = this.get("territories"),
-            armed_forces = this.get("armed_forces");
-
-        states = [];
-
-        if (options.us_states_and_dc) {
-            states = states.concat(us_states_and_dc);
-        }
-        if (options.territories) {
-            states = states.concat(territories);
-        }
-        if (options.armed_forces) {
-            states = states.concat(armed_forces);
-        }
-
-        return states;
-    };
-
-    Chance.prototype.street = function (options) {
-        options = initOptions(options);
-
-        var street = this.word({syllables: 2});
-        street = this.capitalize(street);
-        street += ' ';
-        street += options.short_suffix ?
-            this.street_suffix().abbreviation :
-            this.street_suffix().name;
-        return street;
-    };
-
-    Chance.prototype.street_suffix = function () {
-        return this.pick(this.street_suffixes());
-    };
-
-    Chance.prototype.street_suffixes = function () {
-        // These are the most common suffixes.
-        return this.get("street_suffixes");
-    };
-
-    // Note: only returning US zip codes, internationalization will be a whole
-    // other beast to tackle at some point.
-    Chance.prototype.zip = function (options) {
-        var zip = this.n(this.natural, 5, {max: 9});
-
-        if (options && options.plusfour === true) {
-            zip.push('-');
-            zip = zip.concat(this.n(this.natural, 4, {max: 9}));
-        }
-
-        return zip.join("");
-    };
-
-    // -- End Location --
-
-    // -- Time
-
-    Chance.prototype.ampm = function () {
-        return this.bool() ? 'am' : 'pm';
-    };
-
-    Chance.prototype.date = function (options) {
-        var date_string, date;
-
-        // If interval is specified we ignore preset
-        if(options && (options.min || options.max)) {
-            options = initOptions(options, {
-                american: true,
-                string: false
-            });
-            var min = typeof options.min !== "undefined" ? options.min.getTime() : 1;
-            // 100,000,000 days measured relative to midnight at the beginning of 01 January, 1970 UTC. http://es5.github.io/#x15.9.1.1
-            var max = typeof options.max !== "undefined" ? options.max.getTime() : 8640000000000000;
-
-            date = new Date(this.natural({min: min, max: max}));
-        } else {
-            var m = this.month({raw: true});
-            var daysInMonth = m.days;
-
-            if(options && options.month) {
-                // Mod 12 to allow months outside range of 0-11 (not encouraged, but also not prevented).
-                daysInMonth = this.get('months')[((options.month % 12) + 12) % 12].days;
+                return this;
+            },
+            trigger: function(name, args) {
+                var handlers = events[name] || [];
+                handlers.every(function(handler) {
+                    return self.handleUndefinedResult(handler, true)(args);
+                });
+                return this;
             }
-
-            options = initOptions(options, {
-                year: parseInt(this.year(), 10),
-                // Necessary to subtract 1 because Date() 0-indexes month but not day or year
-                // for some reason.
-                month: m.numeric - 1,
-                day: this.natural({min: 1, max: daysInMonth}),
-                hour: this.hour(),
-                minute: this.minute(),
-                second: this.second(),
-                millisecond: this.millisecond(),
-                american: true,
-                string: false
-            });
-
-            date = new Date(options.year, options.month, options.day, options.hour, options.minute, options.second, options.millisecond);
-        }
-
-        if (options.american) {
-            // Adding 1 to the month is necessary because Date() 0-indexes
-            // months but not day for some odd reason.
-            date_string = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-        } else {
-            date_string = date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
-        }
-
-        return options.string ? date_string : date;
-    };
-
-    Chance.prototype.hammertime = function (options) {
-        return this.date(options).getTime();
-    };
-
-    Chance.prototype.hour = function (options) {
-        options = initOptions(options, {min: 1, max: options && options.twentyfour ? 24 : 12});
-
-        testRange(options.min < 1, "Chance: Min cannot be less than 1.");
-        testRange(options.twentyfour && options.max > 24, "Chance: Max cannot be greater than 24 for twentyfour option.");
-        testRange(!options.twentyfour && options.max > 12, "Chance: Max cannot be greater than 12.");
-        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
-
-        return this.natural({min: options.min, max: options.max});
-    };
-
-    Chance.prototype.millisecond = function () {
-        return this.natural({max: 999});
-    };
-
-    Chance.prototype.minute = Chance.prototype.second = function (options) {
-        options = initOptions(options, {min: 0, max: 59});
-
-        testRange(options.min < 0, "Chance: Min cannot be less than 0.");
-        testRange(options.max > 59, "Chance: Max cannot be greater than 59.");
-        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
-
-        return this.natural({min: options.min, max: options.max});
-    };
-
-    Chance.prototype.month = function (options) {
-        options = initOptions(options, {min: 1, max: 12});
-
-        testRange(options.min < 1, "Chance: Min cannot be less than 1.");
-        testRange(options.max > 12, "Chance: Max cannot be greater than 12.");
-        testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
-
-        var month = this.pick(this.months().slice(options.min - 1, options.max));
-        return options.raw ? month : month.name;
-    };
-
-    Chance.prototype.months = function () {
-        return this.get("months");
-    };
-
-    Chance.prototype.second = function () {
-        return this.natural({max: 59});
-    };
-
-    Chance.prototype.timestamp = function () {
-        return this.natural({min: 1, max: parseInt(new Date().getTime() / 1000, 10)});
-    };
-
-    Chance.prototype.year = function (options) {
-        // Default to current year as min if none specified
-        options = initOptions(options, {min: new Date().getFullYear()});
-
-        // Default to one century after current year as max if none specified
-        options.max = (typeof options.max !== "undefined") ? options.max : options.min + 100;
-
-        return this.natural(options).toString();
-    };
-
-    // -- End Time
-
-    // -- Finance --
-
-    Chance.prototype.cc = function (options) {
-        options = initOptions(options);
-
-        var type, number, to_generate;
-
-        type = (options.type) ?
-                    this.cc_type({ name: options.type, raw: true }) :
-                    this.cc_type({ raw: true });
-
-        number = type.prefix.split("");
-        to_generate = type.length - type.prefix.length - 1;
-
-        // Generates n - 1 digits
-        number = number.concat(this.n(this.integer, to_generate, {min: 0, max: 9}));
-
-        // Generates the last digit according to Luhn algorithm
-        number.push(this.luhn_calculate(number.join("")));
-
-        return number.join("");
-    };
-
-    Chance.prototype.cc_types = function () {
-        // http://en.wikipedia.org/wiki/Bank_card_number#Issuer_identification_number_.28IIN.29
-        return this.get("cc_types");
-    };
-
-    Chance.prototype.cc_type = function (options) {
-        options = initOptions(options);
-        var types = this.cc_types(),
-            type = null;
-
-        if (options.name) {
-            for (var i = 0; i < types.length; i++) {
-                // Accept either name or short_name to specify card type
-                if (types[i].name === options.name || types[i].short_name === options.name) {
-                    type = types[i];
-                    break;
-                }
-            }
-            if (type === null) {
-                throw new RangeError("Credit card type '" + options.name + "'' is not supported");
-            }
-        } else {
-            type = this.pick(types);
-        }
-
-        return options.raw ? type : type.name;
-    };
-
-    //return all world currency by ISO 4217
-    Chance.prototype.currency_types = function () {
-        return this.get("currency_types");
-    };
-
-    //return random world currency by ISO 4217
-    Chance.prototype.currency = function () {
-        return this.pick(this.currency_types());
-    };
-
-    //Return random correct currency exchange pair (e.g. EUR/USD) or array of currency code
-    Chance.prototype.currency_pair = function (returnAsString) {
-        var currencies = this.unique(this.currency, 2, {
-            comparator: function(arr, val) {
-
-                return arr.reduce(function(acc, item) {
-                    // If a match has been found, short circuit check and just return
-                    return acc || (item.code === val.code);
-                }, false);
-            }
-        });
-
-        if (returnAsString) {
-            return currencies[0].code + '/' + currencies[1].code;
-        } else {
-            return currencies;
-        }
-    };
-
-    Chance.prototype.dollar = function (options) {
-        // By default, a somewhat more sane max for dollar than all available numbers
-        options = initOptions(options, {max : 10000, min : 0});
-
-        var dollar = this.floating({min: options.min, max: options.max, fixed: 2}).toString(),
-            cents = dollar.split('.')[1];
-
-        if (cents === undefined) {
-            dollar += '.00';
-        } else if (cents.length < 2) {
-            dollar = dollar + '0';
-        }
-
-        if (dollar < 0) {
-            return '-$' + dollar.replace('-', '');
-        } else {
-            return '$' + dollar;
-        }
-    };
-
-    Chance.prototype.exp = function (options) {
-        options = initOptions(options);
-        var exp = {};
-
-        exp.year = this.exp_year();
-
-        // If the year is this year, need to ensure month is greater than the
-        // current month or this expiration will not be valid
-        if (exp.year === (new Date().getFullYear()).toString()) {
-            exp.month = this.exp_month({future: true});
-        } else {
-            exp.month = this.exp_month();
-        }
-
-        return options.raw ? exp : exp.month + '/' + exp.year;
-    };
-
-    Chance.prototype.exp_month = function (options) {
-        options = initOptions(options);
-        var month, month_int,
-            // Date object months are 0 indexed
-            curMonth = new Date().getMonth() + 1;
-
-        if (options.future) {
-            do {
-                month = this.month({raw: true}).numeric;
-                month_int = parseInt(month, 10);
-            } while (month_int <= curMonth);
-        } else {
-            month = this.month({raw: true}).numeric;
-        }
-
-        return month;
-    };
-
-    Chance.prototype.exp_year = function () {
-        return this.year({max: new Date().getFullYear() + 10});
-    };
-
-    // -- End Finance
-
-    // -- Regional
-
-    Chance.prototype.pl_pesel = function () {
-        var number = this.natural({min: 1, max: 9999999999});
-        var arr = this.pad(number, 10).split('');
-        for (var i = 0; i < arr.length; i++) {
-            arr[i] = parseInt(arr[i]);
-        }
-
-        var controlNumber = (1 * arr[0] + 3 * arr[1] + 7 * arr[2] + 9 * arr[3] + 1 * arr[4] + 3 * arr[5] + 7 * arr[6] + 9 * arr[7] + 1 * arr[8] + 3 * arr[9]) % 10;
-        if(controlNumber !== 0) {
-            controlNumber = 10 - controlNumber;
-        }
-
-        return arr.join('') + controlNumber;
-    };
-
-    Chance.prototype.pl_nip = function () {
-        var number = this.natural({min: 1, max: 999999999});
-        var arr = this.pad(number, 9).split('');
-        for (var i = 0; i < arr.length; i++) {
-            arr[i] = parseInt(arr[i]);
-        }
-
-        var controlNumber = (6 * arr[0] + 5 * arr[1] + 7 * arr[2] + 2 * arr[3] + 3 * arr[4] + 4 * arr[5] + 5 * arr[6] + 6 * arr[7] + 7 * arr[8]) % 11;
-        if(controlNumber === 10) {
-            return this.pl_nip();
-        }
-
-        return arr.join('') + controlNumber;
-    };
-
-    Chance.prototype.pl_regon = function () {
-        var number = this.natural({min: 1, max: 99999999});
-        var arr = this.pad(number, 8).split('');
-        for (var i = 0; i < arr.length; i++) {
-            arr[i] = parseInt(arr[i]);
-        }
-
-        var controlNumber = (8 * arr[0] + 9 * arr[1] + 2 * arr[2] + 3 * arr[3] + 4 * arr[4] + 5 * arr[5] + 6 * arr[6] + 7 * arr[7]) % 11;
-        if(controlNumber === 10) {
-            controlNumber = 0;
-        }
-
-        return arr.join('') + controlNumber;
-    };
-
-    // -- End Regional
-
-    // -- Miscellaneous --
-
-    // Dice - For all the board game geeks out there, myself included ;)
-    function diceFn (range) {
-        return function () {
-            return this.natural(range);
         };
-    }
-    Chance.prototype.d4 = diceFn({min: 1, max: 4});
-    Chance.prototype.d6 = diceFn({min: 1, max: 6});
-    Chance.prototype.d8 = diceFn({min: 1, max: 8});
-    Chance.prototype.d10 = diceFn({min: 1, max: 10});
-    Chance.prototype.d12 = diceFn({min: 1, max: 12});
-    Chance.prototype.d20 = diceFn({min: 1, max: 20});
-    Chance.prototype.d30 = diceFn({min: 1, max: 30});
-    Chance.prototype.d100 = diceFn({min: 1, max: 100});
-
-    Chance.prototype.rpg = function (thrown, options) {
-        options = initOptions(options);
-        if (!thrown) {
-            throw new RangeError("A type of die roll must be included");
-        } else {
-            var bits = thrown.toLowerCase().split("d"),
-                rolls = [];
-
-            if (bits.length !== 2 || !parseInt(bits[0], 10) || !parseInt(bits[1], 10)) {
-                throw new Error("Invalid format provided. Please provide #d# where the first # is the number of dice to roll, the second # is the max of each die");
-            }
-            for (var i = bits[0]; i > 0; i--) {
-                rolls[i - 1] = this.natural({min: 1, max: bits[1]});
-            }
-            return (typeof options.sum !== 'undefined' && options.sum) ? rolls.reduce(function (p, c) { return p + c; }) : rolls;
-        }
     };
 
-    // Guid
-    Chance.prototype.guid = function (options) {
-        options = initOptions(options, { version: 5 });
-
-        var guid_pool = "abcdef1234567890",
-            variant_pool = "ab89",
-            guid = this.string({ pool: guid_pool, length: 8 }) + '-' +
-                   this.string({ pool: guid_pool, length: 4 }) + '-' +
-                   // The Version
-                   options.version +
-                   this.string({ pool: guid_pool, length: 3 }) + '-' +
-                   // The Variant
-                   this.string({ pool: variant_pool, length: 1 }) +
-                   this.string({ pool: guid_pool, length: 3 }) + '-' +
-                   this.string({ pool: guid_pool, length: 12 });
-        return guid;
-    };
-
-    // Hash
-    Chance.prototype.hash = function (options) {
-        options = initOptions(options, {length : 40, casing: 'lower'});
-        var pool = options.casing === 'upper' ? HEX_POOL.toUpperCase() : HEX_POOL;
-        return this.string({pool: pool, length: options.length});
-    };
-
-    Chance.prototype.luhn_check = function (num) {
-        var str = num.toString();
-        var checkDigit = +str.substring(str.length - 1);
-        return checkDigit === this.luhn_calculate(+str.substring(0, str.length - 1));
-    };
-
-    Chance.prototype.luhn_calculate = function (num) {
-        var digits = num.toString().split("").reverse();
-        var sum = 0;
-        var digit;
-
-        for (var i = 0, l = digits.length; l > i; ++i) {
-            digit = +digits[i];
-            if (i % 2 === 0) {
-                digit *= 2;
-                if (digit > 9) {
-                    digit -= 9;
-                }
-            }
-            sum += digit;
-        }
-        return (sum * 9) % 10;
-    };
-
-    // MD5 Hash
-    Chance.prototype.md5 = function(options) {
-        var opts = { str: '', key: null, raw: false };
-
-        if (!options) {
-            opts.str = this.string();
-            options = {};
-        }
-        else if (typeof options === 'string') {
-            opts.str = options;
-            options = {};
-        }
-        else if (typeof options !== 'object') {
-            return null;
-        }
-        else if(options.constructor === 'Array') {
-            return null;
-        }
-
-        opts = initOptions(options, opts);
-
-        if(!opts.str){
-            throw new Error('A parameter is required to return an md5 hash.');
-        }
-
-        return this.bimd5.md5(opts.str, opts.key, opts.raw);
-    };
-
-    var data = {
-
-        firstNames: {
-            "male": ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Charles", "Thomas", "Christopher", "Daniel", "Matthew", "George", "Donald", "Anthony", "Paul", "Mark", "Edward", "Steven", "Kenneth", "Andrew", "Brian", "Joshua", "Kevin", "Ronald", "Timothy", "Jason", "Jeffrey", "Frank", "Gary", "Ryan", "Nicholas", "Eric", "Stephen", "Jacob", "Larry", "Jonathan", "Scott", "Raymond", "Justin", "Brandon", "Gregory", "Samuel", "Benjamin", "Patrick", "Jack", "Henry", "Walter", "Dennis", "Jerry", "Alexander", "Peter", "Tyler", "Douglas", "Harold", "Aaron", "Jose", "Adam", "Arthur", "Zachary", "Carl", "Nathan", "Albert", "Kyle", "Lawrence", "Joe", "Willie", "Gerald", "Roger", "Keith", "Jeremy", "Terry", "Harry", "Ralph", "Sean", "Jesse", "Roy", "Louis", "Billy", "Austin", "Bruce", "Eugene", "Christian", "Bryan", "Wayne", "Russell", "Howard", "Fred", "Ethan", "Jordan", "Philip", "Alan", "Juan", "Randy", "Vincent", "Bobby", "Dylan", "Johnny", "Phillip", "Victor", "Clarence", "Ernest", "Martin", "Craig", "Stanley", "Shawn", "Travis", "Bradley", "Leonard", "Earl", "Gabriel", "Jimmy", "Francis", "Todd", "Noah", "Danny", "Dale", "Cody", "Carlos", "Allen", "Frederick", "Logan", "Curtis", "Alex", "Joel", "Luis", "Norman", "Marvin", "Glenn", "Tony", "Nathaniel", "Rodney", "Melvin", "Alfred", "Steve", "Cameron", "Chad", "Edwin", "Caleb", "Evan", "Antonio", "Lee", "Herbert", "Jeffery", "Isaac", "Derek", "Ricky", "Marcus", "Theodore", "Elijah", "Luke", "Jesus", "Eddie", "Troy", "Mike", "Dustin", "Ray", "Adrian", "Bernard", "Leroy", "Angel", "Randall", "Wesley", "Ian", "Jared", "Mason", "Hunter", "Calvin", "Oscar", "Clifford", "Jay", "Shane", "Ronnie", "Barry", "Lucas", "Corey", "Manuel", "Leo", "Tommy", "Warren", "Jackson", "Isaiah", "Connor", "Don", "Dean", "Jon", "Julian", "Miguel", "Bill", "Lloyd", "Charlie", "Mitchell", "Leon", "Jerome", "Darrell", "Jeremiah", "Alvin", "Brett", "Seth", "Floyd", "Jim", "Blake", "Micheal", "Gordon", "Trevor", "Lewis", "Erik", "Edgar", "Vernon", "Devin", "Gavin", "Jayden", "Chris", "Clyde", "Tom", "Derrick", "Mario", "Brent", "Marc", "Herman", "Chase", "Dominic", "Ricardo", "Franklin", "Maurice", "Max", "Aiden", "Owen", "Lester", "Gilbert", "Elmer", "Gene", "Francisco", "Glen", "Cory", "Garrett", "Clayton", "Sam", "Jorge", "Chester", "Alejandro", "Jeff", "Harvey", "Milton", "Cole", "Ivan", "Andre", "Duane", "Landon"],
-            "female": ["Mary", "Emma", "Elizabeth", "Minnie", "Margaret", "Ida", "Alice", "Bertha", "Sarah", "Annie", "Clara", "Ella", "Florence", "Cora", "Martha", "Laura", "Nellie", "Grace", "Carrie", "Maude", "Mabel", "Bessie", "Jennie", "Gertrude", "Julia", "Hattie", "Edith", "Mattie", "Rose", "Catherine", "Lillian", "Ada", "Lillie", "Helen", "Jessie", "Louise", "Ethel", "Lula", "Myrtle", "Eva", "Frances", "Lena", "Lucy", "Edna", "Maggie", "Pearl", "Daisy", "Fannie", "Josephine", "Dora", "Rosa", "Katherine", "Agnes", "Marie", "Nora", "May", "Mamie", "Blanche", "Stella", "Ellen", "Nancy", "Effie", "Sallie", "Nettie", "Della", "Lizzie", "Flora", "Susie", "Maud", "Mae", "Etta", "Harriet", "Sadie", "Caroline", "Katie", "Lydia", "Elsie", "Kate", "Susan", "Mollie", "Alma", "Addie", "Georgia", "Eliza", "Lulu", "Nannie", "Lottie", "Amanda", "Belle", "Charlotte", "Rebecca", "Ruth", "Viola", "Olive", "Amelia", "Hannah", "Jane", "Virginia", "Emily", "Matilda", "Irene", "Kathryn", "Esther", "Willie", "Henrietta", "Ollie", "Amy", "Rachel", "Sara", "Estella", "Theresa", "Augusta", "Ora", "Pauline", "Josie", "Lola", "Sophia", "Leona", "Anne", "Mildred", "Ann", "Beulah", "Callie", "Lou", "Delia", "Eleanor", "Barbara", "Iva", "Louisa", "Maria", "Mayme", "Evelyn", "Estelle", "Nina", "Betty", "Marion", "Bettie", "Dorothy", "Luella", "Inez", "Lela", "Rosie", "Allie", "Millie", "Janie", "Cornelia", "Victoria", "Ruby", "Winifred", "Alta", "Celia", "Christine", "Beatrice", "Birdie", "Harriett", "Mable", "Myra", "Sophie", "Tillie", "Isabel", "Sylvia", "Carolyn", "Isabelle", "Leila", "Sally", "Ina", "Essie", "Bertie", "Nell", "Alberta", "Katharine", "Lora", "Rena", "Mina", "Rhoda", "Mathilda", "Abbie", "Eula", "Dollie", "Hettie", "Eunice", "Fanny", "Ola", "Lenora", "Adelaide", "Christina", "Lelia", "Nelle", "Sue", "Johanna", "Lilly", "Lucinda", "Minerva", "Lettie", "Roxie", "Cynthia", "Helena", "Hilda", "Hulda", "Bernice", "Genevieve", "Jean", "Cordelia", "Marian", "Francis", "Jeanette", "Adeline", "Gussie", "Leah", "Lois", "Lura", "Mittie", "Hallie", "Isabella", "Olga", "Phoebe", "Teresa", "Hester", "Lida", "Lina", "Winnie", "Claudia", "Marguerite", "Vera", "Cecelia", "Bess", "Emilie", "John", "Rosetta", "Verna", "Myrtie", "Cecilia", "Elva", "Olivia", "Ophelia", "Georgie", "Elnora", "Violet", "Adele", "Lily", "Linnie", "Loretta", "Madge", "Polly", "Virgie", "Eugenia", "Lucile", "Lucille", "Mabelle", "Rosalie"]
-        },
-
-        lastNames: ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia', 'Martinez', 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker', 'Hall', 'Allen', 'Young', 'Hernandez', 'King', 'Wright', 'Lopez', 'Hill', 'Scott', 'Green', 'Adams', 'Baker', 'Gonzalez', 'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans', 'Edwards', 'Collins', 'Stewart', 'Sanchez', 'Morris', 'Rogers', 'Reed', 'Cook', 'Morgan', 'Bell', 'Murphy', 'Bailey', 'Rivera', 'Cooper', 'Richardson', 'Cox', 'Howard', 'Ward', 'Torres', 'Peterson', 'Gray', 'Ramirez', 'James', 'Watson', 'Brooks', 'Kelly', 'Sanders', 'Price', 'Bennett', 'Wood', 'Barnes', 'Ross', 'Henderson', 'Coleman', 'Jenkins', 'Perry', 'Powell', 'Long', 'Patterson', 'Hughes', 'Flores', 'Washington', 'Butler', 'Simmons', 'Foster', 'Gonzales', 'Bryant', 'Alexander', 'Russell', 'Griffin', 'Diaz', 'Hayes', 'Myers', 'Ford', 'Hamilton', 'Graham', 'Sullivan', 'Wallace', 'Woods', 'Cole', 'West', 'Jordan', 'Owens', 'Reynolds', 'Fisher', 'Ellis', 'Harrison', 'Gibson', 'McDonald', 'Cruz', 'Marshall', 'Ortiz', 'Gomez', 'Murray', 'Freeman', 'Wells', 'Webb', 'Simpson', 'Stevens', 'Tucker', 'Porter', 'Hunter', 'Hicks', 'Crawford', 'Henry', 'Boyd', 'Mason', 'Morales', 'Kennedy', 'Warren', 'Dixon', 'Ramos', 'Reyes', 'Burns', 'Gordon', 'Shaw', 'Holmes', 'Rice', 'Robertson', 'Hunt', 'Black', 'Daniels', 'Palmer', 'Mills', 'Nichols', 'Grant', 'Knight', 'Ferguson', 'Rose', 'Stone', 'Hawkins', 'Dunn', 'Perkins', 'Hudson', 'Spencer', 'Gardner', 'Stephens', 'Payne', 'Pierce', 'Berry', 'Matthews', 'Arnold', 'Wagner', 'Willis', 'Ray', 'Watkins', 'Olson', 'Carroll', 'Duncan', 'Snyder', 'Hart', 'Cunningham', 'Bradley', 'Lane', 'Andrews', 'Ruiz', 'Harper', 'Fox', 'Riley', 'Armstrong', 'Carpenter', 'Weaver', 'Greene', 'Lawrence', 'Elliott', 'Chavez', 'Sims', 'Austin', 'Peters', 'Kelley', 'Franklin', 'Lawson', 'Fields', 'Gutierrez', 'Ryan', 'Schmidt', 'Carr', 'Vasquez', 'Castillo', 'Wheeler', 'Chapman', 'Oliver', 'Montgomery', 'Richards', 'Williamson', 'Johnston', 'Banks', 'Meyer', 'Bishop', 'McCoy', 'Howell', 'Alvarez', 'Morrison', 'Hansen', 'Fernandez', 'Garza', 'Harvey', 'Little', 'Burton', 'Stanley', 'Nguyen', 'George', 'Jacobs', 'Reid', 'Kim', 'Fuller', 'Lynch', 'Dean', 'Gilbert', 'Garrett', 'Romero', 'Welch', 'Larson', 'Frazier', 'Burke', 'Hanson', 'Day', 'Mendoza', 'Moreno', 'Bowman', 'Medina', 'Fowler', 'Brewer', 'Hoffman', 'Carlson', 'Silva', 'Pearson', 'Holland', 'Douglas', 'Fleming', 'Jensen', 'Vargas', 'Byrd', 'Davidson', 'Hopkins', 'May', 'Terry', 'Herrera', 'Wade', 'Soto', 'Walters', 'Curtis', 'Neal', 'Caldwell', 'Lowe', 'Jennings', 'Barnett', 'Graves', 'Jimenez', 'Horton', 'Shelton', 'Barrett', 'Obrien', 'Castro', 'Sutton', 'Gregory', 'McKinney', 'Lucas', 'Miles', 'Craig', 'Rodriquez', 'Chambers', 'Holt', 'Lambert', 'Fletcher', 'Watts', 'Bates', 'Hale', 'Rhodes', 'Pena', 'Beck', 'Newman', 'Haynes', 'McDaniel', 'Mendez', 'Bush', 'Vaughn', 'Parks', 'Dawson', 'Santiago', 'Norris', 'Hardy', 'Love', 'Steele', 'Curry', 'Powers', 'Schultz', 'Barker', 'Guzman', 'Page', 'Munoz', 'Ball', 'Keller', 'Chandler', 'Weber', 'Leonard', 'Walsh', 'Lyons', 'Ramsey', 'Wolfe', 'Schneider', 'Mullins', 'Benson', 'Sharp', 'Bowen', 'Daniel', 'Barber', 'Cummings', 'Hines', 'Baldwin', 'Griffith', 'Valdez', 'Hubbard', 'Salazar', 'Reeves', 'Warner', 'Stevenson', 'Burgess', 'Santos', 'Tate', 'Cross', 'Garner', 'Mann', 'Mack', 'Moss', 'Thornton', 'Dennis', 'McGee', 'Farmer', 'Delgado', 'Aguilar', 'Vega', 'Glover', 'Manning', 'Cohen', 'Harmon', 'Rodgers', 'Robbins', 'Newton', 'Todd', 'Blair', 'Higgins', 'Ingram', 'Reese', 'Cannon', 'Strickland', 'Townsend', 'Potter', 'Goodwin', 'Walton', 'Rowe', 'Hampton', 'Ortega', 'Patton', 'Swanson', 'Joseph', 'Francis', 'Goodman', 'Maldonado', 'Yates', 'Becker', 'Erickson', 'Hodges', 'Rios', 'Conner', 'Adkins', 'Webster', 'Norman', 'Malone', 'Hammond', 'Flowers', 'Cobb', 'Moody', 'Quinn', 'Blake', 'Maxwell', 'Pope', 'Floyd', 'Osborne', 'Paul', 'McCarthy', 'Guerrero', 'Lindsey', 'Estrada', 'Sandoval', 'Gibbs', 'Tyler', 'Gross', 'Fitzgerald', 'Stokes', 'Doyle', 'Sherman', 'Saunders', 'Wise', 'Colon', 'Gill', 'Alvarado', 'Greer', 'Padilla', 'Simon', 'Waters', 'Nunez', 'Ballard', 'Schwartz', 'McBride', 'Houston', 'Christensen', 'Klein', 'Pratt', 'Briggs', 'Parsons', 'McLaughlin', 'Zimmerman', 'French', 'Buchanan', 'Moran', 'Copeland', 'Roy', 'Pittman', 'Brady', 'McCormick', 'Holloway', 'Brock', 'Poole', 'Frank', 'Logan', 'Owen', 'Bass', 'Marsh', 'Drake', 'Wong', 'Jefferson', 'Park', 'Morton', 'Abbott', 'Sparks', 'Patrick', 'Norton', 'Huff', 'Clayton', 'Massey', 'Lloyd', 'Figueroa', 'Carson', 'Bowers', 'Roberson', 'Barton', 'Tran', 'Lamb', 'Harrington', 'Casey', 'Boone', 'Cortez', 'Clarke', 'Mathis', 'Singleton', 'Wilkins', 'Cain', 'Bryan', 'Underwood', 'Hogan', 'McKenzie', 'Collier', 'Luna', 'Phelps', 'McGuire', 'Allison', 'Bridges', 'Wilkerson', 'Nash', 'Summers', 'Atkins'],
-
-        // Data taken from https://github.com/umpirsky/country-list/blob/master/country/cldr/en_US/country.json
-        countries: [{"name":"Afghanistan","abbreviation":"AF"},{"name":"Albania","abbreviation":"AL"},{"name":"Algeria","abbreviation":"DZ"},{"name":"American Samoa","abbreviation":"AS"},{"name":"Andorra","abbreviation":"AD"},{"name":"Angola","abbreviation":"AO"},{"name":"Anguilla","abbreviation":"AI"},{"name":"Antarctica","abbreviation":"AQ"},{"name":"Antigua and Barbuda","abbreviation":"AG"},{"name":"Argentina","abbreviation":"AR"},{"name":"Armenia","abbreviation":"AM"},{"name":"Aruba","abbreviation":"AW"},{"name":"Australia","abbreviation":"AU"},{"name":"Austria","abbreviation":"AT"},{"name":"Azerbaijan","abbreviation":"AZ"},{"name":"Bahamas","abbreviation":"BS"},{"name":"Bahrain","abbreviation":"BH"},{"name":"Bangladesh","abbreviation":"BD"},{"name":"Barbados","abbreviation":"BB"},{"name":"Belarus","abbreviation":"BY"},{"name":"Belgium","abbreviation":"BE"},{"name":"Belize","abbreviation":"BZ"},{"name":"Benin","abbreviation":"BJ"},{"name":"Bermuda","abbreviation":"BM"},{"name":"Bhutan","abbreviation":"BT"},{"name":"Bolivia","abbreviation":"BO"},{"name":"Bosnia and Herzegovina","abbreviation":"BA"},{"name":"Botswana","abbreviation":"BW"},{"name":"Bouvet Island","abbreviation":"BV"},{"name":"Brazil","abbreviation":"BR"},{"name":"British Antarctic Territory","abbreviation":"BQ"},{"name":"British Indian Ocean Territory","abbreviation":"IO"},{"name":"British Virgin Islands","abbreviation":"VG"},{"name":"Brunei","abbreviation":"BN"},{"name":"Bulgaria","abbreviation":"BG"},{"name":"Burkina Faso","abbreviation":"BF"},{"name":"Burundi","abbreviation":"BI"},{"name":"Cambodia","abbreviation":"KH"},{"name":"Cameroon","abbreviation":"CM"},{"name":"Canada","abbreviation":"CA"},{"name":"Canton and Enderbury Islands","abbreviation":"CT"},{"name":"Cape Verde","abbreviation":"CV"},{"name":"Cayman Islands","abbreviation":"KY"},{"name":"Central African Republic","abbreviation":"CF"},{"name":"Chad","abbreviation":"TD"},{"name":"Chile","abbreviation":"CL"},{"name":"China","abbreviation":"CN"},{"name":"Christmas Island","abbreviation":"CX"},{"name":"Cocos [Keeling] Islands","abbreviation":"CC"},{"name":"Colombia","abbreviation":"CO"},{"name":"Comoros","abbreviation":"KM"},{"name":"Congo - Brazzaville","abbreviation":"CG"},{"name":"Congo - Kinshasa","abbreviation":"CD"},{"name":"Cook Islands","abbreviation":"CK"},{"name":"Costa Rica","abbreviation":"CR"},{"name":"Croatia","abbreviation":"HR"},{"name":"Cuba","abbreviation":"CU"},{"name":"Cyprus","abbreviation":"CY"},{"name":"Czech Republic","abbreviation":"CZ"},{"name":"Côte d’Ivoire","abbreviation":"CI"},{"name":"Denmark","abbreviation":"DK"},{"name":"Djibouti","abbreviation":"DJ"},{"name":"Dominica","abbreviation":"DM"},{"name":"Dominican Republic","abbreviation":"DO"},{"name":"Dronning Maud Land","abbreviation":"NQ"},{"name":"East Germany","abbreviation":"DD"},{"name":"Ecuador","abbreviation":"EC"},{"name":"Egypt","abbreviation":"EG"},{"name":"El Salvador","abbreviation":"SV"},{"name":"Equatorial Guinea","abbreviation":"GQ"},{"name":"Eritrea","abbreviation":"ER"},{"name":"Estonia","abbreviation":"EE"},{"name":"Ethiopia","abbreviation":"ET"},{"name":"Falkland Islands","abbreviation":"FK"},{"name":"Faroe Islands","abbreviation":"FO"},{"name":"Fiji","abbreviation":"FJ"},{"name":"Finland","abbreviation":"FI"},{"name":"France","abbreviation":"FR"},{"name":"French Guiana","abbreviation":"GF"},{"name":"French Polynesia","abbreviation":"PF"},{"name":"French Southern Territories","abbreviation":"TF"},{"name":"French Southern and Antarctic Territories","abbreviation":"FQ"},{"name":"Gabon","abbreviation":"GA"},{"name":"Gambia","abbreviation":"GM"},{"name":"Georgia","abbreviation":"GE"},{"name":"Germany","abbreviation":"DE"},{"name":"Ghana","abbreviation":"GH"},{"name":"Gibraltar","abbreviation":"GI"},{"name":"Greece","abbreviation":"GR"},{"name":"Greenland","abbreviation":"GL"},{"name":"Grenada","abbreviation":"GD"},{"name":"Guadeloupe","abbreviation":"GP"},{"name":"Guam","abbreviation":"GU"},{"name":"Guatemala","abbreviation":"GT"},{"name":"Guernsey","abbreviation":"GG"},{"name":"Guinea","abbreviation":"GN"},{"name":"Guinea-Bissau","abbreviation":"GW"},{"name":"Guyana","abbreviation":"GY"},{"name":"Haiti","abbreviation":"HT"},{"name":"Heard Island and McDonald Islands","abbreviation":"HM"},{"name":"Honduras","abbreviation":"HN"},{"name":"Hong Kong SAR China","abbreviation":"HK"},{"name":"Hungary","abbreviation":"HU"},{"name":"Iceland","abbreviation":"IS"},{"name":"India","abbreviation":"IN"},{"name":"Indonesia","abbreviation":"ID"},{"name":"Iran","abbreviation":"IR"},{"name":"Iraq","abbreviation":"IQ"},{"name":"Ireland","abbreviation":"IE"},{"name":"Isle of Man","abbreviation":"IM"},{"name":"Israel","abbreviation":"IL"},{"name":"Italy","abbreviation":"IT"},{"name":"Jamaica","abbreviation":"JM"},{"name":"Japan","abbreviation":"JP"},{"name":"Jersey","abbreviation":"JE"},{"name":"Johnston Island","abbreviation":"JT"},{"name":"Jordan","abbreviation":"JO"},{"name":"Kazakhstan","abbreviation":"KZ"},{"name":"Kenya","abbreviation":"KE"},{"name":"Kiribati","abbreviation":"KI"},{"name":"Kuwait","abbreviation":"KW"},{"name":"Kyrgyzstan","abbreviation":"KG"},{"name":"Laos","abbreviation":"LA"},{"name":"Latvia","abbreviation":"LV"},{"name":"Lebanon","abbreviation":"LB"},{"name":"Lesotho","abbreviation":"LS"},{"name":"Liberia","abbreviation":"LR"},{"name":"Libya","abbreviation":"LY"},{"name":"Liechtenstein","abbreviation":"LI"},{"name":"Lithuania","abbreviation":"LT"},{"name":"Luxembourg","abbreviation":"LU"},{"name":"Macau SAR China","abbreviation":"MO"},{"name":"Macedonia","abbreviation":"MK"},{"name":"Madagascar","abbreviation":"MG"},{"name":"Malawi","abbreviation":"MW"},{"name":"Malaysia","abbreviation":"MY"},{"name":"Maldives","abbreviation":"MV"},{"name":"Mali","abbreviation":"ML"},{"name":"Malta","abbreviation":"MT"},{"name":"Marshall Islands","abbreviation":"MH"},{"name":"Martinique","abbreviation":"MQ"},{"name":"Mauritania","abbreviation":"MR"},{"name":"Mauritius","abbreviation":"MU"},{"name":"Mayotte","abbreviation":"YT"},{"name":"Metropolitan France","abbreviation":"FX"},{"name":"Mexico","abbreviation":"MX"},{"name":"Micronesia","abbreviation":"FM"},{"name":"Midway Islands","abbreviation":"MI"},{"name":"Moldova","abbreviation":"MD"},{"name":"Monaco","abbreviation":"MC"},{"name":"Mongolia","abbreviation":"MN"},{"name":"Montenegro","abbreviation":"ME"},{"name":"Montserrat","abbreviation":"MS"},{"name":"Morocco","abbreviation":"MA"},{"name":"Mozambique","abbreviation":"MZ"},{"name":"Myanmar [Burma]","abbreviation":"MM"},{"name":"Namibia","abbreviation":"NA"},{"name":"Nauru","abbreviation":"NR"},{"name":"Nepal","abbreviation":"NP"},{"name":"Netherlands","abbreviation":"NL"},{"name":"Netherlands Antilles","abbreviation":"AN"},{"name":"Neutral Zone","abbreviation":"NT"},{"name":"New Caledonia","abbreviation":"NC"},{"name":"New Zealand","abbreviation":"NZ"},{"name":"Nicaragua","abbreviation":"NI"},{"name":"Niger","abbreviation":"NE"},{"name":"Nigeria","abbreviation":"NG"},{"name":"Niue","abbreviation":"NU"},{"name":"Norfolk Island","abbreviation":"NF"},{"name":"North Korea","abbreviation":"KP"},{"name":"North Vietnam","abbreviation":"VD"},{"name":"Northern Mariana Islands","abbreviation":"MP"},{"name":"Norway","abbreviation":"NO"},{"name":"Oman","abbreviation":"OM"},{"name":"Pacific Islands Trust Territory","abbreviation":"PC"},{"name":"Pakistan","abbreviation":"PK"},{"name":"Palau","abbreviation":"PW"},{"name":"Palestinian Territories","abbreviation":"PS"},{"name":"Panama","abbreviation":"PA"},{"name":"Panama Canal Zone","abbreviation":"PZ"},{"name":"Papua New Guinea","abbreviation":"PG"},{"name":"Paraguay","abbreviation":"PY"},{"name":"People's Democratic Republic of Yemen","abbreviation":"YD"},{"name":"Peru","abbreviation":"PE"},{"name":"Philippines","abbreviation":"PH"},{"name":"Pitcairn Islands","abbreviation":"PN"},{"name":"Poland","abbreviation":"PL"},{"name":"Portugal","abbreviation":"PT"},{"name":"Puerto Rico","abbreviation":"PR"},{"name":"Qatar","abbreviation":"QA"},{"name":"Romania","abbreviation":"RO"},{"name":"Russia","abbreviation":"RU"},{"name":"Rwanda","abbreviation":"RW"},{"name":"Réunion","abbreviation":"RE"},{"name":"Saint Barthélemy","abbreviation":"BL"},{"name":"Saint Helena","abbreviation":"SH"},{"name":"Saint Kitts and Nevis","abbreviation":"KN"},{"name":"Saint Lucia","abbreviation":"LC"},{"name":"Saint Martin","abbreviation":"MF"},{"name":"Saint Pierre and Miquelon","abbreviation":"PM"},{"name":"Saint Vincent and the Grenadines","abbreviation":"VC"},{"name":"Samoa","abbreviation":"WS"},{"name":"San Marino","abbreviation":"SM"},{"name":"Saudi Arabia","abbreviation":"SA"},{"name":"Senegal","abbreviation":"SN"},{"name":"Serbia","abbreviation":"RS"},{"name":"Serbia and Montenegro","abbreviation":"CS"},{"name":"Seychelles","abbreviation":"SC"},{"name":"Sierra Leone","abbreviation":"SL"},{"name":"Singapore","abbreviation":"SG"},{"name":"Slovakia","abbreviation":"SK"},{"name":"Slovenia","abbreviation":"SI"},{"name":"Solomon Islands","abbreviation":"SB"},{"name":"Somalia","abbreviation":"SO"},{"name":"South Africa","abbreviation":"ZA"},{"name":"South Georgia and the South Sandwich Islands","abbreviation":"GS"},{"name":"South Korea","abbreviation":"KR"},{"name":"Spain","abbreviation":"ES"},{"name":"Sri Lanka","abbreviation":"LK"},{"name":"Sudan","abbreviation":"SD"},{"name":"Suriname","abbreviation":"SR"},{"name":"Svalbard and Jan Mayen","abbreviation":"SJ"},{"name":"Swaziland","abbreviation":"SZ"},{"name":"Sweden","abbreviation":"SE"},{"name":"Switzerland","abbreviation":"CH"},{"name":"Syria","abbreviation":"SY"},{"name":"São Tomé and Príncipe","abbreviation":"ST"},{"name":"Taiwan","abbreviation":"TW"},{"name":"Tajikistan","abbreviation":"TJ"},{"name":"Tanzania","abbreviation":"TZ"},{"name":"Thailand","abbreviation":"TH"},{"name":"Timor-Leste","abbreviation":"TL"},{"name":"Togo","abbreviation":"TG"},{"name":"Tokelau","abbreviation":"TK"},{"name":"Tonga","abbreviation":"TO"},{"name":"Trinidad and Tobago","abbreviation":"TT"},{"name":"Tunisia","abbreviation":"TN"},{"name":"Turkey","abbreviation":"TR"},{"name":"Turkmenistan","abbreviation":"TM"},{"name":"Turks and Caicos Islands","abbreviation":"TC"},{"name":"Tuvalu","abbreviation":"TV"},{"name":"U.S. Minor Outlying Islands","abbreviation":"UM"},{"name":"U.S. Miscellaneous Pacific Islands","abbreviation":"PU"},{"name":"U.S. Virgin Islands","abbreviation":"VI"},{"name":"Uganda","abbreviation":"UG"},{"name":"Ukraine","abbreviation":"UA"},{"name":"Union of Soviet Socialist Republics","abbreviation":"SU"},{"name":"United Arab Emirates","abbreviation":"AE"},{"name":"United Kingdom","abbreviation":"GB"},{"name":"United States","abbreviation":"US"},{"name":"Unknown or Invalid Region","abbreviation":"ZZ"},{"name":"Uruguay","abbreviation":"UY"},{"name":"Uzbekistan","abbreviation":"UZ"},{"name":"Vanuatu","abbreviation":"VU"},{"name":"Vatican City","abbreviation":"VA"},{"name":"Venezuela","abbreviation":"VE"},{"name":"Vietnam","abbreviation":"VN"},{"name":"Wake Island","abbreviation":"WK"},{"name":"Wallis and Futuna","abbreviation":"WF"},{"name":"Western Sahara","abbreviation":"EH"},{"name":"Yemen","abbreviation":"YE"},{"name":"Zambia","abbreviation":"ZM"},{"name":"Zimbabwe","abbreviation":"ZW"},{"name":"Åland Islands","abbreviation":"AX"}],
-
-        provinces: [
-            {name: 'Alberta', abbreviation: 'AB'},
-            {name: 'British Columbia', abbreviation: 'BC'},
-            {name: 'Manitoba', abbreviation: 'MB'},
-            {name: 'New Brunswick', abbreviation: 'NB'},
-            {name: 'Newfoundland and Labrador', abbreviation: 'NL'},
-            {name: 'Nova Scotia', abbreviation: 'NS'},
-            {name: 'Ontario', abbreviation: 'ON'},
-            {name: 'Prince Edward Island', abbreviation: 'PE'},
-            {name: 'Quebec', abbreviation: 'QC'},
-            {name: 'Saskatchewan', abbreviation: 'SK'},
-
-            // The case could be made that the following are not actually provinces
-            // since they are technically considered "territories" however they all
-            // look the same on an envelope!
-            {name: 'Northwest Territories', abbreviation: 'NT'},
-            {name: 'Nunavut', abbreviation: 'NU'},
-            {name: 'Yukon', abbreviation: 'YT'}
-        ],
-
-        us_states_and_dc: [
-            {name: 'Alabama', abbreviation: 'AL'},
-            {name: 'Alaska', abbreviation: 'AK'},
-            {name: 'Arizona', abbreviation: 'AZ'},
-            {name: 'Arkansas', abbreviation: 'AR'},
-            {name: 'California', abbreviation: 'CA'},
-            {name: 'Colorado', abbreviation: 'CO'},
-            {name: 'Connecticut', abbreviation: 'CT'},
-            {name: 'Delaware', abbreviation: 'DE'},
-            {name: 'District of Columbia', abbreviation: 'DC'},
-            {name: 'Florida', abbreviation: 'FL'},
-            {name: 'Georgia', abbreviation: 'GA'},
-            {name: 'Hawaii', abbreviation: 'HI'},
-            {name: 'Idaho', abbreviation: 'ID'},
-            {name: 'Illinois', abbreviation: 'IL'},
-            {name: 'Indiana', abbreviation: 'IN'},
-            {name: 'Iowa', abbreviation: 'IA'},
-            {name: 'Kansas', abbreviation: 'KS'},
-            {name: 'Kentucky', abbreviation: 'KY'},
-            {name: 'Louisiana', abbreviation: 'LA'},
-            {name: 'Maine', abbreviation: 'ME'},
-            {name: 'Maryland', abbreviation: 'MD'},
-            {name: 'Massachusetts', abbreviation: 'MA'},
-            {name: 'Michigan', abbreviation: 'MI'},
-            {name: 'Minnesota', abbreviation: 'MN'},
-            {name: 'Mississippi', abbreviation: 'MS'},
-            {name: 'Missouri', abbreviation: 'MO'},
-            {name: 'Montana', abbreviation: 'MT'},
-            {name: 'Nebraska', abbreviation: 'NE'},
-            {name: 'Nevada', abbreviation: 'NV'},
-            {name: 'New Hampshire', abbreviation: 'NH'},
-            {name: 'New Jersey', abbreviation: 'NJ'},
-            {name: 'New Mexico', abbreviation: 'NM'},
-            {name: 'New York', abbreviation: 'NY'},
-            {name: 'North Carolina', abbreviation: 'NC'},
-            {name: 'North Dakota', abbreviation: 'ND'},
-            {name: 'Ohio', abbreviation: 'OH'},
-            {name: 'Oklahoma', abbreviation: 'OK'},
-            {name: 'Oregon', abbreviation: 'OR'},
-            {name: 'Pennsylvania', abbreviation: 'PA'},
-            {name: 'Rhode Island', abbreviation: 'RI'},
-            {name: 'South Carolina', abbreviation: 'SC'},
-            {name: 'South Dakota', abbreviation: 'SD'},
-            {name: 'Tennessee', abbreviation: 'TN'},
-            {name: 'Texas', abbreviation: 'TX'},
-            {name: 'Utah', abbreviation: 'UT'},
-            {name: 'Vermont', abbreviation: 'VT'},
-            {name: 'Virginia', abbreviation: 'VA'},
-            {name: 'Washington', abbreviation: 'WA'},
-            {name: 'West Virginia', abbreviation: 'WV'},
-            {name: 'Wisconsin', abbreviation: 'WI'},
-            {name: 'Wyoming', abbreviation: 'WY'}
-        ],
-
-        territories: [
-            {name: 'American Samoa', abbreviation: 'AS'},
-            {name: 'Federated States of Micronesia', abbreviation: 'FM'},
-            {name: 'Guam', abbreviation: 'GU'},
-            {name: 'Marshall Islands', abbreviation: 'MH'},
-            {name: 'Northern Mariana Islands', abbreviation: 'MP'},
-            {name: 'Puerto Rico', abbreviation: 'PR'},
-            {name: 'Virgin Islands, U.S.', abbreviation: 'VI'}
-        ],
-
-        armed_forces: [
-            {name: 'Armed Forces Europe', abbreviation: 'AE'},
-            {name: 'Armed Forces Pacific', abbreviation: 'AP'},
-            {name: 'Armed Forces the Americas', abbreviation: 'AA'}
-        ],
-
-        street_suffixes: [
-            {name: 'Avenue', abbreviation: 'Ave'},
-            {name: 'Boulevard', abbreviation: 'Blvd'},
-            {name: 'Center', abbreviation: 'Ctr'},
-            {name: 'Circle', abbreviation: 'Cir'},
-            {name: 'Court', abbreviation: 'Ct'},
-            {name: 'Drive', abbreviation: 'Dr'},
-            {name: 'Extension', abbreviation: 'Ext'},
-            {name: 'Glen', abbreviation: 'Gln'},
-            {name: 'Grove', abbreviation: 'Grv'},
-            {name: 'Heights', abbreviation: 'Hts'},
-            {name: 'Highway', abbreviation: 'Hwy'},
-            {name: 'Junction', abbreviation: 'Jct'},
-            {name: 'Key', abbreviation: 'Key'},
-            {name: 'Lane', abbreviation: 'Ln'},
-            {name: 'Loop', abbreviation: 'Loop'},
-            {name: 'Manor', abbreviation: 'Mnr'},
-            {name: 'Mill', abbreviation: 'Mill'},
-            {name: 'Park', abbreviation: 'Park'},
-            {name: 'Parkway', abbreviation: 'Pkwy'},
-            {name: 'Pass', abbreviation: 'Pass'},
-            {name: 'Path', abbreviation: 'Path'},
-            {name: 'Pike', abbreviation: 'Pike'},
-            {name: 'Place', abbreviation: 'Pl'},
-            {name: 'Plaza', abbreviation: 'Plz'},
-            {name: 'Point', abbreviation: 'Pt'},
-            {name: 'Ridge', abbreviation: 'Rdg'},
-            {name: 'River', abbreviation: 'Riv'},
-            {name: 'Road', abbreviation: 'Rd'},
-            {name: 'Square', abbreviation: 'Sq'},
-            {name: 'Street', abbreviation: 'St'},
-            {name: 'Terrace', abbreviation: 'Ter'},
-            {name: 'Trail', abbreviation: 'Trl'},
-            {name: 'Turnpike', abbreviation: 'Tpke'},
-            {name: 'View', abbreviation: 'Vw'},
-            {name: 'Way', abbreviation: 'Way'}
-        ],
-
-        months: [
-            {name: 'January', short_name: 'Jan', numeric: '01', days: 31},
-            // Not messing with leap years...
-            {name: 'February', short_name: 'Feb', numeric: '02', days: 28},
-            {name: 'March', short_name: 'Mar', numeric: '03', days: 31},
-            {name: 'April', short_name: 'Apr', numeric: '04', days: 30},
-            {name: 'May', short_name: 'May', numeric: '05', days: 31},
-            {name: 'June', short_name: 'Jun', numeric: '06', days: 30},
-            {name: 'July', short_name: 'Jul', numeric: '07', days: 31},
-            {name: 'August', short_name: 'Aug', numeric: '08', days: 31},
-            {name: 'September', short_name: 'Sep', numeric: '09', days: 30},
-            {name: 'October', short_name: 'Oct', numeric: '10', days: 31},
-            {name: 'November', short_name: 'Nov', numeric: '11', days: 30},
-            {name: 'December', short_name: 'Dec', numeric: '12', days: 31}
-        ],
-
-        // http://en.wikipedia.org/wiki/Bank_card_number#Issuer_identification_number_.28IIN.29
-        cc_types: [
-            {name: "American Express", short_name: 'amex', prefix: '34', length: 15},
-            {name: "Bankcard", short_name: 'bankcard', prefix: '5610', length: 16},
-            {name: "China UnionPay", short_name: 'chinaunion', prefix: '62', length: 16},
-            {name: "Diners Club Carte Blanche", short_name: 'dccarte', prefix: '300', length: 14},
-            {name: "Diners Club enRoute", short_name: 'dcenroute', prefix: '2014', length: 15},
-            {name: "Diners Club International", short_name: 'dcintl', prefix: '36', length: 14},
-            {name: "Diners Club United States & Canada", short_name: 'dcusc', prefix: '54', length: 16},
-            {name: "Discover Card", short_name: 'discover', prefix: '6011', length: 16},
-            {name: "InstaPayment", short_name: 'instapay', prefix: '637', length: 16},
-            {name: "JCB", short_name: 'jcb', prefix: '3528', length: 16},
-            {name: "Laser", short_name: 'laser', prefix: '6304', length: 16},
-            {name: "Maestro", short_name: 'maestro', prefix: '5018', length: 16},
-            {name: "Mastercard", short_name: 'mc', prefix: '51', length: 16},
-            {name: "Solo", short_name: 'solo', prefix: '6334', length: 16},
-            {name: "Switch", short_name: 'switch', prefix: '4903', length: 16},
-            {name: "Visa", short_name: 'visa', prefix: '4', length: 16},
-            {name: "Visa Electron", short_name: 'electron', prefix: '4026', length: 16}
-        ],
-
-        //return all world currency by ISO 4217
-        currency_types: [
-            {'code' : 'AED', 'name' : 'United Arab Emirates Dirham'},
-            {'code' : 'AFN', 'name' : 'Afghanistan Afghani'},
-            {'code' : 'ALL', 'name' : 'Albania Lek'},
-            {'code' : 'AMD', 'name' : 'Armenia Dram'},
-            {'code' : 'ANG', 'name' : 'Netherlands Antilles Guilder'},
-            {'code' : 'AOA', 'name' : 'Angola Kwanza'},
-            {'code' : 'ARS', 'name' : 'Argentina Peso'},
-            {'code' : 'AUD', 'name' : 'Australia Dollar'},
-            {'code' : 'AWG', 'name' : 'Aruba Guilder'},
-            {'code' : 'AZN', 'name' : 'Azerbaijan New Manat'},
-            {'code' : 'BAM', 'name' : 'Bosnia and Herzegovina Convertible Marka'},
-            {'code' : 'BBD', 'name' : 'Barbados Dollar'},
-            {'code' : 'BDT', 'name' : 'Bangladesh Taka'},
-            {'code' : 'BGN', 'name' : 'Bulgaria Lev'},
-            {'code' : 'BHD', 'name' : 'Bahrain Dinar'},
-            {'code' : 'BIF', 'name' : 'Burundi Franc'},
-            {'code' : 'BMD', 'name' : 'Bermuda Dollar'},
-            {'code' : 'BND', 'name' : 'Brunei Darussalam Dollar'},
-            {'code' : 'BOB', 'name' : 'Bolivia Boliviano'},
-            {'code' : 'BRL', 'name' : 'Brazil Real'},
-            {'code' : 'BSD', 'name' : 'Bahamas Dollar'},
-            {'code' : 'BTN', 'name' : 'Bhutan Ngultrum'},
-            {'code' : 'BWP', 'name' : 'Botswana Pula'},
-            {'code' : 'BYR', 'name' : 'Belarus Ruble'},
-            {'code' : 'BZD', 'name' : 'Belize Dollar'},
-            {'code' : 'CAD', 'name' : 'Canada Dollar'},
-            {'code' : 'CDF', 'name' : 'Congo/Kinshasa Franc'},
-            {'code' : 'CHF', 'name' : 'Switzerland Franc'},
-            {'code' : 'CLP', 'name' : 'Chile Peso'},
-            {'code' : 'CNY', 'name' : 'China Yuan Renminbi'},
-            {'code' : 'COP', 'name' : 'Colombia Peso'},
-            {'code' : 'CRC', 'name' : 'Costa Rica Colon'},
-            {'code' : 'CUC', 'name' : 'Cuba Convertible Peso'},
-            {'code' : 'CUP', 'name' : 'Cuba Peso'},
-            {'code' : 'CVE', 'name' : 'Cape Verde Escudo'},
-            {'code' : 'CZK', 'name' : 'Czech Republic Koruna'},
-            {'code' : 'DJF', 'name' : 'Djibouti Franc'},
-            {'code' : 'DKK', 'name' : 'Denmark Krone'},
-            {'code' : 'DOP', 'name' : 'Dominican Republic Peso'},
-            {'code' : 'DZD', 'name' : 'Algeria Dinar'},
-            {'code' : 'EGP', 'name' : 'Egypt Pound'},
-            {'code' : 'ERN', 'name' : 'Eritrea Nakfa'},
-            {'code' : 'ETB', 'name' : 'Ethiopia Birr'},
-            {'code' : 'EUR', 'name' : 'Euro Member Countries'},
-            {'code' : 'FJD', 'name' : 'Fiji Dollar'},
-            {'code' : 'FKP', 'name' : 'Falkland Islands (Malvinas) Pound'},
-            {'code' : 'GBP', 'name' : 'United Kingdom Pound'},
-            {'code' : 'GEL', 'name' : 'Georgia Lari'},
-            {'code' : 'GGP', 'name' : 'Guernsey Pound'},
-            {'code' : 'GHS', 'name' : 'Ghana Cedi'},
-            {'code' : 'GIP', 'name' : 'Gibraltar Pound'},
-            {'code' : 'GMD', 'name' : 'Gambia Dalasi'},
-            {'code' : 'GNF', 'name' : 'Guinea Franc'},
-            {'code' : 'GTQ', 'name' : 'Guatemala Quetzal'},
-            {'code' : 'GYD', 'name' : 'Guyana Dollar'},
-            {'code' : 'HKD', 'name' : 'Hong Kong Dollar'},
-            {'code' : 'HNL', 'name' : 'Honduras Lempira'},
-            {'code' : 'HRK', 'name' : 'Croatia Kuna'},
-            {'code' : 'HTG', 'name' : 'Haiti Gourde'},
-            {'code' : 'HUF', 'name' : 'Hungary Forint'},
-            {'code' : 'IDR', 'name' : 'Indonesia Rupiah'},
-            {'code' : 'ILS', 'name' : 'Israel Shekel'},
-            {'code' : 'IMP', 'name' : 'Isle of Man Pound'},
-            {'code' : 'INR', 'name' : 'India Rupee'},
-            {'code' : 'IQD', 'name' : 'Iraq Dinar'},
-            {'code' : 'IRR', 'name' : 'Iran Rial'},
-            {'code' : 'ISK', 'name' : 'Iceland Krona'},
-            {'code' : 'JEP', 'name' : 'Jersey Pound'},
-            {'code' : 'JMD', 'name' : 'Jamaica Dollar'},
-            {'code' : 'JOD', 'name' : 'Jordan Dinar'},
-            {'code' : 'JPY', 'name' : 'Japan Yen'},
-            {'code' : 'KES', 'name' : 'Kenya Shilling'},
-            {'code' : 'KGS', 'name' : 'Kyrgyzstan Som'},
-            {'code' : 'KHR', 'name' : 'Cambodia Riel'},
-            {'code' : 'KMF', 'name' : 'Comoros Franc'},
-            {'code' : 'KPW', 'name' : 'Korea (North) Won'},
-            {'code' : 'KRW', 'name' : 'Korea (South) Won'},
-            {'code' : 'KWD', 'name' : 'Kuwait Dinar'},
-            {'code' : 'KYD', 'name' : 'Cayman Islands Dollar'},
-            {'code' : 'KZT', 'name' : 'Kazakhstan Tenge'},
-            {'code' : 'LAK', 'name' : 'Laos Kip'},
-            {'code' : 'LBP', 'name' : 'Lebanon Pound'},
-            {'code' : 'LKR', 'name' : 'Sri Lanka Rupee'},
-            {'code' : 'LRD', 'name' : 'Liberia Dollar'},
-            {'code' : 'LSL', 'name' : 'Lesotho Loti'},
-            {'code' : 'LTL', 'name' : 'Lithuania Litas'},
-            {'code' : 'LYD', 'name' : 'Libya Dinar'},
-            {'code' : 'MAD', 'name' : 'Morocco Dirham'},
-            {'code' : 'MDL', 'name' : 'Moldova Leu'},
-            {'code' : 'MGA', 'name' : 'Madagascar Ariary'},
-            {'code' : 'MKD', 'name' : 'Macedonia Denar'},
-            {'code' : 'MMK', 'name' : 'Myanmar (Burma) Kyat'},
-            {'code' : 'MNT', 'name' : 'Mongolia Tughrik'},
-            {'code' : 'MOP', 'name' : 'Macau Pataca'},
-            {'code' : 'MRO', 'name' : 'Mauritania Ouguiya'},
-            {'code' : 'MUR', 'name' : 'Mauritius Rupee'},
-            {'code' : 'MVR', 'name' : 'Maldives (Maldive Islands) Rufiyaa'},
-            {'code' : 'MWK', 'name' : 'Malawi Kwacha'},
-            {'code' : 'MXN', 'name' : 'Mexico Peso'},
-            {'code' : 'MYR', 'name' : 'Malaysia Ringgit'},
-            {'code' : 'MZN', 'name' : 'Mozambique Metical'},
-            {'code' : 'NAD', 'name' : 'Namibia Dollar'},
-            {'code' : 'NGN', 'name' : 'Nigeria Naira'},
-            {'code' : 'NIO', 'name' : 'Nicaragua Cordoba'},
-            {'code' : 'NOK', 'name' : 'Norway Krone'},
-            {'code' : 'NPR', 'name' : 'Nepal Rupee'},
-            {'code' : 'NZD', 'name' : 'New Zealand Dollar'},
-            {'code' : 'OMR', 'name' : 'Oman Rial'},
-            {'code' : 'PAB', 'name' : 'Panama Balboa'},
-            {'code' : 'PEN', 'name' : 'Peru Nuevo Sol'},
-            {'code' : 'PGK', 'name' : 'Papua New Guinea Kina'},
-            {'code' : 'PHP', 'name' : 'Philippines Peso'},
-            {'code' : 'PKR', 'name' : 'Pakistan Rupee'},
-            {'code' : 'PLN', 'name' : 'Poland Zloty'},
-            {'code' : 'PYG', 'name' : 'Paraguay Guarani'},
-            {'code' : 'QAR', 'name' : 'Qatar Riyal'},
-            {'code' : 'RON', 'name' : 'Romania New Leu'},
-            {'code' : 'RSD', 'name' : 'Serbia Dinar'},
-            {'code' : 'RUB', 'name' : 'Russia Ruble'},
-            {'code' : 'RWF', 'name' : 'Rwanda Franc'},
-            {'code' : 'SAR', 'name' : 'Saudi Arabia Riyal'},
-            {'code' : 'SBD', 'name' : 'Solomon Islands Dollar'},
-            {'code' : 'SCR', 'name' : 'Seychelles Rupee'},
-            {'code' : 'SDG', 'name' : 'Sudan Pound'},
-            {'code' : 'SEK', 'name' : 'Sweden Krona'},
-            {'code' : 'SGD', 'name' : 'Singapore Dollar'},
-            {'code' : 'SHP', 'name' : 'Saint Helena Pound'},
-            {'code' : 'SLL', 'name' : 'Sierra Leone Leone'},
-            {'code' : 'SOS', 'name' : 'Somalia Shilling'},
-            {'code' : 'SPL', 'name' : 'Seborga Luigino'},
-            {'code' : 'SRD', 'name' : 'Suriname Dollar'},
-            {'code' : 'STD', 'name' : 'São Tomé and Príncipe Dobra'},
-            {'code' : 'SVC', 'name' : 'El Salvador Colon'},
-            {'code' : 'SYP', 'name' : 'Syria Pound'},
-            {'code' : 'SZL', 'name' : 'Swaziland Lilangeni'},
-            {'code' : 'THB', 'name' : 'Thailand Baht'},
-            {'code' : 'TJS', 'name' : 'Tajikistan Somoni'},
-            {'code' : 'TMT', 'name' : 'Turkmenistan Manat'},
-            {'code' : 'TND', 'name' : 'Tunisia Dinar'},
-            {'code' : 'TOP', 'name' : 'Tonga Pa\'anga'},
-            {'code' : 'TRY', 'name' : 'Turkey Lira'},
-            {'code' : 'TTD', 'name' : 'Trinidad and Tobago Dollar'},
-            {'code' : 'TVD', 'name' : 'Tuvalu Dollar'},
-            {'code' : 'TWD', 'name' : 'Taiwan New Dollar'},
-            {'code' : 'TZS', 'name' : 'Tanzania Shilling'},
-            {'code' : 'UAH', 'name' : 'Ukraine Hryvnia'},
-            {'code' : 'UGX', 'name' : 'Uganda Shilling'},
-            {'code' : 'USD', 'name' : 'United States Dollar'},
-            {'code' : 'UYU', 'name' : 'Uruguay Peso'},
-            {'code' : 'UZS', 'name' : 'Uzbekistan Som'},
-            {'code' : 'VEF', 'name' : 'Venezuela Bolivar'},
-            {'code' : 'VND', 'name' : 'Viet Nam Dong'},
-            {'code' : 'VUV', 'name' : 'Vanuatu Vatu'},
-            {'code' : 'WST', 'name' : 'Samoa Tala'},
-            {'code' : 'XAF', 'name' : 'Communauté Financière Africaine (BEAC) CFA Franc BEAC'},
-            {'code' : 'XCD', 'name' : 'East Caribbean Dollar'},
-            {'code' : 'XDR', 'name' : 'International Monetary Fund (IMF) Special Drawing Rights'},
-            {'code' : 'XOF', 'name' : 'Communauté Financière Africaine (BCEAO) Franc'},
-            {'code' : 'XPF', 'name' : 'Comptoirs Français du Pacifique (CFP) Franc'},
-            {'code' : 'YER', 'name' : 'Yemen Rial'},
-            {'code' : 'ZAR', 'name' : 'South Africa Rand'},
-            {'code' : 'ZMW', 'name' : 'Zambia Kwacha'},
-            {'code' : 'ZWD', 'name' : 'Zimbabwe Dollar'}
-        ]
-    };
-
-    var o_hasOwnProperty = Object.prototype.hasOwnProperty;
-    var o_keys = (Object.keys || function(obj) {
-      var result = [];
-      for (var key in obj) {
-        if (o_hasOwnProperty.call(obj, key)) {
-          result.push(key);
-        }
-      }
-
-      return result;
-    });
-
-    function _copyObject(source, target) {
-      var keys = o_keys(source);
-      var key;
-
-      for (var i = 0, l = keys.length; i < l; i++) {
-        key = keys[i];
-        target[key] = source[key] || target[key];
-      }
-    }
-
-    function _copyArray(source, target) {
-      for (var i = 0, l = source.length; i < l; i++) {
-        target[i] = source[i];
-      }
-    }
-
-    function copyObject(source, _target) {
-        var isArray = Array.isArray(source);
-        var target = _target || (isArray ? new Array(source.length) : {});
-
-        if (isArray) {
-          _copyArray(source, target);
-        } else {
-          _copyObject(source, target);
-        }
-
-        return target;
-    }
-
-    /** Get the data based on key**/
-    Chance.prototype.get = function (name) {
-        return copyObject(data[name]);
-    };
-
-    // Mac Address
-    Chance.prototype.mac_address = function(options){
-        // typically mac addresses are separated by ":"
-        // however they can also be separated by "-"
-        // the network variant uses a dot every fourth byte
-
-        options = initOptions(options);
-        if(!options.separator) {
-            options.separator =  options.networkVersion ? "." : ":";
-        }
-
-        var mac_pool="ABCDEF1234567890",
-            mac = "";
-        if(!options.networkVersion) {
-            mac = this.n(this.string, 6, { pool: mac_pool, length:2 }).join(options.separator);
-        } else {
-            mac = this.n(this.string, 3, { pool: mac_pool, length:4 }).join(options.separator);
-        }
-
-        return mac;
-    };
-
-    Chance.prototype.normal = function (options) {
-        options = initOptions(options, {mean : 0, dev : 1});
-
-        // The Marsaglia Polar method
-        var s, u, v, norm,
-            mean = options.mean,
-            dev = options.dev;
-
-        do {
-            // U and V are from the uniform distribution on (-1, 1)
-            u = this.random() * 2 - 1;
-            v = this.random() * 2 - 1;
-
-            s = u * u + v * v;
-        } while (s >= 1);
-
-        // Compute the standard normal variate
-        norm = u * Math.sqrt(-2 * Math.log(s) / s);
-
-        // Shape and scale
-        return dev * norm + mean;
-    };
-
-    Chance.prototype.radio = function (options) {
-        // Initial Letter (Typically Designated by Side of Mississippi River)
-        options = initOptions(options, {side : "?"});
-        var fl = "";
-        switch (options.side.toLowerCase()) {
-        case "east":
-        case "e":
-            fl = "W";
-            break;
-        case "west":
-        case "w":
-            fl = "K";
-            break;
-        default:
-            fl = this.character({pool: "KW"});
-            break;
-        }
-
-        return fl + this.character({alpha: true, casing: "upper"}) +
-                this.character({alpha: true, casing: "upper"}) +
-                this.character({alpha: true, casing: "upper"});
-    };
-
-    // Set the data as key and data or the data map
-    Chance.prototype.set = function (name, values) {
-        if (typeof name === "string") {
-            data[name] = values;
-        } else {
-            data = copyObject(name, data);
-        }
-    };
-
-    Chance.prototype.tv = function (options) {
-        return this.radio(options);
-    };
-
-    // ID number for Brazil companies
-    Chance.prototype.cnpj = function () {
-        var n = this.n(this.natural, 8, { max: 9 });
-        var d1 = 2+n[7]*6+n[6]*7+n[5]*8+n[4]*9+n[3]*2+n[2]*3+n[1]*4+n[0]*5;
-        d1 = 11 - (d1 % 11);
-        if (d1>=10){
-            d1 = 0;
-        }
-        var d2 = d1*2+3+n[7]*7+n[6]*8+n[5]*9+n[4]*2+n[3]*3+n[2]*4+n[1]*5+n[0]*6;
-        d2 = 11 - (d2 % 11);
-        if (d2>=10){
-            d2 = 0;
-        }
-        return ''+n[0]+n[1]+'.'+n[2]+n[3]+n[4]+'.'+n[5]+n[6]+n[7]+'/0001-'+d1+d2;
-    };
-
-    // -- End Miscellaneous --
-
-    Chance.prototype.mersenne_twister = function (seed) {
-        return new MersenneTwister(seed);
-    };
-
-    Chance.prototype.blueimp_md5 = function () {
-        return new BlueImpMD5();
-    };
-
-    // Mersenne Twister from https://gist.github.com/banksean/300494
-    var MersenneTwister = function (seed) {
-        if (seed === undefined) {
-            // kept random number same size as time used previously to ensure no unexpected results downstream
-            seed = Math.floor(Math.random()*Math.pow(10,13));
-        }
-        /* Period parameters */
-        this.N = 624;
-        this.M = 397;
-        this.MATRIX_A = 0x9908b0df;   /* constant vector a */
-        this.UPPER_MASK = 0x80000000; /* most significant w-r bits */
-        this.LOWER_MASK = 0x7fffffff; /* least significant r bits */
-
-        this.mt = new Array(this.N); /* the array for the state vector */
-        this.mti = this.N + 1; /* mti==N + 1 means mt[N] is not initialized */
-
-        this.init_genrand(seed);
-    };
-
-    /* initializes mt[N] with a seed */
-    MersenneTwister.prototype.init_genrand = function (s) {
-        this.mt[0] = s >>> 0;
-        for (this.mti = 1; this.mti < this.N; this.mti++) {
-            s = this.mt[this.mti - 1] ^ (this.mt[this.mti - 1] >>> 30);
-            this.mt[this.mti] = (((((s & 0xffff0000) >>> 16) * 1812433253) << 16) + (s & 0x0000ffff) * 1812433253) + this.mti;
-            /* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
-            /* In the previous versions, MSBs of the seed affect   */
-            /* only MSBs of the array mt[].                        */
-            /* 2002/01/09 modified by Makoto Matsumoto             */
-            this.mt[this.mti] >>>= 0;
-            /* for >32 bit machines */
-        }
-    };
-
-    /* initialize by an array with array-length */
-    /* init_key is the array for initializing keys */
-    /* key_length is its length */
-    /* slight change for C++, 2004/2/26 */
-    MersenneTwister.prototype.init_by_array = function (init_key, key_length) {
-        var i = 1, j = 0, k, s;
-        this.init_genrand(19650218);
-        k = (this.N > key_length ? this.N : key_length);
-        for (; k; k--) {
-            s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
-            this.mt[i] = (this.mt[i] ^ (((((s & 0xffff0000) >>> 16) * 1664525) << 16) + ((s & 0x0000ffff) * 1664525))) + init_key[j] + j; /* non linear */
-            this.mt[i] >>>= 0; /* for WORDSIZE > 32 machines */
-            i++;
-            j++;
-            if (i >= this.N) { this.mt[0] = this.mt[this.N - 1]; i = 1; }
-            if (j >= key_length) { j = 0; }
-        }
-        for (k = this.N - 1; k; k--) {
-            s = this.mt[i - 1] ^ (this.mt[i - 1] >>> 30);
-            this.mt[i] = (this.mt[i] ^ (((((s & 0xffff0000) >>> 16) * 1566083941) << 16) + (s & 0x0000ffff) * 1566083941)) - i; /* non linear */
-            this.mt[i] >>>= 0; /* for WORDSIZE > 32 machines */
-            i++;
-            if (i >= this.N) { this.mt[0] = this.mt[this.N - 1]; i = 1; }
-        }
-
-        this.mt[0] = 0x80000000; /* MSB is 1; assuring non-zero initial array */
-    };
-
-    /* generates a random number on [0,0xffffffff]-interval */
-    MersenneTwister.prototype.genrand_int32 = function () {
-        var y;
-        var mag01 = new Array(0x0, this.MATRIX_A);
-        /* mag01[x] = x * MATRIX_A  for x=0,1 */
-
-        if (this.mti >= this.N) { /* generate N words at one time */
-            var kk;
-
-            if (this.mti === this.N + 1) {   /* if init_genrand() has not been called, */
-                this.init_genrand(5489); /* a default initial seed is used */
-            }
-            for (kk = 0; kk < this.N - this.M; kk++) {
-                y = (this.mt[kk]&this.UPPER_MASK)|(this.mt[kk + 1]&this.LOWER_MASK);
-                this.mt[kk] = this.mt[kk + this.M] ^ (y >>> 1) ^ mag01[y & 0x1];
-            }
-            for (;kk < this.N - 1; kk++) {
-                y = (this.mt[kk]&this.UPPER_MASK)|(this.mt[kk + 1]&this.LOWER_MASK);
-                this.mt[kk] = this.mt[kk + (this.M - this.N)] ^ (y >>> 1) ^ mag01[y & 0x1];
-            }
-            y = (this.mt[this.N - 1]&this.UPPER_MASK)|(this.mt[0]&this.LOWER_MASK);
-            this.mt[this.N - 1] = this.mt[this.M - 1] ^ (y >>> 1) ^ mag01[y & 0x1];
-
-            this.mti = 0;
-        }
-
-        y = this.mt[this.mti++];
-
-        /* Tempering */
-        y ^= (y >>> 11);
-        y ^= (y << 7) & 0x9d2c5680;
-        y ^= (y << 15) & 0xefc60000;
-        y ^= (y >>> 18);
-
-        return y >>> 0;
-    };
-
-    /* generates a random number on [0,0x7fffffff]-interval */
-    MersenneTwister.prototype.genrand_int31 = function () {
-        return (this.genrand_int32() >>> 1);
-    };
-
-    /* generates a random number on [0,1]-real-interval */
-    MersenneTwister.prototype.genrand_real1 = function () {
-        return this.genrand_int32() * (1.0 / 4294967295.0);
-        /* divided by 2^32-1 */
-    };
-
-    /* generates a random number on [0,1)-real-interval */
-    MersenneTwister.prototype.random = function () {
-        return this.genrand_int32() * (1.0 / 4294967296.0);
-        /* divided by 2^32 */
-    };
-
-    /* generates a random number on (0,1)-real-interval */
-    MersenneTwister.prototype.genrand_real3 = function () {
-        return (this.genrand_int32() + 0.5) * (1.0 / 4294967296.0);
-        /* divided by 2^32 */
-    };
-
-    /* generates a random number on [0,1) with 53-bit resolution*/
-    MersenneTwister.prototype.genrand_res53 = function () {
-        var a = this.genrand_int32()>>>5, b = this.genrand_int32()>>>6;
-        return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
-    };
-
-    // BlueImp MD5 hashing algorithm from https://github.com/blueimp/JavaScript-MD5
-    var BlueImpMD5 = function () {};
-
-    BlueImpMD5.prototype.VERSION = '1.0.1';
-
-    /*
-    * Add integers, wrapping at 2^32. This uses 16-bit operations internally
-    * to work around bugs in some JS interpreters.
-    */
-    BlueImpMD5.prototype.safe_add = function safe_add(x, y) {
-        var lsw = (x & 0xFFFF) + (y & 0xFFFF),
-            msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-        return (msw << 16) | (lsw & 0xFFFF);
-    };
-
-    /*
-    * Bitwise rotate a 32-bit number to the left.
-    */
-    BlueImpMD5.prototype.bit_roll = function (num, cnt) {
-        return (num << cnt) | (num >>> (32 - cnt));
-    };
-
-    /*
-    * These functions implement the five basic operations the algorithm uses.
-    */
-    BlueImpMD5.prototype.md5_cmn = function (q, a, b, x, s, t) {
-        return this.safe_add(this.bit_roll(this.safe_add(this.safe_add(a, q), this.safe_add(x, t)), s), b);
-    };
-    BlueImpMD5.prototype.md5_ff = function (a, b, c, d, x, s, t) {
-        return this.md5_cmn((b & c) | ((~b) & d), a, b, x, s, t);
-    };
-    BlueImpMD5.prototype.md5_gg = function (a, b, c, d, x, s, t) {
-        return this.md5_cmn((b & d) | (c & (~d)), a, b, x, s, t);
-    };
-    BlueImpMD5.prototype.md5_hh = function (a, b, c, d, x, s, t) {
-        return this.md5_cmn(b ^ c ^ d, a, b, x, s, t);
-    };
-    BlueImpMD5.prototype.md5_ii = function (a, b, c, d, x, s, t) {
-        return this.md5_cmn(c ^ (b | (~d)), a, b, x, s, t);
-    };
-
-    /*
-    * Calculate the MD5 of an array of little-endian words, and a bit length.
-    */
-    BlueImpMD5.prototype.binl_md5 = function (x, len) {
-        /* append padding */
-        x[len >> 5] |= 0x80 << (len % 32);
-        x[(((len + 64) >>> 9) << 4) + 14] = len;
-
-        var i, olda, oldb, oldc, oldd,
-            a =  1732584193,
-            b = -271733879,
-            c = -1732584194,
-            d =  271733878;
-
-        for (i = 0; i < x.length; i += 16) {
-            olda = a;
-            oldb = b;
-            oldc = c;
-            oldd = d;
-
-            a = this.md5_ff(a, b, c, d, x[i],       7, -680876936);
-            d = this.md5_ff(d, a, b, c, x[i +  1], 12, -389564586);
-            c = this.md5_ff(c, d, a, b, x[i +  2], 17,  606105819);
-            b = this.md5_ff(b, c, d, a, x[i +  3], 22, -1044525330);
-            a = this.md5_ff(a, b, c, d, x[i +  4],  7, -176418897);
-            d = this.md5_ff(d, a, b, c, x[i +  5], 12,  1200080426);
-            c = this.md5_ff(c, d, a, b, x[i +  6], 17, -1473231341);
-            b = this.md5_ff(b, c, d, a, x[i +  7], 22, -45705983);
-            a = this.md5_ff(a, b, c, d, x[i +  8],  7,  1770035416);
-            d = this.md5_ff(d, a, b, c, x[i +  9], 12, -1958414417);
-            c = this.md5_ff(c, d, a, b, x[i + 10], 17, -42063);
-            b = this.md5_ff(b, c, d, a, x[i + 11], 22, -1990404162);
-            a = this.md5_ff(a, b, c, d, x[i + 12],  7,  1804603682);
-            d = this.md5_ff(d, a, b, c, x[i + 13], 12, -40341101);
-            c = this.md5_ff(c, d, a, b, x[i + 14], 17, -1502002290);
-            b = this.md5_ff(b, c, d, a, x[i + 15], 22,  1236535329);
-
-            a = this.md5_gg(a, b, c, d, x[i +  1],  5, -165796510);
-            d = this.md5_gg(d, a, b, c, x[i +  6],  9, -1069501632);
-            c = this.md5_gg(c, d, a, b, x[i + 11], 14,  643717713);
-            b = this.md5_gg(b, c, d, a, x[i],      20, -373897302);
-            a = this.md5_gg(a, b, c, d, x[i +  5],  5, -701558691);
-            d = this.md5_gg(d, a, b, c, x[i + 10],  9,  38016083);
-            c = this.md5_gg(c, d, a, b, x[i + 15], 14, -660478335);
-            b = this.md5_gg(b, c, d, a, x[i +  4], 20, -405537848);
-            a = this.md5_gg(a, b, c, d, x[i +  9],  5,  568446438);
-            d = this.md5_gg(d, a, b, c, x[i + 14],  9, -1019803690);
-            c = this.md5_gg(c, d, a, b, x[i +  3], 14, -187363961);
-            b = this.md5_gg(b, c, d, a, x[i +  8], 20,  1163531501);
-            a = this.md5_gg(a, b, c, d, x[i + 13],  5, -1444681467);
-            d = this.md5_gg(d, a, b, c, x[i +  2],  9, -51403784);
-            c = this.md5_gg(c, d, a, b, x[i +  7], 14,  1735328473);
-            b = this.md5_gg(b, c, d, a, x[i + 12], 20, -1926607734);
-
-            a = this.md5_hh(a, b, c, d, x[i +  5],  4, -378558);
-            d = this.md5_hh(d, a, b, c, x[i +  8], 11, -2022574463);
-            c = this.md5_hh(c, d, a, b, x[i + 11], 16,  1839030562);
-            b = this.md5_hh(b, c, d, a, x[i + 14], 23, -35309556);
-            a = this.md5_hh(a, b, c, d, x[i +  1],  4, -1530992060);
-            d = this.md5_hh(d, a, b, c, x[i +  4], 11,  1272893353);
-            c = this.md5_hh(c, d, a, b, x[i +  7], 16, -155497632);
-            b = this.md5_hh(b, c, d, a, x[i + 10], 23, -1094730640);
-            a = this.md5_hh(a, b, c, d, x[i + 13],  4,  681279174);
-            d = this.md5_hh(d, a, b, c, x[i],      11, -358537222);
-            c = this.md5_hh(c, d, a, b, x[i +  3], 16, -722521979);
-            b = this.md5_hh(b, c, d, a, x[i +  6], 23,  76029189);
-            a = this.md5_hh(a, b, c, d, x[i +  9],  4, -640364487);
-            d = this.md5_hh(d, a, b, c, x[i + 12], 11, -421815835);
-            c = this.md5_hh(c, d, a, b, x[i + 15], 16,  530742520);
-            b = this.md5_hh(b, c, d, a, x[i +  2], 23, -995338651);
-
-            a = this.md5_ii(a, b, c, d, x[i],       6, -198630844);
-            d = this.md5_ii(d, a, b, c, x[i +  7], 10,  1126891415);
-            c = this.md5_ii(c, d, a, b, x[i + 14], 15, -1416354905);
-            b = this.md5_ii(b, c, d, a, x[i +  5], 21, -57434055);
-            a = this.md5_ii(a, b, c, d, x[i + 12],  6,  1700485571);
-            d = this.md5_ii(d, a, b, c, x[i +  3], 10, -1894986606);
-            c = this.md5_ii(c, d, a, b, x[i + 10], 15, -1051523);
-            b = this.md5_ii(b, c, d, a, x[i +  1], 21, -2054922799);
-            a = this.md5_ii(a, b, c, d, x[i +  8],  6,  1873313359);
-            d = this.md5_ii(d, a, b, c, x[i + 15], 10, -30611744);
-            c = this.md5_ii(c, d, a, b, x[i +  6], 15, -1560198380);
-            b = this.md5_ii(b, c, d, a, x[i + 13], 21,  1309151649);
-            a = this.md5_ii(a, b, c, d, x[i +  4],  6, -145523070);
-            d = this.md5_ii(d, a, b, c, x[i + 11], 10, -1120210379);
-            c = this.md5_ii(c, d, a, b, x[i +  2], 15,  718787259);
-            b = this.md5_ii(b, c, d, a, x[i +  9], 21, -343485551);
-
-            a = this.safe_add(a, olda);
-            b = this.safe_add(b, oldb);
-            c = this.safe_add(c, oldc);
-            d = this.safe_add(d, oldd);
-        }
-        return [a, b, c, d];
-    };
-
-    /*
-    * Convert an array of little-endian words to a string
-    */
-    BlueImpMD5.prototype.binl2rstr = function (input) {
-        var i,
-            output = '';
-        for (i = 0; i < input.length * 32; i += 8) {
-            output += String.fromCharCode((input[i >> 5] >>> (i % 32)) & 0xFF);
-        }
-        return output;
-    };
-
-    /*
-    * Convert a raw string to an array of little-endian words
-    * Characters >255 have their high-byte silently ignored.
-    */
-    BlueImpMD5.prototype.rstr2binl = function (input) {
-        var i,
-            output = [];
-        output[(input.length >> 2) - 1] = undefined;
-        for (i = 0; i < output.length; i += 1) {
-            output[i] = 0;
-        }
-        for (i = 0; i < input.length * 8; i += 8) {
-            output[i >> 5] |= (input.charCodeAt(i / 8) & 0xFF) << (i % 32);
-        }
-        return output;
-    };
-
-    /*
-    * Calculate the MD5 of a raw string
-    */
-    BlueImpMD5.prototype.rstr_md5 = function (s) {
-        return this.binl2rstr(this.binl_md5(this.rstr2binl(s), s.length * 8));
-    };
-
-    /*
-    * Calculate the HMAC-MD5, of a key and some data (raw strings)
-    */
-    BlueImpMD5.prototype.rstr_hmac_md5 = function (key, data) {
-        var i,
-            bkey = this.rstr2binl(key),
-            ipad = [],
-            opad = [],
-            hash;
-        ipad[15] = opad[15] = undefined;
-        if (bkey.length > 16) {
-            bkey = this.binl_md5(bkey, key.length * 8);
-        }
-        for (i = 0; i < 16; i += 1) {
-            ipad[i] = bkey[i] ^ 0x36363636;
-            opad[i] = bkey[i] ^ 0x5C5C5C5C;
-        }
-        hash = this.binl_md5(ipad.concat(this.rstr2binl(data)), 512 + data.length * 8);
-        return this.binl2rstr(this.binl_md5(opad.concat(hash), 512 + 128));
-    };
-
-    /*
-    * Convert a raw string to a hex string
-    */
-    BlueImpMD5.prototype.rstr2hex = function (input) {
-        var hex_tab = '0123456789abcdef',
-            output = '',
-            x,
-            i;
-        for (i = 0; i < input.length; i += 1) {
-            x = input.charCodeAt(i);
-            output += hex_tab.charAt((x >>> 4) & 0x0F) +
-                hex_tab.charAt(x & 0x0F);
-        }
-        return output;
-    };
-
-    /*
-    * Encode a string as utf-8
-    */
-    BlueImpMD5.prototype.str2rstr_utf8 = function (input) {
-        return unescape(encodeURIComponent(input));
-    };
-
-    /*
-    * Take string arguments and return either raw or hex encoded strings
-    */
-    BlueImpMD5.prototype.raw_md5 = function (s) {
-        return this.rstr_md5(this.str2rstr_utf8(s));
-    };
-    BlueImpMD5.prototype.hex_md5 = function (s) {
-        return this.rstr2hex(this.raw_md5(s));
-    };
-    BlueImpMD5.prototype.raw_hmac_md5 = function (k, d) {
-        return this.rstr_hmac_md5(this.str2rstr_utf8(k), this.str2rstr_utf8(d));
-    };
-    BlueImpMD5.prototype.hex_hmac_md5 = function (k, d) {
-        return this.rstr2hex(this.raw_hmac_md5(k, d));
-    };
-
-    BlueImpMD5.prototype.md5 = function (string, key, raw) {
-        if (!key) {
-            if (!raw) {
-                return this.hex_md5(string);
-            }
-
-            return this.raw_md5(string);
-        }
-
-        if (!raw) {
-            return this.hex_hmac_md5(key, string);
-        }
-
-        return this.raw_hmac_md5(key, string);
-    };
-
-    // CommonJS module
-    if (typeof exports !== 'undefined') {
-        if (typeof module !== 'undefined' && module.exports) {
-            exports = module.exports = Chance;
-        }
-        exports.Chance = Chance;
-    }
-
-    // Register as an anonymous AMD module
-    if (typeof define === 'function' && define.amd) {
-        define([], function () {
-            return Chance;
-        });
-    }
-
-    // if there is a importsScrips object define chance for worker
-    if (typeof importScripts !== 'undefined') {
-        chance = new Chance();
-    }
-
-    // If there is a window object, that at least has a document property,
-    // instantiate and define chance on the window
-    if (typeof window === "object" && typeof window.document === "object") {
-        window.Chance = Chance;
-        window.chance = new Chance();
-    }
-})();
-
+    return self;
+}]);
+
+/* HTML templates */
+tagsInput.run(["$templateCache", function($templateCache) {
+    $templateCache.put('ngTagsInput/tags-input.html',
+    "<div class=\"host\" tabindex=\"-1\" ng-click=\"eventHandlers.host.click()\" ti-transclude-append><div class=\"tags\" ng-class=\"{focused: hasFocus}\"><ul class=\"tag-list\"><li class=\"tag-item\" ng-repeat=\"tag in tagList.items track by track(tag)\" ng-class=\"{ selected: tag == tagList.selected }\" ng-click=\"eventHandlers.tag.click(tag)\"><ti-tag-item data=\"::tag\"></ti-tag-item></li></ul><input class=\"input\" autocomplete=\"off\" ng-model=\"newTag.text\" ng-model-options=\"{getterSetter: true}\" ng-keydown=\"eventHandlers.input.keydown($event)\" ng-focus=\"eventHandlers.input.focus($event)\" ng-blur=\"eventHandlers.input.blur($event)\" ng-paste=\"eventHandlers.input.paste($event)\" ng-trim=\"false\" ng-class=\"{'invalid-tag': newTag.invalid}\" ng-disabled=\"disabled\" ti-bind-attrs=\"{type: options.type, placeholder: options.placeholder, tabindex: options.tabindex, spellcheck: options.spellcheck}\" ti-autosize></div></div>"
+  );
+
+  $templateCache.put('ngTagsInput/tag-item.html',
+    "<span ng-bind=\"$getDisplayText()\"></span> <a class=\"remove-button\" ng-click=\"$removeTag()\" ng-bind=\"::$$removeTagSymbol\"></a>"
+  );
+
+  $templateCache.put('ngTagsInput/auto-complete.html',
+    "<div class=\"autocomplete\" ng-if=\"suggestionList.visible\"><ul class=\"suggestion-list\"><li class=\"suggestion-item\" ng-repeat=\"item in suggestionList.items track by track(item)\" ng-class=\"{selected: item == suggestionList.selected}\" ng-click=\"addSuggestionByIndex($index)\" ng-mouseenter=\"suggestionList.select($index)\"><ti-autocomplete-match data=\"::item\"></ti-autocomplete-match></li></ul></div>"
+  );
+
+  $templateCache.put('ngTagsInput/auto-complete-match.html',
+    "<span ng-bind-html=\"$highlight($getDisplayText())\"></span>"
+  );
+}]);
+
+}());
 var app = angular.module('app', [
 	'ngAnimate',
 	'ngRoute',
@@ -48108,7 +53608,11 @@ var app = angular.module('app', [
     'ui.tree',
     'ngSanitize',
     'ngAnimate',
-    'ngQuantum']);
+    'ngQuantum',
+    'mgcrea.ngStrap',
+    'ngTagsInput']);
+app.config(function ($selectProvider) {
+});
 app.constant('AuthConst',{
     reg:{
         title: 'Reg',
@@ -48139,6 +53643,12 @@ app.constant('AuthConst',{
         name: 'recovery',
         url: '#/recovery',
         action: '/auth/recovery'
+    },
+    message:{
+        'auth/login/success':'You authorizing!',
+        'auth/logout/success':'Bye-Bye!',
+        'auth/logout/confirm':'Do you really want to leave?',
+        'auth/usernofound':'User with email %s not found!'
     }
 });
 app.constant('BookmarkConst', {
@@ -48149,6 +53659,8 @@ app.constant('BookmarkConst', {
         url: '#/bookmark',
         getData: '/bookmark'
     }
+});
+app.constant('MessageConst', {
 });
 app.constant('NavbarConst', {
     left:[
@@ -48339,7 +53851,11 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
       requireBase: false
     });
 });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
+    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '</div>');
+	a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
     '    <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
     '</div>\n' +
     '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
@@ -48371,75 +53887,110 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </a>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '</div>');
+	a.put('views/auth/login.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Login on site</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com, user@email.com, author@email.com)</code></p>\n' +
+    '    <p>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-sm-4">\n' +
+    '            <form ng-submit="AuthSvc.doLogin(email,password)" novalidate class="css-form">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="email">Email:</label>\n' +
+    '                    <input type="email" class="form-control" id="email" placeholder="email" ng-model="email" required>\n' +
+    '                </div>\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="password">Password:</label>\n' +
+    '                    <input type="password" class="form-control" id="password" placeholder="password"\n' +
+    '                           ng-model="password" >\n' +
+    '                </div>\n' +
+    '                <button type="submit" class="btn btn-primary">Login</button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '    </p>\n' +
+    '    <p>If you lose password please click to <a ng-href="{{AppConst.auth.recovery.url}}">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="{{AppConst.auth.reg.url}}">registration form</a></p>\n' +
     '</div>');
 	a.put('views/tag/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span></h1>\n' +
     '    </div>\n' +
     '    <div ng-repeat="allItem in TagSvc.allList">\n' +
-    '    <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
-    '    <div class="row">\n' +
-    '        <div ng-class="\'col-md-\'+(12/TagSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
-    '            <div class="jumbotron">\n' +
-    '                <div ng-include="AppConst.widjets.carusel.template"></div>\n' +
-    '                <div ng-include="AppConst.widjets.anonce.template"></div>\n' +
+    '        <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
+    '        <div class="row">\n' +
+    '            <div ng-class="\'col-md-\'+(12/TagSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
+    '                <div class="jumbotron">\n' +
+    '                    <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
+    '                    <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
     '\n' +
-    '                <div class="jumbotron-contents">\n' +
-    '                    <div class="row">\n' +
-    '                        <div class="col-md-8">\n' +
+    '                    <div class="jumbotron-contents">\n' +
+    '                        <div class="row">\n' +
+    '                            <div class="col-md-8">\n' +
     '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag | unsafe"></a>\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
     '                            </span>\n' +
-    '                        </div>\n' +
-    '                        <div class="col-md-4">\n' +
-    '                            <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                            <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
+    '                            </div>\n' +
+    '                            <div class="col-md-4">\n' +
+    '                                <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                                <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right"\n' +
+    '                                   ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '                            </div>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '        </div>\n' +
-    '    </div>\n' +
     '\n' +
-    '</div>');
+    '    </div>');
 	a.put('views/search/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"</h1>\n' +
     '    </div>\n' +
     '    <div ng-repeat="allItem in SearchSvc.allList">\n' +
-    '    <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
-    '    <div class="row">\n' +
-    '        <div ng-class="\'col-md-\'+(12/SearchSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
-    '            <div class="jumbotron">\n' +
-    '                <div ng-include="AppConst.widjets.carusel.template"></div>\n' +
-    '                <div ng-include="AppConst.widjets.anonce.template"></div>\n' +
+    '        <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
+    '        <div class="row">\n' +
+    '            <div ng-class="\'col-md-\'+(12/SearchSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
+    '                <div class="jumbotron">\n' +
+    '                    <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
+    '                    <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
     '\n' +
-    '                <div class="jumbotron-contents">\n' +
-    '                    <div class="row">\n' +
-    '                        <div class="col-md-8">\n' +
+    '                    <div class="jumbotron-contents">\n' +
+    '                        <div class="row">\n' +
+    '                            <div class="col-md-8">\n' +
     '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag | unsafe"></a>\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
     '                            </span>\n' +
-    '                        </div>\n' +
-    '                        <div class="col-md-4">\n' +
-    '                            <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                            <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-info pull-right">Edit</a>\n' +
+    '                            </div>\n' +
+    '                            <div class="col-md-4">\n' +
+    '                                <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
+    '                                <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right"\n' +
+    '                                   ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '                            </div>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '        </div>\n' +
-    '    </div>\n' +
     '\n' +
-    '</div>');
+    '    </div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
-    '        <h1>Edit project</h1>\n' +
+    '        <h1>\n' +
+    '            <span>Edit project</span>\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/\'+ProjectSvc.item.name}}"\n' +
+    '               class="btn btn-default">View</a>\n' +
+    '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
     '        <div class="col-md-9">\n' +
@@ -48501,23 +54052,18 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            </div>\n' +
     '            <div class="form-group">\n' +
     '                <label for="ItemType">Type</label>\n' +
-    '                <ul id="ItemType" nq-select="" ng-model="ProjectSvc.item.type"\n' +
-    '                    qo-placeholder="" qo-effect="false">\n' +
-    '                    <li ng-repeat="type in AppConst.project.types" option-value="{{type.id}}"\n' +
-    '                        select-option="{{type.id}}" option-label="{{type.title}}">\n' +
-    '                        <span ng-bind-html="type.title | unsafe"></span>\n' +
-    '                    </li>\n' +
-    '                </ul>\n' +
+    '                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
+    '                    <option ng-repeat="type in AppConst.project.types"\n' +
+    '                            ng-value="type.id"\n' +
+    '                            ng-bind-html="type.title | unsafe"\n' +
+    '                            ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
+    '                </select>\n' +
     '            </div>\n' +
     '            <div class="form-group">\n' +
     '                <label for="ItemTags">Tags</label>\n' +
-    '                <ul id="ItemTags" nq-select="" qo-multiple="true" ng-model="ProjectSvc.item.tags"\n' +
-    '                    qo-placeholder="" qo-effect="false">\n' +
-    '                    <li ng-repeat="tag in ProjectSvc.TagSvc.list" option-value="{{tag}}"\n' +
-    '                        select-option="{{tag}}" option-label="{{tag}}">\n' +
-    '                        <span ng-bind-html="tag | unsafe"></span>\n' +
-    '                    </li>\n' +
-    '                </ul>\n' +
+    '                <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '                    <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>\n' +
+    '                </tags-input>\n' +
     '            </div>\n' +
     '            <div class="form-group">\n' +
     '                <label for="ItemDescription">Description</label>\n' +
@@ -48529,7 +54075,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '</div>');
 	a.put('views/project/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
-    '        <h1>My projects</h1>\n' +
+    '        <h1>\n' +
+    '            <span>My projects</span>\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/create\'}}"\n' +
+    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Create</a>\n' +
+    '        </h1>\n' +
     '    </div>\n' +
     '    <p class="lead">Description of projects</p>\n' +
     '    <div class="row">\n' +
@@ -48542,13 +54092,14 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    <div class="row">\n' +
     '                        <div class="col-md-8">\n' +
     '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag | unsafe"></a>\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
     '                            </span>\n' +
     '                        </div>\n' +
     '                        <div class="col-md-4">\n' +
     '                            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right">Edit</a>\n' +
+    '                            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
+    '                               class="btn btn-primary pull-right" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -48559,15 +54110,22 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '</div>');
 	a.put('views/project/item.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
-    '        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-sm hidden-md hidden-lg"></h1>\n' +
+    '        <h1 class="hidden-sm hidden-md hidden-lg">\n' +
+    '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
+    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '        </h1>\n' +
     '        <div class="pull-right">\n' +
     '            <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag}}" class="btn btn-default btn-xs"\n' +
-    '                   ng-bind-html="tag | unsafe"></a>\n' +
+    '                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                   ng-bind-html="tag.text | unsafe"></a>\n' +
     '            </span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>\n' +
     '        </div>\n' +
-    '        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-xs"></h1>\n' +
+    '        <h1 class="hidden-xs">\n' +
+    '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
+    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '        </h1>\n' +
     '    </div>\n' +
     '    <p class="lead" ng-bind-html="ProjectSvc.item.description | unsafe"></p>\n' +
     '    <div class="row">\n' +
@@ -48575,8 +54133,9 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            <div class="jumbotron">\n' +
     '                <div class="jumbotron-photo">\n' +
     '                    <div class="row">\n' +
-    '                        <div ng-class="\'col-md-\'+(12/ProjectSvc.item.images.length)" ng-repeat="image in ProjectSvc.item.images">\n' +
-    '                            <img ng-src="{{image}}"/>\n' +
+    '                        <div ng-class="\'col-md-\'+(12/ProjectSvc.item.images.length)"\n' +
+    '                             ng-repeat="image in ProjectSvc.item.images">\n' +
+    '                            <img ng-src="{{image.src}}" class="img-responsive"/>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -48585,39 +54144,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
-    '</div>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
-    '</div>');
-	a.put('views/auth/login.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Login on site</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com, user@email.com, author@email.com)</code></p>\n' +
-    '    <p>\n' +
-    '    <div class="row">\n' +
-    '        <div class="col-sm-4">\n' +
-    '            <form ng-submit="AuthSvc.doLogin(email,password)" novalidate class="css-form">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="email">Email:</label>\n' +
-    '                    <input type="email" class="form-control" id="email" placeholder="email" ng-model="email" required>\n' +
-    '                </div>\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="password">Password:</label>\n' +
-    '                    <input type="password" class="form-control" id="password" placeholder="password"\n' +
-    '                           ng-model="password" >\n' +
-    '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary">Login</button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AppConst.auth.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AppConst.auth.reg.url}}">registration form</a></p>\n' +
     '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
@@ -48794,8 +54320,28 @@ app.factory('AppSvc', function () {
     service.init();    
     return service;
   });
-app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
+
+    $rootScope.$on('auth.login',function(data){
+        MessageSvc.info('auth/login/success');
+        NavbarSvc.init();
+        NavbarSvc.goBack();
+    });
+
+    $rootScope.$on('auth.logout',function(data){
+        MessageSvc.info('auth/logout/success');
+        NavbarSvc.init();
+        NavbarSvc.goHome();
+    });
+
+    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
+        if (current.params!=undefined && current.params.navId==AppConst.auth.logout.name && service.isLogged()){
+            eventRoute.preventDefault();
+            service.doLogout();
+        }
+    });
+
     service.init=function(reload){
         NavbarSvc.init();
     }
@@ -48811,27 +54357,35 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routePar
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
+                    MessageSvc.error(response.data.code, {
+                        values:
+                            [
+                                email
+                            ]
+                    });
             }
         );
 	}
 	service.doLogout=function(){
-		 AuthRes.actionLogout().then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    var data={
-                      "userId": false,
-                      "userData": {}
+         MessageSvc.confirm('auth/logout/confirm', {},
+         function(){
+             AuthRes.actionLogout().then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        var data={
+                          "userId": false,
+                          "userData": {}
+                        }
+                        AppConfig=angular.extend(AppConfig, data);
+                        $rootScope.$broadcast('auth.logout', data);
                     }
-                    AppConfig=angular.extend(AppConfig, data);
-                    $rootScope.$broadcast('auth.logout', data);
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code);
                 }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
-            }
-        );
+            );
+        });
     }
 
     service.isLogged=function(){
@@ -48839,21 +54393,145 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, $rootScope, $routePar
     }
 
     service.isAdmin=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('admin')
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('admin')!=-1
     }
 
     service.isAuthor=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('author')
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('author')!=-1
     }
 
     service.isUser=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('user')
+        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('user')!=-1
     }
 
     return service;
   });
-app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
+app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
     var service={};
+
+    service.list=false;
+
+    service.error=function(message, data, callbackOk){
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='Error';
+
+        if (callbackOk===undefined)
+            callbackOk=function(){
+            }
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        var boxOptions = {
+            title: data.title,
+            content: vsprintf(message, data.values),
+            theme: 'danger',
+            effect: false,
+            afterOk: callbackOk
+        }
+
+        $modalBox(boxOptions);
+        $rootScope.$broadcast('message.error', message, data, callbackOk);
+    }
+
+    service.alert=function(message, data, callbackOk){
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='Info';
+
+        if (callbackOk===undefined)
+            callbackOk=function(){
+            }
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        var boxOptions = {
+            title: data.title,
+            content: vsprintf(message, data.values),
+            theme: 'alert',
+            effect: false,
+            afterOk: callbackOk
+        }
+
+        $modalBox(boxOptions);
+        $rootScope.$broadcast('message.info', message, data, callbackOk);
+    }
+
+    service.confirm=function(message, data, callbackOk, callbackCancel){
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='Message';
+
+        if (callbackOk===undefined)
+            callbackOk=function(){
+            }
+        if (callbackCancel===undefined)
+            callbackCancel=function(){
+            }
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        var boxOptions = {
+            title: data.title,
+            content: vsprintf(message, data.values),
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Yes',
+            cancelText: 'No',
+            afterConfirm: callbackOk,
+            afterCancel: callbackCancel
+        }
+
+        $modalBox(boxOptions);
+        $rootScope.$broadcast('message.alert', message, data, callbackOk);
+    }
+
+
+    service.info=function(message, data, type){
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='';
+        if (data.alertType===undefined)
+            data.alertType='info';
+        if (data.placement===undefined)
+            data.placement='center';
+
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        $alert(vsprintf(message, data.values), data.title, data.alertType, data.placement)
+    }
+
+    service.init=function(){
+        service.list={};
+        for (var key in AppConst){
+            if (AppConst[key]['message']!==undefined){
+                angular.extend(service.list, AppConst[key]['message']);
+            }
+        }
+    }
+
+    if (service.list===false)
+        service.init();
+
+    return service;
+  });
+app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
+    var service={};
+
+    $rootScope.$on('$routeChangeStart',function(event, current, previous){
+        service.init();
+        $rootScope.$broadcast('navbar.change', event, current, previous);
+    });
 
     function modifiItem(item){
         var navItem={};
@@ -48880,6 +54558,9 @@ app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
                 item.hidden=false;
     }
 
+    service.goBack=function(){
+        $window.history.back();
+    }
     service.goHome=function(){
         $location.path(service.brand.url.replace('#',''));
     }
@@ -48892,7 +54573,7 @@ app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
         if (navId!=undefined)
             $routeParams.navId=navId;
         else
-        if ($route.current.$$route.navId!=undefined)
+        if ($route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
             $routeParams.navId=$route.current.$$route.navId;
 
         service.brand=AppConst.brand;
@@ -48907,10 +54588,23 @@ app.factory('NavbarSvc', function ($routeParams, $route, $location, AppConst) {
 
     return service;
   });
-app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $location, AppConst, ProjectRes, TagSvc, NavbarSvc) {
+app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
     var service={};
 
-    service.item=false;
+    $rootScope.$on('project.delete',function(item){
+        MessageSvc.info('project/delete/success', {values:item});
+        ProjectSvc.goList();
+    });
+
+    $rootScope.$on('project.create',function(item){
+        MessageSvc.info('project/create/success', {values:item});
+    });
+
+    $rootScope.$on('project.update',function(item){
+        MessageSvc.info('project/update/success', {values:item});
+    });
+
+    service.item={};
     service.list=false;
 
     service.TagSvc=TagSvc;
@@ -48937,13 +54631,15 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.list.push(response.data.data);
+                    service.list.push(angular.copy(response.data.data));
                     $rootScope.$broadcast('project.create', service.item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
+                    MessageSvc.error(response.data.code, {
+                        object: item
+                    });
             }
         );
     }
@@ -48951,13 +54647,15 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=response.data.data;
+                    service.item=angular.copy(response.data.data);
                     $rootScope.$broadcast('project.update', service.item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
+                    MessageSvc.error(response.data.code, {
+                        object: item
+                    });
             }
         );
     }
@@ -48971,13 +54669,15 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
                             break;
                         }
                     }
-                    service.item=false;
+                    service.item={};
                     $rootScope.$broadcast('project.delete', item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
+                    MessageSvc.error(response.data.code, {
+                        object: item
+                    });
             }
         );
     }
@@ -49000,28 +54700,38 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
             if (service.item.name!==$routeParams.projectName)
                 ProjectRes.getItem($routeParams.projectName).then(
                     function (response) {
-                        service.item=response.data.data;
+                        service.item=angular.copy(response.data.data);
                         deferred.resolve(service.item);
                         $rootScope.$broadcast('project.item.load', service.item);
                     },
                     function (response) {
                         service.item={};
-                        console.log('error', response);
+                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                            MessageSvc.error(response.data.code, {
+                                values:
+                                    [
+                                        $routeParams.projectName
+                                    ]
+                            });
                         deferred.resolve(service.item);
                     }
                 );
         }else{
             if (service.list===false){
                 ProjectRes.getList().then(function (response) {
-                    service.list=response.data.data.records;
-                    service.pageNumber=response.data.data.pageNumber;
-                    service.countRecordsOnPage=response.data.data.countRecordsOnPage;
-                    service.countAllRecords=response.data.data.countAllRecords;
+                    var data=angular.copy(response.data.data);
+                    service.list=data.records;
+                    service.pageNumber=data.pageNumber;
+                    service.countRecordsOnPage=data.countRecordsOnPage;
+                    service.countAllRecords=data.countAllRecords;
                     deferred.resolve(service.list);
                     $rootScope.$broadcast('project.load', service.list);
                 }, function (response) {
                     service.list=[];
-                    console.log('error', response);
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, {
+                            object: service
+                        });
                     deferred.resolve(service.list);
                 });
             }else
@@ -49094,20 +54804,33 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
         }
     }
 
+    service.searchTag=function(query){
+        var list=[];
+        for (var i=0;i<service.list.length;i++){
+            if (service.list[i].text.indexOf(query)!=-1)
+                list.push(service.list[i]);
+        }
+        return list;
+    }
+
     service.load=function(){
         var deferred = $q.defer();
         if (service.list===false)
             TagRes.getList().then(function (response) {
-                service.list=response.data.data.records;
-                service.pageNumber=response.data.data.pageNumber;
-                service.countRecordsOnPage=response.data.data.countRecordsOnPage;
-                service.countAllRecords=response.data.data.countAllRecords;
+                var data=angular.copy(response.data.data);
+                service.list=data.records;
+                service.pageNumber=data.pageNumber;
+                service.countRecordsOnPage=data.countRecordsOnPage;
+                service.countAllRecords=data.countAllRecords;
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('tag.load', service.list);
             },
             function (response) {
                 service.list=[];
-                console.log('error', response);
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, {
+                        object: service
+                    });
                 deferred.resolve(service.list);
             })
         else
@@ -49133,59 +54856,38 @@ app.controller('AppCtrl', function ($scope, AppSvc, AppConst) {
     $scope.AppConst=AppConst;
 	$scope.AppSvc=AppSvc;
 });
-app.controller('AuthCtrl', function ($scope, $rootScope, AuthSvc, AppConst) {
+app.controller('AuthCtrl', function ($scope, AuthSvc, AppConst, MessageSvc) {
 	$scope.AuthSvc=AuthSvc;
-
-    $rootScope.$on('navbar.change',function(event, current, previous){
-        if (current.params!=undefined && current.params.navId==AppConst.auth.logout.name)
-            AuthSvc.doLogout();
-	});
 
 	AuthSvc.init();
 });
-app.controller('NavbarCtrl', function ($scope, $rootScope, NavbarSvc) {
+app.controller('NavbarCtrl', function ($scope, NavbarSvc) {
 	$scope.NavbarSvc=NavbarSvc;
-
-	$rootScope.$on('$routeChangeSuccess',function(event, current, previous){
-	    NavbarSvc.init();
-	    $rootScope.$broadcast('navbar.change', current, previous);
-	});
-
-	$rootScope.$on('auth.login',function(data){
-	    NavbarSvc.init();
-	    NavbarSvc.goHome();
-	});
-
-	$rootScope.$on('auth.logout',function(data){
-	    NavbarSvc.init();
-	    NavbarSvc.goHome();
-	});
 
     NavbarSvc.init();
 });
-app.controller('ProjectCtrl', function ($scope, $rootScope, UtilsSvc, ProjectSvc, CaruselSvc, AppConst) {
+app.controller('ProjectCtrl', function ($scope, $timeout, UtilsSvc, ProjectSvc, CaruselSvc, AppConst, AuthSvc) {
     $scope.UtilsSvc=UtilsSvc;
 	$scope.ProjectSvc=ProjectSvc;
 	$scope.CaruselSvc=CaruselSvc;
 	$scope.AppConst=AppConst;
-
-    $rootScope.$on('project.delete',function(item){
-        ProjectSvc.goList();
-	});
+	$scope.AuthSvc=AuthSvc;
 
 	ProjectSvc.init();
 });
-app.controller('SearchCtrl', function ($scope, SearchSvc, AppConst, CaruselSvc) {
+app.controller('SearchCtrl', function ($scope, SearchSvc, AppConst, CaruselSvc, AuthSvc) {
 	$scope.SearchSvc=SearchSvc;
 	$scope.CaruselSvc=CaruselSvc;
 	$scope.AppConst=AppConst;
+	$scope.AuthSvc=AuthSvc;
 
 	SearchSvc.init();
 });
-app.controller('TagCtrl', function ($scope, TagSvc, AppConst, CaruselSvc) {
+app.controller('TagCtrl', function ($scope, TagSvc, AppConst, CaruselSvc, AuthSvc) {
 	$scope.TagSvc=TagSvc;
 	$scope.CaruselSvc=CaruselSvc;
 	$scope.AppConst=AppConst;
+	$scope.AuthSvc=AuthSvc;
 
 	TagSvc.init();
 });

@@ -1,6 +1,10 @@
 <div class="container">
     <div class="page-header">
-        <h1>My projects</h1>
+        <h1>
+            <span>My projects</span>
+            <a ng-href="{{AppConst.project.urls.url+'/create'}}"
+               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Create</a>
+        </h1>
     </div>
     <p class="lead">Description of projects</p>
     <div class="row">
@@ -13,13 +17,14 @@
                     <div class="row">
                         <div class="col-md-8">
                             <span ng-repeat="tag in item.tags">
-                                <a ng-href="{{AppConst.tag.urls.url+'/'+tag}}" class="btn btn-default btn-xs"
-                                   ng-bind-html="tag | unsafe"></a>
+                                <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" class="btn btn-default btn-xs"
+                                   ng-bind-html="tag.text | unsafe"></a>
                             </span>
                         </div>
                         <div class="col-md-4">
                             <a ng-href="{{AppConst.project.urls.url+'/'+item.name}}" class="btn btn-link pull-right">Detail...</a>
-                            <a ng-href="{{AppConst.project.urls.url+'/update/'+item.name}}" class="btn btn-primary pull-right">Edit</a>
+                            <a ng-href="{{AppConst.project.urls.url+'/update/'+item.name}}"
+                               class="btn btn-primary pull-right" ng-if="AuthSvc.isAdmin()">Edit</a>
                         </div>
                     </div>
                 </div>

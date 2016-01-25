@@ -1,14 +1,21 @@
 <div class="container">
     <div class="page-header">
-        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-sm hidden-md hidden-lg"></h1>
+        <h1 class="hidden-sm hidden-md hidden-lg">
+            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>
+            <a ng-href="{{AppConst.project.urls.url+'/update/'+ProjectSvc.item.name}}"
+               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>
+        </h1>
         <div class="pull-right">
             <span ng-repeat="tag in ProjectSvc.item.tags">
-                <a ng-href="{{AppConst.tag.urls.url+'/'+tag}}" class="btn btn-default btn-xs"
-                   ng-bind-html="tag | unsafe"></a>
+                <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" class="btn btn-default btn-xs"
+                   ng-bind-html="tag.text | unsafe"></a>
             </span>
-            <a ng-href="{{AppConst.project.urls.url+'/update/'+ProjectSvc.item.name}}" class="btn btn-info btn-xs">Edit</a>
         </div>
-        <h1 ng-bind-html="ProjectSvc.item.title | unsafe" class="hidden-xs"></h1>
+        <h1 class="hidden-xs">
+            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>
+            <a ng-href="{{AppConst.project.urls.url+'/update/'+ProjectSvc.item.name}}"
+               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>
+        </h1>
     </div>
     <p class="lead" ng-bind-html="ProjectSvc.item.description | unsafe"></p>
     <div class="row">
@@ -16,8 +23,9 @@
             <div class="jumbotron">
                 <div class="jumbotron-photo">
                     <div class="row">
-                        <div ng-class="'col-md-'+(12/ProjectSvc.item.images.length)" ng-repeat="image in ProjectSvc.item.images">
-                            <img ng-src="{{image}}"/>
+                        <div ng-class="'col-md-'+(12/ProjectSvc.item.images.length)"
+                             ng-repeat="image in ProjectSvc.item.images">
+                            <img ng-src="{{image.src}}" class="img-responsive"/>
                         </div>
                     </div>
                 </div>

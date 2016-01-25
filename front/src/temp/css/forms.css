@@ -6,3 +6,9 @@
 
 span[data-value="? number:1 ?"] {
   display: none; }
+
+.text-left {
+  text-align: left; }
+
+.text-right {
+  text-align: right; }

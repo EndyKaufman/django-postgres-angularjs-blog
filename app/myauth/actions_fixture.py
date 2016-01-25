@@ -28,17 +28,17 @@ def postLogin(request):
     try:
         email = json_data['email']
     except KeyError:
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'auth/noemail'}, 404
     try:
         password = json_data['password']
     except KeyError:
-        return {'code': 'account/nopassword'}, 404
+        return {'code': 'auth/nopassword'}, 404
 
     if email == '':
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'auth/noemail'}, 404
 
     if password == '':
-        return {'code': 'account/nopassword'}, 404
+        return {'code': 'auth/nopassword'}, 404
 
     email = email.lower()
 
@@ -46,19 +46,19 @@ def postLogin(request):
     try:
         validate_email(email)
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'auth/wrongemail'}, 404
 
     '''
     # Try auth
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
-        return {'code': 'account/usernofound', 'values': [email]}, 404
+        return {'code': 'auth/usernofound', 'values': [email]}, 404
 
     user = auth.authenticate(username=user.username, password=password)
 
     if user is None:
-        return { 'code': 'account/wrongpassword' % email}, 404
+        return { 'code': 'auth/wrongpassword' % email}, 404
 
     if user.is_active:
         user.backend = 'django.contrib.auth.backends.ModelBackend'    
@@ -76,7 +76,7 @@ def postLogin(request):
         }
     else:
         auth.logout(request)
-        return { 'code': 'account/notactive'}, 404
+        return { 'code': 'auth/notactive'}, 404
     '''
     try:
         with open('app/myauth/fixtures/users.json') as f:
@@ -93,7 +93,7 @@ def postLogin(request):
             user = record
 
     if user == False:
-        return {'code': 'account/usernofound', 'values': [email]}, 404
+        return {'code': 'auth/usernofound', 'values': [email]}, 404
 
     return {'code': 'ok', 'data': user}
 

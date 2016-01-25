@@ -3,29 +3,30 @@
         <h1>Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"</h1>
     </div>
     <div ng-repeat="allItem in SearchSvc.allList">
-    <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>
-    <div class="row">
-        <div ng-class="'col-md-'+(12/SearchSvc.countItemsOnRow)" ng-repeat="item in allItem.list">
-            <div class="jumbotron">
-                <div ng-include="AppConst.widjets.carusel.template"></div>
-                <div ng-include="AppConst.widjets.anonce.template"></div>
+        <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>
+        <div class="row">
+            <div ng-class="'col-md-'+(12/SearchSvc.countItemsOnRow)" ng-repeat="item in allItem.list">
+                <div class="jumbotron">
+                    <div ng-include="AppConst.widjets.carusel.templates.item"></div>
+                    <div ng-include="AppConst.widjets.anonce.templates.item"></div>
 
-                <div class="jumbotron-contents">
-                    <div class="row">
-                        <div class="col-md-8">
+                    <div class="jumbotron-contents">
+                        <div class="row">
+                            <div class="col-md-8">
                             <span ng-repeat="tag in item.tags">
-                                <a ng-href="{{AppConst.tag.urls.url+'/'+tag}}" class="btn btn-default btn-xs"
-                                   ng-bind-html="tag | unsafe"></a>
+                                <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" class="btn btn-default btn-xs"
+                                   ng-bind-html="tag.text | unsafe"></a>
                             </span>
-                        </div>
-                        <div class="col-md-4">
-                            <a ng-href="{{allItem.url+'/'+item.name}}" class="btn btn-link pull-right">Detail...</a>
-                            <a ng-href="{{allItem.url+'/update/'+item.name}}" class="btn btn-info pull-right">Edit</a>
+                            </div>
+                            <div class="col-md-4">
+                                <a ng-href="{{allItem.url+'/'+item.name}}" class="btn btn-link pull-right">Detail...</a>
+                                <a ng-href="{{allItem.url+'/update/'+item.name}}" class="btn btn-primary pull-right"
+                                   ng-if="AuthSvc.isAdmin()">Edit</a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>

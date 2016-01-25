@@ -3,17 +3,53 @@
   "countRecordsOnPage": 0,
   "countAllRecords": 100,
   "records": [
-    "tag1",
-    "tag21",
-    "tag23",
-    "tag44",
-    "tag133",
-    "tag215",
-    "tag235",
-    "tag445",
-    "tag155",
-    "tag2155",
-    "tag23555",
-    "tag44555"
+    {
+      "id": 1,
+      "text": "tag1"
+    },
+    {
+      "id": 2,
+      "text": "tag21"
+    },
+    {
+      "id": 3,
+      "text": "tag23"
+    },
+    {
+      "id": 4,
+      "text": "tag44"
+    },
+    {
+      "id": 5,
+      "text": "tag133"
+    },
+    {
+      "id": 6,
+      "text": "tag215"
+    },
+    {
+      "id": 7,
+      "text": "tag235"
+    },
+    {
+      "id": 8,
+      "text": "tag445"
+    },
+    {
+      "id": 9,
+      "text": "tag155"
+    },
+    {
+      "id": 10,
+      "text": "tag2155"
+    },
+    {
+      "id": 11,
+      "text": "tag23555"
+    },
+    {
+      "id": 12,
+      "text": "tag44555"
+    }
   ]
 }

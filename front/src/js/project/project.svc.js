@@ -1,7 +1,20 @@
-app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $location, AppConst, ProjectRes, TagSvc, NavbarSvc) {
+app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
     var service={};
 
-    service.item=false;
+    $rootScope.$on('project.delete',function(item){
+        MessageSvc.info('project/delete/success', {values:item});
+        ProjectSvc.goList();
+    });
+
+    $rootScope.$on('project.create',function(item){
+        MessageSvc.info('project/create/success', {values:item});
+    });
+
+    $rootScope.$on('project.update',function(item){
+        MessageSvc.info('project/update/success', {values:item});
+    });
+
+    service.item={};
     service.list=false;
 
     service.TagSvc=TagSvc;
@@ -28,13 +41,15 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.list.push(response.data.data);
+                    service.list.push(angular.copy(response.data.data));
                     $rootScope.$broadcast('project.create', service.item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
+                    MessageSvc.error(response.data.code, {
+                        object: item
+                    });
             }
         );
     }
@@ -42,13 +57,15 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=response.data.data;
+                    service.item=angular.copy(response.data.data);
                     $rootScope.$broadcast('project.update', service.item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
+                    MessageSvc.error(response.data.code, {
+                        object: item
+                    });
             }
         );
     }
@@ -62,13 +79,15 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
                             break;
                         }
                     }
-                    service.item=false;
+                    service.item={};
                     $rootScope.$broadcast('project.delete', item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    alert(response.data.code);
+                    MessageSvc.error(response.data.code, {
+                        object: item
+                    });
             }
         );
     }
@@ -91,28 +110,38 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $locati
             if (service.item.name!==$routeParams.projectName)
                 ProjectRes.getItem($routeParams.projectName).then(
                     function (response) {
-                        service.item=response.data.data;
+                        service.item=angular.copy(response.data.data);
                         deferred.resolve(service.item);
                         $rootScope.$broadcast('project.item.load', service.item);
                     },
                     function (response) {
                         service.item={};
-                        console.log('error', response);
+                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                            MessageSvc.error(response.data.code, {
+                                values:
+                                    [
+                                        $routeParams.projectName
+                                    ]
+                            });
                         deferred.resolve(service.item);
                     }
                 );
         }else{
             if (service.list===false){
                 ProjectRes.getList().then(function (response) {
-                    service.list=response.data.data.records;
-                    service.pageNumber=response.data.data.pageNumber;
-                    service.countRecordsOnPage=response.data.data.countRecordsOnPage;
-                    service.countAllRecords=response.data.data.countAllRecords;
+                    var data=angular.copy(response.data.data);
+                    service.list=data.records;
+                    service.pageNumber=data.pageNumber;
+                    service.countRecordsOnPage=data.countRecordsOnPage;
+                    service.countAllRecords=data.countAllRecords;
                     deferred.resolve(service.list);
                     $rootScope.$broadcast('project.load', service.list);
                 }, function (response) {
                     service.list=[];
-                    console.log('error', response);
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, {
+                            object: service
+                        });
                     deferred.resolve(service.list);
                 });
             }else

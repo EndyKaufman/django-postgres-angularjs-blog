@@ -30,20 +30,33 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
         }
     }
 
+    service.searchTag=function(query){
+        var list=[];
+        for (var i=0;i<service.list.length;i++){
+            if (service.list[i].text.indexOf(query)!=-1)
+                list.push(service.list[i]);
+        }
+        return list;
+    }
+
     service.load=function(){
         var deferred = $q.defer();
         if (service.list===false)
             TagRes.getList().then(function (response) {
-                service.list=response.data.data.records;
-                service.pageNumber=response.data.data.pageNumber;
-                service.countRecordsOnPage=response.data.data.countRecordsOnPage;
-                service.countAllRecords=response.data.data.countAllRecords;
+                var data=angular.copy(response.data.data);
+                service.list=data.records;
+                service.pageNumber=data.pageNumber;
+                service.countRecordsOnPage=data.countRecordsOnPage;
+                service.countAllRecords=data.countAllRecords;
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('tag.load', service.list);
             },
             function (response) {
                 service.list=[];
-                console.log('error', response);
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, {
+                        object: service
+                    });
                 deferred.resolve(service.list);
             })
         else
