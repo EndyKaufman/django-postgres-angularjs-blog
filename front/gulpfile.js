@@ -93,8 +93,15 @@ var dest_path='../project/static/'
 
 //css modifi function
 function cssChange(content) {
-    return content.replace(new RegExp("../../bower_components/bootstrap/fonts/glyphicons-halflings-regular","ig"),
-    '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular');
+    return content
+    .replace(new RegExp("../../bower_components/bootstrap/fonts/glyphicons-halflings-regular","ig"),
+    '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular')
+    .replace(new RegExp("# sourceMappingURL=","ig"),'')
+    .replace(new RegExp("../../images/scrollbar/resizer.png","ig"),'')
+    .replace(new RegExp("../../images/scrollbar/arrow-up.png","ig"),'')
+    .replace(new RegExp("../../images/scrollbar/arrow-down.png","ig"),'')
+    .replace(new RegExp("../../images/scrollbar/arrow-left.png","ig"),'')
+    .replace(new RegExp("../../images/scrollbar/arrow-right.png","ig"),'');
 }
 
 //clear temp folder

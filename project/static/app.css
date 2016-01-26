@@ -8363,7 +8363,7 @@ html::-webkit-scrollbar-button {
 }
 :not(textarea)::-webkit-resizer {
   background-color: #f4f4f4;
-  background-image: url("../../images/scrollbar/resizer.png");
+  background-image: url("");
   background-repeat: no-repeat;
   background-position: top bottom;
   border-top: 1px solid transparent;
@@ -8375,21 +8375,21 @@ html::-webkit-scrollbar-button {
   border-left: 1px solid #f4f4f4;
 }
 ::-webkit-scrollbar-button:vertical:decrement {
-  background-image: url('../../images/scrollbar/arrow-up.png'), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
-  background-image: url('../../images/scrollbar/arrow-up.png'), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
   border-bottom-width: 1px;
 }
 ::-webkit-scrollbar-button:vertical:increment {
-  background-image: url('../../images/scrollbar/arrow-down.png'), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
-  background-image: url('../../images/scrollbar/arrow-down.png'), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
 }
 ::-webkit-scrollbar-button:horizontal:decrement {
-  background-image: url('../../images/scrollbar/arrow-left.png'), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
-  background-image: url('../../images/scrollbar/arrow-left.png'), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
 }
 ::-webkit-scrollbar-button:horizontal:increment {
-  background-image: url('../../images/scrollbar/arrow-right.png'), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
-  background-image: url('../../images/scrollbar/arrow-right.png'), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), -webkit-radial-gradient(center, ellipse, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
+  background-image: url(''), radial-gradient(ellipse at center, rgba(255, 255, 255, .7) 40%, rgba(0, 0, 0, .15) 100%);
 }
 .bar-slimmest::-webkit-scrollbar-button,
 .bar-slim::-webkit-scrollbar-button,
@@ -11490,7 +11490,7 @@ body > .loading-container {
   right: auto;
   left: 0;
 }
-/*# sourceMappingURL=quantumui.css.map */
+/*quantumui.css.map */
 
 tags-input {
   display: block;
@@ -11651,7 +11651,7 @@ tags-input .autocomplete .suggestion-item em {
   background-color: #fff;
 }
 
-/*# sourceMappingURL=ng-tags-input.css.map */
+/*ng-tags-input.css.map */
 
 tags-input {
   box-shadow: none;
@@ -11830,7 +11830,7 @@ tags-input.ti-input-sm .tags .input, .input-group-sm tags-input .tags .input {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #c0a16b;
 }
 
-/*# sourceMappingURL=ng-tags-input.bootstrap.css.map */
+/*ng-tags-input.bootstrap.css.map */
 
 /*! HTML5 Boilerplate v4.3.0 | MIT License | http://h5bp.com/ */
 /*
