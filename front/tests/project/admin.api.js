@@ -4,15 +4,16 @@ describe('Project Admin API:', function() {
   var listResponse = undefined, updateResponse = undefined, deleteResponse = undefined;
 
   beforeEach(function(done){
+    browser.driver.manage().window().setSize(1280, 1024);
     browser.get(browser.baseUrl).then(function(){
         mytools.getJson('/project/list', function(response){
             listResponse = response;
             var record = listResponse.data.records[0];
 
-            mytools.postJson('/project/update/'+record.id, function(response){
+            mytools.postJson('/project/update/'+record.id, record, function(response){
                 updateResponse = response;
 
-                mytools.postJson('/project/delete/'+record.tags[0].id, function(response){
+                mytools.postJson('/project/delete/'+record.tags[0].id, {}, function(response){
                     deleteResponse = response;
 
                     done();
@@ -25,7 +26,7 @@ describe('Project Admin API:', function() {
   it('get /project/list and check structure', function() {
     expect(typeof listResponse).toEqual('object');
     expect(listResponse.code).toEqual('ok');
-    var record = listResponse.data.records;
+    var record = listResponse.data.records[0];
     var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags'];
     expect(typeof listResponse.data.pageNumber).toEqual('number');
     expect(typeof listResponse.data.countRecordsOnPage).toEqual('number');

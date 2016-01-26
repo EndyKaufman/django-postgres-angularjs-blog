@@ -176,183 +176,19 @@ gulp.task('dev', gulp.series('clear','template:js','scss','less','dev:css',
 gulp.task('public', gulp.series('clear','template:js','scss','less','public:css',
               'public:js'));
 
-//run silenium test (before run tests you must  run server on http://127.0.0.1:5000)
-var cwd0={
-	title: 'tests',
-	configFile: 'protractor.config.js',
-	args: ['--baseUrl', 'http://127.0.0.1:5000', '--waits', 500]
-};
-var cwd1={
-	title: 'selenium-server-standalone',
-	shell:'java',
-	params: ['-jar','node_modules/protractor/selenium/selenium-server-standalone-2.48.2.jar', '-role',  'hub']
-};
-var cwd2={
-	title: 'phantomjs webdriver',
-	shell:'node_modules/phantomjs/bin/phantomjs',
-	params: ['--webdriver=8084', '--webdriver-selenium-grid-hub=http://127.0.0.1:4444']
-};
-
 // Downloads the selenium webdriver
 gulp.task('webdriver_update', webdriver_update);
 
 // Runs the selenium webdriver
 gulp.task('webdriver_standalone', webdriver_standalone);
 
+// Tests
 gulp.task('test', function () {
-    //prepare
-    var runCwd1Spawn=null;
-    var runCwd2Spawn=null;
-    var def=null;
-    var runTestRunned=null;
-
-
-    function exitHandler(options, err) {
-        //Stop reading input
-        process.stdin.pause();
-
-        if (runCwd1Spawn!=null && runCwd1!=null){
-            runCwd1Spawn.kill();
-            runCwd1=null;
-        }
-
-        if (runCwd2Spawn!=null&& runCwd2!=null){
-            runCwd2Spawn.kill();
-            runCwd2=null;
-        }
-
-        if (options.cleanup) {
-            console.log('clean');
-        }
-        if (err) console.log(err.stack);
-        if (options.exit){
-            console.log('exit from process');
-            if (def!=null && !options.err)
-                def.resolve();
-
-            if (def!=null && options.err)
-                def.reject(options.err);
-            //process.exit();
-        }
-    }
-
-    //do something when app is closing
-    process.on('exit', exitHandler.bind(null,{cleanup:true}));
-
-    //catches ctrl+c event
-    process.on('SIGINT', exitHandler.bind(null, {exit:true}));
-
-    //catches uncaught exceptions
-    process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
-
-    var runTest=function(){
-        gutil.log(gutil.colors.yellow('['+cwd0.title+'] start'));
-        var stream = gulp.src(tests_source)
-            .pipe(protractor({
-                configFile: cwd0.configFile,
-                args: cwd0.args
-            }));
-        stream.on('end', function() {
-            gutil.log(gutil.colors.yellow('['+cwd0.title+'] completed'));
-            exitHandler({exit:true});
-        });
-
-        stream.on('error', function(err) {
-            gutil.log(gutil.colors.yellow('['+cwd0.title+'] error'));
-            exitHandler({exit:true});
-        });
-        return stream;
-    }
-
-    runCwd2=function(){
-        gutil.log(gutil.colors.yellow('['+cwd2.title+'] start'));
-        // Finally execute your script below - here "ls -lA"
-        var child = spawn(cwd2.shell, cwd2.params, {cwd: process.cwd()}),
-            stdout = '',
-            stderr = '',
-            prevData = '';
-
-        child.stdout.setEncoding('utf8');
-
-        child.stdout.on('data', function (data) {
-            if (prevData!=data){
-                prevData = data;
-                stdout += data;
-                gutil.log(gutil.colors.blue(data));
-            }
-            if (runTestRunned==null)
-                runTestRunned=runTest();
-        });
-
-        child.stderr.setEncoding('utf8');
-        child.stderr.on('data', function (data) {
-            if (prevData!=data){
-                prevData = data;
-                stderr += data;
-                gutil.log(gutil.colors.red(data));
-            }
-            gutil.beep();
-        });
-
-        child.on('close', function(code) {
-            gutil.log(gutil.colors.yellow('['+cwd2.title+'] Done with exit code'), code);
-            //gutil.log(gutil.colors.yellow('['+cwd2.title+'] You access complete stdout and stderr from here'));
-        });
-
-        return child;
-    }
-
-    runCwd1=function(){
-        // Finally execute your script below - here "ls -lA"
-        var child = spawn(cwd1.shell, cwd1.params, {cwd: process.cwd()}),
-            stdout = '',
-            stderr = '',
-            prevData = '';
-
-        child.stdout.setEncoding('utf8');
-        gutil.log(gutil.colors.yellow('['+cwd1.title+'] start'));
-
-        child.stdout.on('data', function (data) {
-            if (prevData!=data){
-                prevData = data;
-                stdout += data;
-                gutil.log(gutil.colors.blue(data));
-            }
-
-            if (data.indexOf('Selenium Grid hub is up and running')!=-1 && runCwd2Spawn==null)
-                runCwd2Spawn=runCwd2();
-        });
-
-        child.stderr.setEncoding('utf8');
-        child.stderr.on('data', function (data) {
-            if (prevData!=data){
-                prevData = data;
-                stderr += data;
-                gutil.log(gutil.colors.red(data));
-                gutil.beep();
-            }
-
-            if (data.indexOf('Selenium Grid hub is up and running')!=-1 && runCwd2Spawn==null)
-                runCwd2Spawn=runCwd2();
-        });
-
-        child.on('close', function(code) {
-            gutil.log(gutil.colors.yellow('['+cwd1.title+'] Done with exit code'), code);
-            //gutil.log(gutil.colors.yellow('['+cwd1.title+'] You access complete stdout and stderr from here'));
-        });
-
-        return child;
-    }
-
-    //test body
-
-    def = q.defer();
-
-    process.stdin.resume();//so the program will not close instantly
-
-    runCwd1Spawn=runCwd1();
-
-    return def.promise;
+    return gulp.src(tests_source)
+        .pipe(protractor({
+            configFile: "protractor.config.js",
+            args: ['--baseUrl', 'http://127.0.0.1:5000']
+        }));
 });
 
 

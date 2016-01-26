@@ -4,6 +4,7 @@ describe('Auth API (admin):', function() {
   var adminData = undefined, logoutData = undefined;
 
   beforeEach(function(done){
+    browser.driver.manage().window().setSize(1280, 1024);
     browser.get(browser.baseUrl).then(function(){
         mytools.executeAndReturnJson(
             'callback(window.AppConfig);',

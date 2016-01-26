@@ -1,9 +1,10 @@
 describe('Project Guest API:', function() {
   var mytools = require('./../tools.js');
 
-  var itemResponse = undefined, listbysearchResponse = undefined, listbytagResponse = undefined, listResponse = undefined;
+  var itemResponse = undefined, listbysearchResponse = undefined, listbytagResponse = undefined, listResponse = undefined, updateResponse = undefined;
 
   beforeEach(function(done){
+    browser.driver.manage().window().setSize(1280, 1024);
     browser.get(browser.baseUrl).then(function(){
         mytools.getJson('/project/list', function(response){
             listResponse = response;

@@ -1,17 +1,20 @@
 // An example configuration file.
 // https://raw.github.com/angular/protractor/master/example/conf.js
 exports.config = {
+    framework: 'jasmine2',
     // The address of a running selenium server.
-    //seleniumServerJar: './node_modules/protractor/selenium/selenium-server-standalone-2.48.2.jar', // Make use you check the version in the folder
-    seleniumAddress: 'http://localhost:4444/wd/hub',
+    seleniumServerJar: './node_modules/protractor/selenium/selenium-server-standalone-2.48.2.jar', // Make use you check the version in the folder
+    //seleniumAddress: 'http://localhost:4444/wd/hub',
     // Capabilities to be passed to the webdriver instance.
     capabilities: {
-    'browserName': 'phantomjs'
+        'browserName': 'phantomjs'
     },
     // Options to be passed to Jasmine-node.
     jasmineNodeOpts: {
+        isVerbose: true,
         showColors: true,
-        defaultTimeoutInterval: 300000
+        includeStackTrace: true,
+        defaultTimeoutInterval: 30000
     },
     onPrepare: function() {
         var jasmineReporters = require('jasmine-reporters');

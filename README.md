@@ -31,7 +31,7 @@ pip install -r requirements.txt
 ## frontend tools
 ```
 cd front
-sudo npm install -g gulpjs/gulp-cli#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver git+https://git@github.com/Medium/phantomjs.git
+sudo npm install -g gulpjs/gulp-cli#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver git+https://git@github.com/Medium/phantomjs.git##v1.9.19
 sudo npm install --save-dev
 sudo npm install gulp --save-dev
 sudo bower install --save --allow-root
@@ -94,6 +94,7 @@ sudo apt-get install -y nodejs
 ## for update node deps
 ```
 cd front
+sudo npm update -g
 sudo npm update --save-dev
 sudo npm rebuild
 sudo ncu -u -m bower
@@ -107,6 +108,20 @@ sudo npm uninstall gulp -g
 sudo npm uninstall gulp
 sudo npm install gulpjs/gulp-cli#4.0 -g
 sudo npm install gulpjs/gulp.git#4.0 --save-dev
+```
+
+
+## commands for reinstall phantom js
+```
+cd front
+sudo rm -r /usr/local/bin/phantomjs
+sudo rm -r /usr/lib/node_modules/phantomjs
+sudo rm -r /usr/lib/node_modules/.phantomjs.DELETE
+sudo npm -g install git+https://git@github.com/Medium/phantomjs.git#v1.9.19
+sudo ln -s /usr/lib/node_modules/phantomjs/lib/phantom/bin/phantomjs /usr/local/bin/phantomjs
+sudo rm -r node_modules/phantomjs
+sudo rm -r node_modules/.phantomjs.DELETE
+sudo npm install git+https://git@github.com/Medium/phantomjs.git#v1.9.19 --save-dev
 ```
 
 ## vagrant commands
