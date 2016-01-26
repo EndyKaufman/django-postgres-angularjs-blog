@@ -1,13 +1,13 @@
 app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
 
-    $rootScope.$on('auth.login',function(data){
+    $rootScope.$on('auth.login',function(event, data){
         MessageSvc.info('auth/login/success');
         NavbarSvc.init();
         NavbarSvc.goBack();
     });
 
-    $rootScope.$on('auth.logout',function(data){
+    $rootScope.$on('auth.logout',function(event, data){
         MessageSvc.info('auth/logout/success');
         NavbarSvc.init();
         NavbarSvc.goHome();

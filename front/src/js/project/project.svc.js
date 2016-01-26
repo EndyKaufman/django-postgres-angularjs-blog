@@ -1,17 +1,19 @@
 app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
     var service={};
 
-    $rootScope.$on('project.delete',function(item){
+    $rootScope.$on('project.delete',function(event, item){
         MessageSvc.info('project/delete/success', {values:item});
-        ProjectSvc.goList();
+        service.goList();
     });
 
-    $rootScope.$on('project.create',function(item){
+    $rootScope.$on('project.create',function(event, item){
         MessageSvc.info('project/create/success', {values:item});
+        service.goItem(item.name);
     });
 
-    $rootScope.$on('project.update',function(item){
+    $rootScope.$on('project.update',function(event, item){
         MessageSvc.info('project/update/success', {values:item});
+        service.goItem(item.name);
     });
 
     service.item={};
@@ -37,18 +39,24 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     service.goList=function(){
         $location.path(AppConst.project.urls.url.replace('#',''));
     }
+
+    service.goItem=function(projectName){
+        $location.path(AppConst.project.urls.url.replace('#','')+'/'+projectName);
+    }
+
 	service.doCreate=function(item){
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.list.push(angular.copy(response.data.data));
+                    service.item=angular.copy(response.data.data);
+                    service.list.push(service.item);
                     $rootScope.$broadcast('project.create', service.item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: item
+                        obj: item
                     });
             }
         );
@@ -64,7 +72,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: item
+                        obj: item
                     });
             }
         );
@@ -86,7 +94,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: item
+                        obj: item
                     });
             }
         );
@@ -98,12 +106,18 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     service.doAppendImage=function(text){
         if (text===undefined)
             text='';
+        if (service.item.images===undefined)
+            service.item.images=[];
         service.item.images.push({
             id: chance.guid(),
             title: text
         });
     }
-
+    service.initEmptyItem=function(){
+        service.item={};
+        service.item.type=1;
+        service.item.tags=[];
+    }
     service.load=function(){
         var deferred = $q.defer();
         if ($routeParams.projectName!=undefined){
@@ -140,7 +154,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
                     service.list=[];
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                         MessageSvc.error(response.data.code, {
-                            object: service
+                            obj: service
                         });
                     deferred.resolve(service.list);
                 });

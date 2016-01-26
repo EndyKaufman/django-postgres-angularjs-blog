@@ -31,9 +31,8 @@ pip install -r requirements.txt
 ## frontend tools
 ```
 cd front
-sudo npm install -g gulpjs/gulp-cli#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver git+https://git@github.com/Medium/phantomjs.git##v1.9.19
+sudo npm install -g gulpjs/gulp-cli#4.0 gulpjs/gulp#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver git+https://git@github.com/Medium/phantomjs.git##v1.9.19 node-sass
 sudo npm install --save-dev
-sudo npm install gulp --save-dev
 sudo bower install --save --allow-root
 gulp webdriver_update
 ```
@@ -78,6 +77,22 @@ gulp dev
 ```
 cd front
 gulp test
+```
+
+# RUN ON WINDOWS WITH VAGRANT
+
+## prepare
+```
+download and install virtualbox from https://www.virtualbox.org/wiki/Downloads
+download and install vagrant from https://www.vagrantup.com/downloads.html
+read docs http://www.sitepoint.com/getting-started-vagrant-windows/
+```
+
+## clone project and run from this folder vagrant init & vagrant up
+```
+git clone https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog 
+cd blog
+vagrant up
 ```
 
 # NOTES
@@ -131,40 +146,3 @@ vagrant reload
 vagrant resume
 ```
 
-
-# RUN ON WINDOWS WITH VAGRANT
-
-## prepare
-```
-download and install virtualbox from https://www.virtualbox.org/wiki/Downloads
-download and install vagrant from https://www.vagrantup.com/downloads.html
-read docs http://www.sitepoint.com/getting-started-vagrant-windows/
-```
-
-## clone project and run from this folder vagrant init & vagrant up
-```
-git clone https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog 
-cd blog
-vagrant init ubuntu/trusty64
-vagrant up
-```
-
-## install tools manual, if vagrant up not work (after connect to ***ssh vagrant@127.0.0.1:2222***)
-```
-apt-get update
-sudo apt-get install -y g++
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-sudo apt-get install -y nodejs
-sudo apt-get install -y git
-sudo apt-get install -y default-jre
-sudo apt-get install -y default-jdk
-sudo apt-get install -y openjdk-7-jre
-sudo apt-get install -y openjdk-7-jdk
-sudo ln -s /usr/bin/nodejs /usr/bin/node
-sudo apt-get install npm
-npm config set bin-links false
-sudo npm install -g npm
-cd ../../vagrant
-ls
-```
-after you must install frontend tools

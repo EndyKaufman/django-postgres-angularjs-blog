@@ -3,6 +3,28 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
     service.list=false;
 
+    var extVSprintF=function(message, data){
+        var new_data=[]
+        var new_message=message;
+        if (typeof data === 'object'){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
+            }
+        }
+        else
+        if (Array.isArray(data)){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_data.push(data[key]);
+            }
+        }
+        else
+        if (data!=undefined)
+            new_data.push(data);
+        return vsprintf(new_message, new_data);
+    }
+
     service.error=function(message, data, callbackOk){
         if (data===undefined)
             data={values:[]};
@@ -18,7 +40,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
         var boxOptions = {
             title: data.title,
-            content: vsprintf(message, data.values),
+            content: extVSprintF(message, data.values),
             theme: 'danger',
             effect: false,
             afterOk: callbackOk
@@ -43,7 +65,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
         var boxOptions = {
             title: data.title,
-            content: vsprintf(message, data.values),
+            content: extVSprintF(message, data.values),
             theme: 'alert',
             effect: false,
             afterOk: callbackOk
@@ -71,7 +93,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
         var boxOptions = {
             title: data.title,
-            content: vsprintf(message, data.values),
+            content: extVSprintF(message, data.values),
             boxType: 'confirm',
             theme: 'alert',
             effect: false,
@@ -100,7 +122,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         if (service.list[message]!==undefined)
             message=service.list[message];
 
-        $alert(vsprintf(message, data.values), data.title, data.alertType, data.placement)
+        $alert(extVSprintF(message, data.values), data.title, data.alertType, data.placement)
     }
 
     service.init=function(){

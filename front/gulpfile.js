@@ -17,7 +17,6 @@ var protractor = require("gulp-protractor").protractor;
 var webdriver_update = require('gulp-protractor').webdriver_update;
 var webdriver_standalone = require('gulp-protractor').webdriver_standalone;
 
-var spawn = require('child_process').spawn;
 var gutil = require('gulp-util');
 
 //source

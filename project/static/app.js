@@ -53803,17 +53803,25 @@ app.config(function ($routeProvider, $locationProvider) {
 });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
-      .when('/project/:projectName', {
-        templateUrl: 'views/project/item.html',
-        controller: 'ProjectCtrl'
-      })
       .when('/project/update/:projectName', {
         templateUrl: 'views/project/update.html',
-        controller: 'ProjectCtrl'
+        controller: 'ProjectCtrl',
+        update: true
+      })
+      .when('/project/create', {
+        templateUrl: 'views/project/create.html',
+        controller: 'ProjectCtrl',
+        create: true
+      })
+      .when('/project/:projectName', {
+        templateUrl: 'views/project/item.html',
+        controller: 'ProjectCtrl',
+        item: true
       })
       .when('/project', {
         templateUrl: 'views/project/list.html',
-        controller: 'ProjectCtrl'
+        controller: 'ProjectCtrl',
+        list: true
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -53851,11 +53859,7 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
       requireBase: false
     });
 });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
-    '</div>');
-	a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
     '    <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
     '</div>\n' +
     '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
@@ -53887,38 +53891,9 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </a>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
-    '</div>');
-	a.put('views/auth/login.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Login on site</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com, user@email.com, author@email.com)</code></p>\n' +
-    '    <p>\n' +
-    '    <div class="row">\n' +
-    '        <div class="col-sm-4">\n' +
-    '            <form ng-submit="AuthSvc.doLogin(email,password)" novalidate class="css-form">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="email">Email:</label>\n' +
-    '                    <input type="email" class="form-control" id="email" placeholder="email" ng-model="email" required>\n' +
-    '                </div>\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="password">Password:</label>\n' +
-    '                    <input type="password" class="form-control" id="password" placeholder="password"\n' +
-    '                           ng-model="password" >\n' +
-    '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary">Login</button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AppConst.auth.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AppConst.auth.reg.url}}">registration form</a></p>\n' +
+	a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
+    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
     '</div>');
 	a.put('views/tag/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -54145,6 +54120,125 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/project/create.html', '<div class="container" ng-init="ProjectSvc.initEmptyItem()">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>\n' +
+    '            <span>Create project</span>\n' +
+    '        </h1>\n' +
+    '    </div>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-md-9">\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemTitle">Title</label>\n' +
+    '                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemHtml">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
+    '                <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '                <div class="input-group">\n' +
+    '                    <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '                           ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-danger"\n' +
+    '                                    type="button">\n' +
+    '                                Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div>\n' +
+    '                <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success">Create</button>\n' +
+    '                <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image</button>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '        <div class="col-md-3">\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemName">Name</label>\n' +
+    '                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemType">Type</label>\n' +
+    '                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
+    '                    <option ng-repeat="type in AppConst.project.types"\n' +
+    '                            ng-value="type.id"\n' +
+    '                            ng-bind-html="type.title | unsafe"\n' +
+    '                            ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
+    '                </select>\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemTags">Tags</label>\n' +
+    '                <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '                    <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>\n' +
+    '                </tags-input>\n' +
+    '            </div>\n' +
+    '            <div class="form-group">\n' +
+    '                <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
+    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '</div>');
+	a.put('views/auth/login.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Login on site</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com, user@email.com, author@email.com)</code></p>\n' +
+    '    <p>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-sm-4">\n' +
+    '            <form ng-submit="AuthSvc.doLogin(email,password)" novalidate class="css-form">\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="email">Email:</label>\n' +
+    '                    <input type="email" class="form-control" id="email" placeholder="email" ng-model="email" required>\n' +
+    '                </div>\n' +
+    '                <div class="form-group">\n' +
+    '                    <label for="password">Password:</label>\n' +
+    '                    <input type="password" class="form-control" id="password" placeholder="password"\n' +
+    '                           ng-model="password" >\n' +
+    '                </div>\n' +
+    '                <button type="submit" class="btn btn-primary">Login</button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '    </p>\n' +
+    '    <p>If you lose password please click to <a ng-href="{{AppConst.auth.recovery.url}}">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="{{AppConst.auth.reg.url}}">registration form</a></p>\n' +
+    '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
     '        <div class="navbar-header">\n' +
@@ -54323,13 +54417,13 @@ app.factory('AppSvc', function () {
 app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
 
-    $rootScope.$on('auth.login',function(data){
+    $rootScope.$on('auth.login',function(event, data){
         MessageSvc.info('auth/login/success');
         NavbarSvc.init();
         NavbarSvc.goBack();
     });
 
-    $rootScope.$on('auth.logout',function(data){
+    $rootScope.$on('auth.logout',function(event, data){
         MessageSvc.info('auth/logout/success');
         NavbarSvc.init();
         NavbarSvc.goHome();
@@ -54411,6 +54505,28 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
     service.list=false;
 
+    var extVSprintF=function(message, data){
+        var new_data=[]
+        var new_message=message;
+        if (typeof data === 'object'){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
+            }
+        }
+        else
+        if (Array.isArray(data)){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_data.push(data[key]);
+            }
+        }
+        else
+        if (data!=undefined)
+            new_data.push(data);
+        return vsprintf(new_message, new_data);
+    }
+
     service.error=function(message, data, callbackOk){
         if (data===undefined)
             data={values:[]};
@@ -54426,7 +54542,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
         var boxOptions = {
             title: data.title,
-            content: vsprintf(message, data.values),
+            content: extVSprintF(message, data.values),
             theme: 'danger',
             effect: false,
             afterOk: callbackOk
@@ -54451,7 +54567,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
         var boxOptions = {
             title: data.title,
-            content: vsprintf(message, data.values),
+            content: extVSprintF(message, data.values),
             theme: 'alert',
             effect: false,
             afterOk: callbackOk
@@ -54479,7 +54595,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
         var boxOptions = {
             title: data.title,
-            content: vsprintf(message, data.values),
+            content: extVSprintF(message, data.values),
             boxType: 'confirm',
             theme: 'alert',
             effect: false,
@@ -54508,7 +54624,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         if (service.list[message]!==undefined)
             message=service.list[message];
 
-        $alert(vsprintf(message, data.values), data.title, data.alertType, data.placement)
+        $alert(extVSprintF(message, data.values), data.title, data.alertType, data.placement)
     }
 
     service.init=function(){
@@ -54591,17 +54707,19 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
 app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
     var service={};
 
-    $rootScope.$on('project.delete',function(item){
+    $rootScope.$on('project.delete',function(event, item){
         MessageSvc.info('project/delete/success', {values:item});
-        ProjectSvc.goList();
+        service.goList();
     });
 
-    $rootScope.$on('project.create',function(item){
+    $rootScope.$on('project.create',function(event, item){
         MessageSvc.info('project/create/success', {values:item});
+        service.goItem(item.name);
     });
 
-    $rootScope.$on('project.update',function(item){
+    $rootScope.$on('project.update',function(event, item){
         MessageSvc.info('project/update/success', {values:item});
+        service.goItem(item.name);
     });
 
     service.item={};
@@ -54627,18 +54745,24 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     service.goList=function(){
         $location.path(AppConst.project.urls.url.replace('#',''));
     }
+
+    service.goItem=function(projectName){
+        $location.path(AppConst.project.urls.url.replace('#','')+'/'+projectName);
+    }
+
 	service.doCreate=function(item){
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.list.push(angular.copy(response.data.data));
+                    service.item=angular.copy(response.data.data);
+                    service.list.push(service.item);
                     $rootScope.$broadcast('project.create', service.item);
                 }
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: item
+                        obj: item
                     });
             }
         );
@@ -54654,7 +54778,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: item
+                        obj: item
                     });
             }
         );
@@ -54676,7 +54800,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: item
+                        obj: item
                     });
             }
         );
@@ -54688,12 +54812,18 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     service.doAppendImage=function(text){
         if (text===undefined)
             text='';
+        if (service.item.images===undefined)
+            service.item.images=[];
         service.item.images.push({
             id: chance.guid(),
             title: text
         });
     }
-
+    service.initEmptyItem=function(){
+        service.item={};
+        service.item.type=1;
+        service.item.tags=[];
+    }
     service.load=function(){
         var deferred = $q.defer();
         if ($routeParams.projectName!=undefined){
@@ -54730,7 +54860,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
                     service.list=[];
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                         MessageSvc.error(response.data.code, {
-                            object: service
+                            obj: service
                         });
                     deferred.resolve(service.list);
                 });
@@ -54829,7 +54959,7 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
                 service.list=[];
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: service
+                        obj: service
                     });
                 deferred.resolve(service.list);
             })

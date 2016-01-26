@@ -55,7 +55,7 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
                 service.list=[];
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, {
-                        object: service
+                        obj: service
                     });
                 deferred.resolve(service.list);
             })
