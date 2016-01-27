@@ -97,7 +97,7 @@ vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
 source env.sh
-python.py manage livereload
+python manage.py livereload
 ```
 
 ## run tests on vagrant
