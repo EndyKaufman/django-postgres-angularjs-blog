@@ -6,7 +6,18 @@ https://django-postgres-angularjs-blog.herokuapp.com
 
 ## current progress of project
 
-in process
+1. ~~Write function tests work on Protractor + Selenium with PhantomJS~~
+2. ~~Move to Vagrant~~
+3. **Make templates and tests for basic edit mode**
+4. Add test data base on sqlite and move it mock data from test 
+5. Make all methods and classes for authorization
+6. Move frontend code to submodule
+7. Migrate production to Postres SQL
+8. Add uppload files from admin mode to Amazone S3
+9. Make other parts (copy+past)
+10. Change standart bootstrap theme to beautiful and clear free template
+11. SEO optimizations for Google & Yandex
+12. Add social publisher (Facebook, Twitter, Vkontakte)
 
 # CREATE PROJECT
 ```
