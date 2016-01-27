@@ -95,6 +95,8 @@ cd blog
 vagrant up
 vagrant ssh
 cd ../../vagrant
+source venv/bin/activate
+source env.sh
 python.py manage livereload
 ```
 
