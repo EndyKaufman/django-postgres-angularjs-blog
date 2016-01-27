@@ -92,11 +92,20 @@ download and install vagrant from https://www.vagrantup.com/downloads.html
 read docs http://www.sitepoint.com/getting-started-vagrant-windows/
 ```
 
-## clone project
+## clone and prepare project
 ```
 git clone https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog 
 cd blog
 vagrant up
+vagrant ssh
+cd ../../vagrant/front
+sudo npm install --save-dev
+gulp webdriver_update
+```
+
+## start server
+```
+cd blog
 vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
