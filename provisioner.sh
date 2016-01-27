@@ -35,5 +35,4 @@ sudo npm install --save-dev
 sudo npm install node-sass --save-dev
 sudo npm install gulpjs/gulp#4.0 --save-dev
 sudo npm rebuild
-gulp webdriver_update
 sudo bower install --save --allow-root
