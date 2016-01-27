@@ -93,6 +93,25 @@ read docs http://www.sitepoint.com/getting-started-vagrant-windows/
 git clone https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog 
 cd blog
 vagrant up
+vagrant ssh
+cd ../../vagrant
+python.py manage livereload
+```
+
+## run tests on vagrant
+```
+cd blog
+vagrant ssh
+cd ../../vagrant/front
+gulp test
+```
+
+## build front on vagrant
+```
+cd blog
+vagrant ssh
+cd ../../vagrant/front
+gulp dev
 ```
 
 # NOTES
