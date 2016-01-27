@@ -20,7 +20,7 @@ sudo npm install -g npm
 sudo npm install -g gulpjs/gulp-cli#4.0
 sudo npm install -g karma-cli
 sudo npm install -g npm-check-updates
-sudo npm install -g bower protractor
+sudo npm install -g bower
 sudo npm install -g protractor
 sudo npm install -g selenium-webdriver
 sudo npm install -g node-gyp
