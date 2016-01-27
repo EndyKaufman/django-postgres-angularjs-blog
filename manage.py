@@ -29,6 +29,6 @@ if __name__ == "__main__":
         server.watch('front/src/js', shell_command, 'forever')
         server.watch('front/src/scss', shell_command, 'forever')
         server.watch('front/src/views', shell_command, 'forever')
-        server.serve(5000)
+        server.serve(port=5000, host='0.0.0.0')
     else:
         execute_from_command_line(sys.argv)
