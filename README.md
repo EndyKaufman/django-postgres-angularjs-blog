@@ -31,10 +31,14 @@ pip install -r requirements.txt
 ## frontend tools
 ```
 cd front
-sudo npm install -g gulpjs/gulp-cli#4.0 gulpjs/gulp#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver git+https://git@github.com/Medium/phantomjs.git##v1.9.19 node-sass
+sudo npm install -g npm
+sudo npm install -g gulpjs/gulp-cli#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver node-gyp git+https://git@github.com/Medium/phantomjs.git##v1.9.19
 sudo npm install --save-dev
-sudo bower install --save --allow-root
+sudo npm install node-sass --save-dev
+sudo npm install gulpjs/gulp#4.0 --save-dev
+sudo npm rebuild
 gulp webdriver_update
+sudo bower install --save --allow-root
 ```
 
 ## run local server
@@ -45,6 +49,14 @@ python manage.py livereload
 ```
 
 open url http://127.0.0.1:5000
+
+#TEST (on Protractor + Selenium with PhantomJS)
+
+## run tests (before run tests, you must run local server on http://127.0.0.1:5000)
+```
+cd front
+gulp test
+```
 
 # DEVELOP
 
@@ -71,14 +83,6 @@ cd front
 gulp dev
 ```
 
-#TEST (on Protractor + Selenium with PhantomJS)
-
-## run tests (before run tests, you must run local server on http://127.0.0.1:5000)
-```
-cd front
-gulp test
-```
-
 # RUN ON WINDOWS WITH VAGRANT
 
 ## prepare
@@ -88,7 +92,7 @@ download and install vagrant from https://www.vagrantup.com/downloads.html
 read docs http://www.sitepoint.com/getting-started-vagrant-windows/
 ```
 
-## clone project and run from this folder vagrant init & vagrant up
+## clone project
 ```
 git clone https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog 
 cd blog
