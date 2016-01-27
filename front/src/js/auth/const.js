@@ -30,6 +30,7 @@ app.constant('AuthConst',{
         action: '/auth/recovery'
     },
     message:{
+        'auth/login/invalidform':'Error in email or password field!',
         'auth/login/success':'You authorizing!',
         'auth/logout/success':'Bye-Bye!',
         'auth/logout/confirm':'Do you really want to leave?',

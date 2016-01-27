@@ -24,7 +24,11 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
         NavbarSvc.init();
     }
 
-	service.doLogin=function(email,password){
+	service.doLogin=function(form, email, password){
+	    if (!form.$valid){
+            MessageSvc.error('auth/login/invalidform');
+            return;
+	    }
 	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){

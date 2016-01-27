@@ -2,19 +2,29 @@
     <div class="page-header">
         <h1>Login on site</h1>
     </div>
-    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com, user@email.com, author@email.com)</code></p>
+    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com,
+        user@email.com, author@email.com)</code></p>
     <p>
     <div class="row">
         <div class="col-sm-4">
-            <form ng-submit="AuthSvc.doLogin(email,password)" novalidate class="css-form">
-                <div class="form-group">
+            <form ng-submit="AuthSvc.doLogin(loginForm, email, password)" novalidate class="css-form" name="loginForm">
+                <div class="form-group"
+                     ng-class="(loginForm.$submitted || loginForm.email.$touched) ? loginForm.email.$error.required || loginForm.email.$error.email ? 'has-error has-feedback' : 'has-success has-feedback' : ''">
                     <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" placeholder="email" ng-model="email" required>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="email"
+                           ng-model="email" required>
+                    <span ng-show="loginForm.$submitted || loginForm.email.$touched" class="form-control-feedback"
+                          ng-class="loginForm.email.$error.required || loginForm.email.$error.email? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'"
+                          aria-hidden="true"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="(loginForm.$submitted || loginForm.password.$touched) ? loginForm.password.$error.required ? 'has-error has-feedback' : 'has-success has-feedback' : ''">
                     <label for="password">Password:</label>
-                    <input type="password" class="form-control" id="password" placeholder="password"
-                           ng-model="password" >
+                    <input type="password" class="form-control" name="password" id="password" placeholder="password"
+                           ng-model="password" required>
+                    <span ng-show="loginForm.$submitted || loginForm.password.$touched" class="form-control-feedback"
+                          ng-class="loginForm.password.$error.required ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'"
+                          aria-hidden="true"></span>
                 </div>
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>

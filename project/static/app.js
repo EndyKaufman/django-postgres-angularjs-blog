@@ -53645,6 +53645,7 @@ app.constant('AuthConst',{
         action: '/auth/recovery'
     },
     message:{
+        'auth/login/invalidform':'Error in email or password field!',
         'auth/login/success':'You authorizing!',
         'auth/logout/success':'Bye-Bye!',
         'auth/logout/confirm':'Do you really want to leave?',
@@ -54217,19 +54218,29 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    <div class="page-header">\n' +
     '        <h1>Login on site</h1>\n' +
     '    </div>\n' +
-    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com, user@email.com, author@email.com)</code></p>\n' +
+    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com,\n' +
+    '        user@email.com, author@email.com)</code></p>\n' +
     '    <p>\n' +
     '    <div class="row">\n' +
     '        <div class="col-sm-4">\n' +
-    '            <form ng-submit="AuthSvc.doLogin(email,password)" novalidate class="css-form">\n' +
-    '                <div class="form-group">\n' +
+    '            <form ng-submit="AuthSvc.doLogin(loginForm, email, password)" novalidate class="css-form" name="loginForm">\n' +
+    '                <div class="form-group"\n' +
+    '                     ng-class="(loginForm.$submitted || loginForm.email.$touched) ? loginForm.email.$error.required || loginForm.email.$error.email ? \'has-error has-feedback\' : \'has-success has-feedback\' : \'\'">\n' +
     '                    <label for="email">Email:</label>\n' +
-    '                    <input type="email" class="form-control" id="email" placeholder="email" ng-model="email" required>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
+    '                           ng-model="email" required>\n' +
+    '                    <span ng-show="loginForm.$submitted || loginForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="loginForm.email.$error.required || loginForm.email.$error.email? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <div class="form-group">\n' +
+    '                <div class="form-group"\n' +
+    '                     ng-class="(loginForm.$submitted || loginForm.password.$touched) ? loginForm.password.$error.required ? \'has-error has-feedback\' : \'has-success has-feedback\' : \'\'">\n' +
     '                    <label for="password">Password:</label>\n' +
-    '                    <input type="password" class="form-control" id="password" placeholder="password"\n' +
-    '                           ng-model="password" >\n' +
+    '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
+    '                           ng-model="password" required>\n' +
+    '                    <span ng-show="loginForm.$submitted || loginForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="loginForm.password.$error.required ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <button type="submit" class="btn btn-primary">Login</button>\n' +
     '            </form>\n' +
@@ -54440,7 +54451,11 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
         NavbarSvc.init();
     }
 
-	service.doLogin=function(email,password){
+	service.doLogin=function(form, email, password){
+	    if (!form.$valid){
+            MessageSvc.error('auth/login/invalidform');
+            return;
+	    }
 	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
