@@ -6,17 +6,18 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
     var extVSprintF=function(message, data){
         var new_data=[]
         var new_message=message;
-        if (typeof data === 'object'){
-            for (var key in data){
-                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
-                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
-            }
-        }
-        else
+
         if (Array.isArray(data)){
             for (var key in data){
                 if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
                     new_data.push(data[key]);
+            }
+        }
+        else
+        if (typeof data === 'object'){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
             }
         }
         else
@@ -43,7 +44,8 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
             content: extVSprintF(message, data.values),
             theme: 'danger',
             effect: false,
-            afterOk: callbackOk
+            afterOk: callbackOk,
+            html: true
         }
 
         $modalBox(boxOptions);
@@ -68,7 +70,8 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
             content: extVSprintF(message, data.values),
             theme: 'alert',
             effect: false,
-            afterOk: callbackOk
+            afterOk: callbackOk,
+            html: true
         }
 
         $modalBox(boxOptions);
@@ -100,7 +103,8 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
             confirmText: 'Yes',
             cancelText: 'No',
             afterConfirm: callbackOk,
-            afterCancel: callbackCancel
+            afterCancel: callbackCancel,
+            html: true
         }
 
         $modalBox(boxOptions);

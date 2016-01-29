@@ -33,6 +33,7 @@
     "chance": "~0.8.0",
     "sprintf": "~1.0.3",
     "angular-strap": "~2.3.7",
-    "ng-tags-input": "~3.0.0"
+    "ng-tags-input": "~3.0.0",
+    "angular-bootstrap-show-errors": "~2.3.0"
   }
 }

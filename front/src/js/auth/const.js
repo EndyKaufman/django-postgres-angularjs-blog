@@ -30,10 +30,15 @@ app.constant('AuthConst',{
         action: '/auth/recovery'
     },
     message:{
-        'auth/login/invalidform':'Error in email or password field!',
+        'auth/noemail':'Email is empty!',
+        'auth/nopassword':'Password is empty!',
+        'auth/wrongemail':'Email is incorrect!',
+        'auth/usernofound':'User not founded!',
+        'auth/wrongpassword':'Wrong password!',
+        'auth/notactive':'User not activated!',
         'auth/login/success':'You authorizing!',
         'auth/logout/success':'Bye-Bye!',
         'auth/logout/confirm':'Do you really want to leave?',
-        'auth/usernofound':'User with email %s not found!'
+        'auth/usernofound':'User with email <strong>%s</strong> not found!'
     }
 });

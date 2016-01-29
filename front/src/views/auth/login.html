@@ -26,7 +26,7 @@
                           ng-class="loginForm.password.$error.required ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'"
                           aria-hidden="true"></span>
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" class="btn btn-primary" ng-disabled="!loginForm.$valid">Login</button>
             </form>
         </div>
     </div>

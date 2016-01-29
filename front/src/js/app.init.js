@@ -8,4 +8,5 @@ var app = angular.module('app', [
     'ngAnimate',
     'ngQuantum',
     'mgcrea.ngStrap',
-    'ngTagsInput']);
+    'ngTagsInput',
+    'ui.bootstrap.showErrors']);

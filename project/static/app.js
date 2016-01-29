@@ -53645,11 +53645,16 @@ app.constant('AuthConst',{
         action: '/auth/recovery'
     },
     message:{
-        'auth/login/invalidform':'Error in email or password field!',
+        'auth/noemail':'Email is empty!',
+        'auth/nopassword':'Password is empty!',
+        'auth/wrongemail':'Email is incorrect!',
+        'auth/usernofound':'User not founded!',
+        'auth/wrongpassword':'Wrong password!',
+        'auth/notactive':'User not activated!',
         'auth/login/success':'You authorizing!',
         'auth/logout/success':'Bye-Bye!',
         'auth/logout/confirm':'Do you really want to leave?',
-        'auth/usernofound':'User with email %s not found!'
+        'auth/usernofound':'User with email <strong>%s</strong> not found!'
     }
 });
 app.constant('BookmarkConst', {
@@ -54242,7 +54247,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                          ng-class="loginForm.password.$error.required ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary">Login</button>\n' +
+    '                <button type="submit" class="btn btn-primary" ng-disabled="!loginForm.$valid">Login</button>\n' +
     '            </form>\n' +
     '        </div>\n' +
     '    </div>\n' +
@@ -54452,10 +54457,6 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
     }
 
 	service.doLogin=function(form, email, password){
-	    if (!form.$valid){
-            MessageSvc.error('auth/login/invalidform');
-            return;
-	    }
 	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
@@ -54466,12 +54467,7 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        values:
-                            [
-                                email
-                            ]
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
 	}
@@ -54491,7 +54487,7 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
                 },
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code);
+                        MessageSvc.error(response.data.code, response.data);
                 }
             );
         });
@@ -54521,15 +54517,10 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
     service.list=false;
 
     var extVSprintF=function(message, data){
+            console.log(new_message, data);
         var new_data=[]
         var new_message=message;
-        if (typeof data === 'object'){
-            for (var key in data){
-                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
-                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
-            }
-        }
-        else
+
         if (Array.isArray(data)){
             for (var key in data){
                 if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
@@ -54537,8 +54528,16 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
             }
         }
         else
+        if (typeof data === 'object'){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
+            }
+        }
+        else
         if (data!=undefined)
             new_data.push(data);
+            console.log(new_message, new_data);
         return vsprintf(new_message, new_data);
     }
 
@@ -54560,7 +54559,8 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
             content: extVSprintF(message, data.values),
             theme: 'danger',
             effect: false,
-            afterOk: callbackOk
+            afterOk: callbackOk,
+            html: true
         }
 
         $modalBox(boxOptions);
@@ -54585,7 +54585,8 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
             content: extVSprintF(message, data.values),
             theme: 'alert',
             effect: false,
-            afterOk: callbackOk
+            afterOk: callbackOk,
+            html: true
         }
 
         $modalBox(boxOptions);
@@ -54617,7 +54618,8 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
             confirmText: 'Yes',
             cancelText: 'No',
             afterConfirm: callbackOk,
-            afterCancel: callbackCancel
+            afterCancel: callbackCancel,
+            html: true
         }
 
         $modalBox(boxOptions);
@@ -54776,9 +54778,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        obj: item
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
     }
@@ -54792,9 +54792,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        obj: item
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
     }
@@ -54814,9 +54812,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        obj: item
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
     }
@@ -54852,12 +54848,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
                     function (response) {
                         service.item={};
                         if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                            MessageSvc.error(response.data.code, {
-                                values:
-                                    [
-                                        $routeParams.projectName
-                                    ]
-                            });
+                            MessageSvc.error(response.data.code, response.data);
                         deferred.resolve(service.item);
                     }
                 );
@@ -54874,9 +54865,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
                 }, function (response) {
                     service.list=[];
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, {
-                            obj: service
-                        });
+                        MessageSvc.error(response.data.code, response.data);
                     deferred.resolve(service.list);
                 });
             }else
@@ -54973,9 +54962,7 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
             function (response) {
                 service.list=[];
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        obj: service
-                    });
+                    MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
             })
         else

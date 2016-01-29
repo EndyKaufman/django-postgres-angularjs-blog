@@ -55,9 +55,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        obj: item
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
     }
@@ -71,9 +69,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        obj: item
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
     }
@@ -93,9 +89,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        obj: item
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
     }
@@ -131,12 +125,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
                     function (response) {
                         service.item={};
                         if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                            MessageSvc.error(response.data.code, {
-                                values:
-                                    [
-                                        $routeParams.projectName
-                                    ]
-                            });
+                            MessageSvc.error(response.data.code, response.data);
                         deferred.resolve(service.item);
                     }
                 );
@@ -153,9 +142,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
                 }, function (response) {
                     service.list=[];
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, {
-                            obj: service
-                        });
+                        MessageSvc.error(response.data.code, response.data);
                     deferred.resolve(service.list);
                 });
             }else

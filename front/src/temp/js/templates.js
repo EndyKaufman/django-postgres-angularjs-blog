@@ -380,7 +380,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                          ng-class="loginForm.password.$error.required ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary">Login</button>\n' +
+    '                <button type="submit" class="btn btn-primary" ng-disabled="!loginForm.$valid">Login</button>\n' +
     '            </form>\n' +
     '        </div>\n' +
     '    </div>\n' +

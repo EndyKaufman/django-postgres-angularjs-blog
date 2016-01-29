@@ -48,6 +48,7 @@ var js_source=[
     'bower_components/angular-strap/dist/angular-strap.js',
     'bower_components/angular-strap/dist/angular-strap.tpl.js',
     'bower_components/ng-tags-input/ng-tags-input.js',
+    'bower_components/angular-bootstrap-show-errors/src/showErrors.js',
     'src/js/app.init.js',
     'src/js/app.skin.js',
 
@@ -85,7 +86,8 @@ var js_source=[
 //test
 var tests_source=[
     'tests/**/*.js',
-    '!tests/tools.js'
+    '!tests/**/helpers.js',
+    '!tests/helpers.js'
 ];
 
 //dest

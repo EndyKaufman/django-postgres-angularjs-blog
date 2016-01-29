@@ -25,10 +25,6 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
     }
 
 	service.doLogin=function(form, email, password){
-	    if (!form.$valid){
-            MessageSvc.error('auth/login/invalidform');
-            return;
-	    }
 	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
@@ -39,12 +35,7 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
             },
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, {
-                        values:
-                            [
-                                email
-                            ]
-                    });
+                    MessageSvc.error(response.data.code, response.data);
             }
         );
 	}
@@ -64,7 +55,7 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
                 },
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code);
+                        MessageSvc.error(response.data.code, response.data);
                 }
             );
         });
