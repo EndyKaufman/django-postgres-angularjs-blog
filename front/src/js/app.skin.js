@@ -1,2 +1,3 @@
-app.config(function ($selectProvider) {
+app.config(function ($selectProvider, showErrorsConfigProvider) {
+  showErrorsConfigProvider.showSuccess(true);
 });

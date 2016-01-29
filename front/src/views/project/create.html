@@ -4,83 +4,19 @@
             <span>Create project</span>
         </h1>
     </div>
-    <div class="row">
-        <div class="col-md-9">
-            <div class="form-group">
-                <label for="ItemTitle">Title</label>
-                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">
-            </div>
-            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">
-                <div class="form-group">
-                    <label for="ItemText">Text</label>
-                <textarea type="text" class="form-control" id="ItemText"
-                          ng-model="ProjectSvc.item.text" rows="15"></textarea>
+    <form name="projectForm">
+        <div class="row">
+            <div class="col-md-9">
+                <div ng-include="AppConst.project.templates.inputs.central"></div>
+                <div>
+                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>
+                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image
+                    </button>
                 </div>
             </div>
-            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">
-                <div class="form-group">
-                    <label for="ItemHtml">Html</label>
-                <textarea type="text" class="form-control" id="ItemHtml"
-                          ng-model="ProjectSvc.item.html" rows="15"></textarea>
-                </div>
-            </div>
-            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">
-                <div class="form-group">
-                    <label for="ItemUrl">Url</label>
-                <textarea type="text" class="form-control" id="ItemUrl"
-                          ng-model="ProjectSvc.item.url" rows="15"></textarea>
-                </div>
-            </div>
-            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">
-                <div class="form-group">
-                    <label for="ItemMarkdown">Markdown</label>
-                <textarea type="text" class="form-control" id="ItemMarkdown"
-                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>
-                </div>
-            </div>
-            <div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">
-                <label for="{{'ItemImage'+($index+1)}}" ng-bind-html="'Image '+($index+1) | unsafe"></label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="{{'ItemImage'+($index+1)}}"
-                           ng-model="image.src">
-                        <span class="input-group-btn">
-                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-danger"
-                                    type="button">
-                                Delete image
-                            </button>
-                        </span>
-                </div>
-            </div>
-            <div>
-                <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success">Create</button>
-                <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image</button>
+            <div class="col-md-3">
+                <div ng-include="AppConst.project.templates.inputs.right"></div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="form-group">
-                <label for="ItemName">Name</label>
-                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">
-            </div>
-            <div class="form-group">
-                <label for="ItemType">Type</label>
-                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">
-                    <option ng-repeat="type in AppConst.project.types"
-                            ng-value="type.id"
-                            ng-bind-html="type.title | unsafe"
-                            ng-selected="ProjectSvc.item.type==type.id"></option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="ItemTags">Tags</label>
-                <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">
-                    <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>
-                </tags-input>
-            </div>
-            <div class="form-group">
-                <label for="ItemDescription">Description</label>
-                <textarea type="text" class="form-control" id="ItemDescription"
-                          ng-model="ProjectSvc.item.description"></textarea>
-            </div>
-        </div>
-    </div>
+    </form>
 </div>

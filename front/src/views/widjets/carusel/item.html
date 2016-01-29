@@ -3,10 +3,10 @@
         <ol class="carousel-indicators" ng-if="item.images.length>1">
             <li ng-repeat="image in item.images" data-target="{{'#carousel-'+item.name}}"
                 data-slide-to="{{$index}}" ng-class="$index==0?'active':''"></li>
-        </ol>
+        </ol>{{AppConfig.static_url}}
         <div class="carousel-inner">
             <div ng-repeat="image in item.images" class="item" ng-class="$index==0?'active':''"><img
-                    ng-src="{{image.src}}"></div>
+                    ng-src="{{AppConfig.static_url+image.src}}"></div>
         </div>
         <a ng-click="CaruselSvc.prev('#carousel-'+item.name)" class="left carousel-control"
            data-slide="prev" ng-if="item.images.length>1">

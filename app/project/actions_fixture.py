@@ -95,6 +95,16 @@ def actionUpdate(request, project_id):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
+    # Validate fields
+    try:
+        fieldName = json_data['name']
+    except KeyError:
+        return {'code': 'auth/noname'}, 404
+    try:
+        fieldTitle = json_data['title']
+    except KeyError:
+        return {'code': 'auth/notitle'}, 404
+
     return {'code': 'ok', 'data': json_data}
 
 
@@ -110,6 +120,16 @@ def actionCreate(request):
 
     if json_data is False:
         return {'code': 'nodata'}, 404
+
+    # Validate fields
+    try:
+        fieldName = json_data['name']
+    except KeyError:
+        return {'code': 'auth/noname'}, 404
+    try:
+        fieldTitle = json_data['title']
+    except KeyError:
+        return {'code': 'auth/notitle'}, 404
 
     return {'code': 'ok', 'data': json_data}
 

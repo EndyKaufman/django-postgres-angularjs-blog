@@ -25,7 +25,7 @@
                     <div class="row">
                         <div ng-class="'col-md-'+(12/ProjectSvc.item.images.length)"
                              ng-repeat="image in ProjectSvc.item.images">
-                            <img ng-src="{{image.src}}" class="img-responsive"/>
+                            <img ng-src="{{AppConfig.static_url+image.src}}" class="img-responsive"/>
                         </div>
                     </div>
                 </div>

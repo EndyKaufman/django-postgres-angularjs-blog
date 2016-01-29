@@ -1,5 +1,5 @@
 describe('Auth API (user):', function() {
-  var mytools = require('./../tools.js');
+  var mytools = require('./../helpers.js');
 
   var logoutData = undefined, userData = undefined;
 

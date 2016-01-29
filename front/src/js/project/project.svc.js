@@ -45,6 +45,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     }
 
 	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
@@ -60,6 +61,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         );
     }
 	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){

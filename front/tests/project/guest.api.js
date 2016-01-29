@@ -1,5 +1,5 @@
 describe('Project Guest API:', function() {
-  var mytools = require('./../tools.js');
+  var mytools = require('./../helpers.js');
 
   var itemResponse = undefined, listbysearchResponse = undefined, listbytagResponse = undefined, listResponse = undefined, updateResponse = undefined;
 

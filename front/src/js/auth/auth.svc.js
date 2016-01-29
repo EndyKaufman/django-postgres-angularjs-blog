@@ -21,10 +21,14 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
     });
 
     service.init=function(reload){
-        NavbarSvc.init();
+        NavbarSvc.init($routeParams.navId);
     }
 
-	service.doLogin=function(form, email, password){
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+    }
+
+	service.doLogin=function(email, password){
 	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){

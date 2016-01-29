@@ -53600,6 +53600,106 @@ tagsInput.run(["$templateCache", function($templateCache) {
 }]);
 
 }());
+(function() {
+  var showErrorsModule;
+
+  showErrorsModule = angular.module('ui.bootstrap.showErrors', []);
+
+  showErrorsModule.directive('showErrors', [
+    '$timeout', 'showErrorsConfig', '$interpolate', function($timeout, showErrorsConfig, $interpolate) {
+      var getShowSuccess, getTrigger, linkFn;
+      getTrigger = function(options) {
+        var trigger;
+        trigger = showErrorsConfig.trigger;
+        if (options && (options.trigger != null)) {
+          trigger = options.trigger;
+        }
+        return trigger;
+      };
+      getShowSuccess = function(options) {
+        var showSuccess;
+        showSuccess = showErrorsConfig.showSuccess;
+        if (options && (options.showSuccess != null)) {
+          showSuccess = options.showSuccess;
+        }
+        return showSuccess;
+      };
+      linkFn = function(scope, el, attrs, formCtrl) {
+        var blurred, inputEl, inputName, inputNgEl, options, showSuccess, toggleClasses, trigger;
+        blurred = false;
+        options = scope.$eval(attrs.showErrors);
+        showSuccess = getShowSuccess(options);
+        trigger = getTrigger(options);
+        inputEl = el[0].querySelector('.form-control[name]');
+        inputNgEl = angular.element(inputEl);
+        inputName = $interpolate(inputNgEl.attr('name') || '')(scope);
+        if (!inputName) {
+          throw "show-errors element has no child input elements with a 'name' attribute and a 'form-control' class";
+        }
+        inputNgEl.bind(trigger, function() {
+          blurred = true;
+          return toggleClasses(formCtrl[inputName].$invalid);
+        });
+        scope.$watch(function() {
+          return formCtrl[inputName] && formCtrl[inputName].$invalid;
+        }, function(invalid) {
+          if (!blurred) {
+            return;
+          }
+          return toggleClasses(invalid);
+        });
+        scope.$on('show-errors-check-validity', function() {
+          return toggleClasses(formCtrl[inputName].$invalid);
+        });
+        scope.$on('show-errors-reset', function() {
+          return $timeout(function() {
+            el.removeClass('has-error');
+            el.removeClass('has-success');
+            return blurred = false;
+          }, 0, false);
+        });
+        return toggleClasses = function(invalid) {
+          el.toggleClass('has-error', invalid);
+          if (showSuccess) {
+            return el.toggleClass('has-success', !invalid);
+          }
+        };
+      };
+      return {
+        restrict: 'A',
+        require: '^form',
+        compile: function(elem, attrs) {
+          if (attrs['showErrors'].indexOf('skipFormGroupCheck') === -1) {
+            if (!(elem.hasClass('form-group') || elem.hasClass('input-group'))) {
+              throw "show-errors element does not have the 'form-group' or 'input-group' class";
+            }
+          }
+          return linkFn;
+        }
+      };
+    }
+  ]);
+
+  showErrorsModule.provider('showErrorsConfig', function() {
+    var _showSuccess, _trigger;
+    _showSuccess = false;
+    _trigger = 'blur';
+    this.showSuccess = function(showSuccess) {
+      return _showSuccess = showSuccess;
+    };
+    this.trigger = function(trigger) {
+      return _trigger = trigger;
+    };
+    this.$get = function() {
+      return {
+        showSuccess: _showSuccess,
+        trigger: _trigger
+      };
+    };
+  });
+
+}).call(this);
+
 var app = angular.module('app', [
 	'ngAnimate',
 	'ngRoute',
@@ -53610,8 +53710,10 @@ var app = angular.module('app', [
     'ngAnimate',
     'ngQuantum',
     'mgcrea.ngStrap',
-    'ngTagsInput']);
-app.config(function ($selectProvider) {
+    'ngTagsInput',
+    'ui.bootstrap.showErrors']);
+app.config(function ($selectProvider, showErrorsConfigProvider) {
+  showErrorsConfigProvider.showSuccess(true);
 });
 app.constant('AuthConst',{
     reg:{
@@ -53730,7 +53832,13 @@ app.constant('ProjectConst', {
         {id:2,title:'Html'},
         {id:3,title:'Url'},
         {id:4,title:'Markdown'}
-    ]
+    ],
+    templates:{
+        inputs:{
+            central: 'views/project/inputs/central.html',
+            right: 'views/project/inputs/right.html'
+        }
+    }
 });
 app.constant('SearchConst', {
     strings:{
@@ -53805,6 +53913,11 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: 'views/auth/login.html',
         controller: 'AuthCtrl',
         navId: 'login'
+      })
+      .when('/profile', {
+        templateUrl: 'views/auth/profile.html',
+        controller: 'AuthCtrl',
+        navId: 'profile'
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -53882,10 +53995,10 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '        <ol class="carousel-indicators" ng-if="item.images.length>1">\n' +
     '            <li ng-repeat="image in item.images" data-target="{{\'#carousel-\'+item.name}}"\n' +
     '                data-slide-to="{{$index}}" ng-class="$index==0?\'active\':\'\'"></li>\n' +
-    '        </ol>\n' +
+    '        </ol>{{AppConfig.static_url}}\n' +
     '        <div class="carousel-inner">\n' +
     '            <div ng-repeat="image in item.images" class="item" ng-class="$index==0?\'active\':\'\'"><img\n' +
-    '                    ng-src="{{image.src}}"></div>\n' +
+    '                    ng-src="{{AppConfig.static_url+image.src}}"></div>\n' +
     '        </div>\n' +
     '        <a ng-click="CaruselSvc.prev(\'#carousel-\'+item.name)" class="left carousel-control"\n' +
     '           data-slide="prev" ng-if="item.images.length>1">\n' +
@@ -53900,6 +54013,81 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
 	a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
     '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
     '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '</div>');
+	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemName">Name</label>\n' +
+    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
+    '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!projectForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemType">Type</label>\n' +
+    '    <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
+    '        <option ng-repeat="type in AppConst.project.types"\n' +
+    '                ng-value="type.id"\n' +
+    '                ng-bind-html="type.title | unsafe"\n' +
+    '                ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
+    '    </select>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemTags">Tags</label>\n' +
+    '    <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '        <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>\n' +
+    '    </tags-input>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
+    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
+    '</div>');
+	a.put('views/project/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemTitle">Title</label>\n' +
+    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="ProjectSvc.item.title" required>\n' +
+    '    <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!projectForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
+    '    <div class="form-group has-feedback">\n' +
+    '        <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
+    '    <div class="form-group has-feedback">\n' +
+    '        <label for="ItemHtml">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
+    '    <div class="form-group has-feedback">\n' +
+    '        <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
+    '    <div class="form-group has-feedback">\n' +
+    '        <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
+    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '    <div class="input-group has-feedback">\n' +
+    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '               ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-danger"\n' +
+    '                                    type="button">\n' +
+    '                                Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '    </div>\n' +
     '</div>');
 	a.put('views/tag/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -53973,86 +54161,24 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '               class="btn btn-default">View</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <div class="row">\n' +
-    '        <div class="col-md-9">\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemTitle">Title</label>\n' +
-    '                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">\n' +
-    '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemText">Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '    <form name="projectForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="col-md-9">\n' +
+    '\n' +
+    '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
+    '                <div>\n' +
+    '                    <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Update</button>\n' +
+    '                    <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project\n' +
+    '                    </button>\n' +
+    '                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image\n' +
+    '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemHtml">Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemUrl">Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemMarkdown">Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
-    '                <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
-    '                <div class="input-group">\n' +
-    '                    <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
-    '                           ng-model="image.src">\n' +
-    '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-danger"\n' +
-    '                                    type="button">\n' +
-    '                                Delete image\n' +
-    '                            </button>\n' +
-    '                        </span>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div>\n' +
-    '                <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success">Update</button>\n' +
-    '                <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project</button>\n' +
-    '                <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image</button>\n' +
+    '            <div class="col-md-3">\n' +
+    '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
-    '        <div class="col-md-3">\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemName">Name</label>\n' +
-    '                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">\n' +
-    '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemType">Type</label>\n' +
-    '                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
-    '                    <option ng-repeat="type in AppConst.project.types"\n' +
-    '                            ng-value="type.id"\n' +
-    '                            ng-bind-html="type.title | unsafe"\n' +
-    '                            ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
-    '                </select>\n' +
-    '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemTags">Tags</label>\n' +
-    '                <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '                    <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>\n' +
-    '                </tags-input>\n' +
-    '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemDescription">Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
-    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
-    '            </div>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
+    '    </form>\n' +
     '</div>');
 	a.put('views/project/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -54116,7 +54242,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    <div class="row">\n' +
     '                        <div ng-class="\'col-md-\'+(12/ProjectSvc.item.images.length)"\n' +
     '                             ng-repeat="image in ProjectSvc.item.images">\n' +
-    '                            <img ng-src="{{image.src}}" class="img-responsive"/>\n' +
+    '                            <img ng-src="{{AppConfig.static_url+image.src}}" class="img-responsive"/>\n' +
     '                        </div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
@@ -54132,85 +54258,21 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            <span>Create project</span>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <div class="row">\n' +
-    '        <div class="col-md-9">\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemTitle">Title</label>\n' +
-    '                <input type="text" class="form-control" id="ItemTitle" ng-model="ProjectSvc.item.title">\n' +
-    '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemText">Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '    <form name="projectForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="col-md-9">\n' +
+    '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
+    '                <div>\n' +
+    '                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>\n' +
+    '                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image\n' +
+    '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemHtml">Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemUrl">Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
-    '                <div class="form-group">\n' +
-    '                    <label for="ItemMarkdown">Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
-    '                <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
-    '                <div class="input-group">\n' +
-    '                    <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
-    '                           ng-model="image.src">\n' +
-    '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-danger"\n' +
-    '                                    type="button">\n' +
-    '                                Delete image\n' +
-    '                            </button>\n' +
-    '                        </span>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div>\n' +
-    '                <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success">Create</button>\n' +
-    '                <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image</button>\n' +
+    '            <div class="col-md-3">\n' +
+    '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
-    '        <div class="col-md-3">\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemName">Name</label>\n' +
-    '                <input type="text" class="form-control" id="ItemName" ng-model="ProjectSvc.item.name">\n' +
-    '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemType">Type</label>\n' +
-    '                <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
-    '                    <option ng-repeat="type in AppConst.project.types"\n' +
-    '                            ng-value="type.id"\n' +
-    '                            ng-bind-html="type.title | unsafe"\n' +
-    '                            ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
-    '                </select>\n' +
-    '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemTags">Tags</label>\n' +
-    '                <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '                    <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>\n' +
-    '                </tags-input>\n' +
-    '            </div>\n' +
-    '            <div class="form-group">\n' +
-    '                <label for="ItemDescription">Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription"\n' +
-    '                          ng-model="ProjectSvc.item.description"></textarea>\n' +
-    '            </div>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
+    '    </form>\n' +
     '</div>');
 	a.put('views/home/content.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -54218,6 +54280,48 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    </div>\n' +
     '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
     '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '</div>');
+	a.put('views/auth/profile.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>\n' +
+    '            <span>Profile</span>\n' +
+    '        </h1>\n' +
+    '    </div>\n' +
+    '    <form name="authForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="col-md-9">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="username">Username</label>\n' +
+    '                    <input type="text" class="form-control" name="username" id="username" name="ItemTitle"\n' +
+    '                           ng-model="AuthSvc.item.username" required>\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.username.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="email">Email</label>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
+    '                           ng-model="email" required>\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="password">Password</label>\n' +
+    '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
+    '                           ng-model="password" required>\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <button ng-click="AuthSvc.doUpdate(AuthSvc.item)" class="btn btn-success"\n' +
+    '                        ng-disabled="!authForm.$valid">Save\n' +
+    '                </button>\n' +
+    '            </div>\n' +
+    '            <div class="col-md-3">\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '    </form>\n' +
     '</div>');
 	a.put('views/auth/login.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -54228,26 +54332,24 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    <p>\n' +
     '    <div class="row">\n' +
     '        <div class="col-sm-4">\n' +
-    '            <form ng-submit="AuthSvc.doLogin(loginForm, email, password)" novalidate class="css-form" name="loginForm">\n' +
-    '                <div class="form-group"\n' +
-    '                     ng-class="(loginForm.$submitted || loginForm.email.$touched) ? loginForm.email.$error.required || loginForm.email.$error.email ? \'has-error has-feedback\' : \'has-success has-feedback\' : \'\'">\n' +
+    '            <form ng-submit="AuthSvc.doLogin(email, password)" name="authForm">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email:</label>\n' +
     '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
     '                           ng-model="email" required>\n' +
-    '                    <span ng-show="loginForm.$submitted || loginForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="loginForm.email.$error.required || loginForm.email.$error.email? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <div class="form-group"\n' +
-    '                     ng-class="(loginForm.$submitted || loginForm.password.$touched) ? loginForm.password.$error.required ? \'has-error has-feedback\' : \'has-success has-feedback\' : \'\'">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="password">Password:</label>\n' +
     '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
     '                           ng-model="password" required>\n' +
-    '                    <span ng-show="loginForm.$submitted || loginForm.password.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="loginForm.password.$error.required ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary" ng-disabled="!loginForm.$valid">Login</button>\n' +
+    '                <button type="submit" class="btn btn-primary" ng-disabled="!authForm.$valid">Login</button>\n' +
     '            </form>\n' +
     '        </div>\n' +
     '    </div>\n' +
@@ -54453,10 +54555,14 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
     });
 
     service.init=function(reload){
-        NavbarSvc.init();
+        NavbarSvc.init($routeParams.navId);
     }
 
-	service.doLogin=function(form, email, password){
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+    }
+
+	service.doLogin=function(email, password){
 	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
@@ -54517,7 +54623,6 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
     service.list=false;
 
     var extVSprintF=function(message, data){
-            console.log(new_message, data);
         var new_data=[]
         var new_message=message;
 
@@ -54537,7 +54642,6 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         else
         if (data!=undefined)
             new_data.push(data);
-            console.log(new_message, new_data);
         return vsprintf(new_message, new_data);
     }
 
@@ -54768,6 +54872,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     }
 
 	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
@@ -54783,6 +54888,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         );
     }
 	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){

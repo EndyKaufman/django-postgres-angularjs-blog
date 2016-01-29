@@ -12,5 +12,11 @@ app.constant('ProjectConst', {
         {id:2,title:'Html'},
         {id:3,title:'Url'},
         {id:4,title:'Markdown'}
-    ]
+    ],
+    templates:{
+        inputs:{
+            central: 'views/project/inputs/central.html',
+            right: 'views/project/inputs/right.html'
+        }
+    }
 });

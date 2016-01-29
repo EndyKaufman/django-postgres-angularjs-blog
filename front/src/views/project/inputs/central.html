@@ -1,0 +1,48 @@
+<div class="form-group has-feedback" show-errors>
+    <label for="ItemTitle">Title</label>
+    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="ProjectSvc.item.title" required>
+    <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"
+          ng-class="!projectForm.ItemTitle.$valid ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'"
+          aria-hidden="true"></span>
+</div>
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">
+    <div class="form-group has-feedback">
+        <label for="ItemText">Text</label>
+                <textarea type="text" class="form-control" id="ItemText"
+                          ng-model="ProjectSvc.item.text" rows="15"></textarea>
+    </div>
+</div>
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">
+    <div class="form-group has-feedback">
+        <label for="ItemHtml">Html</label>
+                <textarea type="text" class="form-control" id="ItemHtml"
+                          ng-model="ProjectSvc.item.html" rows="15"></textarea>
+    </div>
+</div>
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">
+    <div class="form-group has-feedback">
+        <label for="ItemUrl">Url</label>
+                <textarea type="text" class="form-control" id="ItemUrl"
+                          ng-model="ProjectSvc.item.url" rows="15"></textarea>
+    </div>
+</div>
+<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">
+    <div class="form-group has-feedback">
+        <label for="ItemMarkdown">Markdown</label>
+                <textarea type="text" class="form-control" id="ItemMarkdown"
+                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>
+    </div>
+</div>
+<div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">
+    <label for="{{'ItemImage'+($index+1)}}" ng-bind-html="'Image '+($index+1) | unsafe"></label>
+    <div class="input-group has-feedback">
+        <input type="text" class="form-control" id="{{'ItemImage'+($index+1)}}"
+               ng-model="image.src">
+                        <span class="input-group-btn">
+                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-danger"
+                                    type="button">
+                                Delete image
+                            </button>
+                        </span>
+    </div>
+</div>

@@ -1,5 +1,5 @@
 describe('Project Admin API:', function() {
-  var mytools = require('./../tools.js');
+  var mytools = require('./../helpers.js');
 
   var listResponse = undefined, createResponse = undefined, updateResponse = undefined, deleteResponse = undefined;
 
