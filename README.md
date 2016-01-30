@@ -8,8 +8,8 @@ https://django-postgres-angularjs-blog.herokuapp.com
 
 1. ~~Write function tests work on Protractor + Selenium with PhantomJS~~
 2. ~~Move to Vagrant~~
-3. **Make templates and tests for basic edit mode**
-4. Add test database on sqlite and move it mock data from tests 
+3. ~~Make templates and tests for basic edit mode~~
+4. **Add test database on sqlite and move it mock data from tests**
 5. Make all methods and classes for authorization
 6. Move frontend code to submodule
 7. Migrate production to Postres SQL
