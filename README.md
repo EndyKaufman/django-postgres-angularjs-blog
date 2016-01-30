@@ -110,7 +110,8 @@ cd blog
 vagrant up
 vagrant ssh
 cd ../../vagrant/front
-sudo npm install --save-dev
+sudo npm install --save-dev --no-bin-links
+npm rebuild --no-bin-links
 gulp webdriver_update
 ```
 
@@ -155,8 +156,8 @@ sudo apt-get install -y nodejs
 ```
 cd front
 sudo npm update -g
-sudo npm update --save-dev
-sudo npm rebuild
+sudo npm update --save-dev 
+sudo npm rebuild 
 sudo ncu -u -m bower
 sudo bower install --save --allow-root
 ```
