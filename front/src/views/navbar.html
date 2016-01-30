@@ -18,15 +18,15 @@
                     <a ng-href="{{item.url}}" ng-bind-html="item.title | unsafe"></a>
                 </li>
             </ul>
-            <form class="navbar-form navbar-right" role="search" ng-if="!NavbarSvc.items.search.hidden"
+            <form class="navbar-form navbar-right" role="search" name="searchForm" ng-if="!NavbarSvc.items.search.hidden"
                   novalidate>
                 <div class="form-search search-only">
                     <div class="input-group">
                         <input type="text" class="form-control search-query"
                                placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="searchText"
-                               ng-enter="NavbarSvc.doSearch(searchText)"/>
+                               ng-enter="NavbarSvc.doSearch(searchText)" required/>
                         <span class="input-group-btn">
-                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-success" type="button">
+                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid">
                                 Search
                             </button>
                         </span>

@@ -15,5 +15,11 @@ app.factory('AuthRes', function ($http, AppConst) {
         });
     };
 
+    service.actionUpdate=function(item){
+        var item=angular.copy(item);
+        item['csrfmiddlewaretoken']=AppConfig.csrf_token;
+        return $http.post(AppConst.auth.update.action, item);
+    }
+
     return service;
   });

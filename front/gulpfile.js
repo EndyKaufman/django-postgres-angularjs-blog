@@ -22,13 +22,15 @@ var gutil = require('gulp-util');
 //source
 var scss_source=['src/scss/**/*.scss'];
 var less_source=['src/less/**/*.less'];
+
 var css_source=[
     'bower_components/normalize-css/normalize.css',
+    'bower_components/google-code-prettify/bin/prettify.min.css',
     'bower_components/angular-ui-tree/dist/angular-ui-tree.min.css',
-    'bower_components/quantumui/dist/css/addon/effect-light.min.css',
-    'bower_components/quantumui/dist/css/quantumui.css',
     'bower_components/ng-tags-input/ng-tags-input.css',
     'bower_components/ng-tags-input/ng-tags-input.bootstrap.css',
+    'bower_components/quantumui/dist/css/addon/effect-light.min.css',
+    'bower_components/quantumui/dist/css/quantumui.css',
     'src/temp/css/**/*.css',
     'src/**/css/*.css',
     'src/**/*.css',];
@@ -36,6 +38,7 @@ var js_source=[
     'src/js/**/tools.js',
     'bower_components/sprintf/dist/sprintf.min.js',
     'bower_components/chance/chance.js',
+    'bower_components/google-code-prettify/src/run_prettify.js',
     //'bower_components/element-queries/dist/element-queries.min.js',
     'bower_components/angular/angular.js',
     'bower_components/angular-route/angular-route.js',
@@ -49,6 +52,13 @@ var js_source=[
     'bower_components/angular-strap/dist/angular-strap.tpl.js',
     'bower_components/ng-tags-input/ng-tags-input.js',
     'bower_components/angular-bootstrap-show-errors/src/showErrors.js',
+    'bower_components/showdown/src/showdown.js',
+    'bower_components/showdown/src/ng-showdown.js',
+    'bower_components/showdown/src/extensions/github.js',
+    'bower_components/showdown/src/extensions/prettify.js',
+    'bower_components/showdown/src/extensions/table.js',
+    'bower_components/showdown/src/extensions/twitter.js',
+    'bower_components/angular-markdown/angular.markdown.js',
     'src/js/app.init.js',
     'src/js/app.skin.js',
 

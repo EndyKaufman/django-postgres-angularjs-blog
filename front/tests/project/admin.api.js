@@ -1,22 +1,22 @@
 describe('Project Admin API:', function() {
-  var mytools = require('./../helpers.js');
+  var helpers = require('./../helpers.js');
 
   var listResponse = undefined, createResponse = undefined, updateResponse = undefined, deleteResponse = undefined;
 
   beforeEach(function(done){
     browser.driver.manage().window().setSize(1280, 1024);
     browser.get(browser.baseUrl).then(function(){
-        mytools.getJson('/project/list', function(response){
+        helpers.getJson('/project/list', function(response){
             listResponse = response;
-            var record = listResponse.data.records[0];
+            var record = listResponse.data[0];
 
-            mytools.postJson('/project/create', record, function(response){
+            helpers.postJson('/project/create', record, function(response){
                 createResponse = response;
 
-                mytools.postJson('/project/update/'+record.id, record, function(response){
+                helpers.postJson('/project/update/'+record.id, record, function(response){
                     updateResponse = response;
 
-                    mytools.postJson('/project/delete/'+record.tags[0].id, {}, function(response){
+                    helpers.postJson('/project/delete/'+record.tags[0].id, {}, function(response){
                         deleteResponse = response;
 
                         done();
@@ -27,37 +27,34 @@ describe('Project Admin API:', function() {
     });
   });
 
-  it('POST /project/create and check structure', function() {
+  it('POST /project/create & check structure', function() {
     expect(typeof createResponse).toEqual('object');
     expect(createResponse.code).toEqual('ok');
-    var record = createResponse.data;
+    var record = createResponse.data[0];
     var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags'];
     for (var i=0; i<fields.length; i++)
-        expect(record[fields[0]] != undefined ? true : false).toEqual(true);
+        expect(record[fields[0]]).toBeDefined();
   });
 
-  it('get /project/list and check structure', function() {
+  it('GET /project/list & check structure', function() {
     expect(typeof listResponse).toEqual('object');
     expect(listResponse.code).toEqual('ok');
-    var record = listResponse.data.records[0];
+    var record = listResponse.data[0];
     var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags'];
-    expect(typeof listResponse.data.pageNumber).toEqual('number');
-    expect(typeof listResponse.data.countRecordsOnPage).toEqual('number');
-    expect(typeof listResponse.data.countAllRecords).toEqual('number');
     for (var i=0; i<fields.length; i++)
-        expect(record[fields[0]] != undefined ? true : false).toEqual(true);
+        expect(record[fields[0]]).toBeDefined();
   });
 
-  it('POST /project/update/:project_id and check structure', function() {
+  it('POST /project/update/:project_id & check structure', function() {
     expect(typeof updateResponse).toEqual('object');
     expect(updateResponse.code).toEqual('ok');
-    var record = updateResponse.data;
+    var record = updateResponse.data[0];
     var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags'];
     for (var i=0; i<fields.length; i++)
-        expect(record[fields[0]] != undefined ? true : false).toEqual(true);
+        expect(record[fields[0]]).toBeDefined();
   });
 
-  it('POST /project/delete/:project_id and check structure', function() {
+  it('POST /project/delete/:project_id & check structure', function() {
     expect(typeof deleteResponse).toEqual('object');
     expect(deleteResponse.code).toEqual('ok');
   });

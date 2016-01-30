@@ -34,6 +34,8 @@
     "sprintf": "~1.0.3",
     "angular-strap": "~2.3.7",
     "ng-tags-input": "~3.0.0",
-    "angular-bootstrap-show-errors": "~2.3.0"
+    "angular-bootstrap-show-errors": "~2.3.0",
+    "angular-markdown": "~0.0.1",
+    "google-code-prettify": "~1.0.4"
   }
 }

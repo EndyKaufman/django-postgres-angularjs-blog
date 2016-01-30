@@ -2606,6 +2606,1912 @@ $(document).ready(function(){
     }
 })();
 
+// Copyright (C) 2013 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+// Looks at query parameters to decide which language handlers and style-sheets
+// to load.
+
+// Query Parameter     Format           Effect                        Default
+// +------------------+---------------+------------------------------+--------+
+// | autorun=         | true | false  | If true then prettyPrint()   | "true" |
+// |                  |               | is called on page load.      |        |
+// +------------------+---------------+------------------------------+--------+
+// | lang=            | language name | Loads the language handler   | Can    |
+// |                  |               | named "lang-<NAME>.js".      | appear |
+// |                  |               | See available handlers at    | many   |
+// |                  |               | http://code.google.com/p/    | times. |
+// |                  |               | google-code-prettify/source/ |        |
+// |                  |               | browse/trunk/src             |        |
+// +------------------+---------------+------------------------------+--------+
+// | skin=            | skin name     | Loads the skin stylesheet    | none.  |
+// |                  |               | named "<NAME>.css".          |        |
+// |                  |               | http://code.google.com/p/    |        |
+// |                  |               | google-code-prettify/source/ |        |
+// |                  |               | browse/trunk/styles          |        |
+// +------------------+---------------+------------------------------+--------+
+// | callback=        | JS identifier | When "prettyPrint" finishes  | none   |
+// |                  |               | window.exports[js_ident] is  |        |
+// |                  |               | called.                      |        |
+// |                  |               | The callback must be under   |        |
+// |                  |               | exports to reduce the risk   |        |
+// |                  |               | of XSS via query parameter   |        |
+// |                  |               | injection.                   |        |
+// +------------------+---------------+------------------------------+--------+
+
+// Exmaples
+// .../prettify.js?lang=css&skin=sunburst
+//   1. Loads the CSS language handler which can be used to prettify CSS
+//      stylesheets, HTML <style> element bodies and style="..." attributes
+//      values.
+//   2. Loads the sunburst.css stylesheet instead of the default prettify.css
+//      stylesheet.
+//      A gallery of stylesheets is available at
+//      https://google-code-prettify.googlecode.com/svn/trunk/styles/index.html
+//   3. Since autorun=false is not specified, calls prettyPrint() on page load.
+
+
+/** @define {boolean} */
+var IN_GLOBAL_SCOPE = false;
+
+(function () {
+  "use strict";
+
+  var win = window;
+  var setTimeout = win.setTimeout;
+  var doc = document;
+  var root = doc.documentElement;
+  var head = doc['head'] || doc.getElementsByTagName("head")[0] || root;
+
+  // From http://javascript.nwbox.com/ContentLoaded/contentloaded.js
+  // Author: Diego Perini (diego.perini at gmail.com)
+  // Summary: cross-browser wrapper for DOMContentLoaded
+  // Updated: 20101020
+  // License: MIT
+  // Version: 1.2
+  function contentLoaded(callback) {
+    var addEventListener = doc['addEventListener'];
+    var done = false, top = true,
+        add = addEventListener ? 'addEventListener' : 'attachEvent',
+        rem = addEventListener ? 'removeEventListener' : 'detachEvent',
+        pre = addEventListener ? '' : 'on',
+
+        init = function(e) {
+          if (e.type == 'readystatechange' && doc.readyState != 'complete') {
+            return;
+          }
+          (e.type == 'load' ? win : doc)[rem](pre + e.type, init, false);
+          if (!done && (done = true)) { callback.call(win, e.type || e); }
+        },
+
+        poll = function() {
+          try {
+            root.doScroll('left');
+          } catch(e) {
+            setTimeout(poll, 50);
+            return;
+          }
+          init('poll');
+        };
+
+    if (doc.readyState == 'complete') {
+      callback.call(win, 'lazy');
+    } else {
+      if (doc.createEventObject && root.doScroll) {
+        try { top = !win.frameElement; } catch(e) { }
+        if (top) { poll(); }
+      }
+      doc[add](pre + 'DOMContentLoaded', init, false);
+      doc[add](pre + 'readystatechange', init, false);
+      win[add](pre + 'load', init, false);
+    }
+  }
+
+  // Given a list of URLs to stylesheets, loads the first that loads without
+  // triggering an error event.
+  function loadStylesheetsFallingBack(stylesheets) {
+    var n = stylesheets.length;
+    function load(i) {
+      if (i === n) { return; }
+      var link = doc.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      if (i + 1 < n) {
+        // http://pieisgood.org/test/script-link-events/ indicates that many
+        // versions of IE do not support onerror on <link>s, though
+        // http://msdn.microsoft.com/en-us/library/ie/ms535848(v=vs.85).aspx
+        // indicates that recent IEs do support error.
+        link.error = link.onerror = function () { load(i + 1); };
+      }
+      link.href = stylesheets[i];
+      head.appendChild(link);
+    }
+    load(0);
+  }
+
+  var scriptQuery = '';
+  // Look for the <script> node that loads this script to get its parameters.
+  // This starts looking at the end instead of just considering the last
+  // because deferred and async scripts run out of order.
+  // If the script is loaded twice, then this will run in reverse order.
+  for (var scripts = doc.scripts, i = scripts.length; --i >= 0;) {
+    var script = scripts[i];
+    var match = script.src.match(
+        /^[^?#]*\/run_prettify\.js(\?[^#]*)?(?:#.*)?$/);
+    if (match) {
+      scriptQuery = match[1] || '';
+      // Remove the script from the DOM so that multiple runs at least run
+      // multiple times even if parameter sets are interpreted in reverse
+      // order.
+      script.parentNode.removeChild(script);
+      break;
+    }
+  }
+
+  // Pull parameters into local variables.
+  var autorun = true;
+  var langs = [];
+  var skins = [];
+  var callbacks = [];
+  scriptQuery.replace(
+      /[?&]([^&=]+)=([^&]+)/g,
+      function (_, name, value) {
+        value = decodeURIComponent(value);
+        name = decodeURIComponent(name);
+        if (name == 'autorun')   { autorun = !/^[0fn]/i.test(value); } else
+        if (name == 'lang')      { langs.push(value);                } else
+        if (name == 'skin')      { skins.push(value);                } else
+        if (name == 'callback')  { callbacks.push(value);            }
+      });
+
+  // Use https to avoid mixed content warnings in client pages and to
+  // prevent a MITM from rewrite prettify mid-flight.
+  // This only works if this script is loaded via https : something
+  // over which we exercise no control.
+  var LOADER_BASE_URL =
+     'https://google-code-prettify.googlecode.com/svn/loader';
+
+  for (var i = 0, n = langs.length; i < n; ++i) (function (lang) {
+    var script = doc.createElement("script");
+
+    // Excerpted from jQuery.ajaxTransport("script") to fire events when
+    // a script is finished loading.
+    // Attach handlers for each script
+    script.onload = script.onerror = script.onreadystatechange = function () {
+      if (script && (
+            !script.readyState || /loaded|complete/.test(script.readyState))) {
+        // Handle memory leak in IE
+        script.onerror = script.onload = script.onreadystatechange = null;
+
+        --pendingLanguages;
+        checkPendingLanguages();
+
+        // Remove the script
+        if (script.parentNode) {
+          script.parentNode.removeChild(script);
+        }
+
+        script = null;
+      }
+    };
+
+    script.type = 'text/javascript';
+    script.src = LOADER_BASE_URL
+      + '/lang-' + encodeURIComponent(langs[i]) + '.js';
+
+    // Circumvent IE6 bugs with base elements (#2709 and #4378) by prepending
+    head.insertBefore(script, head.firstChild);
+  })(langs[i]);
+
+  var pendingLanguages = langs.length;
+  function checkPendingLanguages() {
+    if (!pendingLanguages) {
+      setTimeout(onLangsLoaded, 0);
+    }
+  }
+
+  var skinUrls = [];
+  for (var i = 0, n = skins.length; i < n; ++i) {
+    skinUrls.push(LOADER_BASE_URL
+        + '/skins/' + encodeURIComponent(skins[i]) + '.css');
+  }
+  skinUrls.push(LOADER_BASE_URL + '/prettify.css');
+  loadStylesheetsFallingBack(skinUrls);
+
+  var prettyPrint = (function () {
+    // Copyright (C) 2006 Google Inc.
+    //
+    // Licensed under the Apache License, Version 2.0 (the "License");
+    // you may not use this file except in compliance with the License.
+    // You may obtain a copy of the License at
+    //
+    //      http://www.apache.org/licenses/LICENSE-2.0
+    //
+    // Unless required by applicable law or agreed to in writing, software
+    // distributed under the License is distributed on an "AS IS" BASIS,
+    // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    // See the License for the specific language governing permissions and
+    // limitations under the License.
+    
+    
+    /**
+     * @fileoverview
+     * some functions for browser-side pretty printing of code contained in html.
+     *
+     * <p>
+     * For a fairly comprehensive set of languages see the
+     * <a href="http://google-code-prettify.googlecode.com/svn/trunk/README.html#langs">README</a>
+     * file that came with this source.  At a minimum, the lexer should work on a
+     * number of languages including C and friends, Java, Python, Bash, SQL, HTML,
+     * XML, CSS, Javascript, and Makefiles.  It works passably on Ruby, PHP and Awk
+     * and a subset of Perl, but, because of commenting conventions, doesn't work on
+     * Smalltalk, Lisp-like, or CAML-like languages without an explicit lang class.
+     * <p>
+     * Usage: <ol>
+     * <li> include this source file in an html page via
+     *   {@code <script type="text/javascript" src="/path/to/prettify.js"></script>}
+     * <li> define style rules.  See the example page for examples.
+     * <li> mark the {@code <pre>} and {@code <code>} tags in your source with
+     *    {@code class=prettyprint.}
+     *    You can also use the (html deprecated) {@code <xmp>} tag, but the pretty
+     *    printer needs to do more substantial DOM manipulations to support that, so
+     *    some css styles may not be preserved.
+     * </ol>
+     * That's it.  I wanted to keep the API as simple as possible, so there's no
+     * need to specify which language the code is in, but if you wish, you can add
+     * another class to the {@code <pre>} or {@code <code>} element to specify the
+     * language, as in {@code <pre class="prettyprint lang-java">}.  Any class that
+     * starts with "lang-" followed by a file extension, specifies the file type.
+     * See the "lang-*.js" files in this directory for code that implements
+     * per-language file handlers.
+     * <p>
+     * Change log:<br>
+     * cbeust, 2006/08/22
+     * <blockquote>
+     *   Java annotations (start with "@") are now captured as literals ("lit")
+     * </blockquote>
+     * @requires console
+     */
+    
+    // JSLint declarations
+    /*global console, document, navigator, setTimeout, window, define */
+    
+    /**
+     * Split {@code prettyPrint} into multiple timeouts so as not to interfere with
+     * UI events.
+     * If set to {@code false}, {@code prettyPrint()} is synchronous.
+     */
+    window['PR_SHOULD_USE_CONTINUATION'] = true;
+    
+    /**
+     * Pretty print a chunk of code.
+     * @param {string} sourceCodeHtml The HTML to pretty print.
+     * @param {string} opt_langExtension The language name to use.
+     *     Typically, a filename extension like 'cpp' or 'java'.
+     * @param {number|boolean} opt_numberLines True to number lines,
+     *     or the 1-indexed number of the first line in sourceCodeHtml.
+     * @return {string} code as html, but prettier
+     */
+    var prettyPrintOne;
+    /**
+     * Find all the {@code <pre>} and {@code <code>} tags in the DOM with
+     * {@code class=prettyprint} and prettify them.
+     *
+     * @param {Function} opt_whenDone called when prettifying is done.
+     * @param {HTMLElement|HTMLDocument} opt_root an element or document
+     *   containing all the elements to pretty print.
+     *   Defaults to {@code document.body}.
+     */
+    var prettyPrint;
+    
+    
+    (function () {
+      var win = window;
+      // Keyword lists for various languages.
+      // We use things that coerce to strings to make them compact when minified
+      // and to defeat aggressive optimizers that fold large string constants.
+      var FLOW_CONTROL_KEYWORDS = ["break,continue,do,else,for,if,return,while"];
+      var C_KEYWORDS = [FLOW_CONTROL_KEYWORDS,"auto,case,char,const,default," + 
+          "double,enum,extern,float,goto,inline,int,long,register,short,signed," +
+          "sizeof,static,struct,switch,typedef,union,unsigned,void,volatile"];
+      var COMMON_KEYWORDS = [C_KEYWORDS,"catch,class,delete,false,import," +
+          "new,operator,private,protected,public,this,throw,true,try,typeof"];
+      var CPP_KEYWORDS = [COMMON_KEYWORDS,"alignof,align_union,asm,axiom,bool," +
+          "concept,concept_map,const_cast,constexpr,decltype,delegate," +
+          "dynamic_cast,explicit,export,friend,generic,late_check," +
+          "mutable,namespace,nullptr,property,reinterpret_cast,static_assert," +
+          "static_cast,template,typeid,typename,using,virtual,where"];
+      var JAVA_KEYWORDS = [COMMON_KEYWORDS,
+          "abstract,assert,boolean,byte,extends,final,finally,implements,import," +
+          "instanceof,interface,null,native,package,strictfp,super,synchronized," +
+          "throws,transient"];
+      var CSHARP_KEYWORDS = [JAVA_KEYWORDS,
+          "as,base,by,checked,decimal,delegate,descending,dynamic,event," +
+          "fixed,foreach,from,group,implicit,in,internal,into,is,let," +
+          "lock,object,out,override,orderby,params,partial,readonly,ref,sbyte," +
+          "sealed,stackalloc,string,select,uint,ulong,unchecked,unsafe,ushort," +
+          "var,virtual,where"];
+      var COFFEE_KEYWORDS = "all,and,by,catch,class,else,extends,false,finally," +
+          "for,if,in,is,isnt,loop,new,no,not,null,of,off,on,or,return,super,then," +
+          "throw,true,try,unless,until,when,while,yes";
+      var JSCRIPT_KEYWORDS = [COMMON_KEYWORDS,
+          "debugger,eval,export,function,get,null,set,undefined,var,with," +
+          "Infinity,NaN"];
+      var PERL_KEYWORDS = "caller,delete,die,do,dump,elsif,eval,exit,foreach,for," +
+          "goto,if,import,last,local,my,next,no,our,print,package,redo,require," +
+          "sub,undef,unless,until,use,wantarray,while,BEGIN,END";
+      var PYTHON_KEYWORDS = [FLOW_CONTROL_KEYWORDS, "and,as,assert,class,def,del," +
+          "elif,except,exec,finally,from,global,import,in,is,lambda," +
+          "nonlocal,not,or,pass,print,raise,try,with,yield," +
+          "False,True,None"];
+      var RUBY_KEYWORDS = [FLOW_CONTROL_KEYWORDS, "alias,and,begin,case,class," +
+          "def,defined,elsif,end,ensure,false,in,module,next,nil,not,or,redo," +
+          "rescue,retry,self,super,then,true,undef,unless,until,when,yield," +
+          "BEGIN,END"];
+       var RUST_KEYWORDS = [FLOW_CONTROL_KEYWORDS, "as,assert,const,copy,drop," +
+          "enum,extern,fail,false,fn,impl,let,log,loop,match,mod,move,mut,priv," +
+          "pub,pure,ref,self,static,struct,true,trait,type,unsafe,use"];
+      var SH_KEYWORDS = [FLOW_CONTROL_KEYWORDS, "case,done,elif,esac,eval,fi," +
+          "function,in,local,set,then,until"];
+      var ALL_KEYWORDS = [
+          CPP_KEYWORDS, CSHARP_KEYWORDS, JSCRIPT_KEYWORDS, PERL_KEYWORDS,
+          PYTHON_KEYWORDS, RUBY_KEYWORDS, SH_KEYWORDS];
+      var C_TYPES = /^(DIR|FILE|vector|(de|priority_)?queue|list|stack|(const_)?iterator|(multi)?(set|map)|bitset|u?(int|float)\d*)\b/;
+    
+      // token style names.  correspond to css classes
+      /**
+       * token style for a string literal
+       * @const
+       */
+      var PR_STRING = 'str';
+      /**
+       * token style for a keyword
+       * @const
+       */
+      var PR_KEYWORD = 'kwd';
+      /**
+       * token style for a comment
+       * @const
+       */
+      var PR_COMMENT = 'com';
+      /**
+       * token style for a type
+       * @const
+       */
+      var PR_TYPE = 'typ';
+      /**
+       * token style for a literal value.  e.g. 1, null, true.
+       * @const
+       */
+      var PR_LITERAL = 'lit';
+      /**
+       * token style for a punctuation string.
+       * @const
+       */
+      var PR_PUNCTUATION = 'pun';
+      /**
+       * token style for plain text.
+       * @const
+       */
+      var PR_PLAIN = 'pln';
+    
+      /**
+       * token style for an sgml tag.
+       * @const
+       */
+      var PR_TAG = 'tag';
+      /**
+       * token style for a markup declaration such as a DOCTYPE.
+       * @const
+       */
+      var PR_DECLARATION = 'dec';
+      /**
+       * token style for embedded source.
+       * @const
+       */
+      var PR_SOURCE = 'src';
+      /**
+       * token style for an sgml attribute name.
+       * @const
+       */
+      var PR_ATTRIB_NAME = 'atn';
+      /**
+       * token style for an sgml attribute value.
+       * @const
+       */
+      var PR_ATTRIB_VALUE = 'atv';
+    
+      /**
+       * A class that indicates a section of markup that is not code, e.g. to allow
+       * embedding of line numbers within code listings.
+       * @const
+       */
+      var PR_NOCODE = 'nocode';
+    
+      
+      
+      /**
+       * A set of tokens that can precede a regular expression literal in
+       * javascript
+       * http://web.archive.org/web/20070717142515/http://www.mozilla.org/js/language/js20/rationale/syntax.html
+       * has the full list, but I've removed ones that might be problematic when
+       * seen in languages that don't support regular expression literals.
+       *
+       * <p>Specifically, I've removed any keywords that can't precede a regexp
+       * literal in a syntactically legal javascript program, and I've removed the
+       * "in" keyword since it's not a keyword in many languages, and might be used
+       * as a count of inches.
+       *
+       * <p>The link above does not accurately describe EcmaScript rules since
+       * it fails to distinguish between (a=++/b/i) and (a++/b/i) but it works
+       * very well in practice.
+       *
+       * @private
+       * @const
+       */
+      var REGEXP_PRECEDER_PATTERN = '(?:^^\\.?|[+-]|[!=]=?=?|\\#|%=?|&&?=?|\\(|\\*=?|[+\\-]=|->|\\/=?|::?|<<?=?|>>?>?=?|,|;|\\?|@|\\[|~|{|\\^\\^?=?|\\|\\|?=?|break|case|continue|delete|do|else|finally|instanceof|return|throw|try|typeof)\\s*';
+      
+      // CAVEAT: this does not properly handle the case where a regular
+      // expression immediately follows another since a regular expression may
+      // have flags for case-sensitivity and the like.  Having regexp tokens
+      // adjacent is not valid in any language I'm aware of, so I'm punting.
+      // TODO: maybe style special characters inside a regexp as punctuation.
+    
+      /**
+       * Given a group of {@link RegExp}s, returns a {@code RegExp} that globally
+       * matches the union of the sets of strings matched by the input RegExp.
+       * Since it matches globally, if the input strings have a start-of-input
+       * anchor (/^.../), it is ignored for the purposes of unioning.
+       * @param {Array.<RegExp>} regexs non multiline, non-global regexs.
+       * @return {RegExp} a global regex.
+       */
+      function combinePrefixPatterns(regexs) {
+        var capturedGroupIndex = 0;
+      
+        var needToFoldCase = false;
+        var ignoreCase = false;
+        for (var i = 0, n = regexs.length; i < n; ++i) {
+          var regex = regexs[i];
+          if (regex.ignoreCase) {
+            ignoreCase = true;
+          } else if (/[a-z]/i.test(regex.source.replace(
+                         /\\u[0-9a-f]{4}|\\x[0-9a-f]{2}|\\[^ux]/gi, ''))) {
+            needToFoldCase = true;
+            ignoreCase = false;
+            break;
+          }
+        }
+      
+        var escapeCharToCodeUnit = {
+          'b': 8,
+          't': 9,
+          'n': 0xa,
+          'v': 0xb,
+          'f': 0xc,
+          'r': 0xd
+        };
+      
+        function decodeEscape(charsetPart) {
+          var cc0 = charsetPart.charCodeAt(0);
+          if (cc0 !== 92 /* \\ */) {
+            return cc0;
+          }
+          var c1 = charsetPart.charAt(1);
+          cc0 = escapeCharToCodeUnit[c1];
+          if (cc0) {
+            return cc0;
+          } else if ('0' <= c1 && c1 <= '7') {
+            return parseInt(charsetPart.substring(1), 8);
+          } else if (c1 === 'u' || c1 === 'x') {
+            return parseInt(charsetPart.substring(2), 16);
+          } else {
+            return charsetPart.charCodeAt(1);
+          }
+        }
+      
+        function encodeEscape(charCode) {
+          if (charCode < 0x20) {
+            return (charCode < 0x10 ? '\\x0' : '\\x') + charCode.toString(16);
+          }
+          var ch = String.fromCharCode(charCode);
+          return (ch === '\\' || ch === '-' || ch === ']' || ch === '^')
+              ? "\\" + ch : ch;
+        }
+      
+        function caseFoldCharset(charSet) {
+          var charsetParts = charSet.substring(1, charSet.length - 1).match(
+              new RegExp(
+                  '\\\\u[0-9A-Fa-f]{4}'
+                  + '|\\\\x[0-9A-Fa-f]{2}'
+                  + '|\\\\[0-3][0-7]{0,2}'
+                  + '|\\\\[0-7]{1,2}'
+                  + '|\\\\[\\s\\S]'
+                  + '|-'
+                  + '|[^-\\\\]',
+                  'g'));
+          var ranges = [];
+          var inverse = charsetParts[0] === '^';
+      
+          var out = ['['];
+          if (inverse) { out.push('^'); }
+      
+          for (var i = inverse ? 1 : 0, n = charsetParts.length; i < n; ++i) {
+            var p = charsetParts[i];
+            if (/\\[bdsw]/i.test(p)) {  // Don't muck with named groups.
+              out.push(p);
+            } else {
+              var start = decodeEscape(p);
+              var end;
+              if (i + 2 < n && '-' === charsetParts[i + 1]) {
+                end = decodeEscape(charsetParts[i + 2]);
+                i += 2;
+              } else {
+                end = start;
+              }
+              ranges.push([start, end]);
+              // If the range might intersect letters, then expand it.
+              // This case handling is too simplistic.
+              // It does not deal with non-latin case folding.
+              // It works for latin source code identifiers though.
+              if (!(end < 65 || start > 122)) {
+                if (!(end < 65 || start > 90)) {
+                  ranges.push([Math.max(65, start) | 32, Math.min(end, 90) | 32]);
+                }
+                if (!(end < 97 || start > 122)) {
+                  ranges.push([Math.max(97, start) & ~32, Math.min(end, 122) & ~32]);
+                }
+              }
+            }
+          }
+      
+          // [[1, 10], [3, 4], [8, 12], [14, 14], [16, 16], [17, 17]]
+          // -> [[1, 12], [14, 14], [16, 17]]
+          ranges.sort(function (a, b) { return (a[0] - b[0]) || (b[1]  - a[1]); });
+          var consolidatedRanges = [];
+          var lastRange = [];
+          for (var i = 0; i < ranges.length; ++i) {
+            var range = ranges[i];
+            if (range[0] <= lastRange[1] + 1) {
+              lastRange[1] = Math.max(lastRange[1], range[1]);
+            } else {
+              consolidatedRanges.push(lastRange = range);
+            }
+          }
+      
+          for (var i = 0; i < consolidatedRanges.length; ++i) {
+            var range = consolidatedRanges[i];
+            out.push(encodeEscape(range[0]));
+            if (range[1] > range[0]) {
+              if (range[1] + 1 > range[0]) { out.push('-'); }
+              out.push(encodeEscape(range[1]));
+            }
+          }
+          out.push(']');
+          return out.join('');
+        }
+      
+        function allowAnywhereFoldCaseAndRenumberGroups(regex) {
+          // Split into character sets, escape sequences, punctuation strings
+          // like ('(', '(?:', ')', '^'), and runs of characters that do not
+          // include any of the above.
+          var parts = regex.source.match(
+              new RegExp(
+                  '(?:'
+                  + '\\[(?:[^\\x5C\\x5D]|\\\\[\\s\\S])*\\]'  // a character set
+                  + '|\\\\u[A-Fa-f0-9]{4}'  // a unicode escape
+                  + '|\\\\x[A-Fa-f0-9]{2}'  // a hex escape
+                  + '|\\\\[0-9]+'  // a back-reference or octal escape
+                  + '|\\\\[^ux0-9]'  // other escape sequence
+                  + '|\\(\\?[:!=]'  // start of a non-capturing group
+                  + '|[\\(\\)\\^]'  // start/end of a group, or line start
+                  + '|[^\\x5B\\x5C\\(\\)\\^]+'  // run of other characters
+                  + ')',
+                  'g'));
+          var n = parts.length;
+      
+          // Maps captured group numbers to the number they will occupy in
+          // the output or to -1 if that has not been determined, or to
+          // undefined if they need not be capturing in the output.
+          var capturedGroups = [];
+      
+          // Walk over and identify back references to build the capturedGroups
+          // mapping.
+          for (var i = 0, groupIndex = 0; i < n; ++i) {
+            var p = parts[i];
+            if (p === '(') {
+              // groups are 1-indexed, so max group index is count of '('
+              ++groupIndex;
+            } else if ('\\' === p.charAt(0)) {
+              var decimalValue = +p.substring(1);
+              if (decimalValue) {
+                if (decimalValue <= groupIndex) {
+                  capturedGroups[decimalValue] = -1;
+                } else {
+                  // Replace with an unambiguous escape sequence so that
+                  // an octal escape sequence does not turn into a backreference
+                  // to a capturing group from an earlier regex.
+                  parts[i] = encodeEscape(decimalValue);
+                }
+              }
+            }
+          }
+      
+          // Renumber groups and reduce capturing groups to non-capturing groups
+          // where possible.
+          for (var i = 1; i < capturedGroups.length; ++i) {
+            if (-1 === capturedGroups[i]) {
+              capturedGroups[i] = ++capturedGroupIndex;
+            }
+          }
+          for (var i = 0, groupIndex = 0; i < n; ++i) {
+            var p = parts[i];
+            if (p === '(') {
+              ++groupIndex;
+              if (!capturedGroups[groupIndex]) {
+                parts[i] = '(?:';
+              }
+            } else if ('\\' === p.charAt(0)) {
+              var decimalValue = +p.substring(1);
+              if (decimalValue && decimalValue <= groupIndex) {
+                parts[i] = '\\' + capturedGroups[decimalValue];
+              }
+            }
+          }
+      
+          // Remove any prefix anchors so that the output will match anywhere.
+          // ^^ really does mean an anchored match though.
+          for (var i = 0; i < n; ++i) {
+            if ('^' === parts[i] && '^' !== parts[i + 1]) { parts[i] = ''; }
+          }
+      
+          // Expand letters to groups to handle mixing of case-sensitive and
+          // case-insensitive patterns if necessary.
+          if (regex.ignoreCase && needToFoldCase) {
+            for (var i = 0; i < n; ++i) {
+              var p = parts[i];
+              var ch0 = p.charAt(0);
+              if (p.length >= 2 && ch0 === '[') {
+                parts[i] = caseFoldCharset(p);
+              } else if (ch0 !== '\\') {
+                // TODO: handle letters in numeric escapes.
+                parts[i] = p.replace(
+                    /[a-zA-Z]/g,
+                    function (ch) {
+                      var cc = ch.charCodeAt(0);
+                      return '[' + String.fromCharCode(cc & ~32, cc | 32) + ']';
+                    });
+              }
+            }
+          }
+      
+          return parts.join('');
+        }
+      
+        var rewritten = [];
+        for (var i = 0, n = regexs.length; i < n; ++i) {
+          var regex = regexs[i];
+          if (regex.global || regex.multiline) { throw new Error('' + regex); }
+          rewritten.push(
+              '(?:' + allowAnywhereFoldCaseAndRenumberGroups(regex) + ')');
+        }
+      
+        return new RegExp(rewritten.join('|'), ignoreCase ? 'gi' : 'g');
+      }
+    
+      /**
+       * Split markup into a string of source code and an array mapping ranges in
+       * that string to the text nodes in which they appear.
+       *
+       * <p>
+       * The HTML DOM structure:</p>
+       * <pre>
+       * (Element   "p"
+       *   (Element "b"
+       *     (Text  "print "))       ; #1
+       *   (Text    "'Hello '")      ; #2
+       *   (Element "br")            ; #3
+       *   (Text    "  + 'World';")) ; #4
+       * </pre>
+       * <p>
+       * corresponds to the HTML
+       * {@code <p><b>print </b>'Hello '<br>  + 'World';</p>}.</p>
+       *
+       * <p>
+       * It will produce the output:</p>
+       * <pre>
+       * {
+       *   sourceCode: "print 'Hello '\n  + 'World';",
+       *   //                     1          2
+       *   //           012345678901234 5678901234567
+       *   spans: [0, #1, 6, #2, 14, #3, 15, #4]
+       * }
+       * </pre>
+       * <p>
+       * where #1 is a reference to the {@code "print "} text node above, and so
+       * on for the other text nodes.
+       * </p>
+       *
+       * <p>
+       * The {@code} spans array is an array of pairs.  Even elements are the start
+       * indices of substrings, and odd elements are the text nodes (or BR elements)
+       * that contain the text for those substrings.
+       * Substrings continue until the next index or the end of the source.
+       * </p>
+       *
+       * @param {Node} node an HTML DOM subtree containing source-code.
+       * @param {boolean} isPreformatted true if white-space in text nodes should
+       *    be considered significant.
+       * @return {Object} source code and the text nodes in which they occur.
+       */
+      function extractSourceSpans(node, isPreformatted) {
+        var nocode = /(?:^|\s)nocode(?:\s|$)/;
+      
+        var chunks = [];
+        var length = 0;
+        var spans = [];
+        var k = 0;
+      
+        function walk(node) {
+          var type = node.nodeType;
+          if (type == 1) {  // Element
+            if (nocode.test(node.className)) { return; }
+            for (var child = node.firstChild; child; child = child.nextSibling) {
+              walk(child);
+            }
+            var nodeName = node.nodeName.toLowerCase();
+            if ('br' === nodeName || 'li' === nodeName) {
+              chunks[k] = '\n';
+              spans[k << 1] = length++;
+              spans[(k++ << 1) | 1] = node;
+            }
+          } else if (type == 3 || type == 4) {  // Text
+            var text = node.nodeValue;
+            if (text.length) {
+              if (!isPreformatted) {
+                text = text.replace(/[ \t\r\n]+/g, ' ');
+              } else {
+                text = text.replace(/\r\n?/g, '\n');  // Normalize newlines.
+              }
+              // TODO: handle tabs here?
+              chunks[k] = text;
+              spans[k << 1] = length;
+              length += text.length;
+              spans[(k++ << 1) | 1] = node;
+            }
+          }
+        }
+      
+        walk(node);
+      
+        return {
+          sourceCode: chunks.join('').replace(/\n$/, ''),
+          spans: spans
+        };
+      }
+    
+      /**
+       * Apply the given language handler to sourceCode and add the resulting
+       * decorations to out.
+       * @param {number} basePos the index of sourceCode within the chunk of source
+       *    whose decorations are already present on out.
+       */
+      function appendDecorations(basePos, sourceCode, langHandler, out) {
+        if (!sourceCode) { return; }
+        var job = {
+          sourceCode: sourceCode,
+          basePos: basePos
+        };
+        langHandler(job);
+        out.push.apply(out, job.decorations);
+      }
+    
+      var notWs = /\S/;
+    
+      /**
+       * Given an element, if it contains only one child element and any text nodes
+       * it contains contain only space characters, return the sole child element.
+       * Otherwise returns undefined.
+       * <p>
+       * This is meant to return the CODE element in {@code <pre><code ...>} when
+       * there is a single child element that contains all the non-space textual
+       * content, but not to return anything where there are multiple child elements
+       * as in {@code <pre><code>...</code><code>...</code></pre>} or when there
+       * is textual content.
+       */
+      function childContentWrapper(element) {
+        var wrapper = undefined;
+        for (var c = element.firstChild; c; c = c.nextSibling) {
+          var type = c.nodeType;
+          wrapper = (type === 1)  // Element Node
+              ? (wrapper ? element : c)
+              : (type === 3)  // Text Node
+              ? (notWs.test(c.nodeValue) ? element : wrapper)
+              : wrapper;
+        }
+        return wrapper === element ? undefined : wrapper;
+      }
+    
+      /** Given triples of [style, pattern, context] returns a lexing function,
+        * The lexing function interprets the patterns to find token boundaries and
+        * returns a decoration list of the form
+        * [index_0, style_0, index_1, style_1, ..., index_n, style_n]
+        * where index_n is an index into the sourceCode, and style_n is a style
+        * constant like PR_PLAIN.  index_n-1 <= index_n, and style_n-1 applies to
+        * all characters in sourceCode[index_n-1:index_n].
+        *
+        * The stylePatterns is a list whose elements have the form
+        * [style : string, pattern : RegExp, DEPRECATED, shortcut : string].
+        *
+        * Style is a style constant like PR_PLAIN, or can be a string of the
+        * form 'lang-FOO', where FOO is a language extension describing the
+        * language of the portion of the token in $1 after pattern executes.
+        * E.g., if style is 'lang-lisp', and group 1 contains the text
+        * '(hello (world))', then that portion of the token will be passed to the
+        * registered lisp handler for formatting.
+        * The text before and after group 1 will be restyled using this decorator
+        * so decorators should take care that this doesn't result in infinite
+        * recursion.  For example, the HTML lexer rule for SCRIPT elements looks
+        * something like ['lang-js', /<[s]cript>(.+?)<\/script>/].  This may match
+        * '<script>foo()<\/script>', which would cause the current decorator to
+        * be called with '<script>' which would not match the same rule since
+        * group 1 must not be empty, so it would be instead styled as PR_TAG by
+        * the generic tag rule.  The handler registered for the 'js' extension would
+        * then be called with 'foo()', and finally, the current decorator would
+        * be called with '<\/script>' which would not match the original rule and
+        * so the generic tag rule would identify it as a tag.
+        *
+        * Pattern must only match prefixes, and if it matches a prefix, then that
+        * match is considered a token with the same style.
+        *
+        * Context is applied to the last non-whitespace, non-comment token
+        * recognized.
+        *
+        * Shortcut is an optional string of characters, any of which, if the first
+        * character, gurantee that this pattern and only this pattern matches.
+        *
+        * @param {Array} shortcutStylePatterns patterns that always start with
+        *   a known character.  Must have a shortcut string.
+        * @param {Array} fallthroughStylePatterns patterns that will be tried in
+        *   order if the shortcut ones fail.  May have shortcuts.
+        *
+        * @return {function (Object)} a
+        *   function that takes source code and returns a list of decorations.
+        */
+      function createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns) {
+        var shortcuts = {};
+        var tokenizer;
+        (function () {
+          var allPatterns = shortcutStylePatterns.concat(fallthroughStylePatterns);
+          var allRegexs = [];
+          var regexKeys = {};
+          for (var i = 0, n = allPatterns.length; i < n; ++i) {
+            var patternParts = allPatterns[i];
+            var shortcutChars = patternParts[3];
+            if (shortcutChars) {
+              for (var c = shortcutChars.length; --c >= 0;) {
+                shortcuts[shortcutChars.charAt(c)] = patternParts;
+              }
+            }
+            var regex = patternParts[1];
+            var k = '' + regex;
+            if (!regexKeys.hasOwnProperty(k)) {
+              allRegexs.push(regex);
+              regexKeys[k] = null;
+            }
+          }
+          allRegexs.push(/[\0-\uffff]/);
+          tokenizer = combinePrefixPatterns(allRegexs);
+        })();
+    
+        var nPatterns = fallthroughStylePatterns.length;
+    
+        /**
+         * Lexes job.sourceCode and produces an output array job.decorations of
+         * style classes preceded by the position at which they start in
+         * job.sourceCode in order.
+         *
+         * @param {Object} job an object like <pre>{
+         *    sourceCode: {string} sourceText plain text,
+         *    basePos: {int} position of job.sourceCode in the larger chunk of
+         *        sourceCode.
+         * }</pre>
+         */
+        var decorate = function (job) {
+          var sourceCode = job.sourceCode, basePos = job.basePos;
+          /** Even entries are positions in source in ascending order.  Odd enties
+            * are style markers (e.g., PR_COMMENT) that run from that position until
+            * the end.
+            * @type {Array.<number|string>}
+            */
+          var decorations = [basePos, PR_PLAIN];
+          var pos = 0;  // index into sourceCode
+          var tokens = sourceCode.match(tokenizer) || [];
+          var styleCache = {};
+    
+          for (var ti = 0, nTokens = tokens.length; ti < nTokens; ++ti) {
+            var token = tokens[ti];
+            var style = styleCache[token];
+            var match = void 0;
+    
+            var isEmbedded;
+            if (typeof style === 'string') {
+              isEmbedded = false;
+            } else {
+              var patternParts = shortcuts[token.charAt(0)];
+              if (patternParts) {
+                match = token.match(patternParts[1]);
+                style = patternParts[0];
+              } else {
+                for (var i = 0; i < nPatterns; ++i) {
+                  patternParts = fallthroughStylePatterns[i];
+                  match = token.match(patternParts[1]);
+                  if (match) {
+                    style = patternParts[0];
+                    break;
+                  }
+                }
+    
+                if (!match) {  // make sure that we make progress
+                  style = PR_PLAIN;
+                }
+              }
+    
+              isEmbedded = style.length >= 5 && 'lang-' === style.substring(0, 5);
+              if (isEmbedded && !(match && typeof match[1] === 'string')) {
+                isEmbedded = false;
+                style = PR_SOURCE;
+              }
+    
+              if (!isEmbedded) { styleCache[token] = style; }
+            }
+    
+            var tokenStart = pos;
+            pos += token.length;
+    
+            if (!isEmbedded) {
+              decorations.push(basePos + tokenStart, style);
+            } else {  // Treat group 1 as an embedded block of source code.
+              var embeddedSource = match[1];
+              var embeddedSourceStart = token.indexOf(embeddedSource);
+              var embeddedSourceEnd = embeddedSourceStart + embeddedSource.length;
+              if (match[2]) {
+                // If embeddedSource can be blank, then it would match at the
+                // beginning which would cause us to infinitely recurse on the
+                // entire token, so we catch the right context in match[2].
+                embeddedSourceEnd = token.length - match[2].length;
+                embeddedSourceStart = embeddedSourceEnd - embeddedSource.length;
+              }
+              var lang = style.substring(5);
+              // Decorate the left of the embedded source
+              appendDecorations(
+                  basePos + tokenStart,
+                  token.substring(0, embeddedSourceStart),
+                  decorate, decorations);
+              // Decorate the embedded source
+              appendDecorations(
+                  basePos + tokenStart + embeddedSourceStart,
+                  embeddedSource,
+                  langHandlerForExtension(lang, embeddedSource),
+                  decorations);
+              // Decorate the right of the embedded section
+              appendDecorations(
+                  basePos + tokenStart + embeddedSourceEnd,
+                  token.substring(embeddedSourceEnd),
+                  decorate, decorations);
+            }
+          }
+          job.decorations = decorations;
+        };
+        return decorate;
+      }
+    
+      /** returns a function that produces a list of decorations from source text.
+        *
+        * This code treats ", ', and ` as string delimiters, and \ as a string
+        * escape.  It does not recognize perl's qq() style strings.
+        * It has no special handling for double delimiter escapes as in basic, or
+        * the tripled delimiters used in python, but should work on those regardless
+        * although in those cases a single string literal may be broken up into
+        * multiple adjacent string literals.
+        *
+        * It recognizes C, C++, and shell style comments.
+        *
+        * @param {Object} options a set of optional parameters.
+        * @return {function (Object)} a function that examines the source code
+        *     in the input job and builds the decoration list.
+        */
+      function sourceDecorator(options) {
+        var shortcutStylePatterns = [], fallthroughStylePatterns = [];
+        if (options['tripleQuotedStrings']) {
+          // '''multi-line-string''', 'single-line-string', and double-quoted
+          shortcutStylePatterns.push(
+              [PR_STRING,  /^(?:\'\'\'(?:[^\'\\]|\\[\s\S]|\'{1,2}(?=[^\']))*(?:\'\'\'|$)|\"\"\"(?:[^\"\\]|\\[\s\S]|\"{1,2}(?=[^\"]))*(?:\"\"\"|$)|\'(?:[^\\\']|\\[\s\S])*(?:\'|$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$))/,
+               null, '\'"']);
+        } else if (options['multiLineStrings']) {
+          // 'multi-line-string', "multi-line-string"
+          shortcutStylePatterns.push(
+              [PR_STRING,  /^(?:\'(?:[^\\\']|\\[\s\S])*(?:\'|$)|\"(?:[^\\\"]|\\[\s\S])*(?:\"|$)|\`(?:[^\\\`]|\\[\s\S])*(?:\`|$))/,
+               null, '\'"`']);
+        } else {
+          // 'single-line-string', "single-line-string"
+          shortcutStylePatterns.push(
+              [PR_STRING,
+               /^(?:\'(?:[^\\\'\r\n]|\\.)*(?:\'|$)|\"(?:[^\\\"\r\n]|\\.)*(?:\"|$))/,
+               null, '"\'']);
+        }
+        if (options['verbatimStrings']) {
+          // verbatim-string-literal production from the C# grammar.  See issue 93.
+          fallthroughStylePatterns.push(
+              [PR_STRING, /^@\"(?:[^\"]|\"\")*(?:\"|$)/, null]);
+        }
+        var hc = options['hashComments'];
+        if (hc) {
+          if (options['cStyleComments']) {
+            if (hc > 1) {  // multiline hash comments
+              shortcutStylePatterns.push(
+                  [PR_COMMENT, /^#(?:##(?:[^#]|#(?!##))*(?:###|$)|.*)/, null, '#']);
+            } else {
+              // Stop C preprocessor declarations at an unclosed open comment
+              shortcutStylePatterns.push(
+                  [PR_COMMENT, /^#(?:(?:define|e(?:l|nd)if|else|error|ifn?def|include|line|pragma|undef|warning)\b|[^\r\n]*)/,
+                   null, '#']);
+            }
+            // #include <stdio.h>
+            fallthroughStylePatterns.push(
+                [PR_STRING,
+                 /^<(?:(?:(?:\.\.\/)*|\/?)(?:[\w-]+(?:\/[\w-]+)+)?[\w-]+\.h(?:h|pp|\+\+)?|[a-z]\w*)>/,
+                 null]);
+          } else {
+            shortcutStylePatterns.push([PR_COMMENT, /^#[^\r\n]*/, null, '#']);
+          }
+        }
+        if (options['cStyleComments']) {
+          fallthroughStylePatterns.push([PR_COMMENT, /^\/\/[^\r\n]*/, null]);
+          fallthroughStylePatterns.push(
+              [PR_COMMENT, /^\/\*[\s\S]*?(?:\*\/|$)/, null]);
+        }
+        var regexLiterals = options['regexLiterals'];
+        if (regexLiterals) {
+          /**
+           * @const
+           */
+          var regexExcls = regexLiterals > 1
+            ? ''  // Multiline regex literals
+            : '\n\r';
+          /**
+           * @const
+           */
+          var regexAny = regexExcls ? '.' : '[\\S\\s]';
+          /**
+           * @const
+           */
+          var REGEX_LITERAL = (
+              // A regular expression literal starts with a slash that is
+              // not followed by * or / so that it is not confused with
+              // comments.
+              '/(?=[^/*' + regexExcls + '])'
+              // and then contains any number of raw characters,
+              + '(?:[^/\\x5B\\x5C' + regexExcls + ']'
+              // escape sequences (\x5C),
+              +    '|\\x5C' + regexAny
+              // or non-nesting character sets (\x5B\x5D);
+              +    '|\\x5B(?:[^\\x5C\\x5D' + regexExcls + ']'
+              +             '|\\x5C' + regexAny + ')*(?:\\x5D|$))+'
+              // finally closed by a /.
+              + '/');
+          fallthroughStylePatterns.push(
+              ['lang-regex',
+               RegExp('^' + REGEXP_PRECEDER_PATTERN + '(' + REGEX_LITERAL + ')')
+               ]);
+        }
+    
+        var types = options['types'];
+        if (types) {
+          fallthroughStylePatterns.push([PR_TYPE, types]);
+        }
+    
+        var keywords = ("" + options['keywords']).replace(/^ | $/g, '');
+        if (keywords.length) {
+          fallthroughStylePatterns.push(
+              [PR_KEYWORD,
+               new RegExp('^(?:' + keywords.replace(/[\s,]+/g, '|') + ')\\b'),
+               null]);
+        }
+    
+        shortcutStylePatterns.push([PR_PLAIN,       /^\s+/, null, ' \r\n\t\xA0']);
+    
+        var punctuation =
+          // The Bash man page says
+    
+          // A word is a sequence of characters considered as a single
+          // unit by GRUB. Words are separated by metacharacters,
+          // which are the following plus space, tab, and newline: { }
+          // | & $ ; < >
+          // ...
+          
+          // A word beginning with # causes that word and all remaining
+          // characters on that line to be ignored.
+    
+          // which means that only a '#' after /(?:^|[{}|&$;<>\s])/ starts a
+          // comment but empirically
+          // $ echo {#}
+          // {#}
+          // $ echo \$#
+          // $#
+          // $ echo }#
+          // }#
+    
+          // so /(?:^|[|&;<>\s])/ is more appropriate.
+    
+          // http://gcc.gnu.org/onlinedocs/gcc-2.95.3/cpp_1.html#SEC3
+          // suggests that this definition is compatible with a
+          // default mode that tries to use a single token definition
+          // to recognize both bash/python style comments and C
+          // preprocessor directives.
+    
+          // This definition of punctuation does not include # in the list of
+          // follow-on exclusions, so # will not be broken before if preceeded
+          // by a punctuation character.  We could try to exclude # after
+          // [|&;<>] but that doesn't seem to cause many major problems.
+          // If that does turn out to be a problem, we should change the below
+          // when hc is truthy to include # in the run of punctuation characters
+          // only when not followint [|&;<>].
+          '^.[^\\s\\w.$@\'"`/\\\\]*';
+        if (options['regexLiterals']) {
+          punctuation += '(?!\s*\/)';
+        }
+    
+        fallthroughStylePatterns.push(
+            // TODO(mikesamuel): recognize non-latin letters and numerals in idents
+            [PR_LITERAL,     /^@[a-z_$][a-z_$@0-9]*/i, null],
+            [PR_TYPE,        /^(?:[@_]?[A-Z]+[a-z][A-Za-z_$@0-9]*|\w+_t\b)/, null],
+            [PR_PLAIN,       /^[a-z_$][a-z_$@0-9]*/i, null],
+            [PR_LITERAL,
+             new RegExp(
+                 '^(?:'
+                 // A hex number
+                 + '0x[a-f0-9]+'
+                 // or an octal or decimal number,
+                 + '|(?:\\d(?:_\\d+)*\\d*(?:\\.\\d*)?|\\.\\d\\+)'
+                 // possibly in scientific notation
+                 + '(?:e[+\\-]?\\d+)?'
+                 + ')'
+                 // with an optional modifier like UL for unsigned long
+                 + '[a-z]*', 'i'),
+             null, '0123456789'],
+            // Don't treat escaped quotes in bash as starting strings.
+            // See issue 144.
+            [PR_PLAIN,       /^\\[\s\S]?/, null],
+            [PR_PUNCTUATION, new RegExp(punctuation), null]);
+    
+        return createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns);
+      }
+    
+      var decorateSource = sourceDecorator({
+            'keywords': ALL_KEYWORDS,
+            'hashComments': true,
+            'cStyleComments': true,
+            'multiLineStrings': true,
+            'regexLiterals': true
+          });
+    
+      /**
+       * Given a DOM subtree, wraps it in a list, and puts each line into its own
+       * list item.
+       *
+       * @param {Node} node modified in place.  Its content is pulled into an
+       *     HTMLOListElement, and each line is moved into a separate list item.
+       *     This requires cloning elements, so the input might not have unique
+       *     IDs after numbering.
+       * @param {boolean} isPreformatted true iff white-space in text nodes should
+       *     be treated as significant.
+       */
+      function numberLines(node, opt_startLineNum, isPreformatted) {
+        var nocode = /(?:^|\s)nocode(?:\s|$)/;
+        var lineBreak = /\r\n?|\n/;
+      
+        var document = node.ownerDocument;
+      
+        var li = document.createElement('li');
+        while (node.firstChild) {
+          li.appendChild(node.firstChild);
+        }
+        // An array of lines.  We split below, so this is initialized to one
+        // un-split line.
+        var listItems = [li];
+      
+        function walk(node) {
+          var type = node.nodeType;
+          if (type == 1 && !nocode.test(node.className)) {  // Element
+            if ('br' === node.nodeName) {
+              breakAfter(node);
+              // Discard the <BR> since it is now flush against a </LI>.
+              if (node.parentNode) {
+                node.parentNode.removeChild(node);
+              }
+            } else {
+              for (var child = node.firstChild; child; child = child.nextSibling) {
+                walk(child);
+              }
+            }
+          } else if ((type == 3 || type == 4) && isPreformatted) {  // Text
+            var text = node.nodeValue;
+            var match = text.match(lineBreak);
+            if (match) {
+              var firstLine = text.substring(0, match.index);
+              node.nodeValue = firstLine;
+              var tail = text.substring(match.index + match[0].length);
+              if (tail) {
+                var parent = node.parentNode;
+                parent.insertBefore(
+                  document.createTextNode(tail), node.nextSibling);
+              }
+              breakAfter(node);
+              if (!firstLine) {
+                // Don't leave blank text nodes in the DOM.
+                node.parentNode.removeChild(node);
+              }
+            }
+          }
+        }
+      
+        // Split a line after the given node.
+        function breakAfter(lineEndNode) {
+          // If there's nothing to the right, then we can skip ending the line
+          // here, and move root-wards since splitting just before an end-tag
+          // would require us to create a bunch of empty copies.
+          while (!lineEndNode.nextSibling) {
+            lineEndNode = lineEndNode.parentNode;
+            if (!lineEndNode) { return; }
+          }
+      
+          function breakLeftOf(limit, copy) {
+            // Clone shallowly if this node needs to be on both sides of the break.
+            var rightSide = copy ? limit.cloneNode(false) : limit;
+            var parent = limit.parentNode;
+            if (parent) {
+              // We clone the parent chain.
+              // This helps us resurrect important styling elements that cross lines.
+              // E.g. in <i>Foo<br>Bar</i>
+              // should be rewritten to <li><i>Foo</i></li><li><i>Bar</i></li>.
+              var parentClone = breakLeftOf(parent, 1);
+              // Move the clone and everything to the right of the original
+              // onto the cloned parent.
+              var next = limit.nextSibling;
+              parentClone.appendChild(rightSide);
+              for (var sibling = next; sibling; sibling = next) {
+                next = sibling.nextSibling;
+                parentClone.appendChild(sibling);
+              }
+            }
+            return rightSide;
+          }
+      
+          var copiedListItem = breakLeftOf(lineEndNode.nextSibling, 0);
+      
+          // Walk the parent chain until we reach an unattached LI.
+          for (var parent;
+               // Check nodeType since IE invents document fragments.
+               (parent = copiedListItem.parentNode) && parent.nodeType === 1;) {
+            copiedListItem = parent;
+          }
+          // Put it on the list of lines for later processing.
+          listItems.push(copiedListItem);
+        }
+      
+        // Split lines while there are lines left to split.
+        for (var i = 0;  // Number of lines that have been split so far.
+             i < listItems.length;  // length updated by breakAfter calls.
+             ++i) {
+          walk(listItems[i]);
+        }
+      
+        // Make sure numeric indices show correctly.
+        if (opt_startLineNum === (opt_startLineNum|0)) {
+          listItems[0].setAttribute('value', opt_startLineNum);
+        }
+      
+        var ol = document.createElement('ol');
+        ol.className = 'linenums';
+        var offset = Math.max(0, ((opt_startLineNum - 1 /* zero index */)) | 0) || 0;
+        for (var i = 0, n = listItems.length; i < n; ++i) {
+          li = listItems[i];
+          // Stick a class on the LIs so that stylesheets can
+          // color odd/even rows, or any other row pattern that
+          // is co-prime with 10.
+          li.className = 'L' + ((i + offset) % 10);
+          if (!li.firstChild) {
+            li.appendChild(document.createTextNode('\xA0'));
+          }
+          ol.appendChild(li);
+        }
+      
+        node.appendChild(ol);
+      }    
+      /**
+       * Breaks {@code job.sourceCode} around style boundaries in
+       * {@code job.decorations} and modifies {@code job.sourceNode} in place.
+       * @param {Object} job like <pre>{
+       *    sourceCode: {string} source as plain text,
+       *    sourceNode: {HTMLElement} the element containing the source,
+       *    spans: {Array.<number|Node>} alternating span start indices into source
+       *       and the text node or element (e.g. {@code <BR>}) corresponding to that
+       *       span.
+       *    decorations: {Array.<number|string} an array of style classes preceded
+       *       by the position at which they start in job.sourceCode in order
+       * }</pre>
+       * @private
+       */
+      function recombineTagsAndDecorations(job) {
+        var isIE8OrEarlier = /\bMSIE\s(\d+)/.exec(navigator.userAgent);
+        isIE8OrEarlier = isIE8OrEarlier && +isIE8OrEarlier[1] <= 8;
+        var newlineRe = /\n/g;
+      
+        var source = job.sourceCode;
+        var sourceLength = source.length;
+        // Index into source after the last code-unit recombined.
+        var sourceIndex = 0;
+      
+        var spans = job.spans;
+        var nSpans = spans.length;
+        // Index into spans after the last span which ends at or before sourceIndex.
+        var spanIndex = 0;
+      
+        var decorations = job.decorations;
+        var nDecorations = decorations.length;
+        // Index into decorations after the last decoration which ends at or before
+        // sourceIndex.
+        var decorationIndex = 0;
+      
+        // Remove all zero-length decorations.
+        decorations[nDecorations] = sourceLength;
+        var decPos, i;
+        for (i = decPos = 0; i < nDecorations;) {
+          if (decorations[i] !== decorations[i + 2]) {
+            decorations[decPos++] = decorations[i++];
+            decorations[decPos++] = decorations[i++];
+          } else {
+            i += 2;
+          }
+        }
+        nDecorations = decPos;
+      
+        // Simplify decorations.
+        for (i = decPos = 0; i < nDecorations;) {
+          var startPos = decorations[i];
+          // Conflate all adjacent decorations that use the same style.
+          var startDec = decorations[i + 1];
+          var end = i + 2;
+          while (end + 2 <= nDecorations && decorations[end + 1] === startDec) {
+            end += 2;
+          }
+          decorations[decPos++] = startPos;
+          decorations[decPos++] = startDec;
+          i = end;
+        }
+      
+        nDecorations = decorations.length = decPos;
+      
+        var sourceNode = job.sourceNode;
+        var oldDisplay;
+        if (sourceNode) {
+          oldDisplay = sourceNode.style.display;
+          sourceNode.style.display = 'none';
+        }
+        try {
+          var decoration = null;
+          while (spanIndex < nSpans) {
+            var spanStart = spans[spanIndex];
+            var spanEnd = spans[spanIndex + 2] || sourceLength;
+      
+            var decEnd = decorations[decorationIndex + 2] || sourceLength;
+      
+            var end = Math.min(spanEnd, decEnd);
+      
+            var textNode = spans[spanIndex + 1];
+            var styledText;
+            if (textNode.nodeType !== 1  // Don't muck with <BR>s or <LI>s
+                // Don't introduce spans around empty text nodes.
+                && (styledText = source.substring(sourceIndex, end))) {
+              // This may seem bizarre, and it is.  Emitting LF on IE causes the
+              // code to display with spaces instead of line breaks.
+              // Emitting Windows standard issue linebreaks (CRLF) causes a blank
+              // space to appear at the beginning of every line but the first.
+              // Emitting an old Mac OS 9 line separator makes everything spiffy.
+              if (isIE8OrEarlier) {
+                styledText = styledText.replace(newlineRe, '\r');
+              }
+              textNode.nodeValue = styledText;
+              var document = textNode.ownerDocument;
+              var span = document.createElement('span');
+              span.className = decorations[decorationIndex + 1];
+              var parentNode = textNode.parentNode;
+              parentNode.replaceChild(span, textNode);
+              span.appendChild(textNode);
+              if (sourceIndex < spanEnd) {  // Split off a text node.
+                spans[spanIndex + 1] = textNode
+                    // TODO: Possibly optimize by using '' if there's no flicker.
+                    = document.createTextNode(source.substring(end, spanEnd));
+                parentNode.insertBefore(textNode, span.nextSibling);
+              }
+            }
+      
+            sourceIndex = end;
+      
+            if (sourceIndex >= spanEnd) {
+              spanIndex += 2;
+            }
+            if (sourceIndex >= decEnd) {
+              decorationIndex += 2;
+            }
+          }
+        } finally {
+          if (sourceNode) {
+            sourceNode.style.display = oldDisplay;
+          }
+        }
+      }
+    
+      /** Maps language-specific file extensions to handlers. */
+      var langHandlerRegistry = {};
+      /** Register a language handler for the given file extensions.
+        * @param {function (Object)} handler a function from source code to a list
+        *      of decorations.  Takes a single argument job which describes the
+        *      state of the computation.   The single parameter has the form
+        *      {@code {
+        *        sourceCode: {string} as plain text.
+        *        decorations: {Array.<number|string>} an array of style classes
+        *                     preceded by the position at which they start in
+        *                     job.sourceCode in order.
+        *                     The language handler should assigned this field.
+        *        basePos: {int} the position of source in the larger source chunk.
+        *                 All positions in the output decorations array are relative
+        *                 to the larger source chunk.
+        *      } }
+        * @param {Array.<string>} fileExtensions
+        */
+      function registerLangHandler(handler, fileExtensions) {
+        for (var i = fileExtensions.length; --i >= 0;) {
+          var ext = fileExtensions[i];
+          if (!langHandlerRegistry.hasOwnProperty(ext)) {
+            langHandlerRegistry[ext] = handler;
+          } else if (win['console']) {
+            console['warn']('cannot override language handler %s', ext);
+          }
+        }
+      }
+      function langHandlerForExtension(extension, source) {
+        if (!(extension && langHandlerRegistry.hasOwnProperty(extension))) {
+          // Treat it as markup if the first non whitespace character is a < and
+          // the last non-whitespace character is a >.
+          extension = /^\s*</.test(source)
+              ? 'default-markup'
+              : 'default-code';
+        }
+        return langHandlerRegistry[extension];
+      }
+      registerLangHandler(decorateSource, ['default-code']);
+      registerLangHandler(
+          createSimpleLexer(
+              [],
+              [
+               [PR_PLAIN,       /^[^<?]+/],
+               [PR_DECLARATION, /^<!\w[^>]*(?:>|$)/],
+               [PR_COMMENT,     /^<\!--[\s\S]*?(?:-\->|$)/],
+               // Unescaped content in an unknown language
+               ['lang-',        /^<\?([\s\S]+?)(?:\?>|$)/],
+               ['lang-',        /^<%([\s\S]+?)(?:%>|$)/],
+               [PR_PUNCTUATION, /^(?:<[%?]|[%?]>)/],
+               ['lang-',        /^<xmp\b[^>]*>([\s\S]+?)<\/xmp\b[^>]*>/i],
+               // Unescaped content in javascript.  (Or possibly vbscript).
+               ['lang-js',      /^<script\b[^>]*>([\s\S]*?)(<\/script\b[^>]*>)/i],
+               // Contains unescaped stylesheet content
+               ['lang-css',     /^<style\b[^>]*>([\s\S]*?)(<\/style\b[^>]*>)/i],
+               ['lang-in.tag',  /^(<\/?[a-z][^<>]*>)/i]
+              ]),
+          ['default-markup', 'htm', 'html', 'mxml', 'xhtml', 'xml', 'xsl']);
+      registerLangHandler(
+          createSimpleLexer(
+              [
+               [PR_PLAIN,        /^[\s]+/, null, ' \t\r\n'],
+               [PR_ATTRIB_VALUE, /^(?:\"[^\"]*\"?|\'[^\']*\'?)/, null, '\"\'']
+               ],
+              [
+               [PR_TAG,          /^^<\/?[a-z](?:[\w.:-]*\w)?|\/?>$/i],
+               [PR_ATTRIB_NAME,  /^(?!style[\s=]|on)[a-z](?:[\w:-]*\w)?/i],
+               ['lang-uq.val',   /^=\s*([^>\'\"\s]*(?:[^>\'\"\s\/]|\/(?=\s)))/],
+               [PR_PUNCTUATION,  /^[=<>\/]+/],
+               ['lang-js',       /^on\w+\s*=\s*\"([^\"]+)\"/i],
+               ['lang-js',       /^on\w+\s*=\s*\'([^\']+)\'/i],
+               ['lang-js',       /^on\w+\s*=\s*([^\"\'>\s]+)/i],
+               ['lang-css',      /^style\s*=\s*\"([^\"]+)\"/i],
+               ['lang-css',      /^style\s*=\s*\'([^\']+)\'/i],
+               ['lang-css',      /^style\s*=\s*([^\"\'>\s]+)/i]
+               ]),
+          ['in.tag']);
+      registerLangHandler(
+          createSimpleLexer([], [[PR_ATTRIB_VALUE, /^[\s\S]+/]]), ['uq.val']);
+      registerLangHandler(sourceDecorator({
+              'keywords': CPP_KEYWORDS,
+              'hashComments': true,
+              'cStyleComments': true,
+              'types': C_TYPES
+            }), ['c', 'cc', 'cpp', 'cxx', 'cyc', 'm']);
+      registerLangHandler(sourceDecorator({
+              'keywords': 'null,true,false'
+            }), ['json']);
+      registerLangHandler(sourceDecorator({
+              'keywords': CSHARP_KEYWORDS,
+              'hashComments': true,
+              'cStyleComments': true,
+              'verbatimStrings': true,
+              'types': C_TYPES
+            }), ['cs']);
+      registerLangHandler(sourceDecorator({
+              'keywords': JAVA_KEYWORDS,
+              'cStyleComments': true
+            }), ['java']);
+      registerLangHandler(sourceDecorator({
+              'keywords': SH_KEYWORDS,
+              'hashComments': true,
+              'multiLineStrings': true
+            }), ['bash', 'bsh', 'csh', 'sh']);
+      registerLangHandler(sourceDecorator({
+              'keywords': PYTHON_KEYWORDS,
+              'hashComments': true,
+              'multiLineStrings': true,
+              'tripleQuotedStrings': true
+            }), ['cv', 'py', 'python']);
+      registerLangHandler(sourceDecorator({
+              'keywords': PERL_KEYWORDS,
+              'hashComments': true,
+              'multiLineStrings': true,
+              'regexLiterals': 2  // multiline regex literals
+            }), ['perl', 'pl', 'pm']);
+      registerLangHandler(sourceDecorator({
+              'keywords': RUBY_KEYWORDS,
+              'hashComments': true,
+              'multiLineStrings': true,
+              'regexLiterals': true
+            }), ['rb', 'ruby']);
+      registerLangHandler(sourceDecorator({
+              'keywords': JSCRIPT_KEYWORDS,
+              'cStyleComments': true,
+              'regexLiterals': true
+            }), ['javascript', 'js']);
+      registerLangHandler(sourceDecorator({
+              'keywords': COFFEE_KEYWORDS,
+              'hashComments': 3,  // ### style block comments
+              'cStyleComments': true,
+              'multilineStrings': true,
+              'tripleQuotedStrings': true,
+              'regexLiterals': true
+            }), ['coffee']);
+      registerLangHandler(sourceDecorator({
+              'keywords': RUST_KEYWORDS,
+              'cStyleComments': true,
+              'multilineStrings': true
+            }), ['rc', 'rs', 'rust']);
+      registerLangHandler(
+          createSimpleLexer([], [[PR_STRING, /^[\s\S]+/]]), ['regex']);
+    
+      function applyDecorator(job) {
+        var opt_langExtension = job.langExtension;
+    
+        try {
+          // Extract tags, and convert the source code to plain text.
+          var sourceAndSpans = extractSourceSpans(job.sourceNode, job.pre);
+          /** Plain text. @type {string} */
+          var source = sourceAndSpans.sourceCode;
+          job.sourceCode = source;
+          job.spans = sourceAndSpans.spans;
+          job.basePos = 0;
+    
+          // Apply the appropriate language handler
+          langHandlerForExtension(opt_langExtension, source)(job);
+    
+          // Integrate the decorations and tags back into the source code,
+          // modifying the sourceNode in place.
+          recombineTagsAndDecorations(job);
+        } catch (e) {
+          if (win['console']) {
+            console['log'](e && e['stack'] || e);
+          }
+        }
+      }
+    
+      /**
+       * Pretty print a chunk of code.
+       * @param sourceCodeHtml {string} The HTML to pretty print.
+       * @param opt_langExtension {string} The language name to use.
+       *     Typically, a filename extension like 'cpp' or 'java'.
+       * @param opt_numberLines {number|boolean} True to number lines,
+       *     or the 1-indexed number of the first line in sourceCodeHtml.
+       */
+      function $prettyPrintOne(sourceCodeHtml, opt_langExtension, opt_numberLines) {
+        var container = document.createElement('div');
+        // This could cause images to load and onload listeners to fire.
+        // E.g. <img onerror="alert(1337)" src="nosuchimage.png">.
+        // We assume that the inner HTML is from a trusted source.
+        // The pre-tag is required for IE8 which strips newlines from innerHTML
+        // when it is injected into a <pre> tag.
+        // http://stackoverflow.com/questions/451486/pre-tag-loses-line-breaks-when-setting-innerhtml-in-ie
+        // http://stackoverflow.com/questions/195363/inserting-a-newline-into-a-pre-tag-ie-javascript
+        container.innerHTML = '<pre>' + sourceCodeHtml + '</pre>';
+        container = container.firstChild;
+        if (opt_numberLines) {
+          numberLines(container, opt_numberLines, true);
+        }
+    
+        var job = {
+          langExtension: opt_langExtension,
+          numberLines: opt_numberLines,
+          sourceNode: container,
+          pre: 1
+        };
+        applyDecorator(job);
+        return container.innerHTML;
+      }
+    
+       /**
+        * Find all the {@code <pre>} and {@code <code>} tags in the DOM with
+        * {@code class=prettyprint} and prettify them.
+        *
+        * @param {Function} opt_whenDone called when prettifying is done.
+        * @param {HTMLElement|HTMLDocument} opt_root an element or document
+        *   containing all the elements to pretty print.
+        *   Defaults to {@code document.body}.
+        */
+      function $prettyPrint(opt_whenDone, opt_root) {
+        var root = opt_root || document.body;
+        var doc = root.ownerDocument || document;
+        function byTagName(tn) { return root.getElementsByTagName(tn); }
+        // fetch a list of nodes to rewrite
+        var codeSegments = [byTagName('pre'), byTagName('code'), byTagName('xmp')];
+        var elements = [];
+        for (var i = 0; i < codeSegments.length; ++i) {
+          for (var j = 0, n = codeSegments[i].length; j < n; ++j) {
+            elements.push(codeSegments[i][j]);
+          }
+        }
+        codeSegments = null;
+    
+        var clock = Date;
+        if (!clock['now']) {
+          clock = { 'now': function () { return +(new Date); } };
+        }
+    
+        // The loop is broken into a series of continuations to make sure that we
+        // don't make the browser unresponsive when rewriting a large page.
+        var k = 0;
+        var prettyPrintingJob;
+    
+        var langExtensionRe = /\blang(?:uage)?-([\w.]+)(?!\S)/;
+        var prettyPrintRe = /\bprettyprint\b/;
+        var prettyPrintedRe = /\bprettyprinted\b/;
+        var preformattedTagNameRe = /pre|xmp/i;
+        var codeRe = /^code$/i;
+        var preCodeXmpRe = /^(?:pre|code|xmp)$/i;
+        var EMPTY = {};
+    
+        function doWork() {
+          var endTime = (win['PR_SHOULD_USE_CONTINUATION'] ?
+                         clock['now']() + 250 /* ms */ :
+                         Infinity);
+          for (; k < elements.length && clock['now']() < endTime; k++) {
+            var cs = elements[k];
+    
+            // Look for a preceding comment like
+            // <?prettify lang="..." linenums="..."?>
+            var attrs = EMPTY;
+            {
+              for (var preceder = cs; (preceder = preceder.previousSibling);) {
+                var nt = preceder.nodeType;
+                // <?foo?> is parsed by HTML 5 to a comment node (8)
+                // like <!--?foo?-->, but in XML is a processing instruction
+                var value = (nt === 7 || nt === 8) && preceder.nodeValue;
+                if (value
+                    ? !/^\??prettify\b/.test(value)
+                    : (nt !== 3 || /\S/.test(preceder.nodeValue))) {
+                  // Skip over white-space text nodes but not others.
+                  break;
+                }
+                if (value) {
+                  attrs = {};
+                  value.replace(
+                      /\b(\w+)=([\w:.%+-]+)/g,
+                    function (_, name, value) { attrs[name] = value; });
+                  break;
+                }
+              }
+            }
+    
+            var className = cs.className;
+            if ((attrs !== EMPTY || prettyPrintRe.test(className))
+                // Don't redo this if we've already done it.
+                // This allows recalling pretty print to just prettyprint elements
+                // that have been added to the page since last call.
+                && !prettyPrintedRe.test(className)) {
+    
+              // make sure this is not nested in an already prettified element
+              var nested = false;
+              for (var p = cs.parentNode; p; p = p.parentNode) {
+                var tn = p.tagName;
+                if (preCodeXmpRe.test(tn)
+                    && p.className && prettyPrintRe.test(p.className)) {
+                  nested = true;
+                  break;
+                }
+              }
+              if (!nested) {
+                // Mark done.  If we fail to prettyprint for whatever reason,
+                // we shouldn't try again.
+                cs.className += ' prettyprinted';
+    
+                // If the classes includes a language extensions, use it.
+                // Language extensions can be specified like
+                //     <pre class="prettyprint lang-cpp">
+                // the language extension "cpp" is used to find a language handler
+                // as passed to PR.registerLangHandler.
+                // HTML5 recommends that a language be specified using "language-"
+                // as the prefix instead.  Google Code Prettify supports both.
+                // http://dev.w3.org/html5/spec-author-view/the-code-element.html
+                var langExtension = attrs['lang'];
+                if (!langExtension) {
+                  langExtension = className.match(langExtensionRe);
+                  // Support <pre class="prettyprint"><code class="language-c">
+                  var wrapper;
+                  if (!langExtension && (wrapper = childContentWrapper(cs))
+                      && codeRe.test(wrapper.tagName)) {
+                    langExtension = wrapper.className.match(langExtensionRe);
+                  }
+    
+                  if (langExtension) { langExtension = langExtension[1]; }
+                }
+    
+                var preformatted;
+                if (preformattedTagNameRe.test(cs.tagName)) {
+                  preformatted = 1;
+                } else {
+                  var currentStyle = cs['currentStyle'];
+                  var defaultView = doc.defaultView;
+                  var whitespace = (
+                      currentStyle
+                      ? currentStyle['whiteSpace']
+                      : (defaultView
+                         && defaultView.getComputedStyle)
+                      ? defaultView.getComputedStyle(cs, null)
+                      .getPropertyValue('white-space')
+                      : 0);
+                  preformatted = whitespace
+                      && 'pre' === whitespace.substring(0, 3);
+                }
+    
+                // Look for a class like linenums or linenums:<n> where <n> is the
+                // 1-indexed number of the first line.
+                var lineNums = attrs['linenums'];
+                if (!(lineNums = lineNums === 'true' || +lineNums)) {
+                  lineNums = className.match(/\blinenums\b(?::(\d+))?/);
+                  lineNums =
+                    lineNums
+                    ? lineNums[1] && lineNums[1].length
+                      ? +lineNums[1] : true
+                    : false;
+                }
+                if (lineNums) { numberLines(cs, lineNums, preformatted); }
+    
+                // do the pretty printing
+                prettyPrintingJob = {
+                  langExtension: langExtension,
+                  sourceNode: cs,
+                  numberLines: lineNums,
+                  pre: preformatted
+                };
+                applyDecorator(prettyPrintingJob);
+              }
+            }
+          }
+          if (k < elements.length) {
+            // finish up in a continuation
+            setTimeout(doWork, 250);
+          } else if ('function' === typeof opt_whenDone) {
+            opt_whenDone();
+          }
+        }
+    
+        doWork();
+      }
+    
+      /**
+       * Contains functions for creating and registering new language handlers.
+       * @type {Object}
+       */
+      var PR = win['PR'] = {
+            'createSimpleLexer': createSimpleLexer,
+            'registerLangHandler': registerLangHandler,
+            'sourceDecorator': sourceDecorator,
+            'PR_ATTRIB_NAME': PR_ATTRIB_NAME,
+            'PR_ATTRIB_VALUE': PR_ATTRIB_VALUE,
+            'PR_COMMENT': PR_COMMENT,
+            'PR_DECLARATION': PR_DECLARATION,
+            'PR_KEYWORD': PR_KEYWORD,
+            'PR_LITERAL': PR_LITERAL,
+            'PR_NOCODE': PR_NOCODE,
+            'PR_PLAIN': PR_PLAIN,
+            'PR_PUNCTUATION': PR_PUNCTUATION,
+            'PR_SOURCE': PR_SOURCE,
+            'PR_STRING': PR_STRING,
+            'PR_TAG': PR_TAG,
+            'PR_TYPE': PR_TYPE,
+            'prettyPrintOne':
+               IN_GLOBAL_SCOPE
+                 ? (win['prettyPrintOne'] = $prettyPrintOne)
+                 : (prettyPrintOne = $prettyPrintOne),
+            'prettyPrint': prettyPrint =
+               IN_GLOBAL_SCOPE
+                 ? (win['prettyPrint'] = $prettyPrint)
+                 : (prettyPrint = $prettyPrint)
+          };
+    
+      // Make PR available via the Asynchronous Module Definition (AMD) API.
+      // Per https://github.com/amdjs/amdjs-api/wiki/AMD:
+      // The Asynchronous Module Definition (AMD) API specifies a
+      // mechanism for defining modules such that the module and its
+      // dependencies can be asynchronously loaded.
+      // ...
+      // To allow a clear indicator that a global define function (as
+      // needed for script src browser loading) conforms to the AMD API,
+      // any global define function SHOULD have a property called "amd"
+      // whose value is an object. This helps avoid conflict with any
+      // other existing JavaScript code that could have defined a define()
+      // function that does not conform to the AMD API.
+      if (typeof define === "function" && define['amd']) {
+        define("google-code-prettify", [], function () {
+          return PR; 
+        });
+      }
+    })();
+    return prettyPrint;
+  })();
+
+  // If this script is deferred or async and the document is already
+  // loaded we need to wait for language handlers to load before performing
+  // any autorun.
+  function onLangsLoaded() {
+    if (autorun) {
+      contentLoaded(
+        function () {
+          var n = callbacks.length;
+          var callback = n ? function () {
+            for (var i = 0; i < n; ++i) {
+              (function (i) {
+                 setTimeout(
+                   function () {
+                     win['exports'][callbacks[i]].apply(win, arguments);
+                   }, 0);
+               })(i);
+            }
+          } : void 0;
+          prettyPrint(callback);
+        });
+    }
+  }
+  checkPendingLanguages();
+
+}());
+
 /**
  * @license AngularJS v1.4.9
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -53700,6 +55606,1905 @@ tagsInput.run(["$templateCache", function($templateCache) {
 
 }).call(this);
 
+//
+// showdown.js -- A javascript port of Markdown.
+//
+// Copyright (c) 2007 John Fraser.
+//
+// Original Markdown Copyright (c) 2004-2005 John Gruber
+//   <http://daringfireball.net/projects/markdown/>
+//
+// Redistributable under a BSD-style open source license.
+// See license.txt for more information.
+//
+// The full source distribution is at:
+//
+//				A A L
+//				T C A
+//				T K B
+//
+//   <http://www.attacklab.net/>
+//
+
+//
+// Wherever possible, Showdown is a straight, line-by-line port
+// of the Perl version of Markdown.
+//
+// This is not a normal parser design; it's basically just a
+// series of string substitutions.  It's hard to read and
+// maintain this way,  but keeping Showdown close to the original
+// design makes it easier to port new features.
+//
+// More importantly, Showdown behaves like markdown.pl in most
+// edge cases.  So web applications can do client-side preview
+// in Javascript, and then build identical HTML on the server.
+//
+// This port needs the new RegExp functionality of ECMA 262,
+// 3rd Edition (i.e. Javascript 1.5).  Most modern web browsers
+// should do fine.  Even with the new regular expression features,
+// We do a lot of work to emulate Perl's regex functionality.
+// The tricky changes in this file mostly have the "attacklab:"
+// label.  Major or self-explanatory changes don't.
+//
+// Smart diff tools like Araxis Merge will be able to match up
+// this file with markdown.pl in a useful way.  A little tweaking
+// helps: in a copy of markdown.pl, replace "#" with "//" and
+// replace "$text" with "text".  Be sure to ignore whitespace
+// and line endings.
+//
+
+
+//
+// Showdown usage:
+//
+//   var text = "Markdown *rocks*.";
+//
+//   var converter = new Showdown.converter();
+//   var html = converter.makeHtml(text);
+//
+//   alert(html);
+//
+// Note: move the sample code to the bottom of this
+// file before uncommenting it.
+//
+
+
+//
+// Showdown namespace
+//
+var Showdown = {extensions: {}};
+
+//
+// forEach
+//
+var forEach = Showdown.forEach = function (obj, callback) {
+    if (typeof obj.forEach === 'function') {
+        obj.forEach(callback);
+    } else {
+        var i, len = obj.length;
+        for (i = 0; i < len; i++) {
+            callback(obj[i], i, obj);
+        }
+    }
+};
+
+//
+// Standard extension naming
+//
+var stdExtName = function (s) {
+    return s.replace(/[_-]||\s/g, '').toLowerCase();
+};
+
+//
+// converter
+//
+// Wraps all "globals" so that the only thing
+// exposed is makeHtml().
+//
+Showdown.converter = function (converter_options) {
+
+//
+// Globals:
+//
+
+// Global hashes, used by various utility routines
+    var g_urls;
+    var g_titles;
+    var g_html_blocks;
+
+// Used to track when we're inside an ordered or unordered list
+// (see _ProcessListItems() for details):
+    var g_list_level = 0;
+
+// Global extensions
+    var g_lang_extensions = [];
+    var g_output_modifiers = [];
+
+
+//
+// Automatic Extension Loading (node only):
+//
+    if (typeof module !== 'undefined' && typeof exports !== 'undefined' && typeof require !== 'undefined') {
+        var fs = require('fs');
+
+        if (fs) {
+            // Search extensions folder
+            var extensions = fs.readdirSync((__dirname || '.') + '/extensions').filter(function (file) {
+                return ~file.indexOf('.js');
+            }).map(function (file) {
+                return file.replace(/\.js$/, '');
+            });
+            // Load extensions into Showdown namespace
+            Showdown.forEach(extensions, function (ext) {
+                var name = stdExtName(ext);
+                Showdown.extensions[name] = require('./extensions/' + ext);
+            });
+        }
+    }
+
+    this.makeHtml = function (text) {
+//
+// Main function. The order in which other subs are called here is
+// essential. Link and image substitutions need to happen before
+// _EscapeSpecialCharsWithinTagAttributes(), so that any *'s or _'s in the <a>
+// and <img> tags get encoded.
+//
+
+        // Clear the global hashes. If we don't clear these, you get conflicts
+        // from other articles when generating a page which contains more than
+        // one article (e.g. an index page that shows the N most recent
+        // articles):
+        g_urls = {};
+        g_titles = {};
+        g_html_blocks = [];
+
+        // attacklab: Replace ~ with ~T
+        // This lets us use tilde as an escape char to avoid md5 hashes
+        // The choice of character is arbitray; anything that isn't
+        // magic in Markdown will work.
+        text = text.replace(/~/g, "~T");
+
+        // attacklab: Replace $ with ~D
+        // RegExp interprets $ as a special character
+        // when it's in a replacement string
+        text = text.replace(/\$/g, "~D");
+
+        // Standardize line endings
+        text = text.replace(/\r\n/g, "\n"); // DOS to Unix
+        text = text.replace(/\r/g, "\n"); // Mac to Unix
+
+        // Make sure text begins and ends with a couple of newlines:
+        text = "\n\n" + text + "\n\n";
+
+        // Convert all tabs to spaces.
+        text = _Detab(text);
+
+        // Strip any lines consisting only of spaces and tabs.
+        // This makes subsequent regexen easier to write, because we can
+        // match consecutive blank lines with /\n+/ instead of something
+        // contorted like /[ \t]*\n+/ .
+        text = text.replace(/^[ \t]+$/mg, "");
+
+        // Run language extensions
+        Showdown.forEach(g_lang_extensions, function (x) {
+            text = _ExecuteExtension(x, text);
+        });
+
+        // Handle github codeblocks prior to running HashHTML so that
+        // HTML contained within the codeblock gets escaped propertly
+        text = _DoGithubCodeBlocks(text);
+
+        // Turn block-level HTML blocks into hash entries
+        text = _HashHTMLBlocks(text);
+
+        // Strip link definitions, store in hashes.
+        text = _StripLinkDefinitions(text);
+
+        text = _RunBlockGamut(text);
+
+        text = _UnescapeSpecialChars(text);
+
+        // attacklab: Restore dollar signs
+        text = text.replace(/~D/g, "$$");
+
+        // attacklab: Restore tildes
+        text = text.replace(/~T/g, "~");
+
+        // Run output modifiers
+        Showdown.forEach(g_output_modifiers, function (x) {
+            text = _ExecuteExtension(x, text);
+        });
+
+        return text;
+    };
+
+
+//
+// Options:
+//
+
+// Parse extensions options into separate arrays
+    if (converter_options && converter_options.extensions) {
+
+        var self = this;
+
+        // Iterate over each plugin
+        Showdown.forEach(converter_options.extensions, function (plugin) {
+
+            // Assume it's a bundled plugin if a string is given
+            if (typeof plugin === 'string') {
+                plugin = Showdown.extensions[stdExtName(plugin)];
+            }
+
+            if (typeof plugin === 'function') {
+                // Iterate over each extension within that plugin
+                Showdown.forEach(plugin(self), function (ext) {
+                    // Sort extensions by type
+                    if (ext.type) {
+                        if (ext.type === 'language' || ext.type === 'lang') {
+                            g_lang_extensions.push(ext);
+                        } else if (ext.type === 'output' || ext.type === 'html') {
+                            g_output_modifiers.push(ext);
+                        }
+                    } else {
+                        // Assume language extension
+                        g_output_modifiers.push(ext);
+                    }
+                });
+            } else {
+                throw "Extension '" + plugin + "' could not be loaded.  It was either not found or is not a valid extension.";
+            }
+        });
+    }
+
+
+    var _ExecuteExtension = function (ext, text) {
+        if (ext.regex) {
+            var re = new RegExp(ext.regex, 'g');
+            return text.replace(re, ext.replace);
+        } else if (ext.filter) {
+            return ext.filter(text);
+        }
+    };
+
+    var _StripLinkDefinitions = function (text) {
+//
+// Strips link definitions from text, stores the URLs and titles in
+// hash references.
+//
+
+        // Link defs are in the form: ^[id]: url "optional title"
+
+        /*
+         var text = text.replace(/
+         ^[ ]{0,3}\[(.+)\]:  // id = $1  attacklab: g_tab_width - 1
+         [ \t]*
+         \n?				// maybe *one* newline
+         [ \t]*
+         <?(\S+?)>?			// url = $2
+         [ \t]*
+         \n?				// maybe one newline
+         [ \t]*
+         (?:
+         (\n*)				// any lines skipped = $3 attacklab: lookbehind removed
+         ["(]
+         (.+?)				// title = $4
+         [")]
+         [ \t]*
+         )?					// title is optional
+         (?:\n+|$)
+         /gm,
+         function(){...});
+         */
+
+        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+        text += "~0";
+
+        text = text.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|(?=~0))/gm,
+            function (wholeMatch, m1, m2, m3, m4) {
+                m1 = m1.toLowerCase();
+                g_urls[m1] = _EncodeAmpsAndAngles(m2);  // Link IDs are case-insensitive
+                if (m3) {
+                    // Oops, found blank lines, so it's not a title.
+                    // Put back the parenthetical statement we stole.
+                    return m3 + m4;
+                } else if (m4) {
+                    g_titles[m1] = m4.replace(/"/g, "&quot;");
+                }
+
+                // Completely remove the definition from the text
+                return "";
+            }
+        );
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    }
+
+    var _HashHTMLBlocks = function (text) {
+        // attacklab: Double up blank lines to reduce lookaround
+        text = text.replace(/\n/g, "\n\n");
+
+        // Hashify HTML blocks:
+        // We only want to do this for block-level HTML tags, such as headers,
+        // lists, and tables. That's because we still want to wrap <p>s around
+        // "paragraphs" that are wrapped in non-block-level tags, such as anchors,
+        // phrase emphasis, and spans. The list of tags we're looking for is
+        // hard-coded:
+        var block_tags_a = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|style|section|header|footer|nav|article|aside";
+        var block_tags_b = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside";
+
+        // First, look for nested blocks, e.g.:
+        //   <div>
+        //     <div>
+        //     tags for inner block must be indented.
+        //     </div>
+        //   </div>
+        //
+        // The outermost tags must start at the left margin for this to match, and
+        // the inner nested divs must be indented.
+        // We need to do this before the next, more liberal match, because the next
+        // match will start at the first `<div>` and stop at the first `</div>`.
+
+        // attacklab: This regex can be expensive when it fails.
+        /*
+         var text = text.replace(/
+         (						// save in $1
+         ^					// start of line  (with /m)
+         <($block_tags_a)	// start tag = $2
+         \b					// word break
+         // attacklab: hack around khtml/pcre bug...
+         [^\r]*?\n			// any number of lines, minimally matching
+         </\2>				// the matching end tag
+         [ \t]*				// trailing spaces/tabs
+         (?=\n+)				// followed by a newline
+         )						// attacklab: there are sentinel newlines at end of document
+         /gm,function(){...}};
+         */
+        text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm, hashElement);
+
+        //
+        // Now match more liberally, simply from `\n<tag>` to `</tag>\n`
+        //
+
+        /*
+         var text = text.replace(/
+         (						// save in $1
+         ^					// start of line  (with /m)
+         <($block_tags_b)	// start tag = $2
+         \b					// word break
+         // attacklab: hack around khtml/pcre bug...
+         [^\r]*?				// any number of lines, minimally matching
+         </\2>				// the matching end tag
+         [ \t]*				// trailing spaces/tabs
+         (?=\n+)				// followed by a newline
+         )						// attacklab: there are sentinel newlines at end of document
+         /gm,function(){...}};
+         */
+        text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside)\b[^\r]*?<\/\2>[ \t]*(?=\n+)\n)/gm, hashElement);
+
+        // Special case just for <hr />. It was easier to make a special case than
+        // to make the other regex more complicated.
+
+        /*
+         text = text.replace(/
+         (						// save in $1
+         \n\n				// Starting after a blank line
+         [ ]{0,3}
+         (<(hr)				// start tag = $2
+         \b					// word break
+         ([^<>])*?			//
+         \/?>)				// the matching end tag
+         [ \t]*
+         (?=\n{2,})			// followed by a blank line
+         )
+         /g,hashElement);
+         */
+        text = text.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g, hashElement);
+
+        // Special case for standalone HTML comments:
+
+        /*
+         text = text.replace(/
+         (						// save in $1
+         \n\n				// Starting after a blank line
+         [ ]{0,3}			// attacklab: g_tab_width - 1
+         <!
+         (--[^\r]*?--\s*)+
+         >
+         [ \t]*
+         (?=\n{2,})			// followed by a blank line
+         )
+         /g,hashElement);
+         */
+        text = text.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g, hashElement);
+
+        // PHP and ASP-style processor instructions (<?...?> and <%...%>)
+
+        /*
+         text = text.replace(/
+         (?:
+         \n\n				// Starting after a blank line
+         )
+         (						// save in $1
+         [ ]{0,3}			// attacklab: g_tab_width - 1
+         (?:
+         <([?%])			// $2
+         [^\r]*?
+         \2>
+         )
+         [ \t]*
+         (?=\n{2,})			// followed by a blank line
+         )
+         /g,hashElement);
+         */
+        text = text.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g, hashElement);
+
+        // attacklab: Undo double lines (see comment at top of this function)
+        text = text.replace(/\n\n/g, "\n");
+        return text;
+    }
+
+    var hashElement = function (wholeMatch, m1) {
+        var blockText = m1;
+
+        // Undo double lines
+        blockText = blockText.replace(/\n\n/g, "\n");
+        blockText = blockText.replace(/^\n/, "");
+
+        // strip trailing blank lines
+        blockText = blockText.replace(/\n+$/g, "");
+
+        // Replace the element text with a marker ("~KxK" where x is its key)
+        blockText = "\n\n~K" + (g_html_blocks.push(blockText) - 1) + "K\n\n";
+
+        return blockText;
+    };
+
+    var _RunBlockGamut = function (text) {
+//
+// These are all the transformations that form block-level
+// tags like paragraphs, headers, and list items.
+//
+        text = _DoHeaders(text);
+
+        // Do Horizontal Rules:
+        var key = hashBlock("<hr />");
+        text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, key);
+        text = text.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm, key);
+        text = text.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm, key);
+
+        text = _DoLists(text);
+        text = _DoCodeBlocks(text);
+        text = _DoBlockQuotes(text);
+
+        // We already ran _HashHTMLBlocks() before, in Markdown(), but that
+        // was to escape raw HTML in the original Markdown source. This time,
+        // we're escaping the markup we've just created, so that we don't wrap
+        // <p> tags around block-level tags.
+        text = _HashHTMLBlocks(text);
+        text = _FormParagraphs(text);
+
+        return text;
+    };
+
+    var _RunSpanGamut = function (text) {
+//
+// These are all the transformations that occur *within* block-level
+// tags like paragraphs, headers, and list items.
+//
+
+        text = _DoCodeSpans(text);
+        text = _EscapeSpecialCharsWithinTagAttributes(text);
+        text = _EncodeBackslashEscapes(text);
+
+        // Process anchor and image tags. Images must come first,
+        // because ![foo][f] looks like an anchor.
+        text = _DoImages(text);
+        text = _DoAnchors(text);
+
+        // Make links out of things like `<http://example.com/>`
+        // Must come after _DoAnchors(), because you can use < and >
+        // delimiters in inline links like [this](<url>).
+        text = _DoAutoLinks(text);
+        text = _EncodeAmpsAndAngles(text);
+        text = _DoItalicsAndBold(text);
+
+        // Do hard breaks:
+        text = text.replace(/  +\n/g, " <br />\n");
+
+        return text;
+    }
+
+    var _EscapeSpecialCharsWithinTagAttributes = function (text) {
+//
+// Within tags -- meaning between < and > -- encode [\ ` * _] so they
+// don't conflict with their use in Markdown for code, italics and strong.
+//
+
+        // Build a regex to find HTML tags and comments.  See Friedl's
+        // "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
+        var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
+
+        text = text.replace(regex, function (wholeMatch) {
+            var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g, "$1`");
+            tag = escapeCharacters(tag, "\\`*_");
+            return tag;
+        });
+
+        return text;
+    }
+
+    var _DoAnchors = function (text) {
+//
+// Turn Markdown link shortcuts into XHTML <a> tags.
+//
+        //
+        // First, handle reference-style links: [link text] [id]
+        //
+
+        /*
+         text = text.replace(/
+         (							// wrap whole match in $1
+         \[
+         (
+         (?:
+         \[[^\]]*\]		// allow brackets nested one level
+         |
+         [^\[]			// or anything else
+         )*
+         )
+         \]
+
+         [ ]?					// one optional space
+         (?:\n[ ]*)?				// one optional newline followed by spaces
+
+         \[
+         (.*?)					// id = $3
+         \]
+         )()()()()					// pad remaining backreferences
+         /g,_DoAnchors_callback);
+         */
+        text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeAnchorTag);
+
+        //
+        // Next, inline-style links: [link text](url "optional title")
+        //
+
+        /*
+         text = text.replace(/
+         (						// wrap whole match in $1
+         \[
+         (
+         (?:
+         \[[^\]]*\]	// allow brackets nested one level
+         |
+         [^\[\]]			// or anything else
+         )
+         )
+         \]
+         \(						// literal paren
+         [ \t]*
+         ()						// no id, so leave $3 empty
+         <?(.*?)>?				// href = $4
+         [ \t]*
+         (						// $5
+         (['"])				// quote char = $6
+         (.*?)				// Title = $7
+         \6					// matching quote
+         [ \t]*				// ignore any spaces/tabs between closing quote and )
+         )?						// title is optional
+         \)
+         )
+         /g,writeAnchorTag);
+         */
+        text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?(.*?(?:\(.*?\).*?)?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeAnchorTag);
+
+        //
+        // Last, handle reference-style shortcuts: [link text]
+        // These must come last in case you've also got [link test][1]
+        // or [link test](/foo)
+        //
+
+        /*
+         text = text.replace(/
+         (		 					// wrap whole match in $1
+         \[
+         ([^\[\]]+)				// link text = $2; can't contain '[' or ']'
+         \]
+         )()()()()()					// pad rest of backreferences
+         /g, writeAnchorTag);
+         */
+        text = text.replace(/(\[([^\[\]]+)\])()()()()()/g, writeAnchorTag);
+
+        return text;
+    }
+
+    var writeAnchorTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
+        if (m7 == undefined) m7 = "";
+        var whole_match = m1;
+        var link_text = m2;
+        var link_id = m3.toLowerCase();
+        var url = m4;
+        var title = m7;
+
+        if (url == "") {
+            if (link_id == "") {
+                // lower-case and turn embedded newlines into spaces
+                link_id = link_text.toLowerCase().replace(/ ?\n/g, " ");
+            }
+            url = "#" + link_id;
+
+            if (g_urls[link_id] != undefined) {
+                url = g_urls[link_id];
+                if (g_titles[link_id] != undefined) {
+                    title = g_titles[link_id];
+                }
+            }
+            else {
+                if (whole_match.search(/\(\s*\)$/m) > -1) {
+                    // Special case for explicit empty url
+                    url = "";
+                } else {
+                    return whole_match;
+                }
+            }
+        }
+
+        url = escapeCharacters(url, "*_");
+        var result = "<a href=\"" + url + "\"";
+
+        if (title != "") {
+            title = title.replace(/"/g, "&quot;");
+            title = escapeCharacters(title, "*_");
+            result += " title=\"" + title + "\"";
+        }
+
+        result += ">" + link_text + "</a>";
+
+        return result;
+    }
+
+    var _DoImages = function (text) {
+//
+// Turn Markdown image shortcuts into <img> tags.
+//
+
+        //
+        // First, handle reference-style labeled images: ![alt text][id]
+        //
+
+        /*
+         text = text.replace(/
+         (						// wrap whole match in $1
+         !\[
+         (.*?)				// alt text = $2
+         \]
+
+         [ ]?				// one optional space
+         (?:\n[ ]*)?			// one optional newline followed by spaces
+
+         \[
+         (.*?)				// id = $3
+         \]
+         )()()()()				// pad rest of backreferences
+         /g,writeImageTag);
+         */
+        text = text.replace(/(!\[(.*?)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeImageTag);
+
+        //
+        // Next, handle inline images:  ![alt text](url "optional title")
+        // Don't forget: encode * and _
+
+        /*
+         text = text.replace(/
+         (						// wrap whole match in $1
+         !\[
+         (.*?)				// alt text = $2
+         \]
+         \s?					// One optional whitespace character
+         \(					// literal paren
+         [ \t]*
+         ()					// no id, so leave $3 empty
+         <?(\S+?)>?			// src url = $4
+         [ \t]*
+         (					// $5
+         (['"])			// quote char = $6
+         (.*?)			// title = $7
+         \6				// matching quote
+         [ \t]*
+         )?					// title is optional
+         \)
+         )
+         /g,writeImageTag);
+         */
+        text = text.replace(/(!\[(.*?)\]\s?\([ \t]*()<?(\S+?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeImageTag);
+
+        return text;
+    }
+
+    var writeImageTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
+        var whole_match = m1;
+        var alt_text = m2;
+        var link_id = m3.toLowerCase();
+        var url = m4;
+        var title = m7;
+
+        if (!title) title = "";
+
+        if (url == "") {
+            if (link_id == "") {
+                // lower-case and turn embedded newlines into spaces
+                link_id = alt_text.toLowerCase().replace(/ ?\n/g, " ");
+            }
+            url = "#" + link_id;
+
+            if (g_urls[link_id] != undefined) {
+                url = g_urls[link_id];
+                if (g_titles[link_id] != undefined) {
+                    title = g_titles[link_id];
+                }
+            }
+            else {
+                return whole_match;
+            }
+        }
+
+        alt_text = alt_text.replace(/"/g, "&quot;");
+        url = escapeCharacters(url, "*_");
+        var result = "<img src=\"" + url + "\" alt=\"" + alt_text + "\"";
+
+        // attacklab: Markdown.pl adds empty title attributes to images.
+        // Replicate this bug.
+
+        //if (title != "") {
+        title = title.replace(/"/g, "&quot;");
+        title = escapeCharacters(title, "*_");
+        result += " title=\"" + title + "\"";
+        //}
+
+        result += " />";
+
+        return result;
+    }
+
+    var _DoHeaders = function (text) {
+
+        // Setext-style headers:
+        //	Header 1
+        //	========
+        //
+        //	Header 2
+        //	--------
+        //
+        text = text.replace(/^(.+)[ \t]*\n=+[ \t]*\n+/gm,
+            function (wholeMatch, m1) {
+                return hashBlock('<h1 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h1>");
+            });
+
+        text = text.replace(/^(.+)[ \t]*\n-+[ \t]*\n+/gm,
+            function (matchFound, m1) {
+                return hashBlock('<h2 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h2>");
+            });
+
+        // atx-style headers:
+        //  # Header 1
+        //  ## Header 2
+        //  ## Header 2 with closing hashes ##
+        //  ...
+        //  ###### Header 6
+        //
+
+        /*
+         text = text.replace(/
+         ^(\#{1,6})				// $1 = string of #'s
+         [ \t]*
+         (.+?)					// $2 = Header text
+         [ \t]*
+         \#*						// optional closing #'s (not counted)
+         \n+
+         /gm, function() {...});
+         */
+
+        text = text.replace(/^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm,
+            function (wholeMatch, m1, m2) {
+                var h_level = m1.length;
+                return hashBlock("<h" + h_level + ' id="' + headerId(m2) + '">' + _RunSpanGamut(m2) + "</h" + h_level + ">");
+            });
+
+        function headerId(m) {
+            return m.replace(/[^\w]/g, '').toLowerCase();
+        }
+
+        return text;
+    }
+
+// This declaration keeps Dojo compressor from outputting garbage:
+    var _ProcessListItems;
+
+    var _DoLists = function (text) {
+//
+// Form HTML ordered (numbered) and unordered (bulleted) lists.
+//
+
+        // attacklab: add sentinel to hack around khtml/safari bug:
+        // http://bugs.webkit.org/show_bug.cgi?id=11231
+        text += "~0";
+
+        // Re-usable pattern to match any entirel ul or ol list:
+
+        /*
+         var whole_list = /
+         (									// $1 = whole list
+         (								// $2
+         [ ]{0,3}					// attacklab: g_tab_width - 1
+         ([*+-]|\d+[.])				// $3 = first list item marker
+         [ \t]+
+         )
+         [^\r]+?
+         (								// $4
+         ~0							// sentinel for workaround; should be $
+         |
+         \n{2,}
+         (?=\S)
+         (?!							// Negative lookahead for another list item marker
+         [ \t]*
+         (?:[*+-]|\d+[.])[ \t]+
+         )
+         )
+         )/g
+         */
+        var whole_list = /^(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm;
+
+        if (g_list_level) {
+            text = text.replace(whole_list, function (wholeMatch, m1, m2) {
+                var list = m1;
+                var list_type = (m2.search(/[*+-]/g) > -1) ? "ul" : "ol";
+
+                // Turn double returns into triple returns, so that we can make a
+                // paragraph for the last item in a list, if necessary:
+                list = list.replace(/\n{2,}/g, "\n\n\n");
+                ;
+                var result = _ProcessListItems(list);
+
+                // Trim any trailing whitespace, to put the closing `</$list_type>`
+                // up on the preceding line, to get it past the current stupid
+                // HTML block parser. This is a hack to work around the terrible
+                // hack that is the HTML block parser.
+                result = result.replace(/\s+$/, "");
+                result = "<" + list_type + ">" + result + "</" + list_type + ">\n";
+                return result;
+            });
+        } else {
+            whole_list = /(\n\n|^\n?)(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/g;
+            text = text.replace(whole_list, function (wholeMatch, m1, m2, m3) {
+                var runup = m1;
+                var list = m2;
+
+                var list_type = (m3.search(/[*+-]/g) > -1) ? "ul" : "ol";
+                // Turn double returns into triple returns, so that we can make a
+                // paragraph for the last item in a list, if necessary:
+                var list = list.replace(/\n{2,}/g, "\n\n\n");
+                ;
+                var result = _ProcessListItems(list);
+                result = runup + "<" + list_type + ">\n" + result + "</" + list_type + ">\n";
+                return result;
+            });
+        }
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    }
+
+    _ProcessListItems = function (list_str) {
+//
+//  Process the contents of a single ordered or unordered list, splitting it
+//  into individual list items.
+//
+        // The $g_list_level global keeps track of when we're inside a list.
+        // Each time we enter a list, we increment it; when we leave a list,
+        // we decrement. If it's zero, we're not in a list anymore.
+        //
+        // We do this because when we're not inside a list, we want to treat
+        // something like this:
+        //
+        //    I recommend upgrading to version
+        //    8. Oops, now this line is treated
+        //    as a sub-list.
+        //
+        // As a single paragraph, despite the fact that the second line starts
+        // with a digit-period-space sequence.
+        //
+        // Whereas when we're inside a list (or sub-list), that line will be
+        // treated as the start of a sub-list. What a kludge, huh? This is
+        // an aspect of Markdown's syntax that's hard to parse perfectly
+        // without resorting to mind-reading. Perhaps the solution is to
+        // change the syntax rules such that sub-lists must start with a
+        // starting cardinal number; e.g. "1." or "a.".
+
+        g_list_level++;
+
+        // trim trailing blank lines:
+        list_str = list_str.replace(/\n{2,}$/, "\n");
+
+        // attacklab: add sentinel to emulate \z
+        list_str += "~0";
+
+        /*
+         list_str = list_str.replace(/
+         (\n)?							// leading line = $1
+         (^[ \t]*)						// leading whitespace = $2
+         ([*+-]|\d+[.]) [ \t]+			// list marker = $3
+         ([^\r]+?						// list item text   = $4
+         (\n{1,2}))
+         (?= \n* (~0 | \2 ([*+-]|\d+[.]) [ \t]+))
+         /gm, function(){...});
+         */
+        list_str = list_str.replace(/(\n)?(^[ \t]*)([*+-]|\d+[.])[ \t]+([^\r]+?(\n{1,2}))(?=\n*(~0|\2([*+-]|\d+[.])[ \t]+))/gm,
+            function (wholeMatch, m1, m2, m3, m4) {
+                var item = m4;
+                var leading_line = m1;
+                var leading_space = m2;
+
+                if (leading_line || (item.search(/\n{2,}/) > -1)) {
+                    item = _RunBlockGamut(_Outdent(item));
+                }
+                else {
+                    // Recursion for sub-lists:
+                    item = _DoLists(_Outdent(item));
+                    item = item.replace(/\n$/, ""); // chomp(item)
+                    item = _RunSpanGamut(item);
+                }
+
+                return "<li>" + item + "</li>\n";
+            }
+        );
+
+        // attacklab: strip sentinel
+        list_str = list_str.replace(/~0/g, "");
+
+        g_list_level--;
+        return list_str;
+    }
+
+    var _DoCodeBlocks = function (text) {
+//
+//  Process Markdown `<pre><code>` blocks.
+//
+
+        /*
+         text = text.replace(text,
+         /(?:\n\n|^)
+         (								// $1 = the code block -- one or more lines, starting with a space/tab
+         (?:
+         (?:[ ]{4}|\t)			// Lines must start with a tab or a tab-width of spaces - attacklab: g_tab_width
+         .*\n+
+         )+
+         )
+         (\n*[ ]{0,3}[^ \t\n]|(?=~0))	// attacklab: g_tab_width
+         /g,function(){...});
+         */
+
+        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+        text += "~0";
+
+        text = text.replace(/(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g,
+            function (wholeMatch, m1, m2) {
+                var codeblock = m1;
+                var nextChar = m2;
+
+                codeblock = _EncodeCode(_Outdent(codeblock));
+                codeblock = _Detab(codeblock);
+                codeblock = codeblock.replace(/^\n+/g, ""); // trim leading newlines
+                codeblock = codeblock.replace(/\n+$/g, ""); // trim trailing whitespace
+
+                codeblock = "<pre><code>" + codeblock + "\n</code></pre>";
+
+                return hashBlock(codeblock) + nextChar;
+            }
+        );
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    };
+
+    var _DoGithubCodeBlocks = function (text) {
+//
+//  Process Github-style code blocks
+//  Example:
+//  ```ruby
+//  def hello_world(x)
+//    puts "Hello, #{x}"
+//  end
+//  ```
+//
+
+
+        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+        text += "~0";
+
+        text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g,
+            function (wholeMatch, m1, m2) {
+                var language = m1;
+                var codeblock = m2;
+
+                codeblock = _EncodeCode(codeblock);
+                codeblock = _Detab(codeblock);
+                codeblock = codeblock.replace(/^\n+/g, ""); // trim leading newlines
+                codeblock = codeblock.replace(/\n+$/g, ""); // trim trailing whitespace
+
+                codeblock = "<pre><code" + (language ? " class=\"" + language + '"' : "") + ">" + codeblock + "\n</code></pre>";
+
+                return hashBlock(codeblock);
+            }
+        );
+
+        // attacklab: strip sentinel
+        text = text.replace(/~0/, "");
+
+        return text;
+    }
+
+    var hashBlock = function (text) {
+        text = text.replace(/(^\n+|\n+$)/g, "");
+        return "\n\n~K" + (g_html_blocks.push(text) - 1) + "K\n\n";
+    }
+
+    var _DoCodeSpans = function (text) {
+//
+//   *  Backtick quotes are used for <code></code> spans.
+//
+//   *  You can use multiple backticks as the delimiters if you want to
+//	 include literal backticks in the code span. So, this input:
+//
+//		 Just type ``foo `bar` baz`` at the prompt.
+//
+//	   Will translate to:
+//
+//		 <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
+//
+//	There's no arbitrary limit to the number of backticks you
+//	can use as delimters. If you need three consecutive backticks
+//	in your code, use four for delimiters, etc.
+//
+//  *  You can use spaces to get literal backticks at the edges:
+//
+//		 ... type `` `bar` `` ...
+//
+//	   Turns to:
+//
+//		 ... type <code>`bar`</code> ...
+//
+
+        /*
+         text = text.replace(/
+         (^|[^\\])					// Character before opening ` can't be a backslash
+         (`+)						// $2 = Opening run of `
+         (							// $3 = The code block
+         [^\r]*?
+         [^`]					// attacklab: work around lack of lookbehind
+         )
+         \2							// Matching closer
+         (?!`)
+         /gm, function(){...});
+         */
+
+        text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,
+            function (wholeMatch, m1, m2, m3, m4) {
+                var c = m3;
+                c = c.replace(/^([ \t]*)/g, "");	// leading whitespace
+                c = c.replace(/[ \t]*$/g, "");	// trailing whitespace
+                c = _EncodeCode(c);
+                return m1 + "<code>" + c + "</code>";
+            });
+
+        return text;
+    }
+
+    var _EncodeCode = function (text) {
+//
+// Encode/escape certain characters inside Markdown code runs.
+// The point is that in code, these characters are literals,
+// and lose their special Markdown meanings.
+//
+        // Encode all ampersands; HTML entities are not
+        // entities within a Markdown code span.
+        text = text.replace(/&/g, "&amp;");
+
+        // Do the angle bracket song and dance:
+        text = text.replace(/</g, "&lt;");
+        text = text.replace(/>/g, "&gt;");
+
+        // Now, escape characters that are magic in Markdown:
+        text = escapeCharacters(text, "\*_{}[]\\", false);
+
+// jj the line above breaks this:
+//---
+
+//* Item
+
+//   1. Subitem
+
+//            special char: *
+//---
+
+        return text;
+    }
+
+    var _DoItalicsAndBold = function (text) {
+
+        // <strong> must go first:
+        text = text.replace(/(\*\*|__)(?=\S)([^\r]*?\S[*_]*)\1/g,
+            "<strong>$2</strong>");
+
+        text = text.replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g,
+            "<em>$2</em>");
+
+        return text;
+    }
+
+    var _DoBlockQuotes = function (text) {
+
+        /*
+         text = text.replace(/
+         (								// Wrap whole match in $1
+         (
+         ^[ \t]*>[ \t]?			// '>' at the start of a line
+         .+\n					// rest of the first line
+         (.+\n)*					// subsequent consecutive lines
+         \n*						// blanks
+         )+
+         )
+         /gm, function(){...});
+         */
+
+        text = text.replace(/((^[ \t]*>[ \t]?.+\n(.+\n)*\n*)+)/gm,
+            function (wholeMatch, m1) {
+                var bq = m1;
+
+                // attacklab: hack around Konqueror 3.5.4 bug:
+                // "----------bug".replace(/^-/g,"") == "bug"
+
+                bq = bq.replace(/^[ \t]*>[ \t]?/gm, "~0");	// trim one level of quoting
+
+                // attacklab: clean up hack
+                bq = bq.replace(/~0/g, "");
+
+                bq = bq.replace(/^[ \t]+$/gm, "");		// trim whitespace-only lines
+                bq = _RunBlockGamut(bq);				// recurse
+
+                bq = bq.replace(/(^|\n)/g, "$1  ");
+                // These leading spaces screw with <pre> content, so we need to fix that:
+                bq = bq.replace(
+                    /(\s*<pre>[^\r]+?<\/pre>)/gm,
+                    function (wholeMatch, m1) {
+                        var pre = m1;
+                        // attacklab: hack around Konqueror 3.5.4 bug:
+                        pre = pre.replace(/^  /mg, "~0");
+                        pre = pre.replace(/~0/g, "");
+                        return pre;
+                    });
+
+                return hashBlock("<blockquote>\n" + bq + "\n</blockquote>");
+            });
+        return text;
+    }
+
+    var _FormParagraphs = function (text) {
+//
+//  Params:
+//    $text - string to process with html <p> tags
+//
+
+        // Strip leading and trailing lines:
+        text = text.replace(/^\n+/g, "");
+        text = text.replace(/\n+$/g, "");
+
+        var grafs = text.split(/\n{2,}/g);
+        var grafsOut = [];
+
+        //
+        // Wrap <p> tags.
+        //
+        var end = grafs.length;
+        for (var i = 0; i < end; i++) {
+            var str = grafs[i];
+
+            // if this is an HTML marker, copy it
+            if (str.search(/~K(\d+)K/g) >= 0) {
+                grafsOut.push(str);
+            }
+            else if (str.search(/\S/) >= 0) {
+                str = _RunSpanGamut(str);
+                str = str.replace(/^([ \t]*)/g, "<p>");
+                str += "</p>"
+                grafsOut.push(str);
+            }
+
+        }
+
+        //
+        // Unhashify HTML blocks
+        //
+        end = grafsOut.length;
+        for (var i = 0; i < end; i++) {
+            // if this is a marker for an html block...
+            while (grafsOut[i].search(/~K(\d+)K/) >= 0) {
+                var blockText = g_html_blocks[RegExp.$1];
+                blockText = blockText.replace(/\$/g, "$$$$"); // Escape any dollar signs
+                grafsOut[i] = grafsOut[i].replace(/~K\d+K/, blockText);
+            }
+        }
+
+        return grafsOut.join("\n\n");
+    }
+
+    var _EncodeAmpsAndAngles = function (text) {
+// Smart processing for ampersands and angle brackets that need to be encoded.
+
+        // Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
+        //   http://bumppo.net/projects/amputator/
+        text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g, "&amp;");
+
+        // Encode naked <'s
+        text = text.replace(/<(?![a-z\/?\$!])/gi, "&lt;");
+
+        return text;
+    }
+
+    var _EncodeBackslashEscapes = function (text) {
+//
+//   Parameter:  String.
+//   Returns:	The string, with after processing the following backslash
+//			   escape sequences.
+//
+
+        // attacklab: The polite way to do this is with the new
+        // escapeCharacters() function:
+        //
+        // 	text = escapeCharacters(text,"\\",true);
+        // 	text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
+        //
+        // ...but we're sidestepping its use of the (slow) RegExp constructor
+        // as an optimization for Firefox.  This function gets called a LOT.
+
+        text = text.replace(/\\(\\)/g, escapeCharacters_callback);
+        text = text.replace(/\\([`*_{}\[\]()>#+-.!])/g, escapeCharacters_callback);
+        return text;
+    }
+
+    var _DoAutoLinks = function (text) {
+
+        text = text.replace(/<((https?|ftp|dict):[^'">\s]+)>/gi, "<a href=\"$1\">$1</a>");
+
+        // Email addresses: <address@domain.foo>
+
+        /*
+         text = text.replace(/
+         <
+         (?:mailto:)?
+         (
+         [-.\w]+
+         \@
+         [-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+
+         )
+         >
+         /gi, _DoAutoLinks_callback());
+         */
+        text = text.replace(/<(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi,
+            function (wholeMatch, m1) {
+                return _EncodeEmailAddress(_UnescapeSpecialChars(m1));
+            }
+        );
+
+        return text;
+    }
+
+    var _EncodeEmailAddress = function (addr) {
+//
+//  Input: an email address, e.g. "foo@example.com"
+//
+//  Output: the email address as a mailto link, with each character
+//	of the address encoded as either a decimal or hex entity, in
+//	the hopes of foiling most address harvesting spam bots. E.g.:
+//
+//	<a href="&#x6D;&#97;&#105;&#108;&#x74;&#111;:&#102;&#111;&#111;&#64;&#101;
+//	   x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;">&#102;&#111;&#111;
+//	   &#64;&#101;x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;</a>
+//
+//  Based on a filter by Matthew Wickline, posted to the BBEdit-Talk
+//  mailing list: <http://tinyurl.com/yu7ue>
+//
+
+        var encode = [
+            function (ch) {
+                return "&#" + ch.charCodeAt(0) + ";";
+            },
+            function (ch) {
+                return "&#x" + ch.charCodeAt(0).toString(16) + ";";
+            },
+            function (ch) {
+                return ch;
+            }
+        ];
+
+        addr = "mailto:" + addr;
+
+        addr = addr.replace(/./g, function (ch) {
+            if (ch == "@") {
+                // this *must* be encoded. I insist.
+                ch = encode[Math.floor(Math.random() * 2)](ch);
+            } else if (ch != ":") {
+                // leave ':' alone (to spot mailto: later)
+                var r = Math.random();
+                // roughly 10% raw, 45% hex, 45% dec
+                ch = (
+                    r > .9 ? encode[2](ch) :
+                        r > .45 ? encode[1](ch) :
+                            encode[0](ch)
+                );
+            }
+            return ch;
+        });
+
+        addr = "<a href=\"" + addr + "\">" + addr + "</a>";
+        addr = addr.replace(/">.+:/g, "\">"); // strip the mailto: from the visible part
+
+        return addr;
+    }
+
+    var _UnescapeSpecialChars = function (text) {
+//
+// Swap back in all the special characters we've hidden.
+//
+        text = text.replace(/~E(\d+)E/g,
+            function (wholeMatch, m1) {
+                var charCodeToReplace = parseInt(m1);
+                return String.fromCharCode(charCodeToReplace);
+            }
+        );
+        return text;
+    }
+
+    var _Outdent = function (text) {
+//
+// Remove one level of line-leading tabs or spaces
+//
+
+        // attacklab: hack around Konqueror 3.5.4 bug:
+        // "----------bug".replace(/^-/g,"") == "bug"
+
+        text = text.replace(/^(\t|[ ]{1,4})/gm, "~0"); // attacklab: g_tab_width
+
+        // attacklab: clean up hack
+        text = text.replace(/~0/g, "")
+
+        return text;
+    }
+
+    var _Detab = function (text) {
+// attacklab: Detab's completely rewritten for speed.
+// In perl we could fix it by anchoring the regexp with \G.
+// In javascript we're less fortunate.
+
+        // expand first n-1 tabs
+        text = text.replace(/\t(?=\t)/g, "    "); // attacklab: g_tab_width
+
+        // replace the nth with two sentinels
+        text = text.replace(/\t/g, "~A~B");
+
+        // use the sentinel to anchor our regex so it doesn't explode
+        text = text.replace(/~B(.+?)~A/g,
+            function (wholeMatch, m1, m2) {
+                var leadingText = m1;
+                var numSpaces = 4 - leadingText.length % 4;  // attacklab: g_tab_width
+
+                // there *must* be a better way to do this:
+                for (var i = 0; i < numSpaces; i++) leadingText += " ";
+
+                return leadingText;
+            }
+        );
+
+        // clean up sentinels
+        text = text.replace(/~A/g, "    ");  // attacklab: g_tab_width
+        text = text.replace(/~B/g, "");
+
+        return text;
+    }
+
+
+//
+//  attacklab: Utility functions
+//
+
+
+    var escapeCharacters = function (text, charsToEscape, afterBackslash) {
+        // First we have to escape the escape characters so that
+        // we can build a character class out of them
+        var regexString = "([" + charsToEscape.replace(/([\[\]\\])/g, "\\$1") + "])";
+
+        if (afterBackslash) {
+            regexString = "\\\\" + regexString;
+        }
+
+        var regex = new RegExp(regexString, "g");
+        text = text.replace(regex, escapeCharacters_callback);
+
+        return text;
+    }
+
+
+    var escapeCharacters_callback = function (wholeMatch, m1) {
+        var charCodeToEscape = m1.charCodeAt(0);
+        return "~E" + charCodeToEscape + "E";
+    }
+
+} // end of Showdown.converter
+
+
+// export
+if (typeof module !== 'undefined') module.exports = Showdown;
+
+// stolen from AMD branch of underscore
+// AMD define happens at the end for compatibility with AMD loaders
+// that don't enforce next-turn semantics on modules.
+if (typeof define === 'function' && define.amd) {
+    define('showdown', function () {
+        return Showdown;
+    });
+}
+
+/**
+ * Created by Tivie on 04-11-2014.
+ */
+
+
+//Check if AngularJs and Showdown is defined and only load ng-Showdown if both are present
+if (typeof angular !== 'undefined'  && typeof Showdown !== 'undefined') {
+
+    (function (module, Showdown) {
+
+        module
+            .provider('$Showdown', provider)
+            .directive('sdModelToHtml', ['$Showdown', markdownToHtmlDirective])
+            .filter('sdStripHtml', stripHtmlFilter);
+
+        /**
+         * Angular Provider
+         * Enables configuration of showdown via angular.config and Dependency Injection into controllers, views
+         * directives, etc... This assures the directives and filters provided by the library itself stay consistent
+         * with the user configurations.
+         * If the user wants to use a different configuration in a determined context, he can use the "classic" Showdown
+         * object instead.
+         *
+         */
+        function provider() {
+
+            // Configuration parameters for Showdown
+            var config = {
+                extensions: [],
+                stripHtml: true
+            };
+
+            /**
+             * Sets a configuration option
+             *
+             * @param {string} key Config parameter key
+             * @param {string} value Config parameter value
+             */
+            this.setOption = function (key, value) {
+                config.key = value;
+
+                return this;
+            };
+
+            /**
+             * Gets the value of the configuration parameter specified by key
+             *
+             * @param {string} key The config parameter key
+             * @returns {string|null} Returns the value of the config parameter. (or null if the config parameter is not set)
+             */
+            this.getOption = function (key) {
+                if (config.hasOwnProperty(key)) {
+                    return config.key;
+                } else {
+                    return null;
+                }
+            };
+
+            /**
+             * Loads a Showdown Extension
+             *
+             * @param {string} extensionName The name of the extension to load
+             */
+            this.loadExtension = function (extensionName) {
+                config.extensions.push(extensionName);
+
+                return this;
+            };
+
+            function SDObject() {
+                var converter = new Showdown.converter(config);
+
+                /**
+                 * Converts a markdown text into HTML
+                 *
+                 * @param {string} markdown The markdown string to be converted to HTML
+                 * @returns {string} The converted HTML
+                 */
+                this.makeHtml = function (markdown) {
+                    return converter.makeHtml(markdown);
+                };
+
+                /**
+                 * Strips a text of it's HTML tags
+                 *
+                 * @param {string} text
+                 * @returns {string}
+                 */
+                this.stripHtml = function (text) {
+                    return String(text).replace(/<[^>]+>/gm, '');
+                };
+            }
+
+            // The object returned by service provider
+            this.$get = function () {
+                return new SDObject();
+            };
+        }
+
+        /**
+         * AngularJS Directive to Md to HTML transformation
+         *
+         * Usage example:
+         * <div sd-md-to-html-model="markdownText" ></div>
+         *
+         * @param $Showdown
+         * @returns {*}
+         */
+        function markdownToHtmlDirective($Showdown) {
+
+            var link = function (scope, element) {
+                scope.$watch('model', function (newValue) {
+                    var val;
+                    if (typeof newValue === 'string') {
+                        val = $Showdown.makeHtml(newValue);
+                    } else {
+                        val = typeof newValue;
+                    }
+                    element.html(val);
+                });
+            };
+
+            return {
+                restrict: 'A',
+                link: link,
+                scope: {
+                    model: '=sdModelToHtml'
+                }
+            }
+        }
+
+        /**
+         * AngularJS Filter to Strip HTML tags from text
+         *
+         * @returns {Function}
+         */
+        function stripHtmlFilter() {
+            return function (text) {
+                return String(text).replace(/<[^>]+>/gm, '');
+            };
+        }
+
+    })(angular.module('Showdown', []), Showdown);
+
+} else {
+
+    /** TODO Since this library is opt out, maybe we should not throw an error so we can concatenate this
+             script with the main lib */
+    // throw new Error("ng-showdown was not loaded because one of it's dependencies (AngularJS or Showdown) wasn't met");
+}
+
+//
+//  Github Extension (WIP)
+//  ~~strike-through~~   ->  <del>strike-through</del>
+//
+
+(function(){
+    var github = function(converter) {
+        return [
+            {
+              // strike-through
+              // NOTE: showdown already replaced "~" with "~T", so we need to adjust accordingly.
+              type    : 'lang',
+              regex   : '(~T){2}([^~]+)(~T){2}',
+              replace : function(match, prefix, content, suffix) {
+                  return '<del>' + content + '</del>';
+              }
+            }
+        ];
+    };
+
+    // Client-side export
+    if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.github = github; }
+    // Server-side export
+    if (typeof module !== 'undefined') module.exports = github;
+}());
+
+//
+//  Google Prettify
+//  A showdown extension to add Google Prettify (http://code.google.com/p/google-code-prettify/)
+//  hints to showdown's HTML output.
+//
+
+(function(){
+
+    var prettify = function(converter) {
+        return [
+            { type: 'output', filter: function(source){
+
+                return source.replace(/(<pre>)?<code>/gi, function(match, pre) {
+                    if (pre) {
+                        return '<pre class="prettyprint linenums" tabIndex="0"><code data-inner="1">';
+                    } else {
+                        return '<code class="prettyprint">';
+                    }
+                });
+            }}
+        ];
+    };
+
+    // Client-side export
+    if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.prettify = prettify; }
+    // Server-side export
+    if (typeof module !== 'undefined') module.exports = prettify;
+
+}());
+
+/*global module:true*/
+/*
+ * Basic table support with re-entrant parsing, where cell content
+ * can also specify markdown.
+ *
+ * Tables
+ * ======
+ *
+ * | Col 1   | Col 2                                              |
+ * |======== |====================================================|
+ * |**bold** | ![Valid XHTML] (http://w3.org/Icons/valid-xhtml10) |
+ * | Plain   | Value                                              |
+ *
+ */
+
+(function(){
+  var table = function(converter) {
+    var tables = {}, style = 'text-align:left;', filter; 
+    tables.th = function(header){
+      if (header.trim() === "") { return "";}
+      var id = header.trim().replace(/ /g, '_').toLowerCase();
+      return '<th id="' + id + '" style="'+style+'">' + header + '</th>';
+    };
+    tables.td = function(cell) {
+      return '<td style="'+style+'">' + converter.makeHtml(cell) + '</td>';
+    };
+    tables.ths = function(){
+      var out = "", i = 0, hs = [].slice.apply(arguments);
+      for (i;i<hs.length;i+=1) {
+        out += tables.th(hs[i]) + '\n';
+      }
+      return out;
+    };
+    tables.tds = function(){
+      var out = "", i = 0, ds = [].slice.apply(arguments);
+      for (i;i<ds.length;i+=1) {
+        out += tables.td(ds[i]) + '\n';
+      }
+      return out;
+    };
+    tables.thead = function() {
+      var out, i = 0, hs = [].slice.apply(arguments);
+      out = "<thead>\n";
+      out += "<tr>\n";
+      out += tables.ths.apply(this, hs);
+      out += "</tr>\n";
+      out += "</thead>\n";
+      return out;
+    };
+    tables.tr = function() {
+      var out, i = 0, cs = [].slice.apply(arguments);
+      out = "<tr>\n";
+      out += tables.tds.apply(this, cs);
+      out += "</tr>\n";
+      return out;
+    };
+    filter = function(text) { 
+      var i=0, lines = text.split('\n'), line, hs, rows, out = [];
+      for (i; i<lines.length;i+=1) {
+        line = lines[i];
+        // looks like a table heading
+        if (line.trim().match(/^[|]{1}.*[|]{1}$/)) {
+          line = line.trim();
+          var tbl = [];
+          tbl.push('<table>');
+          hs = line.substring(1, line.length -1).split('|');
+          tbl.push(tables.thead.apply(this, hs));
+          line = lines[++i];
+          if (!line.trim().match(/^[|]{1}[-=| ]+[|]{1}$/)) {
+            // not a table rolling back
+            line = lines[--i];
+          }
+          else {
+            line = lines[++i];
+            tbl.push('<tbody>');
+            while (line.trim().match(/^[|]{1}.*[|]{1}$/)) {
+              line = line.trim();
+              tbl.push(tables.tr.apply(this, line.substring(1, line.length -1).split('|')));
+              line = lines[++i];
+            }
+            tbl.push('</tbody>');
+            tbl.push('</table>');
+            // we are done with this table and we move along
+            out.push(tbl.join('\n'));
+            continue;
+          }
+        }
+        out.push(line);
+      }             
+      return out.join('\n');
+    };
+    return [
+    { 
+      type: 'lang', 
+      filter: filter
+    }
+    ];
+  };
+
+  // Client-side export
+  if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.table = table; }
+  // Server-side export
+  if (typeof module !== 'undefined') {
+    module.exports = table;
+  }
+}());
+
+//
+//  Twitter Extension
+//  @username   ->  <a href="http://twitter.com/username">@username</a>
+//  #hashtag    ->  <a href="http://twitter.com/search/%23hashtag">#hashtag</a>
+//
+
+(function(){
+
+    var twitter = function(converter) {
+        return [
+
+            // @username syntax
+            { type: 'lang', regex: '\\B(\\\\)?@([\\S]+)\\b', replace: function(match, leadingSlash, username) {
+                // Check if we matched the leading \ and return nothing changed if so
+                if (leadingSlash === '\\') {
+                    return match;
+                } else {
+                    return '<a href="http://twitter.com/' + username + '">@' + username + '</a>';
+                }
+            }},
+
+            // #hashtag syntax
+            { type: 'lang', regex: '\\B(\\\\)?#([\\S]+)\\b', replace: function(match, leadingSlash, tag) {
+                // Check if we matched the leading \ and return nothing changed if so
+                if (leadingSlash === '\\') {
+                    return match;
+                } else {
+                    return '<a href="http://twitter.com/search/%23' + tag + '">#' + tag + '</a>';
+                }
+            }},
+
+            // Escaped @'s
+            { type: 'lang', regex: '\\\\@', replace: '@' }
+        ];
+    };
+
+    // Client-side export
+    if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.twitter = twitter; }
+    // Server-side export
+    if (typeof module !== 'undefined') module.exports = twitter;
+
+}());
+
+'use strict';
+//----------------------------------------------------------------------------------------------------------------------
+// A directive for rendering markdown in AngularJS.
+// https://bitbucket.org/morgul/angular-markdown
+//
+// Written by John Lindquist (original author). Modified by Jonathan Rowny (ngModel support).
+// Adapted by Christopher S. Case
+//
+// Taken from: http://blog.angularjs.org/2012/05/custom-components-part-1.html
+//
+// @module angular.markdown.js
+//----------------------------------------------------------------------------------------------------------------------
+var MarkdownModule = angular.module('angular-markdown', []);
+
+MarkdownModule.directive('markdown', function () {
+	var converter = new Showdown.converter();
+
+	return {
+		restrict: 'E',
+		require: '?ngModel',
+		link: function (scope, element, attrs, model) {
+			// Check for extensions
+			var extAttr = attrs['extensions'];
+			var callPrettyPrint = false;
+			if (extAttr) {
+				var extensions = [];
+
+				// Convert the comma separated string into a list.
+				extAttr.split(',').forEach(function (val) {
+						// Strip any whitespace from the beginning or end.
+						extensions.push(val.replace(/^\s+|\s+$/g, ''));
+					});
+
+				if (extensions.indexOf('prettify') >= 0) {
+					callPrettyPrint = true;
+				} // end if
+
+				// Create a new converter.
+				converter = new Showdown.converter({
+						extensions: extensions
+					});
+			} // end if
+
+			// Check for option to strip whitespace
+			var stripWS = attrs['strip'];
+			if (String(stripWS).toLowerCase() == 'true') {
+				stripWS = true;
+			} else {
+				stripWS = false;
+			} // end if
+
+			var render = function () {
+				var htmlText = "";
+				var val = "";
+
+				// Check to see if we're using a model.
+				if (attrs['ngModel']) {
+					if (model.$modelValue) {
+						val = model.$modelValue;
+					} // end if
+				} else {
+					val = element.text();
+				} // end if
+
+				if (stripWS) {
+					val = val.replace(/^[ /t]+/g, '').replace(/\n[ /t]+/g, '\n');
+				} // end stripWS
+
+				// Compile the markdown, and set it.
+				htmlText = converter.makeHtml(val);
+				element.html(htmlText);
+
+				if (callPrettyPrint) {
+					prettyPrint();
+				} // end if
+			};
+
+			if (attrs['ngModel']) {
+				scope.$watch(attrs['ngModel'], render);
+			} // end if
+
+			render();
+		} // end link
+	}
+}); // end markdown directive
+
+//----------------------------------------------------------------------------------------------------------------------
 var app = angular.module('app', [
 	'ngAnimate',
 	'ngRoute',
@@ -53711,9 +57516,17 @@ var app = angular.module('app', [
     'ngQuantum',
     'mgcrea.ngStrap',
     'ngTagsInput',
-    'ui.bootstrap.showErrors']);
-app.config(function ($selectProvider, showErrorsConfigProvider) {
-  showErrorsConfigProvider.showSuccess(true);
+    'ui.bootstrap.showErrors',
+    'angular-markdown']);
+app.config(function ($selectProvider, showErrorsConfigProvider, $carouselProvider) {
+    showErrorsConfigProvider.showSuccess(true);
+
+    var mydefaults = {
+        outerWidth:'100%',
+        //innerHeight:'350px',
+        interval:15000,
+    }
+    angular.extend($carouselProvider.defaults, mydefaults)
 });
 app.constant('AuthConst',{
     reg:{
@@ -53739,6 +57552,9 @@ app.constant('AuthConst',{
         name: 'profile',
         url: '#/profile',
         action: '/auth/profile'
+    },
+    update:{
+        action: '/auth/update'
     },
     recovery:{
         name: 'Recovery',
@@ -53820,7 +57636,8 @@ app.constant('NoteConst', {
 });
 app.constant('ProjectConst', {
     strings:{
-        title:'My project'
+        title: 'My project',
+        description: 'Projects descriptions'
     },
     urls:{
         url: '#/project',
@@ -53837,7 +57654,17 @@ app.constant('ProjectConst', {
         inputs:{
             central: 'views/project/inputs/central.html',
             right: 'views/project/inputs/right.html'
+        },
+        list:{
+            item: 'views/project/list-item.html',
+            tags: 'views/project/list-tags.html'
+        },
+        item:{
+            view: 'views/project/item-view.html'
         }
+    },
+    message:{
+        'project/remove/confirm':'Do you really want to remove project <strong>%s</strong>?'
     }
 });
 app.constant('SearchConst', {
@@ -53846,6 +57673,12 @@ app.constant('SearchConst', {
     },
     urls:{
         url: '#/search'
+    },
+    templates:{
+        list:{
+            item: 'views/search/list-item.html',
+            tags: 'views/search/list-tags.html'
+        }
     }
 });
 app.constant('TagConst', {
@@ -53855,34 +57688,15 @@ app.constant('TagConst', {
     urls:{
         url: '#/tag',
         getData: '/tag'
-    }
-});
-app.factory('WidjetsConst', function(AnonceConst, CaruselConst, FullContentConst){
-    return {
-        carusel: CaruselConst,
-        anonce: AnonceConst,
-        fullcontent: FullContentConst
-    }
-});
-app.constant('AnonceConst', {
+    },
     templates:{
-        item: 'views/widjets/anonce/item.html',
-        update: 'views/widjets/anonce/update.html'
+        list:{
+            item: 'views/tag/list-item.html',
+            tags: 'views/tag/list-tags.html'
+        }
     }
 });
-app.constant('CaruselConst', {
-    templates:{
-        item: 'views/widjets/carusel/item.html',
-        update: 'views/widjets/carusel/update.html'
-    }
-});
-app.constant('FullContentConst', {
-    templates:{
-        item: 'views/widjets/fullcontent/item.html',
-        update: 'views/widjets/fullcontent/update.html'
-    }
-});
-app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst, WidjetsConst){
+app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
 
     var service={
         brand:{
@@ -53896,7 +57710,6 @@ app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, 
             footer:'views/footer.html'
         },
         navbar: NavbarConst,
-        widjets: WidjetsConst,
         search: SearchConst,
         auth: AuthConst,
         tag: TagConst,
@@ -53978,43 +57791,7 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
       requireBase: false
     });
 });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.markdown | unsafe"></p>\n' +
-    '</div>');
-	a.put('views/widjets/carusel/item.html', '<div class="jumbotron-photo" ng-if="item.images.length>0">\n' +
-    '    <div id="{{\'carousel-\'+item.name}}" class="carousel slide" data-ride="carousel">\n' +
-    '        <ol class="carousel-indicators" ng-if="item.images.length>1">\n' +
-    '            <li ng-repeat="image in item.images" data-target="{{\'#carousel-\'+item.name}}"\n' +
-    '                data-slide-to="{{$index}}" ng-class="$index==0?\'active\':\'\'"></li>\n' +
-    '        </ol>{{AppConfig.static_url}}\n' +
-    '        <div class="carousel-inner">\n' +
-    '            <div ng-repeat="image in item.images" class="item" ng-class="$index==0?\'active\':\'\'"><img\n' +
-    '                    ng-src="{{AppConfig.static_url+image.src}}"></div>\n' +
-    '        </div>\n' +
-    '        <a ng-click="CaruselSvc.prev(\'#carousel-\'+item.name)" class="left carousel-control"\n' +
-    '           data-slide="prev" ng-if="item.images.length>1">\n' +
-    '            <span class="glyphicon glyphicon-chevron-left"></span>\n' +
-    '        </a>\n' +
-    '        <a ng-click="CaruselSvc.next(\'#carousel-\'+item.name)" class="right carousel-control"\n' +
-    '           data-slide="next" ng-if="item.images.length>1">\n' +
-    '            <span class="glyphicon glyphicon-chevron-right"></span>\n' +
-    '        </a>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
-    '</div>');
-	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="ItemName">Name</label>\n' +
     '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
     '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
@@ -54093,84 +57870,75 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    <div class="page-header">\n' +
     '        <h1>Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span></h1>\n' +
     '    </div>\n' +
-    '    <div ng-repeat="allItem in TagSvc.allList">\n' +
-    '        <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
+    '    <div>\n' +
     '        <div class="row">\n' +
-    '            <div ng-class="\'col-md-\'+(12/TagSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
-    '                <div class="jumbotron">\n' +
-    '                    <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
-    '                    <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
-    '\n' +
-    '                    <div class="jumbotron-contents">\n' +
-    '                        <div class="row">\n' +
-    '                            <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                            </div>\n' +
-    '                            <div class="col-md-4">\n' +
-    '                                <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                                <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right"\n' +
-    '                                   ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
-    '                            </div>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '            <div class="col-md-9 padding-left-0">\n' +
+    '                <div ng-repeat="allItem in TagSvc.allList">\n' +
+    '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
+    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
+    '                    <div ng-include="AppConst.tag.templates.list.item"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
+    '            <div class="col-md-3 padding-left-0">\n' +
+    '                <p class="lead">Tags</p>\n' +
+    '                <div ng-include="AppConst.tag.templates.list.tags"></div>\n' +
+    '            </div>\n' +
     '        </div>\n' +
-    '\n' +
-    '    </div>');
+    '    </div>\n' +
+    '</div>');
+	a.put('views/tag/list-tags.html', '<div class="list-group">\n' +
+    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
+    '    </a>\n' +
+    '</div>');
+	a.put('views/tag/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
+    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
+    '</div>');
 	a.put('views/search/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"</h1>\n' +
     '    </div>\n' +
-    '    <div ng-repeat="allItem in SearchSvc.allList">\n' +
-    '        <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
+    '    <div>\n' +
     '        <div class="row">\n' +
-    '            <div ng-class="\'col-md-\'+(12/SearchSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
-    '                <div class="jumbotron">\n' +
-    '                    <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
-    '                    <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
-    '\n' +
-    '                    <div class="jumbotron-contents">\n' +
-    '                        <div class="row">\n' +
-    '                            <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                            </div>\n' +
-    '                            <div class="col-md-4">\n' +
-    '                                <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                                <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right"\n' +
-    '                                   ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
-    '                            </div>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '            <div class="col-md-9 padding-left-0">\n' +
+    '                <div ng-repeat="allItem in SearchSvc.allList">\n' +
+    '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
+    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
+    '                <div ng-include="AppConst.search.templates.list.item"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
+    '            <div class="col-md-3 padding-left-0">\n' +
+    '                <p class="lead">Tags</p>\n' +
+    '                <div ng-include="AppConst.search.templates.list.tags"></div>\n' +
+    '            </div>\n' +
     '        </div>\n' +
-    '\n' +
-    '    </div>');
+    '    </div>\n' +
+    '</div>');
+	a.put('views/search/list-tags.html', '<div class="list-group">\n' +
+    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
+    '    </a>\n' +
+    '</div>');
+	a.put('views/search/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
+    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
+    '</div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>Edit project</span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/\'+ProjectSvc.item.name}}"\n' +
-    '               class="btn btn-default">View</a>\n' +
+    '               class="btn btn-info">View</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
-    '\n' +
     '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Update</button>\n' +
     '                    <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project\n' +
     '                    </button>\n' +
-    '                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image\n' +
+    '                    <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image\n' +
     '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
@@ -54188,32 +57956,41 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Create</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <p class="lead">Description of projects</p>\n' +
     '    <div class="row">\n' +
-    '        <div ng-class="\'col-md-\'+(12/ProjectSvc.countItemsOnRow)" ng-repeat="item in ProjectSvc.list">\n' +
-    '            <div class="jumbotron">\n' +
-    '                <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
-    '                <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
-    '\n' +
-    '                <div class="jumbotron-contents">\n' +
-    '                    <div class="row">\n' +
-    '                        <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                        </div>\n' +
-    '                        <div class="col-md-4">\n' +
-    '                            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
-    '                               class="btn btn-primary pull-right" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '        <div class="col-md-9 padding-left-0">\n' +
+    '            <p class="lead padding-left-15" ng-bind-html="AppConst.project.strings.description | unsafe"></p>\n' +
+    '            <div>\n' +
+    '                <div class="col-md-6" ng-repeat="item in ProjectSvc.list">\n' +
+    '                    <div ng-include="AppConst.project.templates.list.item"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '        </div>\n' +
+    '        <div class="col-md-3 padding-left-0">\n' +
+    '            <p class="lead">Tags</p>\n' +
+    '            <div ng-include="AppConst.project.templates.list.tags"></div>\n' +
+    '        </div>\n' +
     '    </div>\n' +
-    '\n' +
+    '</div>');
+	a.put('views/project/list-tags.html', '<div class="list-group">\n' +
+    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in ProjectSvc.TagSvc.list">\n' +
+    '    </a>\n' +
+    '</div>');
+	a.put('views/project/list-item.html', '<div class="thumbnail">\n' +
+    '    <img ng-src="{{AppConfig.static_url+item.images[0].src}}" ng-if="item.images.length>0" class="img-responsive">\n' +
+    '    <div class="caption">\n' +
+    '        <h3 ng-bind-html="item.title | unsafe"></h3>\n' +
+    '        <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '        <p><span ng-repeat="tag in item.tags">\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
+    '                            </span></p>\n' +
+    '        <p class="text-right">\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
+    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
+    '        </p>\n' +
+    '    </div>\n' +
     '</div>');
 	a.put('views/project/item.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -54222,34 +57999,76 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
-    '        <div class="pull-right">\n' +
-    '            <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '            </span>\n' +
-    '        </div>\n' +
     '        <h1 class="hidden-xs">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <p class="lead" ng-bind-html="ProjectSvc.item.description | unsafe"></p>\n' +
     '    <div class="row">\n' +
-    '        <div class="col-md-12">\n' +
-    '            <div class="jumbotron">\n' +
-    '                <div class="jumbotron-photo">\n' +
-    '                    <div class="row">\n' +
-    '                        <div ng-class="\'col-md-\'+(12/ProjectSvc.item.images.length)"\n' +
-    '                             ng-repeat="image in ProjectSvc.item.images">\n' +
-    '                            <img ng-src="{{AppConfig.static_url+image.src}}" class="img-responsive"/>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '        <div ng-include="AppConst.project.templates.item.view"></div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/project/item-view.html', '<div class="col-md-8 padding-left-15">\n' +
+    '    <img ng-src="{{AppConfig.static_url+ProjectSvc.item.images[0].src}}" ng-if="ProjectSvc.item.images.length==1"\n' +
+    '         class="img-responsive">\n' +
+    '    <div ng-if="ProjectSvc.item.images.length>1">\n' +
+    '        <div data-nq-carousel="">\n' +
+    '            <div data-carousel-item="" ng-repeat="image in ProjectSvc.item.images">\n' +
+    '                <!--h3 class="carousel-title" nf-if="image.title!=\'\'"\n' +
+    '                    ng-bind-html="image.title | unsafe"></h3-->\n' +
+    '                <img ng-src="{{AppConfig.static_url+image.src}}">\n' +
+    '                <div class="carousel-caption" nf-if="image.description!=\'\'">\n' +
+    '                    <h4 ng-bind-html="image.description | unsafe"></h4>\n' +
     '                </div>\n' +
-    '\n' +
-    '                <div ng-include="AppConst.widjets.fullcontent.templates.item"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.images.length==0" class="lead">\n' +
+    '        <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item.text">\n' +
+    '            <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '        </div>\n' +
+    '        <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item.html">\n' +
+    '            <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '        </div>\n' +
+    '        <div ng-if="ProjectSvc.item.type==3 && ProjectSvc.item.url">\n' +
+    '            <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
+    '        </div>\n' +
+    '        <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
+    '            <markdown extensions="github, table, twitter" strip="true" allow-html="true"\n' +
+    '                      ng-model="ProjectSvc.item.markdown">\n' +
+    '            </markdown>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="col-md-4 padding-left-15">\n' +
+    '    <h2>Description</h2>\n' +
+    '    <p class="lead">\n' +
+    '        <span ng-bind-html="ProjectSvc.item.description | unsafe"></span>\n' +
+    '    </p>\n' +
+    '    <h2>Tags</h2>\n' +
+    '    <p class="lead">\n' +
+    '        <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
+    '            <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-md btn-default"\n' +
+    '               ng-bind-html="tag.text | unsafe"></a>\n' +
+    '        </span>\n' +
+    '    </p>\n' +
+    '</div>\n' +
+    '<div class="col-md-12 padding-left-15 lead" ng-if="ProjectSvc.item.images.length!=0">\n' +
+    '    <br/>\n' +
+    '    <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item.text">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item.html">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==3 && ProjectSvc.item.url">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
+    '        <markdown extensions="github, table, twitter" strip="true" allow-html="true"\n' +
+    '                  ng-model="ProjectSvc.item.markdown">\n' +
+    '        </markdown>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/project/create.html', '<div class="container" ng-init="ProjectSvc.initEmptyItem()">\n' +
@@ -54260,15 +58079,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-9">\n' +
+    '            <div class="col-md-10">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>\n' +
-    '                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image\n' +
+    '                    <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image\n' +
     '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
-    '            <div class="col-md-3">\n' +
+    '            <div class="col-md-2">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
@@ -54289,10 +58108,26 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    </div>\n' +
     '    <form name="authForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-9">\n' +
+    '            <div class="col-md-10">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="firstname">First name</label>\n' +
+    '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
+    '                           ng-model="AuthSvc.item.firstname">\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.firstname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="lastname">Last name</label>\n' +
+    '                    <input type="text" class="form-control" name="lastname" id="lastname"\n' +
+    '                           ng-model="AuthSvc.item.lastname">\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.lastname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="username">Username</label>\n' +
-    '                    <input type="text" class="form-control" name="username" id="username" name="ItemTitle"\n' +
+    '                    <input type="text" class="form-control" name="username" id="username"\n' +
     '                           ng-model="AuthSvc.item.username" required>\n' +
     '                    <span ng-show="authForm.$submitted || authForm.username.$touched" class="form-control-feedback"\n' +
     '                          ng-class="!authForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
@@ -54300,25 +58135,25 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email</label>\n' +
-    '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
-    '                           ng-model="email" required>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email"\n' +
+    '                           ng-model="AuthSvc.item.email" required>\n' +
     '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
     '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="password">Password</label>\n' +
-    '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
-    '                           ng-model="password" required>\n' +
+    '                    <input type="password" class="form-control" name="password" id="password"\n' +
+    '                           ng-model="AuthSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
     '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
     '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <button ng-click="AuthSvc.doUpdate(AuthSvc.item)" class="btn btn-success"\n' +
-    '                        ng-disabled="!authForm.$valid">Save\n' +
+    '                        ng-disabled="!authForm.$valid">Update\n' +
     '                </button>\n' +
     '            </div>\n' +
-    '            <div class="col-md-3">\n' +
+    '            <div class="col-md-2">\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -54377,15 +58212,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    <a ng-href="{{item.url}}" ng-bind-html="item.title | unsafe"></a>\n' +
     '                </li>\n' +
     '            </ul>\n' +
-    '            <form class="navbar-form navbar-right" role="search" ng-if="!NavbarSvc.items.search.hidden"\n' +
+    '            <form class="navbar-form navbar-right" role="search" name="searchForm" ng-if="!NavbarSvc.items.search.hidden"\n' +
     '                  novalidate>\n' +
     '                <div class="form-search search-only">\n' +
     '                    <div class="input-group">\n' +
     '                        <input type="text" class="form-control search-query"\n' +
     '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="searchText"\n' +
-    '                               ng-enter="NavbarSvc.doSearch(searchText)"/>\n' +
+    '                               ng-enter="NavbarSvc.doSearch(searchText)" required/>\n' +
     '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-success" type="button">\n' +
+    '                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid">\n' +
     '                                Search\n' +
     '                            </button>\n' +
     '                        </span>\n' +
@@ -54465,6 +58300,12 @@ app.factory('AuthRes', function ($http, AppConst) {
         });
     };
 
+    service.actionUpdate=function(item){
+        var item=angular.copy(item);
+        item['csrfmiddlewaretoken']=AppConfig.csrf_token;
+        return $http.post(AppConst.auth.update.action, item);
+    }
+
     return service;
   });
 app.factory('ProjectRes', function ($http, AppConst) {
@@ -54532,8 +58373,12 @@ app.factory('AppSvc', function () {
     service.init();    
     return service;
   });
-app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
+
+    $rootScope.$on('auth.update',function(event, data){
+        MessageSvc.info('auth/update/success');
+    });
 
     $rootScope.$on('auth.login',function(event, data){
         MessageSvc.info('auth/login/success');
@@ -54556,19 +58401,49 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
 
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
+
+        $q.all([
+            service.load()
+        ]).then(function(responseList) {
+
+        });
+    }
+
+
+    service.load=function(){
+        var deferred = $q.defer();
+        service.item=AppConfig.userData;
+        service.item.id=AppConfig.userId;
+        deferred.resolve(service.item);
+        return deferred.promise;
     }
 
 	service.doUpdate=function(item){
 	    $rootScope.$broadcast('show-errors-check-validity');
+		 AuthRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    AppConfig.userId=service.item.userId;
+                    AppConfig.userData=service.item.userData;
+                    $rootScope.$broadcast('auth.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
     }
 
 	service.doLogin=function(email, password){
 	    AuthRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    var data=angular.copy(response.data.data);
-                    AppConfig=angular.extend(AppConfig, data);
-                	$rootScope.$broadcast('auth.login', data);
+                    service.item=angular.copy(response.data.data[0]);
+                    AppConfig.userId=service.item.userId;
+                    AppConfig.userData=service.item.userData;
+                	$rootScope.$broadcast('auth.login', service.item);
                 }
             },
             function (response) {
@@ -54583,12 +58458,13 @@ app.factory('AuthSvc', function ($http, AppConst, AuthRes, MessageSvc, $rootScop
              AuthRes.actionLogout().then(
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        var data={
+                        service.item={
                           "userId": false,
                           "userData": {}
                         }
-                        AppConfig=angular.extend(AppConfig, data);
-                        $rootScope.$broadcast('auth.logout', data);
+                        AppConfig.userId=service.item.userId;
+                        AppConfig.userData=service.item.userData;
+                        $rootScope.$broadcast('auth.logout', service.item);
                     }
                 },
                 function (response) {
@@ -54694,7 +58570,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         }
 
         $modalBox(boxOptions);
-        $rootScope.$broadcast('message.info', message, data, callbackOk);
+        $rootScope.$broadcast('message.alert', message, data, callbackOk);
     }
 
     service.confirm=function(message, data, callbackOk, callbackCancel){
@@ -54727,11 +58603,13 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         }
 
         $modalBox(boxOptions);
-        $rootScope.$broadcast('message.alert', message, data, callbackOk);
+        $rootScope.$broadcast('message.confirm', message, data, callbackOk);
     }
 
 
     service.info=function(message, data, type){
+        service.alert(message, data);
+        /*
         if (data===undefined)
             data={values:[]};
 
@@ -54745,7 +58623,8 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         if (service.list[message]!==undefined)
             message=service.list[message];
 
-        $alert(extVSprintF(message, data.values), data.title, data.alertType, data.placement)
+        //$alert(extVSprintF(message, data.values), data.title, data.alertType, data.placement)
+        */
     }
 
     service.init=function(){
@@ -54839,6 +58718,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     });
 
     $rootScope.$on('project.update',function(event, item){
+    console.log('project/update/success', {values:item});
         MessageSvc.info('project/update/success', {values:item});
         service.goItem(item.name);
     });
@@ -54854,6 +58734,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 
     service.init=function(reload){
         NavbarSvc.init('project');
+        TagSvc.tagText='';
 
         $q.all([
             TagSvc.load(),
@@ -54871,12 +58752,20 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         $location.path(AppConst.project.urls.url.replace('#','')+'/'+projectName);
     }
 
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                service.list[i]=angular.copy(item);
+            }
+        }
+    }
+
 	service.doCreate=function(item){
 	    $rootScope.$broadcast('show-errors-check-validity');
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data);
+                    service.item=angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('project.create', service.item);
                 }
@@ -54892,7 +58781,9 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
                     $rootScope.$broadcast('project.update', service.item);
                 }
             },
@@ -54903,30 +58794,33 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         );
     }
 	service.doDelete=function(item){
-		 ProjectRes.actionDelete(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    for (var i=0;i<service.list.length;i++){
-                        if (service.list[i].id==item.id){
-                            service.list.splice(i, 1);
-                            break;
+         MessageSvc.confirm('project/remove/confirm', {values:[item.title]},
+         function(){
+             ProjectRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
                         }
+                        service.item={};
+                        $rootScope.$broadcast('project.delete', item);
                     }
-                    service.item={};
-                    $rootScope.$broadcast('project.delete', item);
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
                 }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
+            );
+         });
     }
 
     service.doDeleteImage=function(index){
         service.item.images.splice(index, 1);
     }
-    service.doAppendImage=function(text){
+    service.doAddImage=function(text){
         if (text===undefined)
             text='';
         if (service.item.images===undefined)
@@ -54947,7 +58841,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             if (service.item.name!==$routeParams.projectName)
                 ProjectRes.getItem($routeParams.projectName).then(
                     function (response) {
-                        service.item=angular.copy(response.data.data);
+                        service.item=angular.copy(response.data.data[0]);
                         deferred.resolve(service.item);
                         $rootScope.$broadcast('project.item.load', service.item);
                     },
@@ -54961,11 +58855,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         }else{
             if (service.list===false){
                 ProjectRes.getList().then(function (response) {
-                    var data=angular.copy(response.data.data);
-                    service.list=data.records;
-                    service.pageNumber=data.pageNumber;
-                    service.countRecordsOnPage=data.countRecordsOnPage;
-                    service.countAllRecords=data.countAllRecords;
+                    service.list=angular.copy(response.data.data);
                     deferred.resolve(service.list);
                     $rootScope.$broadcast('project.load', service.list);
                 }, function (response) {
@@ -55001,11 +58891,11 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
                 ProjectRes.getSearch($routeParams.searchText)
             ]).then(function(responseList) {
                 for (var i=0;i<responseList.length;i++){
-                    service.allList.push({
-                        title: AppConst.project.strings.title,
-                        url: AppConst.project.urls.url,
-                        list: responseList[i].data.data.records
-                    });
+                    if (i==0)
+                        service.allList.push({
+                            name: 'project',
+                            list: responseList[i].data.data
+                        });
                 }
             });
         }
@@ -55034,11 +58924,11 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
                 ProjectRes.getListByTag($routeParams.tagText)
             ]).then(function(responseList) {
                 for (var i=1;i<responseList.length;i++){
-                    service.allList.push({
-                        title: AppConst.project.strings.title,
-                        url: AppConst.project.urls.url,
-                        list: responseList[i].data.data.records
-                    });
+                    if (i==1)
+                        service.allList.push({
+                            name: 'project',
+                            list: responseList[i].data.data
+                        });
                 }
             });
         }
@@ -55057,11 +58947,7 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
         var deferred = $q.defer();
         if (service.list===false)
             TagRes.getList().then(function (response) {
-                var data=angular.copy(response.data.data);
-                service.list=data.records;
-                service.pageNumber=data.pageNumber;
-                service.countRecordsOnPage=data.countRecordsOnPage;
-                service.countAllRecords=data.countAllRecords;
+                service.list=angular.copy(response.data.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('tag.load', service.list);
             },
@@ -55077,25 +58963,15 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
     }
     return service;
   });
-app.factory('CaruselSvc', function () {
-    var service={};
-    service.prev=function(target){
-        $(target).carousel('prev');
-    }
-    service.next=function(target){
-        $(target).carousel('next');
-    }
-    service.init=function(reload){
-    }
-    service.init();    
-    return service;
-  });
-app.controller('AppCtrl', function ($scope, AppSvc, AppConst) {
+app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc) {
+    $scope.AppConfig=AppConfig;
+
+    $scope.UtilsSvc=UtilsSvc;
     $scope.AppConst=AppConst;
 	$scope.AppSvc=AppSvc;
 });
-app.controller('AuthCtrl', function ($scope, AuthSvc, AppConst, MessageSvc) {
-	$scope.AuthSvc=AuthSvc;
+app.controller('AuthCtrl', function ($scope, AuthSvc) {
+    $scope.AuthSvc=AuthSvc;
 
 	AuthSvc.init();
 });
@@ -55104,28 +58980,22 @@ app.controller('NavbarCtrl', function ($scope, NavbarSvc) {
 
     NavbarSvc.init();
 });
-app.controller('ProjectCtrl', function ($scope, $timeout, UtilsSvc, ProjectSvc, CaruselSvc, AppConst, AuthSvc) {
-    $scope.UtilsSvc=UtilsSvc;
+app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AuthSvc) {
+    $scope.AuthSvc=AuthSvc;
 	$scope.ProjectSvc=ProjectSvc;
-	$scope.CaruselSvc=CaruselSvc;
-	$scope.AppConst=AppConst;
-	$scope.AuthSvc=AuthSvc;
 
 	ProjectSvc.init();
 });
-app.controller('SearchCtrl', function ($scope, SearchSvc, AppConst, CaruselSvc, AuthSvc) {
+app.controller('SearchCtrl', function ($scope, SearchSvc, AuthSvc, TagSvc) {
+    $scope.AuthSvc=AuthSvc;
 	$scope.SearchSvc=SearchSvc;
-	$scope.CaruselSvc=CaruselSvc;
-	$scope.AppConst=AppConst;
-	$scope.AuthSvc=AuthSvc;
+	$scope.TagSvc=TagSvc;
 
 	SearchSvc.init();
 });
-app.controller('TagCtrl', function ($scope, TagSvc, AppConst, CaruselSvc, AuthSvc) {
+app.controller('TagCtrl', function ($scope, TagSvc, AuthSvc) {
+    $scope.AuthSvc=AuthSvc;
 	$scope.TagSvc=TagSvc;
-	$scope.CaruselSvc=CaruselSvc;
-	$scope.AppConst=AppConst;
-	$scope.AuthSvc=AuthSvc;
 
 	TagSvc.init();
 });

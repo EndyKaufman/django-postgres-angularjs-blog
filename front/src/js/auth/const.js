@@ -23,6 +23,9 @@ app.constant('AuthConst',{
         url: '#/profile',
         action: '/auth/profile'
     },
+    update:{
+        action: '/auth/update'
+    },
     recovery:{
         name: 'Recovery',
         name: 'recovery',

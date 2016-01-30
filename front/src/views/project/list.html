@@ -6,30 +6,18 @@
                class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Create</a>
         </h1>
     </div>
-    <p class="lead">Description of projects</p>
     <div class="row">
-        <div ng-class="'col-md-'+(12/ProjectSvc.countItemsOnRow)" ng-repeat="item in ProjectSvc.list">
-            <div class="jumbotron">
-                <div ng-include="AppConst.widjets.carusel.templates.item"></div>
-                <div ng-include="AppConst.widjets.anonce.templates.item"></div>
-
-                <div class="jumbotron-contents">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <span ng-repeat="tag in item.tags">
-                                <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" class="btn btn-default btn-xs"
-                                   ng-bind-html="tag.text | unsafe"></a>
-                            </span>
-                        </div>
-                        <div class="col-md-4">
-                            <a ng-href="{{AppConst.project.urls.url+'/'+item.name}}" class="btn btn-link pull-right">Detail...</a>
-                            <a ng-href="{{AppConst.project.urls.url+'/update/'+item.name}}"
-                               class="btn btn-primary pull-right" ng-if="AuthSvc.isAdmin()">Edit</a>
-                        </div>
-                    </div>
+        <div class="col-md-9 padding-left-0">
+            <p class="lead padding-left-15" ng-bind-html="AppConst.project.strings.description | unsafe"></p>
+            <div>
+                <div class="col-md-6" ng-repeat="item in ProjectSvc.list">
+                    <div ng-include="AppConst.project.templates.list.item"></div>
                 </div>
             </div>
         </div>
+        <div class="col-md-3 padding-left-0">
+            <p class="lead">Tags</p>
+            <div ng-include="AppConst.project.templates.list.tags"></div>
+        </div>
     </div>
-
 </div>

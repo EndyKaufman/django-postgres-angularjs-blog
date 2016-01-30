@@ -21,7 +21,7 @@ def getList(request):
             content = f.read()
             f.close()
     except IOError:
-        content = '{}'
+        content = '[]'
     data = json.loads(content)
 
     return {'code': 'ok', 'data': data}
@@ -36,7 +36,7 @@ def getSearch(request, search_text):
             content = f.read()
             f.close()
     except IOError:
-        content = '{}'
+        content = '[]'
     data = json.loads(content)
 
     return {'code': 'ok', 'data': data}
@@ -67,20 +67,15 @@ def getItem(request, project_name):
             content = f.read()
             f.close()
     except IOError:
-        content = '{}'
+        content = '[]'
     data = json.loads(content)
 
-    try:
-        records = data['records']
-    except IOError:
-        records = []
-
-    data = {}
-    for record in records:
+    item = {}
+    for record in data:
         if record['name'] == project_name:
-            data = record
+            item = record
 
-    return {'code': 'ok', 'data': data}
+    return {'code': 'ok', 'data': [item]}
 
 # update
 @json_view
@@ -97,15 +92,15 @@ def actionUpdate(request, project_id):
 
     # Validate fields
     try:
-        fieldName = json_data['name']
+        nameField = json_data['name']
     except KeyError:
         return {'code': 'auth/noname'}, 404
     try:
-        fieldTitle = json_data['title']
+        titleField = json_data['title']
     except KeyError:
         return {'code': 'auth/notitle'}, 404
 
-    return {'code': 'ok', 'data': json_data}
+    return {'code': 'ok', 'data': [json_data]}
 
 
 # create
@@ -123,15 +118,15 @@ def actionCreate(request):
 
     # Validate fields
     try:
-        fieldName = json_data['name']
+       nameField = json_data['name']
     except KeyError:
         return {'code': 'auth/noname'}, 404
     try:
-        fieldTitle = json_data['title']
+        titleField = json_data['title']
     except KeyError:
         return {'code': 'auth/notitle'}, 404
 
-    return {'code': 'ok', 'data': json_data}
+    return {'code': 'ok', 'data': [json_data]}
 
 # delete
 @json_view

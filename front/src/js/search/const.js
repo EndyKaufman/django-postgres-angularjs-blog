@@ -4,5 +4,11 @@ app.constant('SearchConst', {
     },
     urls:{
         url: '#/search'
+    },
+    templates:{
+        list:{
+            item: 'views/search/list-item.html',
+            tags: 'views/search/list-tags.html'
+        }
     }
 });

@@ -12,6 +12,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     });
 
     $rootScope.$on('project.update',function(event, item){
+    console.log('project/update/success', {values:item});
         MessageSvc.info('project/update/success', {values:item});
         service.goItem(item.name);
     });
@@ -27,6 +28,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 
     service.init=function(reload){
         NavbarSvc.init('project');
+        TagSvc.tagText='';
 
         $q.all([
             TagSvc.load(),
@@ -44,12 +46,20 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         $location.path(AppConst.project.urls.url.replace('#','')+'/'+projectName);
     }
 
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                service.list[i]=angular.copy(item);
+            }
+        }
+    }
+
 	service.doCreate=function(item){
 	    $rootScope.$broadcast('show-errors-check-validity');
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data);
+                    service.item=angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('project.create', service.item);
                 }
@@ -65,7 +75,9 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
                     $rootScope.$broadcast('project.update', service.item);
                 }
             },
@@ -76,30 +88,33 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         );
     }
 	service.doDelete=function(item){
-		 ProjectRes.actionDelete(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    for (var i=0;i<service.list.length;i++){
-                        if (service.list[i].id==item.id){
-                            service.list.splice(i, 1);
-                            break;
+         MessageSvc.confirm('project/remove/confirm', {values:[item.title]},
+         function(){
+             ProjectRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
                         }
+                        service.item={};
+                        $rootScope.$broadcast('project.delete', item);
                     }
-                    service.item={};
-                    $rootScope.$broadcast('project.delete', item);
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
                 }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
+            );
+         });
     }
 
     service.doDeleteImage=function(index){
         service.item.images.splice(index, 1);
     }
-    service.doAppendImage=function(text){
+    service.doAddImage=function(text){
         if (text===undefined)
             text='';
         if (service.item.images===undefined)
@@ -120,7 +135,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
             if (service.item.name!==$routeParams.projectName)
                 ProjectRes.getItem($routeParams.projectName).then(
                     function (response) {
-                        service.item=angular.copy(response.data.data);
+                        service.item=angular.copy(response.data.data[0]);
                         deferred.resolve(service.item);
                         $rootScope.$broadcast('project.item.load', service.item);
                     },
@@ -134,11 +149,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         }else{
             if (service.list===false){
                 ProjectRes.getList().then(function (response) {
-                    var data=angular.copy(response.data.data);
-                    service.list=data.records;
-                    service.pageNumber=data.pageNumber;
-                    service.countRecordsOnPage=data.countRecordsOnPage;
-                    service.countAllRecords=data.countAllRecords;
+                    service.list=angular.copy(response.data.data);
                     deferred.resolve(service.list);
                     $rootScope.$broadcast('project.load', service.list);
                 }, function (response) {

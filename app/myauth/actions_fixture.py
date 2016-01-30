@@ -11,9 +11,79 @@ import json
 from jsonview.decorators import json_view
 
 
+# update
+@json_view
+def actionUpdate(request):
+    """Update record"""
+
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    # Validate fields
+    try:
+        emailField = json_data['email']
+    except KeyError:
+        return {'code': 'auth/noemail'}, 404
+
+    if emailField == '':
+        return {'code': 'auth/noemail'}, 404
+
+    emailField = emailField.lower()
+
+    # Validate values of fields
+    try:
+        validate_email(emailField)
+    except ValidationError:
+        return {'code': 'auth/wrongemail'}, 404
+
+    try:
+        with open('app/myauth/fixtures/users.json') as f:
+            content = f.read()
+            f.close()
+    except IOError:
+        content = '[]'
+    records = json.loads(content)
+
+    user = False
+
+    for record in records:
+        if record['userData']['email'] == emailField:
+            user = record
+            try:
+                firstname = json_data['firstname']
+            except KeyError:
+                firstname = False
+            if firstname != False:
+                user['userData']['firstname'] = firstname
+
+            try:
+                lastname = json_data['lastname']
+            except KeyError:
+                lastname = False
+            if lastname != False:
+                user['userData']['lastname'] = lastname
+
+            try:
+                username = json_data['username']
+            except KeyError:
+                username = False
+            if username != False:
+                user['userData']['username'] = username
+
+    if user == False:
+        return {'code': 'auth/usernofound', 'values': [emailField]}, 404
+
+    return {'code': 'ok', 'data': [user]}
+
+
 # Login
 @json_view
-def postLogin(request):
+def actionLogin(request):
     """Login action"""
 
     json_data = False
@@ -26,25 +96,25 @@ def postLogin(request):
 
     # Validate fields
     try:
-        email = json_data['email']
+        emailField = json_data['email']
     except KeyError:
         return {'code': 'auth/noemail'}, 404
     try:
-        password = json_data['password']
+        passwordField = json_data['password']
     except KeyError:
         return {'code': 'auth/nopassword'}, 404
 
-    if email == '':
+    if emailField == '':
         return {'code': 'auth/noemail'}, 404
 
-    if password == '':
+    if passwordField == '':
         return {'code': 'auth/nopassword'}, 404
 
-    email = email.lower()
+    emailField = emailField.lower()
 
     # Validate values of fields
     try:
-        validate_email(email)
+        validate_email(emailField)
     except ValidationError:
         return {'code': 'auth/wrongemail'}, 404
 
@@ -89,18 +159,18 @@ def postLogin(request):
     user = False
 
     for record in records:
-        if record['userData']['userEmail'] == email:
+        if record['userData']['email'] == emailField:
             user = record
 
     if user == False:
-        return {'code': 'auth/usernofound', 'values': [email]}, 404
+        return {'code': 'auth/usernofound', 'values': [emailField]}, 404
 
-    return {'code': 'ok', 'data': user}
+    return {'code': 'ok', 'data': [user]}
 
 
 # Logout
 @json_view
-def postLogout(request):
+def actionLogout(request):
     """Logout action"""
 
     # auth.logout(request)

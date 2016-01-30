@@ -9,4 +9,5 @@ var app = angular.module('app', [
     'ngQuantum',
     'mgcrea.ngStrap',
     'ngTagsInput',
-    'ui.bootstrap.showErrors']);
+    'ui.bootstrap.showErrors',
+    'angular-markdown']);

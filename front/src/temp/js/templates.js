@@ -1,40 +1,4 @@
-angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/fullcontent/item.html', '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==1">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==2">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==3">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
-    '</div>\n' +
-    '<div class="jumbotron-contents" ng-if="ProjectSvc.item.type==4">\n' +
-    '    <p ng-bind-html="ProjectSvc.item.markdown | unsafe"></p>\n' +
-    '</div>');
-	a.put('views/widjets/carusel/item.html', '<div class="jumbotron-photo" ng-if="item.images.length>0">\n' +
-    '    <div id="{{\'carousel-\'+item.name}}" class="carousel slide" data-ride="carousel">\n' +
-    '        <ol class="carousel-indicators" ng-if="item.images.length>1">\n' +
-    '            <li ng-repeat="image in item.images" data-target="{{\'#carousel-\'+item.name}}"\n' +
-    '                data-slide-to="{{$index}}" ng-class="$index==0?\'active\':\'\'"></li>\n' +
-    '        </ol>{{AppConfig.static_url}}\n' +
-    '        <div class="carousel-inner">\n' +
-    '            <div ng-repeat="image in item.images" class="item" ng-class="$index==0?\'active\':\'\'"><img\n' +
-    '                    ng-src="{{AppConfig.static_url+image.src}}"></div>\n' +
-    '        </div>\n' +
-    '        <a ng-click="CaruselSvc.prev(\'#carousel-\'+item.name)" class="left carousel-control"\n' +
-    '           data-slide="prev" ng-if="item.images.length>1">\n' +
-    '            <span class="glyphicon glyphicon-chevron-left"></span>\n' +
-    '        </a>\n' +
-    '        <a ng-click="CaruselSvc.next(\'#carousel-\'+item.name)" class="right carousel-control"\n' +
-    '           data-slide="next" ng-if="item.images.length>1">\n' +
-    '            <span class="glyphicon glyphicon-chevron-right"></span>\n' +
-    '        </a>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/widjets/anonce/item.html', '<div class="jumbotron-contents">\n' +
-    '    <h2 ng-bind-html="item.title | unsafe"></h2>\n' +
-    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
-    '</div>');
-	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="ItemName">Name</label>\n' +
     '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
     '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
@@ -113,84 +77,75 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    <div class="page-header">\n' +
     '        <h1>Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span></h1>\n' +
     '    </div>\n' +
-    '    <div ng-repeat="allItem in TagSvc.allList">\n' +
-    '        <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
+    '    <div>\n' +
     '        <div class="row">\n' +
-    '            <div ng-class="\'col-md-\'+(12/TagSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
-    '                <div class="jumbotron">\n' +
-    '                    <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
-    '                    <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
-    '\n' +
-    '                    <div class="jumbotron-contents">\n' +
-    '                        <div class="row">\n' +
-    '                            <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                            </div>\n' +
-    '                            <div class="col-md-4">\n' +
-    '                                <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                                <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right"\n' +
-    '                                   ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
-    '                            </div>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '            <div class="col-md-9 padding-left-0">\n' +
+    '                <div ng-repeat="allItem in TagSvc.allList">\n' +
+    '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
+    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
+    '                    <div ng-include="AppConst.tag.templates.list.item"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
+    '            <div class="col-md-3 padding-left-0">\n' +
+    '                <p class="lead">Tags</p>\n' +
+    '                <div ng-include="AppConst.tag.templates.list.tags"></div>\n' +
+    '            </div>\n' +
     '        </div>\n' +
-    '\n' +
-    '    </div>');
+    '    </div>\n' +
+    '</div>');
+	a.put('views/tag/list-tags.html', '<div class="list-group">\n' +
+    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
+    '    </a>\n' +
+    '</div>');
+	a.put('views/tag/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
+    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
+    '</div>');
 	a.put('views/search/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"</h1>\n' +
     '    </div>\n' +
-    '    <div ng-repeat="allItem in SearchSvc.allList">\n' +
-    '        <p class="lead">Place: <a ng-bind-html="allItem.title | unsafe" ng-href="{{allItem.url}}"></a></p>\n' +
+    '    <div>\n' +
     '        <div class="row">\n' +
-    '            <div ng-class="\'col-md-\'+(12/SearchSvc.countItemsOnRow)" ng-repeat="item in allItem.list">\n' +
-    '                <div class="jumbotron">\n' +
-    '                    <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
-    '                    <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
-    '\n' +
-    '                    <div class="jumbotron-contents">\n' +
-    '                        <div class="row">\n' +
-    '                            <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                            </div>\n' +
-    '                            <div class="col-md-4">\n' +
-    '                                <a ng-href="{{allItem.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                                <a ng-href="{{allItem.url+\'/update/\'+item.name}}" class="btn btn-primary pull-right"\n' +
-    '                                   ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
-    '                            </div>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '            <div class="col-md-9 padding-left-0">\n' +
+    '                <div ng-repeat="allItem in SearchSvc.allList">\n' +
+    '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
+    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
+    '                <div ng-include="AppConst.search.templates.list.item"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
+    '            <div class="col-md-3 padding-left-0">\n' +
+    '                <p class="lead">Tags</p>\n' +
+    '                <div ng-include="AppConst.search.templates.list.tags"></div>\n' +
+    '            </div>\n' +
     '        </div>\n' +
-    '\n' +
-    '    </div>');
+    '    </div>\n' +
+    '</div>');
+	a.put('views/search/list-tags.html', '<div class="list-group">\n' +
+    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
+    '    </a>\n' +
+    '</div>');
+	a.put('views/search/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
+    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
+    '</div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>Edit project</span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/\'+ProjectSvc.item.name}}"\n' +
-    '               class="btn btn-default">View</a>\n' +
+    '               class="btn btn-info">View</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
-    '\n' +
     '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Update</button>\n' +
     '                    <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project\n' +
     '                    </button>\n' +
-    '                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image\n' +
+    '                    <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image\n' +
     '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
@@ -208,32 +163,41 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Create</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <p class="lead">Description of projects</p>\n' +
     '    <div class="row">\n' +
-    '        <div ng-class="\'col-md-\'+(12/ProjectSvc.countItemsOnRow)" ng-repeat="item in ProjectSvc.list">\n' +
-    '            <div class="jumbotron">\n' +
-    '                <div ng-include="AppConst.widjets.carusel.templates.item"></div>\n' +
-    '                <div ng-include="AppConst.widjets.anonce.templates.item"></div>\n' +
-    '\n' +
-    '                <div class="jumbotron-contents">\n' +
-    '                    <div class="row">\n' +
-    '                        <div class="col-md-8">\n' +
-    '                            <span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '                            </span>\n' +
-    '                        </div>\n' +
-    '                        <div class="col-md-4">\n' +
-    '                            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link pull-right">Detail...</a>\n' +
-    '                            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
-    '                               class="btn btn-primary pull-right" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '        <div class="col-md-9 padding-left-0">\n' +
+    '            <p class="lead padding-left-15" ng-bind-html="AppConst.project.strings.description | unsafe"></p>\n' +
+    '            <div>\n' +
+    '                <div class="col-md-6" ng-repeat="item in ProjectSvc.list">\n' +
+    '                    <div ng-include="AppConst.project.templates.list.item"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '        </div>\n' +
+    '        <div class="col-md-3 padding-left-0">\n' +
+    '            <p class="lead">Tags</p>\n' +
+    '            <div ng-include="AppConst.project.templates.list.tags"></div>\n' +
+    '        </div>\n' +
     '    </div>\n' +
-    '\n' +
+    '</div>');
+	a.put('views/project/list-tags.html', '<div class="list-group">\n' +
+    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in ProjectSvc.TagSvc.list">\n' +
+    '    </a>\n' +
+    '</div>');
+	a.put('views/project/list-item.html', '<div class="thumbnail">\n' +
+    '    <img ng-src="{{AppConfig.static_url+item.images[0].src}}" ng-if="item.images.length>0" class="img-responsive">\n' +
+    '    <div class="caption">\n' +
+    '        <h3 ng-bind-html="item.title | unsafe"></h3>\n' +
+    '        <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '        <p><span ng-repeat="tag in item.tags">\n' +
+    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
+    '                            </span></p>\n' +
+    '        <p class="text-right">\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
+    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
+    '        </p>\n' +
+    '    </div>\n' +
     '</div>');
 	a.put('views/project/item.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -242,34 +206,76 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
-    '        <div class="pull-right">\n' +
-    '            <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
-    '                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '            </span>\n' +
-    '        </div>\n' +
     '        <h1 class="hidden-xs">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <p class="lead" ng-bind-html="ProjectSvc.item.description | unsafe"></p>\n' +
     '    <div class="row">\n' +
-    '        <div class="col-md-12">\n' +
-    '            <div class="jumbotron">\n' +
-    '                <div class="jumbotron-photo">\n' +
-    '                    <div class="row">\n' +
-    '                        <div ng-class="\'col-md-\'+(12/ProjectSvc.item.images.length)"\n' +
-    '                             ng-repeat="image in ProjectSvc.item.images">\n' +
-    '                            <img ng-src="{{AppConfig.static_url+image.src}}" class="img-responsive"/>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
+    '        <div ng-include="AppConst.project.templates.item.view"></div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/project/item-view.html', '<div class="col-md-8 padding-left-15">\n' +
+    '    <img ng-src="{{AppConfig.static_url+ProjectSvc.item.images[0].src}}" ng-if="ProjectSvc.item.images.length==1"\n' +
+    '         class="img-responsive">\n' +
+    '    <div ng-if="ProjectSvc.item.images.length>1">\n' +
+    '        <div data-nq-carousel="">\n' +
+    '            <div data-carousel-item="" ng-repeat="image in ProjectSvc.item.images">\n' +
+    '                <!--h3 class="carousel-title" nf-if="image.title!=\'\'"\n' +
+    '                    ng-bind-html="image.title | unsafe"></h3-->\n' +
+    '                <img ng-src="{{AppConfig.static_url+image.src}}">\n' +
+    '                <div class="carousel-caption" nf-if="image.description!=\'\'">\n' +
+    '                    <h4 ng-bind-html="image.description | unsafe"></h4>\n' +
     '                </div>\n' +
-    '\n' +
-    '                <div ng-include="AppConst.widjets.fullcontent.templates.item"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.images.length==0" class="lead">\n' +
+    '        <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item.text">\n' +
+    '            <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '        </div>\n' +
+    '        <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item.html">\n' +
+    '            <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '        </div>\n' +
+    '        <div ng-if="ProjectSvc.item.type==3 && ProjectSvc.item.url">\n' +
+    '            <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
+    '        </div>\n' +
+    '        <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
+    '            <markdown extensions="github, table, twitter" strip="true" allow-html="true"\n' +
+    '                      ng-model="ProjectSvc.item.markdown">\n' +
+    '            </markdown>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="col-md-4 padding-left-15">\n' +
+    '    <h2>Description</h2>\n' +
+    '    <p class="lead">\n' +
+    '        <span ng-bind-html="ProjectSvc.item.description | unsafe"></span>\n' +
+    '    </p>\n' +
+    '    <h2>Tags</h2>\n' +
+    '    <p class="lead">\n' +
+    '        <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
+    '            <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-md btn-default"\n' +
+    '               ng-bind-html="tag.text | unsafe"></a>\n' +
+    '        </span>\n' +
+    '    </p>\n' +
+    '</div>\n' +
+    '<div class="col-md-12 padding-left-15 lead" ng-if="ProjectSvc.item.images.length!=0">\n' +
+    '    <br/>\n' +
+    '    <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item.text">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item.html">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==3 && ProjectSvc.item.url">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
+    '        <markdown extensions="github, table, twitter" strip="true" allow-html="true"\n' +
+    '                  ng-model="ProjectSvc.item.markdown">\n' +
+    '        </markdown>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/project/create.html', '<div class="container" ng-init="ProjectSvc.initEmptyItem()">\n' +
@@ -280,15 +286,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-9">\n' +
+    '            <div class="col-md-10">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>\n' +
-    '                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image\n' +
+    '                    <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image\n' +
     '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
-    '            <div class="col-md-3">\n' +
+    '            <div class="col-md-2">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
@@ -309,10 +315,26 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '    </div>\n' +
     '    <form name="authForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-9">\n' +
+    '            <div class="col-md-10">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="firstname">First name</label>\n' +
+    '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
+    '                           ng-model="AuthSvc.item.firstname">\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.firstname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="lastname">Last name</label>\n' +
+    '                    <input type="text" class="form-control" name="lastname" id="lastname"\n' +
+    '                           ng-model="AuthSvc.item.lastname">\n' +
+    '                    <span ng-show="authForm.$submitted || authForm.lastname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!authForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="username">Username</label>\n' +
-    '                    <input type="text" class="form-control" name="username" id="username" name="ItemTitle"\n' +
+    '                    <input type="text" class="form-control" name="username" id="username"\n' +
     '                           ng-model="AuthSvc.item.username" required>\n' +
     '                    <span ng-show="authForm.$submitted || authForm.username.$touched" class="form-control-feedback"\n' +
     '                          ng-class="!authForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
@@ -320,25 +342,25 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email</label>\n' +
-    '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
-    '                           ng-model="email" required>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email"\n' +
+    '                           ng-model="AuthSvc.item.email" required>\n' +
     '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
     '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="password">Password</label>\n' +
-    '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
-    '                           ng-model="password" required>\n' +
+    '                    <input type="password" class="form-control" name="password" id="password"\n' +
+    '                           ng-model="AuthSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
     '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
     '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <button ng-click="AuthSvc.doUpdate(AuthSvc.item)" class="btn btn-success"\n' +
-    '                        ng-disabled="!authForm.$valid">Save\n' +
+    '                        ng-disabled="!authForm.$valid">Update\n' +
     '                </button>\n' +
     '            </div>\n' +
-    '            <div class="col-md-3">\n' +
+    '            <div class="col-md-2">\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -397,15 +419,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/widjets/
     '                    <a ng-href="{{item.url}}" ng-bind-html="item.title | unsafe"></a>\n' +
     '                </li>\n' +
     '            </ul>\n' +
-    '            <form class="navbar-form navbar-right" role="search" ng-if="!NavbarSvc.items.search.hidden"\n' +
+    '            <form class="navbar-form navbar-right" role="search" name="searchForm" ng-if="!NavbarSvc.items.search.hidden"\n' +
     '                  novalidate>\n' +
     '                <div class="form-search search-only">\n' +
     '                    <div class="input-group">\n' +
     '                        <input type="text" class="form-control search-query"\n' +
     '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="searchText"\n' +
-    '                               ng-enter="NavbarSvc.doSearch(searchText)"/>\n' +
+    '                               ng-enter="NavbarSvc.doSearch(searchText)" required/>\n' +
     '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-success" type="button">\n' +
+    '                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid">\n' +
     '                                Search\n' +
     '                            </button>\n' +
     '                        </span>\n' +

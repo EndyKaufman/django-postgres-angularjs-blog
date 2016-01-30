@@ -2,10 +2,11 @@
   {
     "userId": 1,
     "userData": {
-      "userName": "Admin User Name",
-      "userEmail": "admin@email.com",
-      "firstName": "FirstAdminName",
-      "lastName": "LastAdminName",
+      "id": 1,
+      "username": "Admin User Name",
+      "email": "admin@email.com",
+      "firstname": "FirstAdminName",
+      "lastname": "LastAdminName",
       "roles": [
         "admin"
       ]
@@ -14,10 +15,11 @@
   {
     "userId": 2,
     "userData": {
-      "userName": "User Name",
-      "userEmail": "user@email.com",
-      "firstName": "FirstName",
-      "lastName": "LastName",
+      "id": 2,
+      "username": "User Name",
+      "email": "user@email.com",
+      "firstname": "FirstName",
+      "lastname": "LastName",
       "roles": [
         "user"
       ]

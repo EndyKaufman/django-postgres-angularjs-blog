@@ -6,15 +6,15 @@
     </div>
     <form name="projectForm">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-10">
                 <div ng-include="AppConst.project.templates.inputs.central"></div>
                 <div>
                     <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>
-                    <button ng-click="ProjectSvc.doAppendImage()" class="btn btn-primary pull-right">Append image
+                    <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image
                     </button>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div ng-include="AppConst.project.templates.inputs.right"></div>
             </div>
         </div>

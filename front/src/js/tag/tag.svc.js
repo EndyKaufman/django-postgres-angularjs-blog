@@ -20,11 +20,11 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
                 ProjectRes.getListByTag($routeParams.tagText)
             ]).then(function(responseList) {
                 for (var i=1;i<responseList.length;i++){
-                    service.allList.push({
-                        title: AppConst.project.strings.title,
-                        url: AppConst.project.urls.url,
-                        list: responseList[i].data.data.records
-                    });
+                    if (i==1)
+                        service.allList.push({
+                            name: 'project',
+                            list: responseList[i].data.data
+                        });
                 }
             });
         }
@@ -43,11 +43,7 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
         var deferred = $q.defer();
         if (service.list===false)
             TagRes.getList().then(function (response) {
-                var data=angular.copy(response.data.data);
-                service.list=data.records;
-                service.pageNumber=data.pageNumber;
-                service.countRecordsOnPage=data.countRecordsOnPage;
-                service.countAllRecords=data.countAllRecords;
+                service.list=angular.copy(response.data.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('tag.load', service.list);
             },

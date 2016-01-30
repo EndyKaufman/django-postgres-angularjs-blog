@@ -21,7 +21,7 @@ def getList(request):
             content = f.read()
             f.close()
     except IOError:
-        content = '{}'
+        content = '[]'
     data = json.loads(content)
 
     return {'code': 'ok', 'data': data}

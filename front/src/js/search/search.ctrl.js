@@ -1,8 +1,7 @@
-app.controller('SearchCtrl', function ($scope, SearchSvc, AppConst, CaruselSvc, AuthSvc) {
+app.controller('SearchCtrl', function ($scope, SearchSvc, AuthSvc, TagSvc) {
+    $scope.AuthSvc=AuthSvc;
 	$scope.SearchSvc=SearchSvc;
-	$scope.CaruselSvc=CaruselSvc;
-	$scope.AppConst=AppConst;
-	$scope.AuthSvc=AuthSvc;
+	$scope.TagSvc=TagSvc;
 
 	SearchSvc.init();
 });

@@ -5,33 +5,13 @@
             <a ng-href="{{AppConst.project.urls.url+'/update/'+ProjectSvc.item.name}}"
                class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>
         </h1>
-        <div class="pull-right">
-            <span ng-repeat="tag in ProjectSvc.item.tags">
-                <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" class="btn btn-default btn-xs"
-                   ng-bind-html="tag.text | unsafe"></a>
-            </span>
-        </div>
         <h1 class="hidden-xs">
             <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>
             <a ng-href="{{AppConst.project.urls.url+'/update/'+ProjectSvc.item.name}}"
                class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>
         </h1>
     </div>
-    <p class="lead" ng-bind-html="ProjectSvc.item.description | unsafe"></p>
     <div class="row">
-        <div class="col-md-12">
-            <div class="jumbotron">
-                <div class="jumbotron-photo">
-                    <div class="row">
-                        <div ng-class="'col-md-'+(12/ProjectSvc.item.images.length)"
-                             ng-repeat="image in ProjectSvc.item.images">
-                            <img ng-src="{{AppConfig.static_url+image.src}}" class="img-responsive"/>
-                        </div>
-                    </div>
-                </div>
-
-                <div ng-include="AppConst.widjets.fullcontent.templates.item"></div>
-            </div>
-        </div>
+        <div ng-include="AppConst.project.templates.item.view"></div>
     </div>
 </div>

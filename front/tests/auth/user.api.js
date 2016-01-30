@@ -1,26 +1,34 @@
 describe('Auth API (user):', function() {
-  var mytools = require('./../helpers.js');
+  var helpers = require('./../helpers.js');
 
-  var logoutData = undefined, userData = undefined;
+  var logoutResponse = undefined, userResponse = undefined, profileResponse = undefined;
 
   beforeEach(function(done){
     browser.driver.manage().window().setSize(1280, 1024);
     browser.get(browser.baseUrl).then(function(){
-        mytools.executeAndReturnJson(
+        helpers.executeAndReturnJson(
             'callback(window.AppConfig);',
             function(data){
 
-                mytools.postJson('/auth/login', {
+                helpers.postJson('/auth/login', {
                     email:'user@email.com',
                     password:'user@email.com'
                 }, function(response){
-                    userData = response.data;
+                    userResponse = response;
 
-                    mytools.postJson('/auth/logout', {
+                    helpers.postJson('/auth/update', {
+                        firstname:'New Name',
+                        email:'user@email.com'
                     }, function(response){
-                        logoutData = response;
+                        profileResponse = response;
 
-                        done();
+                        helpers.postJson('/auth/logout', {
+                        }, function(response){
+                            logoutResponse = response;
+
+                            done();
+
+                        });
 
                     });
 
@@ -31,20 +39,34 @@ describe('Auth API (user):', function() {
     })
   });
 
-  it('try post /auth/login as user role and check structure', function() {
-    expect(typeof userData).toEqual('object');
-    expect(typeof userData.userData).toEqual('object');
-    expect(typeof userData.userId).toEqual('number');
-    var data = userData.userData;
-    var fields = ['userName', 'userEmail', 'firstName', 'lastName', 'roles'];
+  it('POST /auth/login as user role & check structure', function() {
+    expect(typeof userResponse).toEqual('object');
+    expect(userResponse.data[0].userData).toBeDefined();
+    expect(userResponse.data[0].userId).toBeDefined();
+    var userData = userResponse.data[0].userData;
+    var fields = ['id', 'username', 'email', 'firstname', 'lastname', 'roles'];
     for (var i=0; i<fields.length; i++)
-        expect(data[fields[0]] != undefined ? true : false).toEqual(true);
-    if (data.roles.length>0)
-        expect(data.roles[0]).toEqual('user');
+        expect(userData[fields[i]]).toBeDefined();
+    if (userData.roles.length>0)
+        expect(userData.roles[0]).toEqual('user');
   });
 
-  it('try post /auth/logout and check structure', function() {
-    expect(logoutData.code).toEqual('ok');
+  it('POST /auth/update & check structure', function() {
+    expect(typeof profileResponse).toEqual('object');
+    expect(profileResponse.data[0].userData).toBeDefined();
+    expect(profileResponse.data[0].userId).toBeDefined();
+    var userData = profileResponse.data[0].userData;
+    var fields = ['id', 'username', 'email', 'firstname', 'lastname', 'roles'];
+    for (var i=0; i<fields.length; i++)
+        expect(userData[fields[i]]).toBeDefined();
+    if (userData.roles.length>0)
+        expect(userData.roles[0]).toEqual('user');
+
+    expect(userData.firstname).toEqual('New Name');
+  });
+
+  it('POST /auth/logout & check structure', function() {
+    expect(logoutResponse.code).toEqual('ok');
   });
 
 });
