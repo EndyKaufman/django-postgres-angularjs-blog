@@ -192,3 +192,10 @@ vagrant reload
 vagrant resume
 ```
 
+## django database commands
+```
+python manage.py migrate
+python manage.py makemigrations
+python manage.py makemigrations --empty yourappname
+```
+

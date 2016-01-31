@@ -11,7 +11,7 @@ if settings.USE_FIXTURE:
         ]
 else:
         urlpatterns = [
-                url(r'^login', actions_fixture.actionLogin),
-                url(r'^logout', actions_fixture.actionLogout),
+                url(r'^login', actions.actionLogin),
+                url(r'^logout', actions.actionLogout),
                 url(r'^update', actions_fixture.actionUpdate)
         ]

@@ -58675,7 +58675,10 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
     }
 
     service.goBack=function(){
-        $window.history.back();
+        if ($window.history.length>2)
+            $window.history.back();
+        else
+            service.goHome();
     }
     service.goHome=function(){
         $location.path(service.brand.url.replace('#',''));

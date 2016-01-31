@@ -49,9 +49,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'storages',
     'jsonview',
+    'app.home',
     'app.myauth',
     'app.tag',
-    'app.home',
+    'app.image',
     'app.project'
 )
 
