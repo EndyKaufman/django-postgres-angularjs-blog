@@ -8,6 +8,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 import json
 from jsonview.decorators import json_view
+import config
 
 
 # Login
@@ -71,15 +72,7 @@ def actionLogin(request):
         if user.is_superuser:
             roles.append('admin')
 
-        return {'code': 'ok', 'data': [{
-            'userId': user.id,
-            'userData': {
-                "username": user.username,
-                "email": user.email,
-                "firstname": user.first_name,
-                "lastname": user.last_name,
-                "roles": roles
-            }}]}
+        return {'code': 'ok', 'data': [config.getUserData(user)]}
     else:
         auth.logout(request)
         return {'code': 'auth/notactive'}, 404

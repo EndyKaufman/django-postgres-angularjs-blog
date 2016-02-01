@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 
-import json
+def getUserData(user):
+    if not user.is_authenticated:
+        return {'userId': False, 'userData': {}}
 
-def getUserData(request):
-    config = {}
+    roles = []
+    if user.is_staff:
+        roles.append('user')
+    if user.is_superuser:
+        roles.append('admin')
 
-    try:
-        with open('app/myauth/fixtures/guest.json') as f:
-            content = f.read()
-            f.close()
-    except IOError:
-        content = '[]'
-    config = json.loads(content)
-
-    return config
+    return {'code': 'ok', 'data': [{
+        'userId': user.id,
+        'userData': {
+            "username": user.username,
+            "email": user.email,
+            "firstname": user.first_name,
+            "lastname": user.last_name,
+            "roles": roles
+        }}]}
