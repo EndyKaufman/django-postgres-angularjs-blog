@@ -11,6 +11,7 @@
 import json
 from jsonview.decorators import json_view
 
+
 # list
 @json_view
 def getList(request):
@@ -25,6 +26,7 @@ def getList(request):
     data = json.loads(content)
 
     return {'code': 'ok', 'data': data}
+
 
 # search
 @json_view
@@ -57,6 +59,7 @@ def getListByTag(request, tag_text):
 
     return {'code': 'ok', 'data': data}
 
+
 # item
 @json_view
 def getItem(request, project_name):
@@ -76,6 +79,7 @@ def getItem(request, project_name):
             item = record
 
     return {'code': 'ok', 'data': [item]}
+
 
 # update
 @json_view
@@ -118,7 +122,7 @@ def actionCreate(request):
 
     # Validate fields
     try:
-       nameField = json_data['name']
+        nameField = json_data['name']
     except KeyError:
         return {'code': 'auth/noname'}, 404
     try:
@@ -127,6 +131,7 @@ def actionCreate(request):
         return {'code': 'auth/notitle'}, 404
 
     return {'code': 'ok', 'data': [json_data]}
+
 
 # delete
 @json_view

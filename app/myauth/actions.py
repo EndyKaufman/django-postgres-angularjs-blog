@@ -11,6 +11,65 @@ from jsonview.decorators import json_view
 import config
 from django.views.decorators.csrf import csrf_exempt
 
+
+# update profile
+@json_view
+def actionProfileUpdate(request):
+    """Update record"""
+
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    # Validate fields
+    try:
+        emailField = json_data['email']
+    except KeyError:
+        emailField = ''
+    try:
+        passwordField = json_data['password']
+    except KeyError:
+        passwordField = False
+    try:
+        first_name = json_data['firstname']
+    except KeyError:
+        first_name = ''
+    try:
+        last_name = json_data['lastname']
+    except KeyError:
+        last_name = ''
+
+    if emailField == '':
+        return {'code': 'auth/noemail'}, 404
+
+    emailField = emailField.lower()
+
+    # Validate values of fields
+    try:
+        validate_email(emailField)
+    except ValidationError:
+        return {'code': 'auth/wrongemail'}, 404
+
+    request.user.backend = 'django.contrib.auth.backends.ModelBackend'
+    try:
+        request.user.email = emailField
+        request.user.first_name = first_name
+        request.user.last_name = last_name
+        request.user.set_password(passwordField)
+        request.user.save()
+        json_data['email'] = emailField
+        json_data['firstname'] = first_name
+        json_data['lastname'] = last_name
+    except:
+        return {'code': 'auth/profile/fail/update'}, 404
+
+    return {'code': 'ok', 'data': [request.user]}
+
+
 # Login
 @json_view
 def actionLogin(request):
@@ -28,11 +87,11 @@ def actionLogin(request):
     try:
         emailField = json_data['email']
     except KeyError:
-        return {'code': 'auth/noemail'}, 404
+        emailField = ''
     try:
         passwordField = json_data['password']
     except KeyError:
-        return {'code': 'auth/nopassword'}, 404
+        passwordField = ''
 
     if emailField == '':
         return {'code': 'auth/noemail'}, 404
@@ -60,7 +119,7 @@ def actionLogin(request):
     user = auth.authenticate(username=user.username, password=passwordField)
 
     if user is None:
-        return {'code': 'auth/wrongpassword' % emailField}, 404
+        return {'code': 'auth/wrongpassword'}, 404
 
     if user.is_active:
         user.backend = 'django.contrib.auth.backends.ModelBackend'

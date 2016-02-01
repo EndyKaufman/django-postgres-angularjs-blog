@@ -49,8 +49,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'storages',
     'jsonview',
-    'app.home',
     'app.myauth',
+    'app.home',
     'app.tag',
     'app.image',
     'app.project'
@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-
+print os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

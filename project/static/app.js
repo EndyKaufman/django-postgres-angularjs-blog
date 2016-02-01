@@ -57554,7 +57554,7 @@ app.constant('AuthConst',{
         action: '/auth/profile'
     },
     update:{
-        action: '/auth/update'
+        action: '/auth/profile/update'
     },
     recovery:{
         name: 'Recovery',

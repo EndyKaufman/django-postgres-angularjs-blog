@@ -21,27 +21,17 @@ import app.myauth
 import app.tag
 import app.project
 import app.home.views
-import app.home.views_fixtures
 import app.home
 
 admin.autodiscover()
 
-if settings.USE_FIXTURE:
-    urlpatterns = [
-        url(r'^$', app.home.views_fixtures.index, name='index'),
-        url(r'^auth/', include(app.myauth)),
-        url(r'^tag/', include(app.tag)),
-        url(r'^project/', include(app.project)),
-        url(r'^admin/', admin.site.urls),
-    ]
-else:
-    urlpatterns = [
-        url(r'^$', app.home.views.index, name='index'),
-        url(r'^auth/', include(app.myauth)),
-        url(r'^tag/', include(app.tag)),
-        url(r'^project/', include(app.project)),
-        url(r'^admin/', admin.site.urls),
-    ]
+urlpatterns = [
+    url(r'^$', app.home.views.index, name='index'),
+    url(r'^auth/', include(app.myauth)),
+    url(r'^tag/', include(app.tag)),
+    url(r'^project/', include(app.project)),
+    url(r'^admin/', admin.site.urls),
+]
 
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
