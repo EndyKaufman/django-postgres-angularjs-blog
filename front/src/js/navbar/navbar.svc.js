@@ -49,8 +49,11 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         if (navId!=undefined)
             $routeParams.navId=navId;
         else
-        if ($route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
-            $routeParams.navId=$route.current.$$route.navId;
+        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
+            $routeParams.navId=$route.current.$$route.navId
+        else
+        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
+            $routeParams.navId=$route.current.params.navId;
 
         service.brand=AppConst.brand;
         service.items=AppConst.navbar;
@@ -60,6 +63,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         for (var i=0;i<service.items.right.length;i++){
             modifiItem(service.items.right[i]);
         }
+        $rootScope.$broadcast('navbar.change', false, {current:{params:{navId:$routeParams.navId}}}, false);
     }
 
     return service;

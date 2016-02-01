@@ -448,4 +448,5 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <p class="text-muted">Footer text</p>\n' +
     '    </div>\n' +
     '</footer>');
+	a.put('views/empty.html', '');
 	 }]);

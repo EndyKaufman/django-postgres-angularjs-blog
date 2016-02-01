@@ -103,8 +103,8 @@ var tests_source=[
 //dest
 var dest_path='../project/static/'
 
-//css modifi function
-function cssChange(content) {
+//source modifi function
+function sourceChange(content) {
     return content
     .replace(new RegExp("../../bower_components/bootstrap/fonts/glyphicons-halflings-regular","ig"),
     '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/fonts/glyphicons-halflings-regular')
@@ -138,7 +138,7 @@ gulp.task('less', function () {
 //concat dev css
 gulp.task('dev:css', function () {
   return gulp.src(css_source)
-    .pipe(change(cssChange))
+    .pipe(change(sourceChange))
     .pipe(concat(dest_path+'app.css'))
     .pipe(gulp.dest('.'))
 });
@@ -148,7 +148,7 @@ gulp.task('public:css', function () {
   return gulp.src(css_source)
     .pipe(sourcemaps.init({loadMaps:true}))
     .pipe(minifyCSS({compatibility: 'ie8'}))
-    .pipe(change(cssChange))
+    .pipe(change(sourceChange))
     .pipe(concat(dest_path+'app.css'))
     .pipe(sourcemaps.write({addComment: false}))
     .pipe(gulp.dest('.'))
@@ -170,6 +170,7 @@ gulp.task('template:js', function () {
 gulp.task('dev:js', function () {
   return gulp.src(js_source)
     .pipe(sourcemaps.init())
+    .pipe(change(sourceChange))
     .pipe(concat(dest_path+'app.js'))
     .pipe(sourcemaps.write({addComment: false}))
     .pipe(gulp.dest('.'))
@@ -179,9 +180,10 @@ gulp.task('dev:js', function () {
 gulp.task('public:js', function () {
   return gulp.src(js_source)
     .pipe(sourcemaps.init())
-    .pipe(concat(dest_path+'app.js'))
     .pipe(ngAnnotate())
     .pipe(uglify())
+    .pipe(change(sourceChange))
+    .pipe(concat(dest_path+'app.js'))
     .pipe(sourcemaps.write({addComment: false}))
     .pipe(gulp.dest('.'))
 });

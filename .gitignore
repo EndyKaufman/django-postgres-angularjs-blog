@@ -2,6 +2,7 @@ venv
 front/bower_components
 front/node_modules
 staticfiles
+front/phantomjsdriver.log
 result.xml
 .vagrant
 *.pyc

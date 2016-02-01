@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 import json
 from jsonview.decorators import json_view
 import config
-
+from django.views.decorators.csrf import csrf_exempt
 
 # Login
 @json_view
@@ -80,6 +80,7 @@ def actionLogin(request):
 
 # Logout
 @json_view
+@csrf_exempt
 def actionLogout(request):
     """Logout action"""
 

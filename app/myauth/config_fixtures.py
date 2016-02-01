@@ -10,7 +10,7 @@ def getUserData(user):
             content = f.read()
             f.close()
     except IOError:
-        content = '[]'
+        content = '{}'
     config = json.loads(content)
 
     return config

@@ -18,15 +18,19 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
     });
 
     $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
-        if (current.params!=undefined && current.params.navId==AppConst.auth.logout.name && service.isLogged()){
-            eventRoute.preventDefault();
+        if (current.params!=undefined && current.params.navId=='logout'){
+            if (eventRoute!=false)
+                eventRoute.preventDefault();
             service.doLogout();
         }
     });
 
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
-
+        if ($routeParams.navId=='logout'){
+            service.doLogout();
+            return;
+        }
         $q.all([
             service.load()
         ]).then(function(responseList) {
@@ -97,6 +101,10 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
                         MessageSvc.error(response.data.code, response.data);
                 }
             );
+        },
+        function(){
+            if ($routeParams.navId=='logout')
+                NavbarSvc.goHome();
         });
     }
 

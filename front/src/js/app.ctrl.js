@@ -1,4 +1,4 @@
-app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc) {
+app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AuthSvc) {
     $scope.AppConfig=AppConfig;
 
     $scope.UtilsSvc=UtilsSvc;

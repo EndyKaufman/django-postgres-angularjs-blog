@@ -18,7 +18,7 @@ def fill_from_fixtures(apps, schema_editor):
     Tag = apps.get_model("tag", "Tag")
 
     for record in records:
-        tag, created = Tag.objects.get_or_create(id=record['id'], text=record['text'])
+        tag, created = Tag.objects.get_or_create(text=record['text'])
 
 class Migration(migrations.Migration):
 

@@ -12,7 +12,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     });
 
     $rootScope.$on('project.update',function(event, item){
-    console.log('project/update/success', {values:item});
         MessageSvc.info('project/update/success', {values:item});
         service.goItem(item.name);
     });

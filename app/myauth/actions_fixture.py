@@ -9,10 +9,12 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 import json
 from jsonview.decorators import json_view
+from django.views.decorators.csrf import csrf_exempt
 
 
 # update
 @json_view
+@csrf_exempt
 def actionUpdate(request):
     """Update record"""
 
@@ -83,6 +85,7 @@ def actionUpdate(request):
 
 # Login
 @json_view
+@csrf_exempt
 def actionLogin(request):
     """Login action"""
 
@@ -170,6 +173,7 @@ def actionLogin(request):
 
 # Logout
 @json_view
+@csrf_exempt
 def actionLogout(request):
     """Logout action"""
 
