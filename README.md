@@ -43,7 +43,7 @@ pip install -r requirements.txt
 ```
 cd front
 sudo npm install -g npm
-sudo npm install -g gulpjs/gulp-cli#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver node-gyp git+https://git@github.com/Medium/phantomjs.git##v1.9.19
+sudo npm install -g gulpjs/gulp-cli#4.0 karma-cli npm-check-updates bower protractor selenium-webdriver node-gyp git+https://git@github.com/Medium/phantomjs.git#v1.9.19
 sudo npm install --save-dev
 sudo npm install node-sass --save-dev
 sudo npm install gulpjs/gulp#4.0 --save-dev
