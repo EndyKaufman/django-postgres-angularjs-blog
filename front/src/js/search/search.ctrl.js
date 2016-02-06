@@ -1,5 +1,5 @@
-app.controller('SearchCtrl', function ($scope, SearchSvc, AuthSvc, TagSvc) {
-    $scope.AuthSvc=AuthSvc;
+app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc) {
+    $scope.AccountSvc=AccountSvc;
 	$scope.SearchSvc=SearchSvc;
 	$scope.TagSvc=TagSvc;
 

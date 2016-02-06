@@ -27,23 +27,50 @@ class Project(models.Model):
         try:
             nameField = jsonObject['name']
         except KeyError:
-            return {'code': 'auth/noname'}, 404
+            return {'code': 'project/noname'}, 404
         try:
             titleField = jsonObject['title']
         except KeyError:
-            return {'code': 'auth/notitle'}, 404
+            return {'code': 'project/notitle'}, 404
 
         return {'code': 'ok'}, 200
 
     def updateFromJsonObject(self, jsonObject):
-        self.title = jsonObject['title']
-        self.name = jsonObject['name']
-        self.description = jsonObject['description']
-        self.url = jsonObject['url']
-        self.text = jsonObject['text']
-        self.html = jsonObject['html']
-        self.markdown = jsonObject['markdown']
-        self.type = jsonObject['type']
+        try:
+            self.title = jsonObject['title']
+        except KeyError:
+            self.title = None
+        try:
+            self.name = jsonObject['name']
+        except KeyError:
+            self.name = None
+        try:
+            self.description = jsonObject['description']
+        except KeyError:
+            self.description = None
+        try:
+            self.url = jsonObject['url']
+        except KeyError:
+            self.url = None
+        try:
+            self.text = jsonObject['text']
+        except KeyError:
+            self.text = None
+        try:
+            self.html = jsonObject['html']
+        except KeyError:
+            self.html = None
+        try:
+            self.markdown = jsonObject['markdown']
+        except KeyError:
+            self.markdown = None
+        try:
+            self.type = jsonObject['type']
+        except KeyError:
+            self.type = None
+
+        if self.type == None:
+            self.type = 1
 
         # tags
         tagFieldIds = []
@@ -61,7 +88,6 @@ class Project(models.Model):
                 tagFieldIds.append(tagId)
             if tagId is None and tagText is not None:
                 tagFieldTexts.append(tag)
-
 
         for tag in self.tags.all():
             if tag.id not in tagFieldIds:
@@ -98,6 +124,5 @@ class Project(models.Model):
         for imageSrc in imageFieldSrcs:
             image, imageCreated = Image.objects.get_or_create(src=imageSrc['src'])
             self.images.add(image)
-
 
         return {'code': 'ok'}, 200

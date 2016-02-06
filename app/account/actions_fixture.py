@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from django.conf import settings
-# from django.contrib import auth
-# from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 import json
 from jsonview.decorators import json_view
-from django.views.decorators.csrf import csrf_exempt
 
 
 # update
@@ -25,25 +19,24 @@ def actionProfileUpdate(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    # Validate fields
+    from app.account.models import User
+
+    validateResult, validateCode = User.validateProfileUpdateJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
     try:
         emailField = json_data['email']
+        emailField = emailField.lower()
     except KeyError:
         emailField = ''
 
     if emailField == '':
-        return {'code': 'auth/noemail'}, 404
-
-    emailField = emailField.lower()
-
-    # Validate values of fields
-    try:
-        validate_email(emailField)
-    except ValidationError:
-        return {'code': 'auth/wrongemail'}, 404
+        return {'code': 'account/noemail'}, 404
 
     try:
-        with open('app/myauth/fixtures/users.json') as f:
+        with open('app/account/fixtures/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -73,7 +66,7 @@ def actionProfileUpdate(request):
             user['username'] = username
 
     if user == False:
-        return {'code': 'auth/usernofound', 'values': [emailField]}, 404
+        return {'code': 'account/usernofound', 'values': [emailField]}, 404
 
     return {'code': 'ok', 'data': [user]}
 
@@ -91,9 +84,16 @@ def actionLogin(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    # Validate fields
+    from app.account.models import User
+
+    validateResult, validateCode = User.validateLoginJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
     try:
         emailField = json_data['email']
+        emailField = emailField.lower()
     except KeyError:
         emailField = ''
     try:
@@ -101,22 +101,8 @@ def actionLogin(request):
     except KeyError:
         passwordField = ''
 
-    if emailField == '':
-        return {'code': 'auth/noemail'}, 404
-
-    if passwordField == '':
-        return {'code': 'auth/nopassword'}, 404
-
-    emailField = emailField.lower()
-
-    # Validate values of fields
     try:
-        validate_email(emailField)
-    except ValidationError:
-        return {'code': 'auth/wrongemail'}, 404
-
-    try:
-        with open('app/myauth/fixtures/users.json') as f:
+        with open('app/account/fixtures/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -130,7 +116,7 @@ def actionLogin(request):
             user = record
 
     if user == False:
-        return {'code': 'auth/usernofound', 'values': [emailField]}, 404
+        return {'code': 'account/usernofound', 'values': [emailField]}, 404
     return {'code': 'ok', 'data': [user]}
 
 

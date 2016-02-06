@@ -20,11 +20,8 @@ def fill_from_fixtures(apps, schema_editor):
     Image = apps.get_model("image", "Image")
     Tag = apps.get_model("tag", "Tag")
 
-    Image_Links = apps.get_model("project", "Image_Links")
-    Tag_Links = apps.get_model("project", "Tag_Links")
-
     for record in records:
-        project, created = Project.objects.get_or_create(id=record['id'], name=record['name'], title=record['title'],
+        project, created = Project.objects.get_or_create(pk=record['id'], name=record['name'], title=record['title'],
                                                          description=record['description'], url=record['url'],
                                                          type=record['type'],
                                                          html=record['html'],
@@ -37,7 +34,7 @@ def fill_from_fixtures(apps, schema_editor):
 
         for tagRecord in tagRecords:
             tag, tagCreated = Tag.objects.get_or_create(text=tagRecord['text'])
-            tagLinks, tagLinksCreated = Tag_Links.objects.get_or_create(project=project, tag=tag)
+            project.tags.add(tag)
 
 
         try:
@@ -47,7 +44,9 @@ def fill_from_fixtures(apps, schema_editor):
 
         for imageRecord in imageRecords:
             image, imageCreated = Image.objects.get_or_create(src=imageRecord['src'])
-            imageLinks, imageLinksCreated = Image_Links.objects.get_or_create(project=project, image=image)
+            project.images.add(image)
+
+        project.save()
 
 
 class Migration(migrations.Migration):

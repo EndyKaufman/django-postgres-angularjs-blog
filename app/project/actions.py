@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from django.conf import settings
-# from django.contrib import auth
-# from django.contrib.auth.models import User
-# from django.core.validators import validate_email
-# from django.core.exceptions import ValidationError
-
 import json
 from jsonview.decorators import json_view
 from project import helpers
@@ -101,13 +93,13 @@ def actionUpdate(request, project_id):
     except Project.DoesNotExist:
         return {'code': 'project/nofound', 'values': [project]}, 404
 
-    try:
-        validateResult, validateCode = project.updateFromJsonObject(json_data)
-        if validateCode != 200:
-            return validateResult, validateCode
-        project.save()
-    except:
-        return {'code': 'project/fail/update'}, 404
+    #try:
+    validateResult, validateCode = project.updateFromJsonObject(json_data)
+    if validateCode != 200:
+        return validateResult, validateCode
+    project.save()
+    #except:
+    #    return {'code': 'project/fail/update'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([project])}
 
@@ -132,18 +124,17 @@ def actionCreate(request):
     if validateCode != 200:
         return validateResult, validateCode
 
-    project = Project.objects.create(name=json_data['name'])
+    project = Project.objects.create(name=json_data['name'], type=1)
 
-    try:
-        validateResult, validateCode = project.updateFromJsonObject(json_data)
-        if validateCode != 200:
-            return validateResult, validateCode
-        project.save()
-    except:
-        return {'code': 'project/fail/create'}, 404
+    # try:
+    validateResult, validateCode = project.updateFromJsonObject(json_data)
+    if validateCode != 200:
+        return validateResult, validateCode
+    project.save()
+    # except:
+    #     return {'code': 'project/fail/create'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([project])}
-
 
 # delete
 @json_view

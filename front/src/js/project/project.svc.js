@@ -123,9 +123,17 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         });
     }
     service.initEmptyItem=function(){
-        service.item={};
-        service.item.type=1;
-        service.item.tags=[];
+        service.item = {};
+        /*service.title = '';
+        service.name = '';
+        service.description = '';
+        service.url = '';
+        service.text = '';
+        service.html = '';
+        service.markdown = '';*/
+        service.item.type = 1;
+        service.item.tags = [];
+        service.item.images = [];
     }
     service.load=function(){
         var deferred = $q.defer();

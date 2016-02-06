@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json
-from app.myauth.helpers import getUserData
+from app.account.models import User
 import django.middleware.csrf
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
@@ -13,6 +12,12 @@ def get(request):
     config['hostName'] = request.get_host().decode('idna')
     config['csrf_token'] = django.middleware.csrf.get_token(request)
     config['static_url'] = static('')
-    config['user'] = getUserData(request.user).copy()
+
+    try:
+        user = User.objects.get(pk=request.user.id)
+        config['user'] = user.getUserData().copy()
+    except User.DoesNotExist:
+        config['user'] = {}
+
 
     return config

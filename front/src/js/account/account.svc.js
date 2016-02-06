@@ -1,18 +1,18 @@
-app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
 
-    $rootScope.$on('auth.update',function(event, data){
-        MessageSvc.info('auth/update/success');
+    $rootScope.$on('account.update',function(event, data){
+        MessageSvc.info('account/update/success');
     });
 
-    $rootScope.$on('auth.login',function(event, data){
-        MessageSvc.info('auth/login/success');
+    $rootScope.$on('account.login',function(event, data){
+        MessageSvc.info('account/login/success');
         NavbarSvc.init();
         NavbarSvc.goBack();
     });
 
-    $rootScope.$on('auth.logout',function(event, data){
-        MessageSvc.info('auth/logout/success');
+    $rootScope.$on('account.logout',function(event, data){
+        MessageSvc.info('account/logout/success');
         NavbarSvc.init();
         NavbarSvc.goHome();
     });
@@ -48,12 +48,12 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
 
 	service.doUpdate=function(item){
 	    $rootScope.$broadcast('show-errors-check-validity');
-		 AuthRes.actionUpdate(item).then(
+		 AccountRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
                     AppConfig.user=service.item;
-                    $rootScope.$broadcast('auth.update', service.item);
+                    $rootScope.$broadcast('account.update', service.item);
                 }
             },
             function (response) {
@@ -64,12 +64,12 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
     }
 
 	service.doLogin=function(email, password){
-	    AuthRes.actionLogin(email,password).then(
+	    AccountRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
                     AppConfig.user=service.item;
-                	$rootScope.$broadcast('auth.login', service.item);
+                	$rootScope.$broadcast('account.login', service.item);
                 }
             },
             function (response) {
@@ -79,14 +79,14 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
         );
 	}
 	service.doLogout=function(){
-         MessageSvc.confirm('auth/logout/confirm', {},
+         MessageSvc.confirm('account/logout/confirm', {},
          function(){
-             AuthRes.actionLogout().then(
+             AccountRes.actionLogout().then(
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                         service.item={}
                         AppConfig.user=service.item;
-                        $rootScope.$broadcast('auth.logout', service.item);
+                        $rootScope.$broadcast('account.logout', service.item);
                     }
                 },
                 function (response) {

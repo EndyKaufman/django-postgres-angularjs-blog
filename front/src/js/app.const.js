@@ -1,4 +1,4 @@
-app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
+app.factory('AppConst', function(AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
 
     var service={
         brand:{
@@ -13,7 +13,7 @@ app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, 
         },
         navbar: NavbarConst,
         search: SearchConst,
-        auth: AuthConst,
+        account: AccountConst,
         tag: TagConst,
         note: NoteConst,
         bookmark: BookmarkConst,

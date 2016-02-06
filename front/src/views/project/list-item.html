@@ -9,7 +9,7 @@
                             </span></p>
         <p class="text-right">
             <a ng-href="{{AppConst.project.urls.url+'/update/'+item.name}}"
-               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>
+               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>
             <a ng-href="{{AppConst.project.urls.url+'/'+item.name}}" class="btn btn-link">Detail...</a>
         </p>
     </div>

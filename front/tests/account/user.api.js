@@ -32,7 +32,7 @@ describe('Update user profile with user role', function() {
             done();
             return;
         }
-        helpers.postJson('/auth/login', {
+        helpers.postJson('/account/login', {
             email:'user@email.com',
             password:'user@email.com'
         }, function(response){
@@ -58,7 +58,7 @@ describe('Update user profile with user role', function() {
                 done();
                 return;
             }
-            helpers.postJson('/auth/profile/update', {
+            helpers.postJson('/account/profile/update', {
                 firstname:'New Name',
                 email:'user@email.com'
             }, function(response){
@@ -85,7 +85,7 @@ describe('Update user profile with user role', function() {
                     done();
                     return;
                 }
-                helpers.postJson('/auth/profile/update', {
+                helpers.postJson('/account/profile/update', {
                     firstname:userResponse.data[0].firstname,
                     email:'user@email.com'
                 }, function(response){
@@ -96,7 +96,7 @@ describe('Update user profile with user role', function() {
 
             it('response structure must be correct', function() {
                 expect(typeof restoreProfileResponse).toEqual('object');
-                var oldData = restoreProfileResponse.data[0];
+                var oldData = userResponse.data[0];
                 var userData = restoreProfileResponse.data[0];
                 expect(oldData.firstname).toEqual(userData.firstname);
             });
@@ -108,7 +108,7 @@ describe('Update user profile with user role', function() {
                         done();
                         return;
                     }
-                    helpers.postJson('/auth/logout', {
+                    helpers.postJson('/account/logout', {
                     }, function(response){
                         logoutResponse = response;
                         done()

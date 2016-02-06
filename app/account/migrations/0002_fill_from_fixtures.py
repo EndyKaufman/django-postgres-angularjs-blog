@@ -3,13 +3,13 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.contrib.auth.models import User
+from app.account.models import User
 import json
 
 
 def fill_from_fixtures(apps, schema_editor):
     try:
-        with open('app/myauth/fixtures/users.json') as f:
+        with open('app/account/fixtures/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -18,29 +18,34 @@ def fill_from_fixtures(apps, schema_editor):
 
     for record in records:
         try:
-            password = record['userData']['password']
+            password = record['password']
         except:
-            password = record['userData']['email']
+            password = ''
+        try:
+            username = record['username']
+        except:
+            username = ''
 
         try:
-            username = record['userData']['username']
-        except:
-            username = record['userData']['email']
-
-        try:
-            first_name = record['userData']['firstname']
+            first_name = record['firstname']
         except:
             first_name = None
 
         try:
-            last_name = record['userData']['lastname']
+            last_name = record['lastname']
         except:
             last_name = None
 
         try:
-            roles = record['userData']['roles']
+            roles = record['roles']
         except:
             roles = []
+
+        if password == '':
+            password = record['email']
+
+        if username == '':
+            username = record['email']
 
         is_admin = False
         is_staff = False
@@ -52,9 +57,9 @@ def fill_from_fixtures(apps, schema_editor):
                 is_admin = True
 
         try:
-            user = User.objects.get(email=record['userData']['email'])
+            user = User.objects.get(email=record['email'])
         except User.DoesNotExist:
-            user = User.objects.create_user(email=record['userData']['email'], password=password, username=username)
+            user = User.objects.create_user(email=record['email'], password=password, username=username)
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             user.first_name = first_name
             user.last_name = last_name
@@ -66,7 +71,7 @@ def fill_from_fixtures(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('myauth', '0001_initial'),
+        ('account', '0001_initial'),
     ]
 
     operations = [

@@ -4,7 +4,7 @@
 # from django.http import HttpResponse
 # from django.conf import settings
 # from django.contrib import auth
-# from django.contrib.auth.models import User
+# from app.account.models import User
 # from django.core.validators import validate_email
 # from django.core.exceptions import ValidationError
 
@@ -94,15 +94,12 @@ def actionUpdate(request, project_id):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    # Validate fields
-    try:
-        nameField = json_data['name']
-    except KeyError:
-        return {'code': 'auth/noname'}, 404
-    try:
-        titleField = json_data['title']
-    except KeyError:
-        return {'code': 'auth/notitle'}, 404
+    from app.project.models import Project
+
+    validateResult, validateCode = Project.validateJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
 
     return {'code': 'ok', 'data': [json_data]}
 
@@ -120,16 +117,15 @@ def actionCreate(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    # Validate fields
-    try:
-        nameField = json_data['name']
-    except KeyError:
-        return {'code': 'auth/noname'}, 404
-    try:
-        titleField = json_data['title']
-    except KeyError:
-        return {'code': 'auth/notitle'}, 404
+    from app.project.models import Project
 
+    validateResult, validateCode = Project.validateJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
+    json_data['tags'][0]['id'] = 101
+    json_data['images'][0]['id'] = 101
     return {'code': 'ok', 'data': [json_data]}
 
 

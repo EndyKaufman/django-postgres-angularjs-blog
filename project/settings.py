@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'storages',
     'jsonview',
-    'app.myauth',
+    'app.account',
     'app.home',
     'app.tag',
     'app.image',
@@ -68,6 +68,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'project.urls'
+AUTH_USER_MODEL = 'account.User'
 
 TEMPLATES = [
     {

@@ -32,7 +32,7 @@ describe('Update user profile with admin role', function() {
             done();
             return;
         }
-        helpers.postJson('/auth/login', {
+        helpers.postJson('/account/login', {
             email:'admin@email.com',
             password:'admin@email.com'
         }, function(response){
@@ -58,7 +58,7 @@ describe('Update user profile with admin role', function() {
                 done();
                 return;
             }
-            helpers.postJson('/auth/profile/update', {
+            helpers.postJson('/account/profile/update', {
                 firstname:'New Name',
                 email:'admin@email.com'
             }, function(response){
@@ -85,9 +85,9 @@ describe('Update user profile with admin role', function() {
                     done();
                     return;
                 }
-                helpers.postJson('/auth/profile/update', {
-                    firstname:adminResponse.data[0].firstname,
-                    email:'admin@email.com'
+                helpers.postJson('/account/profile/update', {
+                    firstname: adminResponse.data[0].firstname,
+                    email: 'admin@email.com'
                 }, function(response){
                     restoreProfileResponse=response;
                     done();
@@ -96,7 +96,7 @@ describe('Update user profile with admin role', function() {
 
             it('response structure must be correct', function() {
                 expect(typeof restoreProfileResponse).toEqual('object');
-                var oldData = restoreProfileResponse.data[0];
+                var oldData = adminResponse.data[0];
                 var userData = restoreProfileResponse.data[0];
                 expect(oldData.firstname).toEqual(userData.firstname);
             });
@@ -108,7 +108,7 @@ describe('Update user profile with admin role', function() {
                         done();
                         return;
                     }
-                    helpers.postJson('/auth/logout', {
+                    helpers.postJson('/account/logout', {
                     }, function(response){
                         logoutResponse = response;
                         done()

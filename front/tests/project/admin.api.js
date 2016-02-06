@@ -1,62 +1,182 @@
-describe('Project Admin API:', function() {
-  var helpers = require('./../helpers.js');
+describe('Work with projects as admin', function() {
+    var helpers = require('./../helpers.js');
 
-  var listResponse = undefined, createResponse = undefined, updateResponse = undefined, deleteResponse = undefined;
-/*
-  beforeEach(function(done){
-    browser.driver.manage().window().setSize(1280, 1024);
-    browser.get(browser.baseUrl).then(function(){
-        helpers.getJson('/project/list', function(response){
-            listResponse = response;
-            var record = listResponse.data[0];
+    var appConfigResponse = undefined, adminResponse=undefined, listResponse = undefined, createResponse = undefined, updateResponse = undefined, deleteResponse = undefined;
 
-            helpers.postJson('/project/create', record, function(response){
-                createResponse = response;
-
-                helpers.postJson('/project/update/'+record.id, record, function(response){
-                    updateResponse = response;
-
-                    helpers.postJson('/project/delete/'+record.tags[0].id, {}, function(response){
-                        deleteResponse = response;
-
-                        done();
-                    })
-                })
-            })
-        })
+    beforeEach(function(done){
+        if (appConfigResponse!==undefined){
+            done();
+            return;
+        }
+        browser.driver.manage().window().setSize(1280, 1024);
+        browser.get(browser.baseUrl).then(function(){
+            helpers.executeAndReturnJson(
+                'if (window.AppConfig!==undefined)callback(window.AppConfig);else callback({});',
+                function(response){
+                    appConfigResponse = response;
+                    done();
+                });
+            }
+        );
     });
-  });
 
-  it('POST /project/create & check structure', function() {
-    expect(typeof createResponse).toEqual('object');
-    expect(createResponse.code).toEqual('ok');
-    var record = createResponse.data[0];
-    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags'];
-    for (var i=0; i<fields.length; i++)
-        expect(record[fields[0]]).toBeDefined();
-  });
+    it('response structure must be correct', function() {
+        expect(appConfigResponse).toBeDefined();
+        expect(typeof appConfigResponse).toEqual('object');
+    });
 
-  it('GET /project/list & check structure', function() {
-    expect(typeof listResponse).toEqual('object');
-    expect(listResponse.code).toEqual('ok');
-    var record = listResponse.data[0];
-    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags'];
-    for (var i=0; i<fields.length; i++)
-        expect(record[fields[0]]).toBeDefined();
-  });
 
-  it('POST /project/update/:project_id & check structure', function() {
-    expect(typeof updateResponse).toEqual('object');
-    expect(updateResponse.code).toEqual('ok');
-    var record = updateResponse.data[0];
-    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags'];
-    for (var i=0; i<fields.length; i++)
-        expect(record[fields[0]]).toBeDefined();
-  });
+    describe('Login on site', function() {
 
-  it('POST /project/delete/:project_id & check structure', function() {
-    expect(typeof deleteResponse).toEqual('object');
-    expect(deleteResponse.code).toEqual('ok');
-  });
-*/
+        beforeEach(function(done){
+            if (adminResponse!==undefined){
+                done();
+                return;
+            }
+            helpers.postJson('/account/login', {
+                email:'admin@email.com',
+                password:'admin@email.com'
+            }, function(response){
+                adminResponse = response;
+                done();
+            });
+        });
+
+        it('response structure must be correct', function() {
+            expect(typeof adminResponse).toEqual('object');
+            var userData = adminResponse.data[0];
+            var fields = ['id', 'username', 'email', 'firstname', 'lastname', 'roles'];
+            for (var i=0; i<fields.length; i++)
+                expect(userData[fields[i]]).toBeDefined();
+            if (userData.roles.length>0)
+                expect(userData.roles[0]).toEqual('admin');
+        });
+
+        describe('Get projects list', function() {
+
+            beforeEach(function(done){
+                if (listResponse!==undefined){
+                    done();
+                    return;
+                }
+                helpers.getJson('/project/list', function(response){
+                    listResponse = response;
+                    done();
+                });
+            });
+
+            it('response structure must be correct', function() {
+                expect(typeof listResponse).toEqual('object');
+                expect(listResponse.code).toEqual('ok');
+                var record = listResponse.data[0];
+                var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                for (var i=0; i<fields.length; i++)
+                    expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+            });
+
+            describe('Create new project', function() {
+                var createdRecord = {};
+
+                beforeEach(function(done){
+                    if (createResponse!==undefined){
+                        done();
+                        return;
+                    }
+                    helpers.postJson('/project/create',
+                        {
+                            id: 101,
+                            name:'newProject',
+                            title:'New Project',
+                            description:'description',
+                            type:1,
+                            url:'url',
+                            html:'html',
+                            markdown:'markdown',
+                            text:'bla bla bla',
+                            tags:[{text:'tag1'}],
+                            images:[{src:'image1'}]
+                        }, function(response){
+                        createResponse = response;
+                        createdRecord = createResponse.data[0];
+                        done();
+                    });
+                });
+
+                it('response structure must be correct', function() {
+                    expect(typeof createResponse).toEqual('object');
+                    expect(createResponse.code).toEqual('ok');
+                    var record = createResponse.data[0];
+                    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                    for (var i=0; i<fields.length; i++){
+                        expect(record[fields[i]]).toBeDefined();}
+                });
+
+                it('tags must be created or used exists', function() {
+                    var record = createResponse.data[0];
+                    expect(record.tags[0].text).toEqual('tag1');
+                    expect(record.tags[0].id).toBeDefined();
+                });
+
+                it('images must be created or used exists', function() {
+                    var record = createResponse.data[0];
+                    expect(record.images[0].src).toEqual('image1');
+                    expect(record.images[0].id).toBeDefined();
+                });
+
+                describe('Update created project', function() {
+
+                    createdRecord.title='New Project Updated';
+
+                    beforeEach(function(done){
+                        if (updateResponse!==undefined){
+                            done();
+                            return;
+                        }
+                        helpers.postJson('/project/update/'+createdRecord.id, createdRecord, function(response){
+                            updateResponse = response;
+                            done();
+                        });
+                    });
+
+                    it('response structure must be correct', function() {
+                        expect(typeof updateResponse).toEqual('object');
+                        expect(updateResponse.code).toEqual('ok');
+                        var record = updateResponse.data[0];
+                        var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                        for (var i=0; i<fields.length; i++)
+                            expect(record[fields[i]]).toBeDefined();
+                    });
+
+                    it('record must be updated', function() {
+                        var record = updateResponse.data[0];
+                        expect(record.title).toEqual(createdRecord.title);
+                    });
+
+                    describe('Remove created project', function() {
+
+                        beforeEach(function(done){
+                            if (deleteResponse!==undefined){
+                                done();
+                                return;
+                            }
+                            helpers.postJson('/project/delete/'+createdRecord.id, {}, function(response){
+                                deleteResponse = response;
+                                done();
+                            });
+                        });
+
+                        it('response structure must be correct', function() {
+                            expect(typeof deleteResponse).toEqual('object');
+                            expect(deleteResponse.code).toEqual('ok');
+                        });
+
+                    });
+
+                });
+
+            });
+
+        });
+
+    });
 });

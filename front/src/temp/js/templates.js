@@ -160,7 +160,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <h1>\n' +
     '            <span>My projects</span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/create\'}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Create</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Create</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
@@ -194,7 +194,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                            </span></p>\n' +
     '        <p class="text-right">\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
     '        </p>\n' +
     '    </div>\n' +
@@ -204,12 +204,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <h1 class="hidden-sm hidden-md hidden-lg">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '        <h1 class="hidden-xs">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
@@ -307,57 +307,57 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
     '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
     '</div>');
-	a.put('views/auth/profile.html', '<div class="container">\n' +
+	a.put('views/account/profile.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>Profile</span>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <form name="authForm">\n' +
+    '    <form name="accountForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="firstname">First name</label>\n' +
     '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
-    '                           ng-model="AuthSvc.item.firstname">\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.firstname.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.firstname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.firstname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="lastname">Last name</label>\n' +
     '                    <input type="text" class="form-control" name="lastname" id="lastname"\n' +
-    '                           ng-model="AuthSvc.item.lastname">\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.lastname.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.lastname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.lastname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="username">Username</label>\n' +
     '                    <input type="text" class="form-control" name="username" id="username"\n' +
-    '                           ng-model="AuthSvc.item.username" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.username.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.username" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.username.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email</label>\n' +
     '                    <input type="email" class="form-control" name="email" id="email"\n' +
-    '                           ng-model="AuthSvc.item.email" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.email" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="password">Password</label>\n' +
     '                    <input type="password" class="form-control" name="password" id="password"\n' +
-    '                           ng-model="AuthSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <button ng-click="AuthSvc.doUpdate(AuthSvc.item)" class="btn btn-success"\n' +
-    '                        ng-disabled="!authForm.$valid">Update\n' +
+    '                <button ng-click="AccountSvc.doUpdate(AccountSvc.item)" class="btn btn-success"\n' +
+    '                        ng-disabled="!accountForm.$valid">Update\n' +
     '                </button>\n' +
     '            </div>\n' +
     '            <div class="col-md-3">\n' +
@@ -365,7 +365,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </form>\n' +
     '</div>');
-	a.put('views/auth/login.html', '<div class="container">\n' +
+	a.put('views/account/login.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Login on site</h1>\n' +
     '    </div>\n' +
@@ -374,30 +374,30 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <p>\n' +
     '    <div class="row">\n' +
     '        <div class="col-sm-4">\n' +
-    '            <form ng-submit="AuthSvc.doLogin(email, password)" name="authForm">\n' +
+    '            <form ng-submit="AccountSvc.doLogin(email, password)" name="accountForm">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email:</label>\n' +
     '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
     '                           ng-model="email" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="password">Password:</label>\n' +
     '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
     '                           ng-model="password" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary" ng-disabled="!authForm.$valid">Login</button>\n' +
+    '                <button type="submit" class="btn btn-primary" ng-disabled="!accountForm.$valid">Login</button>\n' +
     '            </form>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AppConst.auth.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AppConst.auth.reg.url}}">registration form</a></p>\n' +
+    '    <p>If you lose password please click to <a ng-href="{{AppConst.account.recovery.url}}">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="{{AppConst.account.reg.url}}">registration form</a></p>\n' +
     '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +

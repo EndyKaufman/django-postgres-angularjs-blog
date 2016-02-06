@@ -57528,51 +57528,51 @@ app.config(function ($selectProvider, showErrorsConfigProvider, $carouselProvide
     }
     angular.extend($carouselProvider.defaults, mydefaults)
 });
-app.constant('AuthConst',{
+app.constant('AccountConst',{
     reg:{
         title: 'Reg',
         name: 'reg',
         url: '#/reg',
-        action: '/auth/reg'
+        action: '/account/reg'
     },
     login:{
         title: 'Login',
         name: 'login',
         url: '#/login',
-        action: '/auth/login'
+        action: '/account/login'
     },
     logout:{
         title: 'Logout',
         name: 'logout',
         url: '#/logout',
-        action: '/auth/logout'
+        action: '/account/logout'
     },
     profile:{
         title: 'Profile',
         name: 'profile',
         url: '#/profile',
-        action: '/auth/profile'
+        action: '/account/profile'
     },
     update:{
-        action: '/auth/profile/update'
+        action: '/account/profile/update'
     },
     recovery:{
         name: 'Recovery',
         name: 'recovery',
         url: '#/recovery',
-        action: '/auth/recovery'
+        action: '/account/recovery'
     },
     message:{
-        'auth/noemail':'Email is empty!',
-        'auth/nopassword':'Password is empty!',
-        'auth/wrongemail':'Email is incorrect!',
-        'auth/usernofound':'User not founded!',
-        'auth/wrongpassword':'Wrong password!',
-        'auth/notactive':'User not activated!',
-        'auth/login/success':'You authorizing!',
-        'auth/logout/success':'Bye-Bye!',
-        'auth/logout/confirm':'Do you really want to leave?',
-        'auth/usernofound':'User with email <strong>%s</strong> not found!'
+        'account/noemail':'Email is empty!',
+        'account/nopassword':'Password is empty!',
+        'account/wrongemail':'Email is incorrect!',
+        'account/usernofound':'User not founded!',
+        'account/wrongpassword':'Wrong password!',
+        'account/notactive':'User not activated!',
+        'account/login/success':'You authorizing!',
+        'account/logout/success':'Bye-Bye!',
+        'account/logout/confirm':'Do you really want to leave?',
+        'account/usernofound':'User with email <strong>%s</strong> not found!'
     }
 });
 app.constant('BookmarkConst', {
@@ -57604,21 +57604,21 @@ app.constant('NavbarConst', {
     right:[
         {
             name:'login',
-            parent:'auth',
+            parent:'account',
             hiddenHandler: function(){
                 return (AppConfig.user.id!=undefined)
             }
         },
         {
             name: 'profile',
-            parent:'auth',
+            parent:'account',
             hiddenHandler: function(){
                 return (AppConfig.user.id==undefined)
             }
         },
         {
             name:'logout',
-            parent:'auth',
+            parent:'account',
             hiddenHandler: function(){
                 return (AppConfig.user.id==undefined)
             }
@@ -57696,7 +57696,7 @@ app.constant('TagConst', {
         }
     }
 });
-app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
+app.factory('AppConst', function(AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
 
     var service={
         brand:{
@@ -57711,7 +57711,7 @@ app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, 
         },
         navbar: NavbarConst,
         search: SearchConst,
-        auth: AuthConst,
+        account: AccountConst,
         tag: TagConst,
         note: NoteConst,
         bookmark: BookmarkConst,
@@ -57723,13 +57723,13 @@ app.factory('AppConst', function(AuthConst, TagConst, NoteConst, BookmarkConst, 
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
       .when('/login', {
-        templateUrl: 'views/auth/login.html',
-        controller: 'AuthCtrl',
+        templateUrl: 'views/account/login.html',
+        controller: 'AccountCtrl',
         navId: 'login'
       })
       .when('/profile', {
-        templateUrl: 'views/auth/profile.html',
-        controller: 'AuthCtrl',
+        templateUrl: 'views/account/profile.html',
+        controller: 'AccountCtrl',
         navId: 'profile'
       });
 });
@@ -57953,7 +57953,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <h1>\n' +
     '            <span>My projects</span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/create\'}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Create</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Create</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
@@ -57987,7 +57987,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                            </span></p>\n' +
     '        <p class="text-right">\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
     '        </p>\n' +
     '    </div>\n' +
@@ -57997,12 +57997,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <h1 class="hidden-sm hidden-md hidden-lg">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '        <h1 class="hidden-xs">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
     '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
-    '               class="btn btn-primary" ng-if="AuthSvc.isAdmin()">Edit</a>\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
@@ -58100,57 +58100,57 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
     '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
     '</div>');
-	a.put('views/auth/profile.html', '<div class="container">\n' +
+	a.put('views/account/profile.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>Profile</span>\n' +
     '        </h1>\n' +
     '    </div>\n' +
-    '    <form name="authForm">\n' +
+    '    <form name="accountForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="firstname">First name</label>\n' +
     '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
-    '                           ng-model="AuthSvc.item.firstname">\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.firstname.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.firstname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.firstname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="lastname">Last name</label>\n' +
     '                    <input type="text" class="form-control" name="lastname" id="lastname"\n' +
-    '                           ng-model="AuthSvc.item.lastname">\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.lastname.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.lastname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.lastname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="username">Username</label>\n' +
     '                    <input type="text" class="form-control" name="username" id="username"\n' +
-    '                           ng-model="AuthSvc.item.username" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.username.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.username" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.username.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email</label>\n' +
     '                    <input type="email" class="form-control" name="email" id="email"\n' +
-    '                           ng-model="AuthSvc.item.email" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.email" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="password">Password</label>\n' +
     '                    <input type="password" class="form-control" name="password" id="password"\n' +
-    '                           ng-model="AuthSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                           ng-model="AccountSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <button ng-click="AuthSvc.doUpdate(AuthSvc.item)" class="btn btn-success"\n' +
-    '                        ng-disabled="!authForm.$valid">Update\n' +
+    '                <button ng-click="AccountSvc.doUpdate(AccountSvc.item)" class="btn btn-success"\n' +
+    '                        ng-disabled="!accountForm.$valid">Update\n' +
     '                </button>\n' +
     '            </div>\n' +
     '            <div class="col-md-3">\n' +
@@ -58158,7 +58158,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </form>\n' +
     '</div>');
-	a.put('views/auth/login.html', '<div class="container">\n' +
+	a.put('views/account/login.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Login on site</h1>\n' +
     '    </div>\n' +
@@ -58167,30 +58167,30 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <p>\n' +
     '    <div class="row">\n' +
     '        <div class="col-sm-4">\n' +
-    '            <form ng-submit="AuthSvc.doLogin(email, password)" name="authForm">\n' +
+    '            <form ng-submit="AccountSvc.doLogin(email, password)" name="accountForm">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email:</label>\n' +
     '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
     '                           ng-model="email" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="password">Password:</label>\n' +
     '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
     '                           ng-model="password" required>\n' +
-    '                    <span ng-show="authForm.$submitted || authForm.password.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!authForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                          aria-hidden="true"></span>\n' +
     '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary" ng-disabled="!authForm.$valid">Login</button>\n' +
+    '                <button type="submit" class="btn btn-primary" ng-disabled="!accountForm.$valid">Login</button>\n' +
     '            </form>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AppConst.auth.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AppConst.auth.reg.url}}">registration form</a></p>\n' +
+    '    <p>If you lose password please click to <a ng-href="{{AppConst.account.recovery.url}}">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="{{AppConst.account.reg.url}}">registration form</a></p>\n' +
     '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
@@ -58284,11 +58284,11 @@ app.factory('AppRes', function () {
     service.init();    
     return service;
   });
-app.factory('AuthRes', function ($http, AppConst) {
+app.factory('AccountRes', function ($http, AppConst) {
     var service={};
 
     service.actionLogin=function(email, password){
-        return $http.post(AppConst.auth.login.action, {
+        return $http.post(AppConst.account.login.action, {
             email: email,
             password: password,
             csrfmiddlewaretoken: AppConfig.csrf_token
@@ -58296,7 +58296,7 @@ app.factory('AuthRes', function ($http, AppConst) {
     };
 
     service.actionLogout=function(){
-        return $http.post(AppConst.auth.logout.action,{
+        return $http.post(AppConst.account.logout.action,{
             csrfmiddlewaretoken: AppConfig.csrf_token
         });
     };
@@ -58304,7 +58304,7 @@ app.factory('AuthRes', function ($http, AppConst) {
     service.actionUpdate=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
-        return $http.post(AppConst.auth.update.action, item);
+        return $http.post(AppConst.account.update.action, item);
     }
 
     return service;
@@ -58374,21 +58374,21 @@ app.factory('AppSvc', function () {
     service.init();    
     return service;
   });
-app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
 
-    $rootScope.$on('auth.update',function(event, data){
-        MessageSvc.info('auth/update/success');
+    $rootScope.$on('account.update',function(event, data){
+        MessageSvc.info('account/update/success');
     });
 
-    $rootScope.$on('auth.login',function(event, data){
-        MessageSvc.info('auth/login/success');
+    $rootScope.$on('account.login',function(event, data){
+        MessageSvc.info('account/login/success');
         NavbarSvc.init();
         NavbarSvc.goBack();
     });
 
-    $rootScope.$on('auth.logout',function(event, data){
-        MessageSvc.info('auth/logout/success');
+    $rootScope.$on('account.logout',function(event, data){
+        MessageSvc.info('account/logout/success');
         NavbarSvc.init();
         NavbarSvc.goHome();
     });
@@ -58424,12 +58424,12 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
 
 	service.doUpdate=function(item){
 	    $rootScope.$broadcast('show-errors-check-validity');
-		 AuthRes.actionUpdate(item).then(
+		 AccountRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
                     AppConfig.user=service.item;
-                    $rootScope.$broadcast('auth.update', service.item);
+                    $rootScope.$broadcast('account.update', service.item);
                 }
             },
             function (response) {
@@ -58440,12 +58440,12 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
     }
 
 	service.doLogin=function(email, password){
-	    AuthRes.actionLogin(email,password).then(
+	    AccountRes.actionLogin(email,password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
                     AppConfig.user=service.item;
-                	$rootScope.$broadcast('auth.login', service.item);
+                	$rootScope.$broadcast('account.login', service.item);
                 }
             },
             function (response) {
@@ -58455,14 +58455,14 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
         );
 	}
 	service.doLogout=function(){
-         MessageSvc.confirm('auth/logout/confirm', {},
+         MessageSvc.confirm('account/logout/confirm', {},
          function(){
-             AuthRes.actionLogout().then(
+             AccountRes.actionLogout().then(
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                         service.item={}
                         AppConfig.user=service.item;
-                        $rootScope.$broadcast('auth.logout', service.item);
+                        $rootScope.$broadcast('account.logout', service.item);
                     }
                 },
                 function (response) {
@@ -58834,9 +58834,17 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
         });
     }
     service.initEmptyItem=function(){
-        service.item={};
-        service.item.type=1;
-        service.item.tags=[];
+        service.item = {};
+        /*service.title = '';
+        service.name = '';
+        service.description = '';
+        service.url = '';
+        service.text = '';
+        service.html = '';
+        service.markdown = '';*/
+        service.item.type = 1;
+        service.item.tags = [];
+        service.item.images = [];
     }
     service.load=function(){
         var deferred = $q.defer();
@@ -58984,17 +58992,17 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
     }
     return service;
   });
-app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AuthSvc) {
+app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc) {
     $scope.AppConfig=AppConfig;
 
     $scope.UtilsSvc=UtilsSvc;
     $scope.AppConst=AppConst;
 	$scope.AppSvc=AppSvc;
 });
-app.controller('AuthCtrl', function ($scope, AuthSvc) {
-    $scope.AuthSvc=AuthSvc;
+app.controller('AccountCtrl', function ($scope, AccountSvc) {
+    $scope.AccountSvc=AccountSvc;
 
-	AuthSvc.init();
+	AccountSvc.init();
 });
 app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
 	$scope.NavbarSvc=NavbarSvc;
@@ -59002,21 +59010,21 @@ app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
 
     NavbarSvc.init();
 });
-app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AuthSvc) {
-    $scope.AuthSvc=AuthSvc;
+app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc) {
+    $scope.AccountSvc=AccountSvc;
 	$scope.ProjectSvc=ProjectSvc;
 
 	ProjectSvc.init();
 });
-app.controller('SearchCtrl', function ($scope, SearchSvc, AuthSvc, TagSvc) {
-    $scope.AuthSvc=AuthSvc;
+app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc) {
+    $scope.AccountSvc=AccountSvc;
 	$scope.SearchSvc=SearchSvc;
 	$scope.TagSvc=TagSvc;
 
 	SearchSvc.init();
 });
-app.controller('TagCtrl', function ($scope, TagSvc, AuthSvc) {
-    $scope.AuthSvc=AuthSvc;
+app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc) {
+    $scope.AccountSvc=AccountSvc;
 	$scope.TagSvc=TagSvc;
 
 	TagSvc.init();
