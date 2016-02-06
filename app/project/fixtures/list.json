@@ -50,7 +50,7 @@
         "src": "upload/lucho-22.jpg"
       }
     ],
-    "url": "http://project1",
+    "url": "http://project2",
     "type": 2,
     "type_comment": "1-text, 2-html, 3-url, 4-markdown",
     "html": "Html <b>description</b>",
@@ -74,7 +74,7 @@
     "name": "project3",
     "images": [
     ],
-    "url": "http://project1",
+    "url": "http://project3",
     "type": 3,
     "type_comment": "1-text, 2-html, 3-url, 4-markdown",
     "html": "Html <b>description</b>",
@@ -98,7 +98,7 @@
     "name": "project4",
     "images": [
     ],
-    "url": "http://project1",
+    "url": "http://project4",
     "type": 4,
     "type_comment": "1-text, 2-html, 3-url, 4-markdown",
     "html": "Html <b>description</b>",

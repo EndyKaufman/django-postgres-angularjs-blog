@@ -7,7 +7,7 @@ exports.config = {
     //seleniumAddress: 'http://localhost:4444/wd/hub',
     // Capabilities to be passed to the webdriver instance.
     capabilities: {
-        'browserName': 'phantomjs'
+        'browserName': 'firefox'
     },
     // Options to be passed to Jasmine-node.
     jasmineNodeOpts: {

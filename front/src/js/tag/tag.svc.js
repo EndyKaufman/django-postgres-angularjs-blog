@@ -8,6 +8,12 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
 
     service.title=AppConst.tag.strings.title;
 
+    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
+        if (current.params!=undefined && current.params.navId!='tag'){
+            service.tagText='';
+        }
+    });
+
     service.init=function(reload){
         NavbarSvc.init('tag');
 

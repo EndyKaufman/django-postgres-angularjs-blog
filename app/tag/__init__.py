@@ -15,5 +15,5 @@ else:
         # url(r'^create', actions.create),
         # url(r'^update/(?P<project_id>[-\w]+)', actions.update),
         # url(r'^delete/(?P<project_id>[-\w]+)', actions.delete),
-        url(r'^list', actions_fixture.getList)
+        url(r'^list', actions.getList)
     ]

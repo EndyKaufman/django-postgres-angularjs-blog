@@ -286,7 +286,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-10">\n' +
+    '            <div class="col-md-9">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>\n' +
@@ -294,7 +294,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
-    '            <div class="col-md-2">\n' +
+    '            <div class="col-md-3">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
@@ -315,7 +315,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '    <form name="authForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-10">\n' +
+    '            <div class="col-md-9">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="firstname">First name</label>\n' +
     '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
@@ -360,7 +360,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        ng-disabled="!authForm.$valid">Update\n' +
     '                </button>\n' +
     '            </div>\n' +
-    '            <div class="col-md-2">\n' +
+    '            <div class="col-md-3">\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -424,10 +424,10 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="form-search search-only">\n' +
     '                    <div class="input-group">\n' +
     '                        <input type="text" class="form-control search-query"\n' +
-    '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="searchText"\n' +
-    '                               ng-enter="NavbarSvc.doSearch(searchText)" required/>\n' +
+    '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="SearchSvc.searchText"\n' +
+    '                               ng-enter="SearchSvc.doSearch(SearchSvc.searchText)" required/>\n' +
     '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid">\n' +
+    '                            <button ng-click="SearchSvc.doSearch(SearchSvc.searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid">\n' +
     '                                Search\n' +
     '                            </button>\n' +
     '                        </span>\n' +

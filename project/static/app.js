@@ -57606,21 +57606,21 @@ app.constant('NavbarConst', {
             name:'login',
             parent:'auth',
             hiddenHandler: function(){
-                return (AppConfig.userId!=false)
+                return (AppConfig.user.id!=undefined)
             }
         },
         {
             name: 'profile',
             parent:'auth',
             hiddenHandler: function(){
-                return (AppConfig.userId==false)
+                return (AppConfig.user.id==undefined)
             }
         },
         {
             name:'logout',
             parent:'auth',
             hiddenHandler: function(){
-                return (AppConfig.userId==false)
+                return (AppConfig.user.id==undefined)
             }
         }
     ]
@@ -58079,7 +58079,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-10">\n' +
+    '            <div class="col-md-9">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>\n' +
@@ -58087,7 +58087,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </button>\n' +
     '                </div>\n' +
     '            </div>\n' +
-    '            <div class="col-md-2">\n' +
+    '            <div class="col-md-3">\n' +
     '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
@@ -58108,7 +58108,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '    <form name="authForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-10">\n' +
+    '            <div class="col-md-9">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="firstname">First name</label>\n' +
     '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
@@ -58153,7 +58153,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        ng-disabled="!authForm.$valid">Update\n' +
     '                </button>\n' +
     '            </div>\n' +
-    '            <div class="col-md-2">\n' +
+    '            <div class="col-md-3">\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -58217,10 +58217,10 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="form-search search-only">\n' +
     '                    <div class="input-group">\n' +
     '                        <input type="text" class="form-control search-query"\n' +
-    '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="searchText"\n' +
-    '                               ng-enter="NavbarSvc.doSearch(searchText)" required/>\n' +
+    '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="SearchSvc.searchText"\n' +
+    '                               ng-enter="SearchSvc.doSearch(SearchSvc.searchText)" required/>\n' +
     '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="NavbarSvc.doSearch(searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid">\n' +
+    '                            <button ng-click="SearchSvc.doSearch(SearchSvc.searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid">\n' +
     '                                Search\n' +
     '                            </button>\n' +
     '                        </span>\n' +
@@ -58417,8 +58417,7 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
 
     service.load=function(){
         var deferred = $q.defer();
-        service.item=AppConfig.userData;
-        service.item.id=AppConfig.userId;
+        service.item=AppConfig.user;
         deferred.resolve(service.item);
         return deferred.promise;
     }
@@ -58429,8 +58428,7 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
-                    AppConfig.userId=service.item.userId;
-                    AppConfig.userData=service.item.userData;
+                    AppConfig.user=service.item;
                     $rootScope.$broadcast('auth.update', service.item);
                 }
             },
@@ -58446,8 +58444,7 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
-                    AppConfig.userId=service.item.userId;
-                    AppConfig.userData=service.item.userData;
+                    AppConfig.user=service.item;
                 	$rootScope.$broadcast('auth.login', service.item);
                 }
             },
@@ -58463,12 +58460,8 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
              AuthRes.actionLogout().then(
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        service.item={
-                          "userId": false,
-                          "userData": {}
-                        }
-                        AppConfig.userId=service.item.userId;
-                        AppConfig.userData=service.item.userData;
+                        service.item={}
+                        AppConfig.user=service.item;
                         $rootScope.$broadcast('auth.logout', service.item);
                     }
                 },
@@ -58485,19 +58478,19 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
     }
 
     service.isLogged=function(){
-        return AppConfig.userId!=false;
+        return AppConfig.user.id!=undefined;
     }
 
     service.isAdmin=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('admin')!=-1
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('admin')!=-1
     }
 
     service.isAuthor=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('author')!=-1
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('author')!=-1
     }
 
     service.isUser=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('user')!=-1
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('user')!=-1
     }
 
     return service;
@@ -58693,10 +58686,6 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         $location.path(service.brand.url.replace('#',''));
     }
 
-    service.doSearch=function(searchText){
-        $location.path(AppConst.search.urls.url.replace('#','')+'/'+searchText);
-    }
-
     service.init=function(navId){
         if (navId!=undefined)
             $routeParams.navId=navId;
@@ -58749,7 +58738,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 
     service.init=function(reload){
         NavbarSvc.init('project');
-        TagSvc.tagText='';
 
         $q.all([
             TagSvc.load(),
@@ -58886,7 +58874,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     }
     return service;
   });
-app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc, ProjectRes) {
+app.factory('SearchSvc', function ($rootScope, $routeParams, $http, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes) {
     var service={};
 
     service.allList=false;
@@ -58894,6 +58882,17 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
     service.countItemsOnRow=3;
 
     service.title=AppConst.search.strings.title;
+    service.searchText='';
+
+    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
+        if (current.params!=undefined && current.params.navId!='search'){
+            service.searchText='';
+        }
+    });
+
+    service.doSearch=function(searchText){
+        $location.path(AppConst.search.urls.url.replace('#','')+'/'+searchText);
+    }
 
     service.init=function(reload){
         NavbarSvc.init('search');
@@ -58903,10 +58902,11 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
         if ($routeParams.searchText!=undefined){
             service.allList=[];
             $q.all([
+                TagSvc.load(),
                 ProjectRes.getSearch($routeParams.searchText)
             ]).then(function(responseList) {
-                for (var i=0;i<responseList.length;i++){
-                    if (i==0)
+                for (var i=1;i<responseList.length;i++){
+                    if (i==1)
                         service.allList.push({
                             name: 'project',
                             list: responseList[i].data.data
@@ -58926,6 +58926,12 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
     service.countItemsOnRow=3;
 
     service.title=AppConst.tag.strings.title;
+
+    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
+        if (current.params!=undefined && current.params.navId!='tag'){
+            service.tagText='';
+        }
+    });
 
     service.init=function(reload){
         NavbarSvc.init('tag');
@@ -58990,8 +58996,9 @@ app.controller('AuthCtrl', function ($scope, AuthSvc) {
 
 	AuthSvc.init();
 });
-app.controller('NavbarCtrl', function ($scope, NavbarSvc) {
+app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
 	$scope.NavbarSvc=NavbarSvc;
+	$scope.SearchSvc=SearchSvc;
 
     NavbarSvc.init();
 });

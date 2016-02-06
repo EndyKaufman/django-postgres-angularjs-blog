@@ -41,8 +41,7 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
 
     service.load=function(){
         var deferred = $q.defer();
-        service.item=AppConfig.userData;
-        service.item.id=AppConfig.userId;
+        service.item=AppConfig.user;
         deferred.resolve(service.item);
         return deferred.promise;
     }
@@ -53,8 +52,7 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
-                    AppConfig.userId=service.item.userId;
-                    AppConfig.userData=service.item.userData;
+                    AppConfig.user=service.item;
                     $rootScope.$broadcast('auth.update', service.item);
                 }
             },
@@ -70,8 +68,7 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
-                    AppConfig.userId=service.item.userId;
-                    AppConfig.userData=service.item.userData;
+                    AppConfig.user=service.item;
                 	$rootScope.$broadcast('auth.login', service.item);
                 }
             },
@@ -87,12 +84,8 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
              AuthRes.actionLogout().then(
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        service.item={
-                          "userId": false,
-                          "userData": {}
-                        }
-                        AppConfig.userId=service.item.userId;
-                        AppConfig.userData=service.item.userData;
+                        service.item={}
+                        AppConfig.user=service.item;
                         $rootScope.$broadcast('auth.logout', service.item);
                     }
                 },
@@ -109,19 +102,19 @@ app.factory('AuthSvc', function ($q, $http, AppConst, AuthRes, MessageSvc, $root
     }
 
     service.isLogged=function(){
-        return AppConfig.userId!=false;
+        return AppConfig.user.id!=undefined;
     }
 
     service.isAdmin=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('admin')!=-1
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('admin')!=-1
     }
 
     service.isAuthor=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('author')!=-1
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('author')!=-1
     }
 
     service.isUser=function(){
-        return AppConfig.userId!=false && AppConfig.userData.roles!=undefined && AppConfig.userData.roles.indexOf('user')!=-1
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('user')!=-1
     }
 
     return service;

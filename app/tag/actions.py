@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from django.conf import settings
-# from django.contrib import auth
-# from django.contrib.auth.models import User
-# from django.core.validators import validate_email
-# from django.core.exceptions import ValidationError
+from jsonview.decorators import json_view
+from project import helpers
 
-# import json
-# from jsonview.decorators import json_view
 
+# list
+@json_view
+def getList(request):
+    """List data"""
+
+    from app.tag.models import Tag
+
+    data = Tag.objects.all().order_by('-created').all()
+
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}

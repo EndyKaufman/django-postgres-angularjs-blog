@@ -27,7 +27,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 
     service.init=function(reload){
         NavbarSvc.init('project');
-        TagSvc.tagText='';
 
         $q.all([
             TagSvc.load(),

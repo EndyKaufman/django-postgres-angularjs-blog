@@ -18,21 +18,21 @@ app.constant('NavbarConst', {
             name:'login',
             parent:'auth',
             hiddenHandler: function(){
-                return (AppConfig.userId!=false)
+                return (AppConfig.user.id!=undefined)
             }
         },
         {
             name: 'profile',
             parent:'auth',
             hiddenHandler: function(){
-                return (AppConfig.userId==false)
+                return (AppConfig.user.id==undefined)
             }
         },
         {
             name:'logout',
             parent:'auth',
             hiddenHandler: function(){
-                return (AppConfig.userId==false)
+                return (AppConfig.user.id==undefined)
             }
         }
     ]

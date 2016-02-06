@@ -2,7 +2,7 @@ describe('Project Guest API:', function() {
   var helpers = require('./../helpers.js');
 
   var itemResponse = undefined, listbysearchResponse = undefined, listbytagResponse = undefined, listResponse = undefined, updateResponse = undefined;
-
+/*
   beforeEach(function(done){
     browser.driver.manage().window().setSize(1280, 1024);
     browser.get(browser.baseUrl).then(function(){
@@ -62,5 +62,5 @@ describe('Project Guest API:', function() {
     for (var i=0; i<fields.length; i++)
         expect(record[fields[0]] != undefined ? true : false).toEqual(true);
   });
-
+*/
 });

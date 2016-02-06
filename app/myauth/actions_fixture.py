@@ -11,6 +11,7 @@ import json
 from jsonview.decorators import json_view
 from django.views.decorators.csrf import csrf_exempt
 
+
 # update
 @json_view
 def actionProfileUpdate(request):
@@ -52,7 +53,7 @@ def actionProfileUpdate(request):
     user = False
 
     for record in records:
-        if record['userData']['email'] == emailField:
+        if record['email'] == emailField:
             user = record
             try:
                 firstname = json_data['firstname']
@@ -67,14 +68,15 @@ def actionProfileUpdate(request):
             except KeyError:
                 username = emailField[:30]
 
-            user['userData']['firstname'] = firstname
-            user['userData']['lastname'] = lastname
-            user['userData']['username'] = username
+            user['firstname'] = firstname
+            user['lastname'] = lastname
+            user['username'] = username
 
     if user == False:
         return {'code': 'auth/usernofound', 'values': [emailField]}, 404
 
     return {'code': 'ok', 'data': [user]}
+
 
 # Login
 @json_view
@@ -124,18 +126,16 @@ def actionLogin(request):
     user = False
 
     for record in records:
-        if record['userData']['email'] == emailField:
+        if record['email'] == emailField:
             user = record
 
     if user == False:
         return {'code': 'auth/usernofound', 'values': [emailField]}, 404
-
     return {'code': 'ok', 'data': [user]}
 
 
 # Logout
 @json_view
-@csrf_exempt
 def actionLogout(request):
     """Logout action"""
 

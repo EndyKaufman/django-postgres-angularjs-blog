@@ -1,4 +1,4 @@
-app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc, ProjectRes) {
+app.factory('SearchSvc', function ($rootScope, $routeParams, $http, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes) {
     var service={};
 
     service.allList=false;
@@ -6,6 +6,17 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
     service.countItemsOnRow=3;
 
     service.title=AppConst.search.strings.title;
+    service.searchText='';
+
+    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
+        if (current.params!=undefined && current.params.navId!='search'){
+            service.searchText='';
+        }
+    });
+
+    service.doSearch=function(searchText){
+        $location.path(AppConst.search.urls.url.replace('#','')+'/'+searchText);
+    }
 
     service.init=function(reload){
         NavbarSvc.init('search');
@@ -15,10 +26,11 @@ app.factory('SearchSvc', function ($routeParams, $http, $q, AppConst, NavbarSvc,
         if ($routeParams.searchText!=undefined){
             service.allList=[];
             $q.all([
+                TagSvc.load(),
                 ProjectRes.getSearch($routeParams.searchText)
             ]).then(function(responseList) {
-                for (var i=0;i<responseList.length;i++){
-                    if (i==0)
+                for (var i=1;i<responseList.length;i++){
+                    if (i==1)
                         service.allList.push({
                             name: 'project',
                             list: responseList[i].data.data

@@ -8,7 +8,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 import json
 from jsonview.decorators import json_view
-import config
+import helpers
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -54,20 +54,25 @@ def actionProfileUpdate(request):
     except ValidationError:
         return {'code': 'auth/wrongemail'}, 404
 
-    request.user.backend = 'django.contrib.auth.backends.ModelBackend'
+    from django.contrib.auth.models import User
+
     try:
-        request.user.email = emailField
-        request.user.first_name = first_name
-        request.user.last_name = last_name
-        request.user.set_password(passwordField)
-        request.user.save()
-        json_data['email'] = emailField
-        json_data['firstname'] = first_name
-        json_data['lastname'] = last_name
+        user = User.objects.get(id=request.user.id)
+    except User.DoesNotExist:
+        return {'code': 'auth/usernofound', 'values': [emailField]}, 404
+
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    try:
+        user.email = emailField
+        user.first_name = first_name
+        user.last_name = last_name
+        if passwordField != False:
+            user.set_password(passwordField)
+        user.save()
     except:
         return {'code': 'auth/profile/fail/update'}, 404
 
-    return {'code': 'ok', 'data': [request.user]}
+    return {'code': 'ok', 'data': [helpers.getUserData(user)]}
 
 
 # Login
@@ -125,13 +130,7 @@ def actionLogin(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        roles = []
-        if user.is_staff:
-            roles.append('user')
-        if user.is_superuser:
-            roles.append('admin')
-
-        return {'code': 'ok', 'data': [config.getUserData(user)]}
+        return {'code': 'ok', 'data': [helpers.getUserData(user)]}
     else:
         auth.logout(request)
         return {'code': 'auth/notactive'}, 404
@@ -139,7 +138,6 @@ def actionLogin(request):
 
 # Logout
 @json_view
-@csrf_exempt
 def actionLogout(request):
     """Logout action"""
 

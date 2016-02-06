@@ -41,10 +41,6 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         $location.path(service.brand.url.replace('#',''));
     }
 
-    service.doSearch=function(searchText){
-        $location.path(AppConst.search.urls.url.replace('#','')+'/'+searchText);
-    }
-
     service.init=function(navId){
         if (navId!=undefined)
             $routeParams.navId=navId;

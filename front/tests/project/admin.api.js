@@ -2,7 +2,7 @@ describe('Project Admin API:', function() {
   var helpers = require('./../helpers.js');
 
   var listResponse = undefined, createResponse = undefined, updateResponse = undefined, deleteResponse = undefined;
-
+/*
   beforeEach(function(done){
     browser.driver.manage().window().setSize(1280, 1024);
     browser.get(browser.baseUrl).then(function(){
@@ -58,6 +58,5 @@ describe('Project Admin API:', function() {
     expect(typeof deleteResponse).toEqual('object');
     expect(deleteResponse.code).toEqual('ok');
   });
-
-
+*/
 });

@@ -1,28 +1,22 @@
 [
   {
-    "userId": 1,
-    "userData": {
-      "id": 1,
-      "username": "Admin User Name",
-      "email": "admin@email.com",
-      "firstname": "FirstAdminName",
-      "lastname": "LastAdminName",
-      "roles": [
-        "admin"
-      ]
-    }
+    "id": 1,
+    "username": "Admin User Name",
+    "email": "admin@email.com",
+    "firstname": "FirstAdminName",
+    "lastname": "LastAdminName",
+    "roles": [
+      "admin"
+    ]
   },
   {
-    "userId": 2,
-    "userData": {
-      "id": 2,
-      "username": "User Name",
-      "email": "user@email.com",
-      "firstname": "FirstName",
-      "lastname": "LastName",
-      "roles": [
-        "user"
-      ]
-    }
+    "id": 2,
+    "username": "User Name",
+    "email": "user@email.com",
+    "firstname": "FirstName",
+    "lastname": "LastName",
+    "roles": [
+      "user"
+    ]
   }
 ]
