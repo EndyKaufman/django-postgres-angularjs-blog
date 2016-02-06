@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import json
 from django.core import serializers
+from django.contrib.staticfiles.templatetags.staticfiles import static
+import json
 import inspect
 
 
@@ -16,9 +17,20 @@ def itemsToJsonObject(items):
     for row in data:
         result = row['fields']
         result['id'] = row['pk']
+        staticFields = ['src']
+
+        for staticField in staticFields:
+            try:
+                fieldValue = result[staticField]
+            except:
+                fieldValue = None
+            if fieldValue is not None and fieldValue != '' and 'http:' not in fieldValue.lower():
+                result['%sStatic' % staticField] = static(fieldValue)
+
         for key in result:
-            if hasattr(getattr(items[index], key), 'all'):
+            if hasattr(items[index], key) and hasattr(getattr(items[index], key), 'all'):
                 result[key] = itemsToJsonObject(getattr(items[index], key).all())
         results.append(result)
         index = index + 1
+
     return results

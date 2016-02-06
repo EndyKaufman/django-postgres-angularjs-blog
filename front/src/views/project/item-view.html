@@ -1,12 +1,12 @@
 <div class="col-md-8 padding-left-15">
-    <img ng-src="{{AppConfig.static_url+ProjectSvc.item.images[0].src}}" ng-if="ProjectSvc.item.images.length==1"
+    <img ng-src="{{AppConfig.static_url+ProjectSvc.item.images[0].srcStatic}}" ng-if="ProjectSvc.item.images.length==1"
          class="img-responsive">
     <div ng-if="ProjectSvc.item.images.length>1">
         <div data-nq-carousel="">
             <div data-carousel-item="" ng-repeat="image in ProjectSvc.item.images">
                 <!--h3 class="carousel-title" nf-if="image.title!=''"
                     ng-bind-html="image.title | unsafe"></h3-->
-                <img ng-src="{{AppConfig.static_url+image.src}}">
+                <img ng-src="{{AppConfig.static_url+image.srcStatic}}">
                 <div class="carousel-caption" nf-if="image.description!=''">
                     <h4 ng-bind-html="image.description | unsafe"></h4>
                 </div>

@@ -32,7 +32,3 @@ urlpatterns = [
     url(r'^project/', include(app.project)),
     url(r'^admin/', admin.site.urls),
 ]
-
-if not settings.USE_AMAZONE:
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-    urlpatterns += staticfiles_urlpatterns()

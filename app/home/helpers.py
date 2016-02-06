@@ -2,7 +2,6 @@
 
 from app.account.models import User
 import django.middleware.csrf
-from django.contrib.staticfiles.templatetags.staticfiles import static
 
 
 def get(request):
@@ -11,7 +10,6 @@ def get(request):
     config['host'] = request.get_host()
     config['hostName'] = request.get_host().decode('idna')
     config['csrf_token'] = django.middleware.csrf.get_token(request)
-    config['static_url'] = static('')
 
     try:
         user = User.objects.get(pk=request.user.id)
