@@ -37,6 +37,37 @@ else:
     DEBUG = True
     TEMPLATE_DEBUG_MODE = True
 
+
+# LOGGING
+ADMINS = (
+  ('Support', os.environ.get('SUPPORT_EMAIL', '')),
+)
+if ON_PRODUCTION:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler'
+            }
+        },
+        'loggers': {
+            'django.request': {
+                'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+        }
+    }
+
+# CACHE
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 # Application definition
 
 INSTALLED_APPS = (
