@@ -20,6 +20,16 @@ ON_PRODUCTION = os.environ.get('ON_PRODUCTION', None) == '1'
 USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'
 USE_FIXTURE = os.environ.get('USE_FIXTURE', None) == '1'
 
+# EMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1')=='1'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', ''))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+SERVER_EMAIL = os.environ.get('EMAIL_HOST_USER', '')
+SUPPORT_EMAIL = os.environ.get('SUPPORT_EMAIL', '')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -37,12 +47,11 @@ else:
     DEBUG = True
     TEMPLATE_DEBUG_MODE = True
 
-
 # LOGGING
-ADMINS = (
-  ('Support', os.environ.get('SUPPORT_EMAIL', '')),
-)
 if ON_PRODUCTION:
+    ADMINS = (
+        ('Support', SUPPORT_EMAIL),
+    )
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
