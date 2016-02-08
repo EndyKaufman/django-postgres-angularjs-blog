@@ -97,6 +97,10 @@ class Project(models.Model):
             tag, tagCreated = Tag.objects.get_or_create(text=tagText['text'])
             self.tags.add(tag)
 
+        for tagId in tagFieldIds:
+            tag = Tag.objects.get(pk=tagId)
+            self.tags.add(tag)
+
         # images
         imageFieldIds = []
         imageFieldSrcs = []
@@ -123,6 +127,10 @@ class Project(models.Model):
 
         for imageSrc in imageFieldSrcs:
             image, imageCreated = Image.objects.get_or_create(src=imageSrc['src'])
+            self.images.add(image)
+
+        for imageId in imageFieldIds:
+            image = Image.objects.get(pk=imageId)
             self.images.add(image)
 
         return {'code': 'ok'}, 200
