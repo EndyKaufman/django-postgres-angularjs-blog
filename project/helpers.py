@@ -25,7 +25,10 @@ def itemsToJsonObject(items):
             except:
                 fieldValue = None
             if fieldValue is not None and fieldValue != '' and 'http:' not in fieldValue.lower():
-                result['%sStatic' % staticField] = static(fieldValue)
+                try:
+                    result['%sStatic' % staticField] = static(fieldValue)
+                except:
+                    result['%sStatic' % staticField] = ''
 
         for key in result:
             if hasattr(items[index], key) and hasattr(getattr(items[index], key), 'all'):
