@@ -16,8 +16,21 @@ var protractor = require("gulp-protractor").protractor;
 // Download and update the selenium driver
 var webdriver_update = require('gulp-protractor').webdriver_update;
 var webdriver_standalone = require('gulp-protractor').webdriver_standalone;
+var minimist = require('minimist');
+var Xvfb = require('xvfb');
 
 var gutil = require('gulp-util');
+
+var options = minimist(process.argv.slice(2));
+
+if (options.isvagrant==undefined)
+	options.isvagrant=(process.env.USER=='vagrant')?true:false;
+if (options.env==undefined)
+	options.env=process.env.BLOG_ENV || 'development';
+if (options.host==undefined)
+	options.host=process.env.BLOG_HOST || 'http://127.0.0.1:5000';
+if (options.static_dir==undefined)
+	options.static_dir=process.env.BLOG_STATIC_DIR || '../project/static/';
 
 //source
 var scss_source=['src/scss/**/*.scss'];
@@ -101,7 +114,13 @@ var tests_source=[
 ];
 
 //dest
-var dest_path='../project/static/'
+var dest_path=options.static_dir;
+
+// Downloads the selenium webdriver
+gulp.task('webdriver_update', webdriver_update);
+
+// Runs the selenium webdriver
+gulp.task('webdriver_standalone', webdriver_standalone);
 
 //source modifi function
 function sourceChange(content) {
@@ -135,23 +154,21 @@ gulp.task('less', function () {
     .pipe(gulp.dest('./src/temp/css'));
 });
 
-//concat dev css
-gulp.task('dev:css', function () {
-  return gulp.src(css_source)
-    .pipe(change(sourceChange))
-    .pipe(concat(dest_path+'app.css'))
-    .pipe(gulp.dest('.'))
-});
-
-//concat public css
-gulp.task('public:css', function () {
-  return gulp.src(css_source)
-    .pipe(sourcemaps.init({loadMaps:true}))
-    .pipe(minifyCSS({compatibility: 'ie8'}))
-    .pipe(change(sourceChange))
-    .pipe(concat(dest_path+'app.css'))
-    .pipe(sourcemaps.write({addComment: false}))
-    .pipe(gulp.dest('.'))
+//build css
+gulp.task('build:css', function () {
+  if (options.env=='production')
+	  return gulp.src(css_source)
+		.pipe(sourcemaps.init({loadMaps:true}))
+		.pipe(minifyCSS({compatibility: 'ie8'}))
+		.pipe(change(sourceChange))
+		.pipe(concat(dest_path+'app.css'))
+		.pipe(sourcemaps.write({addComment: false}))
+		.pipe(gulp.dest('.'));
+  else
+	  return gulp.src(css_source)
+		.pipe(change(sourceChange))
+		.pipe(concat(dest_path+'app.css'))
+		.pipe(gulp.dest('.'));
 });
 
 //concat templates js
@@ -166,49 +183,62 @@ gulp.task('template:js', function () {
     .pipe(gulp.dest('./'))
 });
 
-//concat dev js
-gulp.task('dev:js', function () {
-  return gulp.src(js_source)
-    .pipe(sourcemaps.init())
-    .pipe(change(sourceChange))
-    .pipe(concat(dest_path+'app.js'))
-    .pipe(sourcemaps.write({addComment: false}))
-    .pipe(gulp.dest('.'))
+//build js
+gulp.task('build:js', function () {
+  if (options.env=='production')
+	  return gulp.src(js_source)
+		.pipe(sourcemaps.init())
+		.pipe(ngAnnotate())
+		.pipe(uglify())
+		.pipe(change(sourceChange))
+		.pipe(concat(dest_path+'app.js'))
+		.pipe(sourcemaps.write({addComment: false}))
+		.pipe(gulp.dest('.'));
+  else
+	  return gulp.src(js_source)
+		.pipe(sourcemaps.init())
+		.pipe(change(sourceChange))
+		.pipe(concat(dest_path+'app.js'))
+		.pipe(sourcemaps.write({addComment: false}))
+		.pipe(gulp.dest('.'));
 });
 
-//concat public js
-gulp.task('public:js', function () {
-  return gulp.src(js_source)
-    .pipe(sourcemaps.init())
-    .pipe(ngAnnotate())
-    .pipe(uglify())
-    .pipe(change(sourceChange))
-    .pipe(concat(dest_path+'app.js'))
-    .pipe(sourcemaps.write({addComment: false}))
-    .pipe(gulp.dest('.'))
-});
-
-//build to dev
-gulp.task('dev', gulp.series('clear','template:js','scss','less','dev:css',
-              'dev:js'));
-
-//build to public
-gulp.task('public', gulp.series('clear','template:js','scss','less','public:css',
-              'public:js'));
-
-// Downloads the selenium webdriver
-gulp.task('webdriver_update', webdriver_update);
-
-// Runs the selenium webdriver
-gulp.task('webdriver_standalone', webdriver_standalone);
+//build
+gulp.task('build', gulp.series('clear','template:js','scss','less','build:css',
+              'build:js'));
 
 // Tests
 gulp.task('test', function () {
-    return gulp.src(tests_source)
-        .pipe(protractor({
-            configFile: "protractor.config.js",
-            args: ['--baseUrl', 'http://127.0.0.1:5000']
-        }));
+	if (options.isvagrant){
+		var xvfb = new Xvfb({displayNum:10, timeout: 15000});
+		xvfb.start(function(err, xvfbProcess) {
+			var stream = gulp.src(tests_source)
+			.pipe(protractor({
+				configFile: "protractor.config.js",
+				args: ['--baseUrl', options.host]
+			}));
+			stream.on('end', function() {
+				xvfb.stop(function() {
+					done();
+				});
+			});
+			stream.on('error', function(err) {
+				xvfb.stop(function(err) {
+					done(err);
+				});
+			});
+		});
+	}else{
+		var stream = gulp.src(tests_source)
+		.pipe(protractor({
+			configFile: "protractor.config.js",
+			args: ['--baseUrl', options.host]
+		}));
+		stream.on('end', function() {
+			done();
+		});
+		stream.on('error', function(err) {
+			done(err);
+		});
+	}
 });
-
-

@@ -56,17 +56,25 @@ sudo bower install --save --allow-root
 ```
 source venv/bin/activate
 export $(cat .env)
-python manage.py livereload
+python manage.py collectstatic --noinput
+gunicorn project.wsgi -b 0.0.0.0:5000
 ```
 
-open url http://127.0.0.1:5000
+open on browser url http://127.0.0.1:5000 in local pc
 
 #TEST (on Protractor + Selenium with PhantomJS)
 
-## run tests (before run tests, you must run local server on http://127.0.0.1:5000)
+## run tests (before run tests, you must run local server)
 ```
 cd front
 gulp test
+```
+
+use custom host
+
+```
+cd front
+gulp test --host http://127.0.0.1:5000
 ```
 
 # DEVELOP
@@ -88,10 +96,25 @@ modifi __init__.py and actions.py with you work code
 
 add module in project/settings.py on INSTALLED_APPS section
 
-## build frontend file (gulp dev / gulp public)
+## build frontend on development mode
 ```
 cd front
-gulp dev
+gulp build --env development
+```
+## build frontend on production mode
+
+default on run command "gulp build"
+
+```
+cd front
+gulp build --env production
+```
+
+use custom output for static
+
+```
+cd front
+gulp build --env production --static_dir ../wwwroot
 ```
 
 # RUN ON WINDOWS WITH VAGRANT
@@ -107,12 +130,8 @@ read docs http://www.sitepoint.com/getting-started-vagrant-windows/
 ```
 git clone https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog 
 cd blog
-vagrant up
-vagrant ssh
-cd ../../vagrant/front
-sudo npm install --save-dev --no-bin-links
-npm rebuild --no-bin-links
-gulp webdriver_update
+vagrant init ubuntu/trusty64
+vagrant up --provider virtualbox
 ```
 
 ## start server
@@ -122,7 +141,7 @@ vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
 source env.sh
-python manage.py livereload
+gunicorn project.wsgi -b 0.0.0.0:5000
 ```
 
 ## run tests on vagrant
@@ -138,7 +157,7 @@ gulp test
 cd blog
 vagrant ssh
 cd ../../vagrant/front
-gulp dev
+gulp build
 ```
 
 # NOTES

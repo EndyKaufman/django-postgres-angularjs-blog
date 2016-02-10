@@ -16,7 +16,7 @@ exports.config = {
         isVerbose: true,
         showColors: true,
         includeStackTrace: true,
-        defaultTimeoutInterval: 30000
+        defaultTimeoutInterval: 60000
     },
     onPrepare: function() {
         var jasmineReporters = require('jasmine-reporters');

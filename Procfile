@@ -1,1 +1,1 @@
-web: gunicorn project.wsgi
+web: gunicorn project.wsgi -b 0.0.0.0:5000

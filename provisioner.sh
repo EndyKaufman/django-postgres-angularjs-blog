@@ -8,6 +8,10 @@ sudo apt-get install -y default-jre
 sudo apt-get install -y default-jdk
 sudo apt-get install -y openjdk-7-jre
 sudo apt-get install -y openjdk-7-jdk
+sudo apt-get install firefox -y
+sudo apt-get install xvfb -y
+sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic x11-apps -y
+sudo Xvfb :10 -ac
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 sudo apt-get update
 sudo apt-get install postgresql postgresql-contrib -y
@@ -31,8 +35,11 @@ virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cd front
-sudo npm install --save-dev
-sudo npm install node-sass --save-dev
-sudo npm install gulpjs/gulp#4.0 --save-dev
+sudo npm install node-sass --save-dev --no-bin-links
+sudo npm install --save-dev --no-bin-links
+sudo npm install gulpjs/gulp#4.0 --save-dev --no-bin-links
 sudo npm rebuild
-sudo bower install --save --allow-root
+sudo npm install --save-dev --no-bin-links
+sudo npm rebuild
+sudo bower install --save --force-latest --allow-root
+gulp webdriver_update

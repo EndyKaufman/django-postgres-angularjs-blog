@@ -1,4 +1,5 @@
 #!/bin/bash
+export DISPLAY=:10
 export EMAIL_USE_TLS=1
 export EMAIL_HOST=smtp.gmail.com
 export EMAIL_PORT=587
