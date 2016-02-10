@@ -97,13 +97,14 @@ modifi __init__.py and actions.py with you work code
 add module in project/settings.py on INSTALLED_APPS section
 
 ## build frontend on development mode
+
+default on run command "gulp build"
+
 ```
 cd front
 gulp build --env development
 ```
 ## build frontend on production mode
-
-default on run command "gulp build"
 
 ```
 cd front
