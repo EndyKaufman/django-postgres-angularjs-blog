@@ -32,6 +32,7 @@ describe('Work with projects as guest', function() {
                 done();
                 return;
             }
+            //helpers.debug=true;
             helpers.getJson('/project/list', function(response){
                 listResponse = response;
                 done();
@@ -41,10 +42,13 @@ describe('Work with projects as guest', function() {
         it('response structure must be correct', function() {
             expect(typeof listResponse).toEqual('object');
             expect(listResponse.code).toEqual('ok');
-            var record = listResponse.data[0];
-            var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
-            for (var i=0; i<fields.length; i++)
-                expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+            expect(listResponse.data).toBeDefined();
+            if (listResponse.data){
+                var record = listResponse.data[0];
+                var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                for (var i=0; i<fields.length; i++)
+                    expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+            }
         });
 
         describe('Get first project', function() {
@@ -54,6 +58,7 @@ describe('Work with projects as guest', function() {
                     done();
                     return;
                 }
+                //helpers.debug=true;
                 helpers.getJson('/project/item/'+listResponse.data[0].name, function(response){
                     itemResponse = response;
                     done();
@@ -63,10 +68,13 @@ describe('Work with projects as guest', function() {
             it('response structure must be correct', function() {
                 expect(typeof itemResponse).toEqual('object');
                 expect(itemResponse.code).toEqual('ok');
-                var record = itemResponse.data[0];
-                var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
-                for (var i=0; i<fields.length; i++)
-                    expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                expect(itemResponse.data).toBeDefined();
+                if (itemResponse.data){
+                    var record = itemResponse.data[0];
+                    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                    for (var i=0; i<fields.length; i++)
+                        expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                }
             });
 
             describe('Get projects list by tag', function() {
@@ -76,6 +84,7 @@ describe('Work with projects as guest', function() {
                         done();
                         return;
                     }
+                    //helpers.debug=true;
                     helpers.getJson('/project/listbytag/'+listResponse.data[0].tags[0].text, function(response){
                         listbytagResponse = response;
                         done();
@@ -85,10 +94,13 @@ describe('Work with projects as guest', function() {
                 it('response structure must be correct', function() {
                     expect(typeof listbytagResponse).toEqual('object');
                     expect(listbytagResponse.code).toEqual('ok');
-                    var record = listbytagResponse.data[0];
-                    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
-                    for (var i=0; i<fields.length; i++)
-                        expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                    expect(listbytagResponse.data).toBeDefined();
+                    if (listbytagResponse.data){
+                        var record = listbytagResponse.data[0];
+                        var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                        for (var i=0; i<fields.length; i++)
+                            expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                    }
                 });
 
                 describe('Seacrh projects list by text', function() {
@@ -98,6 +110,7 @@ describe('Work with projects as guest', function() {
                             done();
                             return;
                         }
+                        //helpers.debug=true;
                         helpers.getJson('/project/search/'+listResponse.data[0].name, function(response){
                             listbysearchResponse = response;
                             done();
@@ -107,10 +120,13 @@ describe('Work with projects as guest', function() {
                     it('response structure must be correct', function() {
                         expect(typeof listbysearchResponse).toEqual('object');
                         expect(listbysearchResponse.code).toEqual('ok');
-                        var record = listbysearchResponse.data[0];
-                        var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
-                        for (var i=0; i<fields.length; i++)
-                            expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                        expect(listbysearchResponse.data).toBeDefined();
+                        if (listbysearchResponse.data){
+                            var record = listbysearchResponse.data[0];
+                            var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                            for (var i=0; i<fields.length; i++)
+                                expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                        }
                     });
 
                 })

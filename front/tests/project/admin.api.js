@@ -33,6 +33,7 @@ describe('Work with projects as admin', function() {
                 done();
                 return;
             }
+            //helpers.debug=true;
             helpers.postJson('/account/login', {
                 email:'admin@email.com',
                 password:'admin@email.com'
@@ -44,12 +45,15 @@ describe('Work with projects as admin', function() {
 
         it('response structure must be correct', function() {
             expect(typeof adminResponse).toEqual('object');
-            var userData = adminResponse.data[0];
-            var fields = ['id', 'username', 'email', 'firstname', 'lastname', 'roles'];
-            for (var i=0; i<fields.length; i++)
-                expect(userData[fields[i]]).toBeDefined();
-            if (userData.roles.length>0)
-                expect(userData.roles[0]).toEqual('admin');
+            expect(adminResponse.data).toBeDefined();
+            if (adminResponse.data){
+                var userData = adminResponse.data[0];
+                var fields = ['id', 'username', 'email', 'firstname', 'lastname', 'roles'];
+                for (var i=0; i<fields.length; i++)
+                    expect(userData[fields[i]]).toBeDefined();
+                if (userData.roles.length>0)
+                    expect(userData.roles[0]).toEqual('admin');
+            }
         });
 
         describe('Get projects list', function() {
@@ -59,6 +63,7 @@ describe('Work with projects as admin', function() {
                     done();
                     return;
                 }
+                //helpers.debug=true;
                 helpers.getJson('/project/list', function(response){
                     listResponse = response;
                     done();
@@ -68,10 +73,13 @@ describe('Work with projects as admin', function() {
             it('response structure must be correct', function() {
                 expect(typeof listResponse).toEqual('object');
                 expect(listResponse.code).toEqual('ok');
-                var record = listResponse.data[0];
-                var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
-                for (var i=0; i<fields.length; i++)
-                    expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                expect(listResponse.data).toBeDefined();
+                if (listResponse.data){
+                    var record = listResponse.data[0];
+                    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                    for (var i=0; i<fields.length; i++)
+                        expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                }
             });
 
             describe('Create new project', function() {
@@ -82,6 +90,7 @@ describe('Work with projects as admin', function() {
                         done();
                         return;
                     }
+                    //helpers.debug=true;
                     helpers.postJson('/project/create',
                         {
                             id: 101,
@@ -97,7 +106,10 @@ describe('Work with projects as admin', function() {
                             images:[{src:'image1'}]
                         }, function(response){
                         createResponse = response;
-                        createdRecord = createResponse.data[0];
+                        createdRecord = {};
+                        if (createResponse.data){
+                            createdRecord = createResponse.data[0];
+                        }
                         done();
                     });
                 });
@@ -105,22 +117,32 @@ describe('Work with projects as admin', function() {
                 it('response structure must be correct', function() {
                     expect(typeof createResponse).toEqual('object');
                     expect(createResponse.code).toEqual('ok');
-                    var record = createResponse.data[0];
-                    var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
-                    for (var i=0; i<fields.length; i++){
-                        expect(record[fields[i]]).toBeDefined();}
+                    expect(createResponse.data).toBeDefined();
+                    if (createResponse.data){
+                        var record = createResponse.data[0];
+                        var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                        for (var i=0; i<fields.length; i++){
+                            expect(record[fields[i]]).toBeDefined();
+                        }
+                    }
                 });
 
                 it('tags must be created or used exists', function() {
-                    var record = createResponse.data[0];
-                    expect(record.tags[0].text).toEqual('tag1');
-                    expect(record.tags[0].id).toBeDefined();
+                    expect(createResponse.data).toBeDefined();
+                    if (createResponse.data){
+                        var record = createResponse.data[0];
+                        expect(record.tags[0].text).toEqual('tag1');
+                        expect(record.tags[0].id).toBeDefined();
+                    }
                 });
 
                 it('images must be created or used exists', function() {
-                    var record = createResponse.data[0];
-                    expect(record.images[0].src).toEqual('image1');
-                    expect(record.images[0].id).toBeDefined();
+                    expect(createResponse.data).toBeDefined();
+                    if (createResponse.data){
+                        var record = createResponse.data[0];
+                        expect(record.images[0].src).toEqual('image1');
+                        expect(record.images[0].id).toBeDefined();
+                    }
                 });
 
                 describe('Update created project', function() {
@@ -132,6 +154,7 @@ describe('Work with projects as admin', function() {
                             done();
                             return;
                         }
+                        //helpers.debug=true;
                         helpers.postJson('/project/update/'+createdRecord.id, createdRecord, function(response){
                             updateResponse = response;
                             done();
@@ -141,15 +164,23 @@ describe('Work with projects as admin', function() {
                     it('response structure must be correct', function() {
                         expect(typeof updateResponse).toEqual('object');
                         expect(updateResponse.code).toEqual('ok');
-                        var record = updateResponse.data[0];
-                        var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
-                        for (var i=0; i<fields.length; i++)
-                            expect(record[fields[i]]).toBeDefined();
+                        expect(updateResponse.data).toBeDefined();
+                        if (updateResponse.data){
+                            var record = updateResponse.data[0];
+                            var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                            for (var i=0; i<fields.length; i++)
+                                expect(record[fields[i]]).toBeDefined();
+                        }
                     });
 
                     it('record must be updated', function() {
-                        var record = updateResponse.data[0];
-                        expect(record.title).toEqual(createdRecord.title);
+                        expect(updateResponse.data).toBeDefined();
+                        if (updateResponse.data){
+                            var record = updateResponse.data[0];
+                            var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
+                            for (var i=0; i<fields.length; i++)
+                                expect(record[fields[i]]).toEqual(createdRecord[fields[i]]);
+                        }
                     });
 
                     describe('Remove created project', function() {
@@ -159,6 +190,7 @@ describe('Work with projects as admin', function() {
                                 done();
                                 return;
                             }
+                            //helpers.debug=true;
                             helpers.postJson('/project/delete/'+createdRecord.id, {}, function(response){
                                 deleteResponse = response;
                                 done();

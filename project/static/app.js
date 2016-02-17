@@ -57554,7 +57554,10 @@ app.constant('AccountConst',{
         action: '/account/profile'
     },
     update:{
-        action: '/account/profile/update'
+        action: '/account/update'
+    },
+    delete:{
+        action: '/account/delete'
     },
     recovery:{
         name: 'Recovery',
@@ -57563,6 +57566,7 @@ app.constant('AccountConst',{
         action: '/account/recovery'
     },
     message:{
+        'account/exists':'User with email <strong>%s</strong> is exists!',
         'account/noemail':'Email is empty!',
         'account/nopassword':'Password is empty!',
         'account/wrongemail':'Email is incorrect!',
@@ -57572,7 +57576,9 @@ app.constant('AccountConst',{
         'account/login/success':'You authorizing!',
         'account/logout/success':'Bye-Bye!',
         'account/logout/confirm':'Do you really want to leave?',
-        'account/usernofound':'User with email <strong>%s</strong> not found!'
+        'account/usernofound':'User with email <strong>%s</strong> not found!',
+        'account/recovery/checkemail':'Check email <strong>%s</strong> for link to reset password',
+        'account/delete/confirm':'Do you really want to delete account?'
     }
 });
 app.constant('BookmarkConst', {
@@ -57722,6 +57728,16 @@ app.factory('AppConst', function(AccountConst, TagConst, NoteConst, BookmarkCons
   });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
+      .when('/reg', {
+        templateUrl: 'views/account/reg.html',
+        controller: 'AccountCtrl',
+        navId: 'reg'
+      })
+      .when('/recovery', {
+        templateUrl: 'views/account/recovery.html',
+        controller: 'AccountCtrl',
+        navId: 'recovery'
+      })
       .when('/login', {
         templateUrl: 'views/account/login.html',
         controller: 'AccountCtrl',
@@ -57866,13 +57882,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        </span>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
-    '</div>');
 	a.put('views/tag/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span></h1>\n' +
@@ -57928,98 +57937,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div>');
 	a.put('views/search/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
     '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
-    '</div>');
-	a.put('views/account/profile.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>\n' +
-    '            <span>Profile</span>\n' +
-    '        </h1>\n' +
-    '    </div>\n' +
-    '    <form name="accountForm">\n' +
-    '        <div class="row">\n' +
-    '            <div class="col-md-9">\n' +
-    '                <div class="form-group has-feedback" show-errors>\n' +
-    '                    <label for="firstname">First name</label>\n' +
-    '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
-    '                           ng-model="AccountSvc.item.firstname">\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.firstname.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                </div>\n' +
-    '                <div class="form-group has-feedback" show-errors>\n' +
-    '                    <label for="lastname">Last name</label>\n' +
-    '                    <input type="text" class="form-control" name="lastname" id="lastname"\n' +
-    '                           ng-model="AccountSvc.item.lastname">\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.lastname.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                </div>\n' +
-    '                <div class="form-group has-feedback" show-errors>\n' +
-    '                    <label for="username">Username</label>\n' +
-    '                    <input type="text" class="form-control" name="username" id="username"\n' +
-    '                           ng-model="AccountSvc.item.username" required>\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.username.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                </div>\n' +
-    '                <div class="form-group has-feedback" show-errors>\n' +
-    '                    <label for="email">Email</label>\n' +
-    '                    <input type="email" class="form-control" name="email" id="email"\n' +
-    '                           ng-model="AccountSvc.item.email" required>\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                </div>\n' +
-    '                <div class="form-group has-feedback" show-errors>\n' +
-    '                    <label for="password">Password</label>\n' +
-    '                    <input type="password" class="form-control" name="password" id="password"\n' +
-    '                           ng-model="AccountSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                </div>\n' +
-    '                <button ng-click="AccountSvc.doUpdate(AccountSvc.item)" class="btn btn-success"\n' +
-    '                        ng-disabled="!accountForm.$valid">Update\n' +
-    '                </button>\n' +
-    '            </div>\n' +
-    '            <div class="col-md-3">\n' +
-    '            </div>\n' +
-    '        </div>\n' +
-    '    </form>\n' +
-    '</div>');
-	a.put('views/account/login.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Login on site</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com,\n' +
-    '        user@email.com, author@email.com)</code></p>\n' +
-    '    <p>\n' +
-    '    <div class="row">\n' +
-    '        <div class="col-sm-4">\n' +
-    '            <form ng-submit="AccountSvc.doLogin(email, password)" name="accountForm">\n' +
-    '                <div class="form-group has-feedback" show-errors>\n' +
-    '                    <label for="email">Email:</label>\n' +
-    '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
-    '                           ng-model="email" required>\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                </div>\n' +
-    '                <div class="form-group has-feedback" show-errors>\n' +
-    '                    <label for="password">Password:</label>\n' +
-    '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
-    '                           ng-model="password" required>\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                </div>\n' +
-    '                <button type="submit" class="btn btn-primary" ng-disabled="!accountForm.$valid">Login</button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AppConst.account.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AppConst.account.reg.url}}">registration form</a></p>\n' +
     '</div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -58192,6 +58109,163 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </form>\n' +
     '</div>');
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '</div>');
+	a.put('views/account/reg.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>\n' +
+    '            <span>Registration on site</span>\n' +
+    '        </h1>\n' +
+    '    </div>\n' +
+    '    <form name="accountForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="col-md-9">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="email">Email</label>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email"\n' +
+    '                           ng-model="AccountSvc.item.email" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="password">Password</label>\n' +
+    '                    <input type="password" class="form-control" name="password" id="password"\n' +
+    '                           ng-model="AccountSvc.item.password" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <button ng-click="AccountSvc.doReg(AccountSvc.item)" class="btn btn-success"\n' +
+    '                        ng-disabled="!accountForm.$valid">Create\n' +
+    '                </button>\n' +
+    '            </div>\n' +
+    '            <div class="col-md-3">\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '    </form>\n' +
+    '</div>');
+	a.put('views/account/recovery.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Recovery password</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Please enter you email address used on registration</p>\n' +
+    '    <p>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-sm-4">\n' +
+    '            <form ng-submit="AccountSvc.doRecovery(email)" name="accountForm">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="email">Email:</label>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
+    '                           ng-model="email" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <button type="submit" class="btn btn-primary" ng-disabled="!accountForm.$valid">Sent link to reset password</button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/account/profile.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>\n' +
+    '            <span>Profile</span>\n' +
+    '        </h1>\n' +
+    '    </div>\n' +
+    '    <form name="accountForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="col-md-9">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="firstname">First name</label>\n' +
+    '                    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
+    '                           ng-model="AccountSvc.item.firstname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.firstname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="lastname">Last name</label>\n' +
+    '                    <input type="text" class="form-control" name="lastname" id="lastname"\n' +
+    '                           ng-model="AccountSvc.item.lastname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.lastname.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="username">Username</label>\n' +
+    '                    <input type="text" class="form-control" name="username" id="username"\n' +
+    '                           ng-model="AccountSvc.item.username" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.username.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="email">Email</label>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email"\n' +
+    '                           ng-model="AccountSvc.item.email" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="password">Password</label>\n' +
+    '                    <input type="password" class="form-control" name="password" id="password"\n' +
+    '                           ng-model="AccountSvc.item.password" placeholder="if empty, the password will not be changed">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <button ng-click="AccountSvc.doUpdate(AccountSvc.item)" class="btn btn-success"\n' +
+    '                        ng-disabled="!accountForm.$valid">Update\n' +
+    '                </button>\n' +
+    '                <button ng-click="AccountSvc.doDelete()" class="btn btn-danger">Delete account\n' +
+    '                </button>\n' +
+    '            </div>\n' +
+    '            <div class="col-md-3">\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '    </form>\n' +
+    '</div>');
+	a.put('views/account/login.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Login on site</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com,\n' +
+    '        user@email.com, author@email.com)</code></p>\n' +
+    '    <p>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-sm-4">\n' +
+    '            <form ng-submit="AccountSvc.doLogin(email, password)" name="accountForm">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="email">Email:</label>\n' +
+    '                    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
+    '                           ng-model="email" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="password">Password:</label>\n' +
+    '                    <input type="password" class="form-control" name="password" id="password" placeholder="password"\n' +
+    '                           ng-model="password" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <button type="submit" class="btn btn-primary" ng-disabled="!accountForm.$valid">Login</button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '    </p>\n' +
+    '    <p>If you lose password please click to <a ng-href="{{AppConst.account.recovery.url}}">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="{{AppConst.account.reg.url}}">registration form</a></p>\n' +
+    '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
     '        <div class="navbar-header">\n' +
@@ -58301,6 +58375,24 @@ app.factory('AccountRes', function ($http, AppConst) {
         });
     };
 
+    service.actionReg=function(item){
+        var item=angular.copy(item);
+        item['csrfmiddlewaretoken']=AppConfig.csrf_token;
+        return $http.post(AppConst.account.reg.action, item);
+    }
+
+    service.actionRecovery=function(item){
+        var item=angular.copy(item);
+        item['csrfmiddlewaretoken']=AppConfig.csrf_token;
+        return $http.post(AppConst.account.recovery.action, item);
+    }
+
+    service.actionDelete=function(){
+        return $http.post(AppConst.account.delete.action,{
+            csrfmiddlewaretoken: AppConfig.csrf_token
+        });
+    }
+
     service.actionUpdate=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
@@ -58379,16 +58471,40 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
 
     $rootScope.$on('account.update',function(event, data){
         MessageSvc.info('account/update/success');
+        AppConfig.user=service.item;
+    });
+
+    $rootScope.$on('account.create',function(event, data){
+        MessageSvc.info('account/create/success');
+        AppConfig.user=service.item;
+        NavbarSvc.init();
+        NavbarSvc.goBack();
     });
 
     $rootScope.$on('account.login',function(event, data){
         MessageSvc.info('account/login/success');
+        AppConfig.user=service.item;
+        NavbarSvc.init();
+        NavbarSvc.goBack();
+    });
+
+    $rootScope.$on('account.login',function(event, data){
+        MessageSvc.info('account/login/success');
+        AppConfig.user=service.item;
         NavbarSvc.init();
         NavbarSvc.goBack();
     });
 
     $rootScope.$on('account.logout',function(event, data){
         MessageSvc.info('account/logout/success');
+        AppConfig.user=service.item;
+        NavbarSvc.init();
+        NavbarSvc.goHome();
+    });
+
+    $rootScope.$on('account.delete',function(event, data){
+        MessageSvc.info('account/delete/success');
+        AppConfig.user=service.item;
         NavbarSvc.init();
         NavbarSvc.goHome();
     });
@@ -58403,6 +58519,10 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
 
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
+        if ($routeParams.navId=='profile' && !service.isLogged()){
+            NavbarSvc.goHome();
+            return;
+        }
         if ($routeParams.navId=='logout'){
             service.doLogout();
             return;
@@ -58414,12 +58534,44 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         });
     }
 
-
     service.load=function(){
         var deferred = $q.defer();
         service.item=AppConfig.user;
         deferred.resolve(service.item);
         return deferred.promise;
+    }
+
+	service.doReg=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 AccountRes.actionReg(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+
+	service.doRecovery=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 AccountRes.actionRecovery(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    item=angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.recovery', item);
+                    MessageSvc.info(response.data.code, response.data);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
     }
 
 	service.doUpdate=function(item){
@@ -58428,7 +58580,6 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
-                    AppConfig.user=service.item;
                     $rootScope.$broadcast('account.update', service.item);
                 }
             },
@@ -58444,7 +58595,6 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
-                    AppConfig.user=service.item;
                 	$rootScope.$broadcast('account.login', service.item);
                 }
             },
@@ -58461,7 +58611,6 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
                 function (response) {
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                         service.item={}
-                        AppConfig.user=service.item;
                         $rootScope.$broadcast('account.logout', service.item);
                     }
                 },
@@ -58474,6 +58623,23 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         function(){
             if ($routeParams.navId=='logout')
                 NavbarSvc.goHome();
+        });
+    }
+	service.doDelete=function(){
+         MessageSvc.confirm('account/delete/confirm', {},
+         function(){
+             AccountRes.actionDelete().then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        service.item={}
+                        $rootScope.$broadcast('account.delete', service.item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
         });
     }
 
@@ -58677,6 +58843,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
     }
 
     service.goBack=function(){
+        console.log($window.history.length);
         if ($window.history.length>2)
             $window.history.back();
         else

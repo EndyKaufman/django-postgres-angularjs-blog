@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="page-header">
+        <h1>Recovery password</h1>
+    </div>
+    <p class="lead">Please enter you email address used on registration</p>
+    <p>
+    <div class="row">
+        <div class="col-sm-4">
+            <form ng-submit="AccountSvc.doRecovery(email)" name="accountForm">
+                <div class="form-group has-feedback" show-errors>
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="email"
+                           ng-model="email" required>
+                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"
+                          ng-class="!accountForm.email.$valid ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'"
+                          aria-hidden="true"></span>
+                </div>
+                <button type="submit" class="btn btn-primary" ng-disabled="!accountForm.$valid">Sent link to reset password</button>
+            </form>
+        </div>
+    </div>
+</div>

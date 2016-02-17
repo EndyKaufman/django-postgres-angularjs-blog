@@ -32,6 +32,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
     }
 
     service.goBack=function(){
+        console.log($window.history.length);
         if ($window.history.length>2)
             $window.history.back();
         else

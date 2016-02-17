@@ -208,7 +208,7 @@ gulp.task('build', gulp.series('clear','template:js','scss','less','build:css',
               'build:js'));
 
 // Tests
-gulp.task('test', function () {
+gulp.task('test', function (done) {
 	if (options.isvagrant){
 		var xvfb = new Xvfb({displayNum:10, timeout: 15000});
 		xvfb.start(function(err, xvfbProcess) {

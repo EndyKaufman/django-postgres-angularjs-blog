@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 
 
 class User(AbstractUser):
-
     def getUserData(self):
 
         roles = []
@@ -21,13 +20,13 @@ class User(AbstractUser):
             return {}
 
         return {
-                "id": self.id,
-                "username": self.username,
-                "email": self.email,
-                "firstname": self.first_name,
-                "lastname": self.last_name,
-                "roles": roles
-            }
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "firstname": self.first_name,
+            "lastname": self.last_name,
+            "roles": roles
+        }
 
     @staticmethod
     def validateProfileUpdateJsonObject(jsonObject):
@@ -37,10 +36,6 @@ class User(AbstractUser):
             emailField = emailField.lower()
         except KeyError:
             emailField = ''
-        try:
-            passwordField = jsonObject['password']
-        except KeyError:
-            passwordField = ''
 
         if emailField == '':
             return {'code': 'account/noemail'}, 404
@@ -79,7 +74,6 @@ class User(AbstractUser):
 
         return {'code': 'ok'}, 200
 
-
     def updateFromJsonObject(self, jsonObject):
         try:
             emailField = jsonObject['email']
@@ -91,16 +85,23 @@ class User(AbstractUser):
         except KeyError:
             passwordField = ''
         try:
-            self.first_name = jsonObject['firstname']
+            first_nameField = jsonObject['firstname']
         except KeyError:
-            self.first_name = ''
+            first_nameField = ''
         try:
-            self.last_name = jsonObject['lastname']
+            last_nameField = jsonObject['lastname']
         except KeyError:
-            self.last_name = ''
+            last_nameField = ''
 
         self.email = emailField
+
         if passwordField != '':
             self.set_password(passwordField)
+
+        if first_nameField != '':
+            self.first_name = first_nameField
+
+        if last_nameField != '':
+            self.last_name = last_nameField
 
         return {'code': 'ok'}, 200

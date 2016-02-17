@@ -1,4 +1,5 @@
 module.exports ={
+  debug: false,
   executeAndReturnJson: function (code, callback){
     code =
         "function getCookie(name) {\n"+
@@ -24,14 +25,30 @@ module.exports ={
     });
   },
   getJson: function(uri, callback){
+    var $this=this;
     this.executeAndReturnJson(
         '$.get( "'+uri+'")'+
-        '.done(function(data){callback(data)})'+
-        '.fail(function(data){callback(data)});',
-        callback
+        '.done(function(){callback.apply(this, arguments)})'+
+        '.fail(function(){callback.apply(this, arguments)});',
+        function(){
+                if ($this.debug===true){
+                    console.log('\nGET: '+uri);
+                    console.log('DATA:');
+                    console.log(data);
+                    console.log('RESPONSE:');
+                    if (arguments[0]!=undefined)
+                        console.log(arguments[0]);
+                    else
+                        console.log(arguments);
+                    console.log('\n');
+                    $this.debug=false;
+                }
+                callback.apply(this, arguments);
+        }
     )
   },
   postJson: function(uri, data, callback){
+    var $this=this;
     this.executeAndReturnJson(
         'var postData='+JSON.stringify(data)+';'+
         'postData.csrfmiddlewaretoken=window.AppConfig.csrf_token;'+
@@ -43,9 +60,23 @@ module.exports ={
         '    dataType: "json",'+
         '    data: JSON.stringify(postData)'+
         '})'+
-        '.done(function(data){callback(data)})'+
-        '.fail(function(data){callback(data)});',
-        callback
+        '.done(function(){callback.apply(this, arguments)})'+
+        '.fail(function(){callback.apply(this, arguments)});',
+        function(){
+                if ($this.debug===true){
+                    console.log('\nPOST: '+uri);
+                    console.log('DATA:');
+                    console.log(data);
+                    console.log('RESPONSE:');
+                    if (arguments[0]!=undefined)
+                        console.log(arguments[0]);
+                    else
+                        console.log(arguments);
+                    console.log('\n');
+                    $this.debug=false;
+                }
+                callback.apply(this, arguments)
+        }
     )
   }
 }

@@ -15,6 +15,24 @@ app.factory('AccountRes', function ($http, AppConst) {
         });
     };
 
+    service.actionReg=function(item){
+        var item=angular.copy(item);
+        item['csrfmiddlewaretoken']=AppConfig.csrf_token;
+        return $http.post(AppConst.account.reg.action, item);
+    }
+
+    service.actionRecovery=function(item){
+        var item=angular.copy(item);
+        item['csrfmiddlewaretoken']=AppConfig.csrf_token;
+        return $http.post(AppConst.account.recovery.action, item);
+    }
+
+    service.actionDelete=function(){
+        return $http.post(AppConst.account.delete.action,{
+            csrfmiddlewaretoken: AppConfig.csrf_token
+        });
+    }
+
     service.actionUpdate=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;

@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="page-header">
+        <h1>
+            <span>Registration on site</span>
+        </h1>
+    </div>
+    <form name="accountForm">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="form-group has-feedback" show-errors>
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" name="email" id="email"
+                           ng-model="AccountSvc.item.email" required>
+                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"
+                          ng-class="!accountForm.email.$valid ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'"
+                          aria-hidden="true"></span>
+                </div>
+                <div class="form-group has-feedback" show-errors>
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" id="password"
+                           ng-model="AccountSvc.item.password" required>
+                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"
+                          ng-class="!accountForm.password.$valid ? 'glyphicon glyphicon-remove' : 'glyphicon glyphicon-ok'"
+                          aria-hidden="true"></span>
+                </div>
+                <button ng-click="AccountSvc.doReg(AccountSvc.item)" class="btn btn-success"
+                        ng-disabled="!accountForm.$valid">Create
+                </button>
+            </div>
+            <div class="col-md-3">
+            </div>
+        </div>
+    </form>
+</div>

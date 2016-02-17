@@ -7,7 +7,7 @@ from jsonview.decorators import json_view
 
 # update profile
 @json_view
-def actionProfileUpdate(request):
+def actionUpdate(request):
     """Update record"""
 
     json_data = False
@@ -92,6 +92,88 @@ def actionLogin(request):
         auth.logout(request)
         return {'code': 'account/notactive'}, 404
 
+
+# create
+@json_view
+def actionReg(request):
+    """Reg action"""
+
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    from app.account.models import User
+
+    validateResult, validateCode = User.validateLoginJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
+    try:
+        emailField = json_data['email']
+        emailField = emailField.lower()
+    except KeyError:
+        emailField = ''
+    try:
+        passwordField = json_data['password']
+    except KeyError:
+        passwordField = ''
+
+    try:
+        user = User.objects.get(email=emailField)
+    except User.DoesNotExist:
+        user = False
+
+    if user != False:
+        return {'code': 'account/exists', 'values': [emailField]}, 404
+
+    user = User.objects.create_user(email=emailField, password=passwordField, username=emailField)
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    user.is_staff = True
+    user.is_superuser = False
+    user.is_active = True
+    user.save()
+    user = auth.authenticate(username=user.username, password=passwordField)
+
+    if user.is_active:
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        auth.login(request, user)
+
+        return {'code': 'ok', 'data': [user.getUserData()]}
+    else:
+        auth.logout(request)
+        return {'code': 'account/notactive'}, 404
+
+
+# delete account
+@json_view
+def actionDelete(request):
+    """Delete record"""
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    from app.account.models import User
+
+    try:
+        user = User.objects.get(pk=request.user.id)
+    except User.DoesNotExist:
+        return {'code': 'account/younotactive'}, 404
+
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    user.delete()
+
+    auth.logout(request)
+
+    return {'code': 'ok'}
 
 # Logout
 @json_view
