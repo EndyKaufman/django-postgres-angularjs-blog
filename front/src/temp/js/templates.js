@@ -307,6 +307,38 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
     '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
     '</div>');
+	a.put('views/account/resetpassword.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Reset password</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Please enter new password for you account</p>\n' +
+    '    <p>\n' +
+    '    <div class="row">\n' +
+    '        <div class="col-sm-4">\n' +
+    '            <form ng-submit="AccountSvc.doResetpassword(code, password)" name="accountForm" ng-init="code=AccountSvc.resetpasswordCode">\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="code">Code:</label>\n' +
+    '                    <input type="text" class="form-control" name="code" id="code" placeholder="code from email"\n' +
+    '                           ng-model="code" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.code.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.code.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <div class="form-group has-feedback" show-errors>\n' +
+    '                    <label for="password">New password:</label>\n' +
+    '                    <input type="password" class="form-control" name="password" id="password" placeholder="new password"\n' +
+    '                           ng-model="password" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '                </div>\n' +
+    '                <button type="submit" class="btn btn-success" ng-disabled="!accountForm.$valid">Save password and login\n' +
+    '                    on site\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
 	a.put('views/account/reg.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
@@ -343,7 +375,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div>');
 	a.put('views/account/recovery.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
-    '        <h1>Recovery password</h1>\n' +
+    '        <h1>Recovery access</h1>\n' +
     '    </div>\n' +
     '    <p class="lead">Please enter you email address used on registration</p>\n' +
     '    <p>\n' +

@@ -17,14 +17,7 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         MessageSvc.info('account/login/success');
         AppConfig.user=service.item;
         NavbarSvc.init();
-        NavbarSvc.goBack();
-    });
-
-    $rootScope.$on('account.login',function(event, data){
-        MessageSvc.info('account/login/success');
-        AppConfig.user=service.item;
-        NavbarSvc.init();
-        NavbarSvc.goBack();
+        NavbarSvc.goHome();
     });
 
     $rootScope.$on('account.logout',function(event, data){
@@ -59,6 +52,14 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
             service.doLogout();
             return;
         }
+        if ($routeParams.navId=='resetpassword'){
+            if ($routeParams.code!==undefined)
+                service.resetpasswordCode=$routeParams.code;
+            else
+                service.resetpasswordCode='';
+            return;
+        }
+
         $q.all([
             service.load()
         ]).then(function(responseList) {
@@ -89,13 +90,30 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         );
     }
 
-	service.doRecovery=function(item){
+	service.doRecovery=function(email){
 	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionRecovery(item).then(
+		 AccountRes.actionRecovery(email).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    item=angular.copy(response.data.data[0]);
-                    $rootScope.$broadcast('account.recovery', item);
+                    $rootScope.$broadcast('account.recovery', {email:email});
+                    MessageSvc.info(response.data.code, response.data);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+
+	service.doResetpassword=function(code, password){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 AccountRes.actionResetpassword(code, password).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.resetpassword', {code:code});
+                	$rootScope.$broadcast('account.login', service.item);
                     MessageSvc.info(response.data.code, response.data);
                 }
             },

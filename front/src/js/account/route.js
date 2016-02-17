@@ -10,6 +10,11 @@ app.config(function ($routeProvider, $locationProvider) {
         controller: 'AccountCtrl',
         navId: 'recovery'
       })
+      .when('/resetpassword/:code', {
+        templateUrl: 'views/account/resetpassword.html',
+        controller: 'AccountCtrl',
+        navId: 'resetpassword'
+      })
       .when('/login', {
         templateUrl: 'views/account/login.html',
         controller: 'AccountCtrl',

@@ -4,11 +4,13 @@ from app.account.models import User
 import django.middleware.csrf
 
 
-def get(request):
+def getConfig(request):
+    protocol = 'https' if request.is_secure() else 'http'
+
     config = {}
 
-    config['host'] = request.get_host()
-    config['hostName'] = request.get_host().decode('idna')
+    config['host'] = '%s://%s' % (protocol, request.get_host())
+    config['hostName'] = '%s://%s' % (protocol, request.get_host().decode('idna'))
     config['csrf_token'] = django.middleware.csrf.get_token(request)
 
     try:
@@ -16,6 +18,5 @@ def get(request):
         config['user'] = user.getUserData().copy()
     except User.DoesNotExist:
         config['user'] = {}
-
 
     return config

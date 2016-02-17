@@ -21,11 +21,19 @@ app.factory('AccountRes', function ($http, AppConst) {
         return $http.post(AppConst.account.reg.action, item);
     }
 
-    service.actionRecovery=function(item){
-        var item=angular.copy(item);
+    service.actionRecovery=function(email){
+        var item={email:email};
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
         return $http.post(AppConst.account.recovery.action, item);
     }
+
+    service.actionResetpassword=function(code, password){
+        return $http.post(AppConst.account.resetpassword.action, {
+            code: code,
+            password: password,
+            csrfmiddlewaretoken: AppConfig.csrf_token
+        });
+    };
 
     service.actionDelete=function(){
         return $http.post(AppConst.account.delete.action,{

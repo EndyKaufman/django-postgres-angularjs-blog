@@ -9,7 +9,9 @@ if settings.USE_FIXTURE:
                 url(r'^logout', actions_fixture.actionLogout),
                 url(r'^update', actions_fixture.actionUpdate),
                 url(r'^reg', actions_fixture.actionReg),
-                url(r'^delete', actions_fixture.actionDelete)
+                url(r'^delete', actions_fixture.actionDelete),
+                url(r'^recovery', actions_fixture.actionRecovery),
+                url(r'^resetpassword', actions_fixture.actionResetpassword)
         ]
 else:
         urlpatterns = [
@@ -17,5 +19,7 @@ else:
                 url(r'^logout', actions.actionLogout),
                 url(r'^update', actions.actionUpdate),
                 url(r'^reg', actions.actionReg),
-                url(r'^delete', actions.actionDelete)
+                url(r'^delete', actions.actionDelete),
+                url(r'^recovery', actions_fixture.actionRecovery),
+                url(r'^resetpassword', actions_fixture.actionResetpassword)
         ]

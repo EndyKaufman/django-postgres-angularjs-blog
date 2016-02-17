@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
 import json
 from jsonview.decorators import json_view
+from project import helpers
+from app import home
+from django.conf import settings
 
 
 # update
@@ -215,3 +216,99 @@ def actionLogout(request):
 
     # auth.logout(request)
     return {'code': 'ok'}
+
+
+# Recovery
+@json_view
+def actionRecovery(request):
+    """Recovery action"""
+
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    from app.account.models import User
+
+    validateResult, validateCode = User.validateRecoveryJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
+    try:
+        emailField = json_data['email']
+        emailField = emailField.lower()
+    except KeyError:
+        emailField = ''
+
+    try:
+        with open('app/account/fixtures/users.json') as f:
+            content = f.read()
+            f.close()
+    except IOError:
+        content = '[]'
+    records = json.loads(content)
+
+    user = False
+
+    for record in records:
+        if record['email'] == emailField:
+            user = record
+
+    if user == False:
+        return {'code': 'account/usernofound', 'values': [emailField]}, 404
+
+    config = home.helpers.getConfig(request)
+    resetKey = helpers.makeCode()
+
+    helpers.sendmail('Reset password',
+                     'Link for reset password: %s/#/resetpassword/%s' % (config['hostName'], resetKey),
+                     [settings.SUPPORT_EMAIL])
+
+    return {'code': 'ok', 'data': [emailField]}
+
+
+# Reset password
+@json_view
+def actionResetpassword(request):
+    """Reset password action"""
+
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    from app.account.models import User
+
+    validateResult, validateCode = User.validateResetpasswordJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
+    try:
+        codeField = json_data['code']
+        codeField = codeField.lower()
+    except KeyError:
+        codeField = ''
+    try:
+        passwordField = json_data['password']
+    except KeyError:
+        passwordField = ''
+
+    try:
+        with open('app/account/fixtures/users.json') as f:
+            content = f.read()
+            f.close()
+    except IOError:
+        content = '[]'
+    records = json.loads(content)
+
+    user = records[0]
+
+    return {'code': 'ok', 'data': [user]}

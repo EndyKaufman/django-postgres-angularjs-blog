@@ -16,6 +16,6 @@ def index(request):
         })
     else:
         return render(request, 'home/templates/index.htm', {
-            'config': json.dumps(helpers.get(request), sort_keys=True, indent=4),
+            'config': json.dumps(helpers.getConfig(request), sort_keys=True, indent=4),
             'settings': settings
         })

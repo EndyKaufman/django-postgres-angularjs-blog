@@ -74,6 +74,47 @@ class User(AbstractUser):
 
         return {'code': 'ok'}, 200
 
+
+    @staticmethod
+    def validateRecoveryJsonObject(jsonObject):
+        try:
+            emailField = jsonObject['email']
+            emailField = emailField.lower()
+        except KeyError:
+            emailField = ''
+
+        if emailField == '':
+            return {'code': 'account/noemail'}, 404
+
+        # Validate values of fields
+        try:
+            validate_email(emailField)
+        except ValidationError:
+            return {'code': 'account/wrongemail'}, 404
+
+        return {'code': 'ok'}, 200
+
+
+    @staticmethod
+    def validateResetpasswordJsonObject(jsonObject):
+        try:
+            codeField = jsonObject['code']
+            codeField = codeField.lower()
+        except KeyError:
+            codeField = ''
+        try:
+            passwordField = jsonObject['password']
+        except KeyError:
+            passwordField = ''
+
+        if codeField == '':
+            return {'code': 'account/nocode'}, 404
+
+        if passwordField == '':
+            return {'code': 'account/nopassword'}, 404
+
+        return {'code': 'ok'}, 200
+
     def updateFromJsonObject(self, jsonObject):
         try:
             emailField = jsonObject['email']

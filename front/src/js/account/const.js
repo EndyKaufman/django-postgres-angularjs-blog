@@ -35,6 +35,9 @@ app.constant('AccountConst',{
         url: '#/recovery',
         action: '/account/recovery'
     },
+    resetpassword:{
+        action: '/account/resetpassword'
+    },
     message:{
         'account/exists':'User with email <strong>%s</strong> is exists!',
         'account/noemail':'Email is empty!',
