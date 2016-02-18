@@ -15,6 +15,11 @@ app.config(function ($routeProvider, $locationProvider) {
         controller: 'AccountCtrl',
         navId: 'resetpassword'
       })
+      .when('/resetpassword', {
+        templateUrl: 'views/account/resetpassword.html',
+        controller: 'AccountCtrl',
+        navId: 'resetpassword'
+      })
       .when('/login', {
         templateUrl: 'views/account/login.html',
         controller: 'AccountCtrl',

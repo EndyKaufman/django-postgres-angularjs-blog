@@ -1,4 +1,4 @@
-app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AccountSvc', function ($q, $http, $location, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
 
     $rootScope.$on('account.update',function(event, data){
@@ -34,6 +34,11 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         NavbarSvc.goHome();
     });
 
+    $rootScope.$on('account.recovery',function(event, data){
+        service.goResetpassword();
+        MessageSvc.info('account/recovery/checkemail', {values:[data.email]});
+    });
+
     $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
         if (current.params!=undefined && current.params.navId=='logout'){
             if (eventRoute!=false)
@@ -42,6 +47,9 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         }
     });
 
+    service.goResetpassword=function(){
+        $location.path(AppConst.account.resetpassword.url.replace('#',''));
+    }
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
         if ($routeParams.navId=='profile' && !service.isLogged()){
@@ -96,7 +104,6 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     $rootScope.$broadcast('account.recovery', {email:email});
-                    MessageSvc.info(response.data.code, response.data);
                 }
             },
             function (response) {
@@ -114,7 +121,6 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
                     service.item=angular.copy(response.data.data[0]);
                     $rootScope.$broadcast('account.resetpassword', {code:code});
                 	$rootScope.$broadcast('account.login', service.item);
-                    MessageSvc.info(response.data.code, response.data);
                 }
             },
             function (response) {

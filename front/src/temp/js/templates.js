@@ -129,6 +129,13 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/search/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
     '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
     '</div>');
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '</div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
@@ -300,18 +307,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </form>\n' +
     '</div>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
-    '</div>');
 	a.put('views/account/resetpassword.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Reset password</h1>\n' +
     '    </div>\n' +
-    '    <p class="lead">Please enter new password for you account</p>\n' +
+    '    <p class="lead">Please enter code from email and new password for you account</p>\n' +
     '    <p>\n' +
     '    <div class="row">\n' +
     '        <div class="col-sm-4">\n' +

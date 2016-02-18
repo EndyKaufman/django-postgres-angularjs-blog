@@ -57566,6 +57566,7 @@ app.constant('AccountConst',{
         action: '/account/recovery'
     },
     resetpassword:{
+        url: '#/resetpassword',
         action: '/account/resetpassword'
     },
     message:{
@@ -57581,20 +57582,9 @@ app.constant('AccountConst',{
         'account/logout/success':'Bye-Bye!',
         'account/logout/confirm':'Do you really want to leave?',
         'account/usernofound':'User with email <strong>%s</strong> not found!',
-        'account/recovery/checkemail':'Check email <strong>%s</strong> for link to reset password',
+        'account/recovery/checkemail':'Check email <strong>%s</strong> for code to reset password',
         'account/delete/confirm':'Do you really want to delete account?'
     }
-});
-app.constant('BookmarkConst', {
-    strings:{
-        title:'My bookmarks'
-    },
-    urls:{
-        url: '#/bookmark',
-        getData: '/bookmark'
-    }
-});
-app.constant('MessageConst', {
 });
 app.constant('NavbarConst', {
     left:[
@@ -57634,6 +57624,17 @@ app.constant('NavbarConst', {
             }
         }
     ]
+});
+app.constant('MessageConst', {
+});
+app.constant('BookmarkConst', {
+    strings:{
+        title:'My bookmarks'
+    },
+    urls:{
+        url: '#/bookmark',
+        getData: '/bookmark'
+    }
 });
 app.constant('NoteConst', {
     strings:{
@@ -57743,6 +57744,11 @@ app.config(function ($routeProvider, $locationProvider) {
         navId: 'recovery'
       })
       .when('/resetpassword/:code', {
+        templateUrl: 'views/account/resetpassword.html',
+        controller: 'AccountCtrl',
+        navId: 'resetpassword'
+      })
+      .when('/resetpassword', {
         templateUrl: 'views/account/resetpassword.html',
         controller: 'AccountCtrl',
         navId: 'resetpassword'
@@ -57947,6 +57953,13 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/search/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
     '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
     '</div>');
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '</div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
@@ -58118,18 +58131,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </form>\n' +
     '</div>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
-    '</div>');
 	a.put('views/account/resetpassword.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Reset password</h1>\n' +
     '    </div>\n' +
-    '    <p class="lead">Please enter new password for you account</p>\n' +
+    '    <p class="lead">Please enter code from email and new password for you account</p>\n' +
     '    <p>\n' +
     '    <div class="row">\n' +
     '        <div class="col-sm-4">\n' +
@@ -58515,7 +58521,7 @@ app.factory('AppSvc', function () {
     service.init();    
     return service;
   });
-app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AccountSvc', function ($q, $http, $location, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
     var service={};
 
     $rootScope.$on('account.update',function(event, data){
@@ -58551,6 +58557,11 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         NavbarSvc.goHome();
     });
 
+    $rootScope.$on('account.recovery',function(event, data){
+        service.goResetpassword();
+        MessageSvc.info('account/recovery/checkemail', {values:[data.email]});
+    });
+
     $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
         if (current.params!=undefined && current.params.navId=='logout'){
             if (eventRoute!=false)
@@ -58559,6 +58570,9 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
         }
     });
 
+    service.goResetpassword=function(){
+        $location.path(AppConst.account.resetpassword.url.replace('#',''));
+    }
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
         if ($routeParams.navId=='profile' && !service.isLogged()){
@@ -58613,7 +58627,6 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     $rootScope.$broadcast('account.recovery', {email:email});
-                    MessageSvc.info(response.data.code, response.data);
                 }
             },
             function (response) {
@@ -58631,7 +58644,6 @@ app.factory('AccountSvc', function ($q, $http, AppConst, AccountRes, MessageSvc,
                     service.item=angular.copy(response.data.data[0]);
                     $rootScope.$broadcast('account.resetpassword', {code:code});
                 	$rootScope.$broadcast('account.login', service.item);
-                    MessageSvc.info(response.data.code, response.data);
                 }
             },
             function (response) {

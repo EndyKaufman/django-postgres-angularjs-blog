@@ -36,6 +36,7 @@ app.constant('AccountConst',{
         action: '/account/recovery'
     },
     resetpassword:{
+        url: '#/resetpassword',
         action: '/account/resetpassword'
     },
     message:{
@@ -51,7 +52,7 @@ app.constant('AccountConst',{
         'account/logout/success':'Bye-Bye!',
         'account/logout/confirm':'Do you really want to leave?',
         'account/usernofound':'User with email <strong>%s</strong> not found!',
-        'account/recovery/checkemail':'Check email <strong>%s</strong> for link to reset password',
+        'account/recovery/checkemail':'Check email <strong>%s</strong> for code to reset password',
         'account/delete/confirm':'Do you really want to delete account?'
     }
 });

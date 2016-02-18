@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core import serializers
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 import json
 import inspect
@@ -25,21 +25,17 @@ def makeCode(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size)).lower()
 
 
-def sendmail(subject, message, address=None, message_id=None):
-    subject = '%s: %s' % (settings.SITE_NAME, subject)
+def sendmail(subject, text_content, html_content=None, to_email=None, message_id=None):
+    from_email = '%s <%s>' % (settings.SITE_NAME, settings.SERVER_EMAIL)
 
-    mail_to = '%s <%s>' % (settings.SITE_NAME, settings.SERVER_EMAIL)
+    if to_email == None:
+        to_email = [settings.SERVER_EMAIL]
 
-    if address == None:
-        address = mail_to
-
-    if message_id == None:
-        message_id = makeCode()
-    email = EmailMessage(subject, message, mail_to,
-                         address, [],
-                         reply_to=[mail_to],
-                         headers={'Message-ID': message_id})
-    email.send(fail_silently=True)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
+    if html_content != None:
+        msg.attach_alternative(html_content, "text/html")
+        msg.content_subtype = "html"  # Main content is now text/html
+    msg.send()
     return True
 
 

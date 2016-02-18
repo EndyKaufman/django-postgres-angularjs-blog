@@ -5,6 +5,7 @@ from jsonview.decorators import json_view
 from project import helpers
 from app import home
 from django.conf import settings
+from django.template.loader import render_to_string
 
 
 # update
@@ -262,11 +263,13 @@ def actionRecovery(request):
         return {'code': 'account/usernofound', 'values': [emailField]}, 404
 
     config = home.helpers.getConfig(request)
-    resetKey = helpers.makeCode()
+    config['code'] = helpers.makeCode()
+    config['SHORT_SITE_NAME'] = settings.SHORT_SITE_NAME
+    config['user_first_name'] = user['firstname']
 
-    helpers.sendmail('Reset password',
-                     'Link for reset password: %s/#/resetpassword/%s' % (config['hostName'], resetKey),
-                     [settings.SUPPORT_EMAIL])
+    helpers.sendmail(subject='Reset password',
+                     html_content=render_to_string('account/templates/resetpassword.email.htm', config),
+                     text_content=render_to_string('account/templates/resetpassword.email.txt', config))
 
     return {'code': 'ok', 'data': [emailField]}
 
