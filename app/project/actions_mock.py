@@ -101,7 +101,7 @@ def actionUpdate(request, project_id):
     if validateCode != 200:
         return validateResult, validateCode
 
-    return {'code': 'ok', 'data': [json_data]}
+    return {'code': 'ok', 'data': [json_data], 'reload_source': {'tag': True, 'image': True}}
 
 
 # create
@@ -126,7 +126,7 @@ def actionCreate(request):
 
     json_data['tags'][0]['id'] = 101
     json_data['images'][0]['id'] = 101
-    return {'code': 'ok', 'data': [json_data]}
+    return {'code': 'ok', 'data': [json_data], 'reload_source': {'tag': True, 'image': True}}
 
 
 # delete

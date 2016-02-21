@@ -17,7 +17,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '<div class="form-group has-feedback">\n' +
     '    <label for="ItemTags">Tags</label>\n' +
     '    <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '        <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>\n' +
+    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
     '    </tags-input>\n' +
     '</div>\n' +
     '<div class="form-group">\n' +
@@ -179,8 +179,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '</div>');
 	a.put('views/project/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
-    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in ProjectSvc.TagSvc.list">\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
 	a.put('views/project/list-item.html', '<div class="thumbnail">\n' +

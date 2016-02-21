@@ -72,6 +72,8 @@ class Project(models.Model):
         if self.type == None:
             self.type = 1
 
+        reload_source = {}
+
         # tags
         tagFieldIds = []
         tagFieldTexts = []
@@ -95,6 +97,8 @@ class Project(models.Model):
 
         for tagText in tagFieldTexts:
             tag, tagCreated = Tag.objects.get_or_create(text=tagText['text'])
+            if tagCreated:
+                reload_source['tag'] = True
             self.tags.add(tag)
 
         for tagId in tagFieldIds:
@@ -127,10 +131,12 @@ class Project(models.Model):
 
         for imageSrc in imageFieldSrcs:
             image, imageCreated = Image.objects.get_or_create(src=imageSrc['src'])
+            if imageCreated:
+                reload_source['image'] = True
             self.images.add(image)
 
         for imageId in imageFieldIds:
             image = Image.objects.get(pk=imageId)
             self.images.add(image)
 
-        return {'code': 'ok'}, 200
+        return {'code': 'ok', 'reload_source': reload_source}, 200

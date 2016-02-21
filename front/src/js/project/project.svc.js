@@ -19,8 +19,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     service.item={};
     service.list=false;
 
-    service.TagSvc=TagSvc;
-
     service.countItemsOnRow=2;
 
     service.title=AppConst.project.strings.title;
@@ -57,6 +55,8 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
                     service.item=angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('project.create', service.item);
@@ -73,6 +73,8 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
                     service.item=angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 

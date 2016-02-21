@@ -45,9 +45,9 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
         return list;
     }
 
-    service.load=function(){
+    service.load=function(reload){
         var deferred = $q.defer();
-        if (service.list===false)
+        if (service.list===false || reload===true)
             TagRes.getList().then(function (response) {
                 service.list=angular.copy(response.data.data);
                 deferred.resolve(service.list);

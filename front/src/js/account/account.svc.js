@@ -48,7 +48,7 @@ app.factory('AccountSvc', function ($q, $http, $location, AppConst, AccountRes, 
     });
 
     service.goResetpassword=function(){
-        $location.path('/account/resetpassword');
+        $location.path('/resetpassword');
     }
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);

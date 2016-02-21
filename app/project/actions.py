@@ -26,13 +26,13 @@ def getSearch(request, search_text):
     from app.project.models import Project
 
     data = Project.objects.filter(
-            Q(title__icontains=search_text) |
-            Q(name__icontains=search_text) |
-            Q(description__icontains=search_text) |
-            Q(url__icontains=search_text) |
-            Q(text__icontains=search_text) |
-            Q(html__icontains=search_text) |
-            Q(markdown__icontains=search_text)
+        Q(title__icontains=search_text) |
+        Q(name__icontains=search_text) |
+        Q(description__icontains=search_text) |
+        Q(url__icontains=search_text) |
+        Q(text__icontains=search_text) |
+        Q(html__icontains=search_text) |
+        Q(markdown__icontains=search_text)
     ).order_by('-created').all()
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
@@ -93,15 +93,15 @@ def actionUpdate(request, project_id):
     except Project.DoesNotExist:
         return {'code': 'project/notfound', 'values': [project]}, 404
 
-    #try:
-    validateResult, validateCode = project.updateFromJsonObject(json_data)
-    if validateCode != 200:
-        return validateResult, validateCode
+    # try:
+    updateResult, updateCode = project.updateFromJsonObject(json_data)
+    if updateCode != 200:
+        return updateResult, updateCode
     project.save()
-    #except:
+    # except:
     #    return {'code': 'project/fail/update'}, 404
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([project])}
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject([project]), 'reload_source': updateResult['reload_source']}
 
 
 # create
@@ -127,14 +127,15 @@ def actionCreate(request):
     project = Project.objects.create(name=json_data['name'], type=1)
 
     # try:
-    validateResult, validateCode = project.updateFromJsonObject(json_data)
-    if validateCode != 200:
-        return validateResult, validateCode
+    createResult, createCode = project.updateFromJsonObject(json_data)
+    if createCode != 200:
+        return createResult, createCode
     project.save()
     # except:
     #     return {'code': 'project/fail/create'}, 404
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([project])}
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject([project]), 'reload_source': createResult['reload_source']}
+
 
 # delete
 @json_view

@@ -17,7 +17,7 @@
 <div class="form-group has-feedback">
     <label for="ItemTags">Tags</label>
     <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">
-        <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>
+        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>
     </tags-input>
 </div>
 <div class="form-group">

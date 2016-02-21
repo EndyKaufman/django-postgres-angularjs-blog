@@ -57772,7 +57772,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '<div class="form-group has-feedback">\n' +
     '    <label for="ItemTags">Tags</label>\n' +
     '    <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '        <auto-complete source="ProjectSvc.TagSvc.searchTag($query)"></auto-complete>\n' +
+    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
     '    </tags-input>\n' +
     '</div>\n' +
     '<div class="form-group">\n' +
@@ -57934,8 +57934,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '</div>');
 	a.put('views/project/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
-    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in ProjectSvc.TagSvc.list">\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
 	a.put('views/project/list-item.html', '<div class="thumbnail">\n' +
@@ -58500,7 +58500,7 @@ app.factory('AccountSvc', function ($q, $http, $location, AppConst, AccountRes, 
     });
 
     service.goResetpassword=function(){
-        $location.path('/account/resetpassword');
+        $location.path('/resetpassword');
     }
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
@@ -58789,7 +58789,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
     service.info=function(message, data, type){
         service.alert(message, data);
-        /*
+/*
         if (data===undefined)
             data={values:[]};
 
@@ -58798,13 +58798,18 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         if (data.alertType===undefined)
             data.alertType='info';
         if (data.placement===undefined)
-            data.placement='center';
+            data.placement='top-right';
 
         if (service.list[message]!==undefined)
             message=service.list[message];
-
-        //$alert(extVSprintF(message, data.values), data.title, data.alertType, data.placement)
-        */
+        $alert({
+            content: extVSprintF(message, data.values),
+            title: data.title,
+            type: data.alertType,
+            placement: data.placement,
+            show: false,
+            container: '.layout-content>.container'
+        });*/
     }
 
     service.init=function(){
@@ -58916,8 +58921,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     service.item={};
     service.list=false;
 
-    service.TagSvc=TagSvc;
-
     service.countItemsOnRow=2;
 
     service.title=AppConst.project.strings.title;
@@ -58954,6 +58957,8 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 		 ProjectRes.actionCreate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
                     service.item=angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('project.create', service.item);
@@ -58970,6 +58975,8 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
 		 ProjectRes.actionUpdate(item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
                     service.item=angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
@@ -59158,9 +59165,9 @@ app.factory('TagSvc', function ($routeParams, $http, $q, $rootScope, AppConst, T
         return list;
     }
 
-    service.load=function(){
+    service.load=function(reload){
         var deferred = $q.defer();
-        if (service.list===false)
+        if (service.list===false || reload===true)
             TagRes.getList().then(function (response) {
                 service.list=angular.copy(response.data.data);
                 deferred.resolve(service.list);
@@ -59196,9 +59203,10 @@ app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
 
     NavbarSvc.init();
 });
-app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc) {
+app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.ProjectSvc=ProjectSvc;
+	$scope.TagSvc=TagSvc;
 
 	ProjectSvc.init();
 });

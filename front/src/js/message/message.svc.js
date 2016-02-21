@@ -114,7 +114,7 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
 
     service.info=function(message, data, type){
         service.alert(message, data);
-        /*
+/*
         if (data===undefined)
             data={values:[]};
 
@@ -123,13 +123,18 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert) {
         if (data.alertType===undefined)
             data.alertType='info';
         if (data.placement===undefined)
-            data.placement='center';
+            data.placement='top-right';
 
         if (service.list[message]!==undefined)
             message=service.list[message];
-
-        //$alert(extVSprintF(message, data.values), data.title, data.alertType, data.placement)
-        */
+        $alert({
+            content: extVSprintF(message, data.values),
+            title: data.title,
+            type: data.alertType,
+            placement: data.placement,
+            show: false,
+            container: '.layout-content>.container'
+        });*/
     }
 
     service.init=function(){
