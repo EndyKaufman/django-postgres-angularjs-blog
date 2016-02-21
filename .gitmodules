@@ -1,3 +1,6 @@
 [submodule "mock"]
 	path = mock
-	url = https://github.com/EndyKaufman/django-postgres-angularjs-blog-mock.git
+	url = git@github.com:EndyKaufman/django-postgres-angularjs-blog-mock.git
+[submodule "front"]
+	path = front
+	url = git@github.com:EndyKaufman/django-postgres-angularjs-blog-front.git

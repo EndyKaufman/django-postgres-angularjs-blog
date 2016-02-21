@@ -231,8 +231,9 @@ python manage.py makemigrations
 python manage.py makemigrations --empty yourappname
 ```
 
-## work with submodules
+## work with git and submodules
 ```
+git submodule add git@github.com:EndyKaufman/django-postgres-angularjs-blog-front.git front
 eval "$(ssh-agent -s)"
 ssh-add
 git config status.submodulesummary 1
