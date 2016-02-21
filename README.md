@@ -233,6 +233,9 @@ python manage.py makemigrations --empty yourappname
 
 ## work with submodules
 ```
+git config status.submodulesummary 1
+git status
+git commit -m "updated my submodule"
 git submodule update --remote --merge
 git push --recurse-submodules=on-demand
 ```
