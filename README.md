@@ -231,3 +231,8 @@ python manage.py makemigrations
 python manage.py makemigrations --empty yourappname
 ```
 
+## work with submodules
+```
+git submodule update --remote --merge
+git push --recurse-submodules=on-demand
+```
