@@ -11,8 +11,8 @@ https://django-postgres-angularjs-blog.herokuapp.com
 3. ~~Make templates and tests for basic edit mode~~
 4. ~~Add test database on sqlite and move it mock data from tests~~
 5. ~~Make all methods and classes for authorization~~
-6. **Move frontend code to submodule**
-7. Migrate production to Postres SQL
+6. ~~Move frontend code to submodule~~
+7. **Migrate production to Postres SQL**
 8. Add uppload files from admin mode to Amazone S3
 9. Make other parts (copy+past)
 10. Change standart bootstrap theme to beautiful and clear free template
