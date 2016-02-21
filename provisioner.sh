@@ -31,6 +31,7 @@ sudo npm install -g node-gyp
 sudo npm install -g git+https://git@github.com/Medium/phantomjs.git#v1.9.19
 cd ../../vagrant
 cp _env .env
+cp _env.sh env.sh
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt

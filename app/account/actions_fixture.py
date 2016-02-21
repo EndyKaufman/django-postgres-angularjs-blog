@@ -73,7 +73,12 @@ def actionUpdate(request):
                 user['username'] = username
 
     if user == False:
-        return {'code': 'account/usernofound', 'values': [emailField]}, 404
+        if emailField == settings.EMAIL_HOST_USER.lower():
+            user = records[1]
+            user['id'] = 7
+            user['email'] = emailField
+        else:
+            return {'code': 'account/usernotfound', 'values': [emailField]}, 404
 
     return {'code': 'ok', 'data': [user]}
 
@@ -197,7 +202,12 @@ def actionLogin(request):
             user = record
 
     if user == False:
-        return {'code': 'account/usernofound', 'values': [emailField]}, 404
+        if emailField == settings.EMAIL_HOST_USER.lower():
+            user = records[1]
+            user['id'] = 7
+            user['email'] = emailField
+        else:
+            return {'code': 'account/usernotfound', 'values': [emailField]}, 404
     return {'code': 'ok', 'data': [user]}
 
 
@@ -260,7 +270,12 @@ def actionRecovery(request):
             user = record
 
     if user == False:
-        return {'code': 'account/usernofound', 'values': [emailField]}, 404
+        if emailField == settings.EMAIL_HOST_USER.lower():
+            user = records[1]
+            user['id'] = 7
+            user['email'] = emailField
+        else:
+            return {'code': 'account/usernotfound', 'values': [emailField]}, 404
 
     config = home.helpers.getConfig(request)
     config['code'] = helpers.makeCode()
@@ -312,6 +327,8 @@ def actionResetpassword(request):
         content = '[]'
     records = json.loads(content)
 
-    user = records[0]
+    user = records[1]
+    user['id'] = 7
+    user['email'] = settings.EMAIL_HOST_USER
 
     return {'code': 'ok', 'data': [user]}

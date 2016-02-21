@@ -26,11 +26,11 @@ var options = minimist(process.argv.slice(2));
 if (options.isvagrant==undefined)
 	options.isvagrant=(process.env.USER=='vagrant')?true:false;
 if (options.env==undefined)
-	options.env=process.env.BLOG_ENV || 'development';
+	options.env=process.env.ENV || 'development';
 if (options.host==undefined)
-	options.host=process.env.BLOG_HOST || 'http://127.0.0.1:5000';
+	options.host=process.env.HOST || 'http://127.0.0.1:5000';
 if (options.static_dir==undefined)
-	options.static_dir=process.env.BLOG_STATIC_DIR || '../project/static/';
+	options.static_dir=process.env.STATIC_DIR || '../project/static/';
 
 //source
 var scss_source=['src/scss/**/*.scss'];
@@ -112,6 +112,12 @@ var tests_source=[
     '!tests/**/helpers.js',
     '!tests/helpers.js'
 ];
+if (options['_']=='test' && options.file!==undefined)
+    tests_source=[
+        'tests/'+options.file,
+        '!tests/**/helpers.js',
+        '!tests/helpers.js'
+    ];
 
 //dest
 var dest_path=options.static_dir;

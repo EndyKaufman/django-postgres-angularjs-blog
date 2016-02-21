@@ -4,13 +4,13 @@
         <h3 ng-bind-html="item.title | unsafe"></h3>
         <p ng-bind-html="item.description | unsafe"></p>
         <p><span ng-repeat="tag in item.tags">
-                                <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" class="btn btn-default btn-xs"
+                                <a ng-href="{{'#/tag/'+tag.text}}" class="btn btn-default btn-xs"
                                    ng-bind-html="tag.text | unsafe"></a>
                             </span></p>
         <p class="text-right">
-            <a ng-href="{{AppConst.project.urls.url+'/update/'+item.name}}"
+            <a ng-href="{{'#/project/update/'+item.name}}"
                class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>
-            <a ng-href="{{AppConst.project.urls.url+'/'+item.name}}" class="btn btn-link">Detail...</a>
+            <a ng-href="{{'#/project/'+item.name}}" class="btn btn-link">Detail...</a>
         </p>
     </div>
 </div>

@@ -16,6 +16,7 @@
 
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
+
     </script>
     <meta name="description" content="">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -28,17 +29,17 @@
     <![endif]-->
 </head>
 <body ng-app="app" ng-controller="AppCtrl">
-    <!--[if lt IE 7]>
-    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
-        your browser</a> to improve your experience.</p>
-    <![endif]-->
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
 
-    <div ng-include="AppConst.templates.navbar" class="layout-navbar"></div>
-    <div ng-view class="layout-content"></div>
-    <div ng-include="AppConst.templates.footer" class="layout-footer"></div>
+<div ng-include="'views/navbar.html'" class="layout-navbar"></div>
+<div ng-view class="layout-content"></div>
+<div ng-include="'views/footer.html'" class="layout-footer"></div>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="{% static 'app.js' %}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="{% static 'app.js' %}"></script>
 </body>
 </html>

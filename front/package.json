@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "cheerio": "^0.20.0",
     "chromedriver": "^2.20.0",
     "express": "^5.0.0-alpha.2",
     "gulp": "github:gulpjs/gulp#4.0",
@@ -18,7 +19,9 @@
     "gulp-templatecache": "0.0.4",
     "gulp-uglify": "^1.5.1",
     "gulp-util": "^3.0.7",
+    "imap": "^0.8.16",
     "jasmine-reporters": "^2.1.1",
+    "mailparser": "^0.5.3",
     "minimist": "^1.2.0",
     "node-sass": "^3.4.2",
     "phantomjs": "git+https://git@github.com/Medium/phantomjs.git#v1.9.19",

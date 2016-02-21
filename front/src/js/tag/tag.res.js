@@ -4,7 +4,7 @@ app.factory('TagRes', function ($http, AppConst) {
     service.getList=function(){
         return $http({
                   method: 'GET',
-                  url: AppConst.tag.urls.getData+'/list'
+                  url: '/tag/list'
                });
     };
 

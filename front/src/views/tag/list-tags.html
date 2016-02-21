@@ -1,5 +1,5 @@
 <div class="list-group">
-    <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" ng-class="tag.text==TagSvc.tagText?'active':''"
+    <a ng-href="{{'#/tag/'+tag.text}}" ng-class="tag.text==TagSvc.tagText?'active':''"
        ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">
     </a>
 </div>

@@ -66,6 +66,7 @@ open on browser url http://127.0.0.1:5000 in local pc
 
 ## run tests (before run tests, you must run local server)
 ```
+export $(cat .env)
 cd front
 gulp test
 ```
@@ -73,8 +74,17 @@ gulp test
 use custom host
 
 ```
+export $(cat .env)
 cd front
 gulp test --host http://127.0.0.1:5000
+```
+
+for test one file
+
+```
+export $(cat .env)
+cd front
+gulp test --file account/recovery_access.email.api.js
 ```
 
 # DEVELOP
@@ -149,7 +159,9 @@ gunicorn project.wsgi -b 0.0.0.0:5000
 ```
 cd blog
 vagrant ssh
-cd ../../vagrant/front
+cd ../../vagrant
+source env.sh
+cd front
 gulp test
 ```
 

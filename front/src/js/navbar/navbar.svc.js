@@ -16,12 +16,18 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
 
         if (navItem.title!=undefined)
             item.title=navItem.title;
+
         if (navItem.url!=undefined)
             item.url=navItem.url;
+
         if (navItem.strings!=undefined && navItem.strings.title!=undefined)
             item.title=navItem.strings.title;
+
         if (navItem.urls!=undefined && navItem.urls.url!=undefined)
             item.url=navItem.urls.url;
+
+        if (item.url===undefined)
+            item.url='#/'+item.name;
 
         item.active=(item.name==$routeParams.navId);
         if (item.hiddenHandler!=undefined)
@@ -39,7 +45,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
             service.goHome();
     }
     service.goHome=function(){
-        $location.path(service.brand.url.replace('#',''));
+        $location.path(service.homeUrl);
     }
 
     service.init=function(navId){
@@ -52,6 +58,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
             $routeParams.navId=$route.current.params.navId;
 
+        service.homeUrl=AppConst.homeUrl;
         service.brand=AppConst.brand;
         service.items=AppConst.navbar;
         for (var i=0;i<service.items.left.length;i++){

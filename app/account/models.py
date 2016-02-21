@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 from django.db import models
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
-
+# User model
 class User(AbstractUser):
     def getUserData(self):
 
@@ -134,7 +135,8 @@ class User(AbstractUser):
         except KeyError:
             last_nameField = ''
 
-        self.email = emailField
+        if emailField != '':
+            self.email = emailField
 
         if passwordField != '':
             self.set_password(passwordField)
@@ -146,3 +148,12 @@ class User(AbstractUser):
             self.last_name = last_nameField
 
         return {'code': 'ok'}, 200
+
+
+# Code model
+class Code(models.Model):
+    text = models.TextField(max_length=512)
+    type = models.IntegerField(blank=True, null=True)
+    created = models.DateTimeField('date created', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('date updated', auto_now=True, blank=True, null=True)
+    created_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

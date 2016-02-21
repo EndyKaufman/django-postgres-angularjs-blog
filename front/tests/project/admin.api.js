@@ -78,7 +78,7 @@ describe('Work with projects as admin', function() {
                     var record = listResponse.data[0];
                     var fields = ['id', 'title', 'description', 'name', 'images', 'url', 'type', 'html', 'markdown', 'text', 'tags', 'images'];
                     for (var i=0; i<fields.length; i++)
-                        expect(record[fields[i]] != undefined ? true : false).toEqual(true);
+                        expect(record[fields[i]]).toBeDefined();
                 }
             });
 
@@ -201,14 +201,9 @@ describe('Work with projects as admin', function() {
                             expect(typeof deleteResponse).toEqual('object');
                             expect(deleteResponse.code).toEqual('ok');
                         });
-
                     });
-
                 });
-
             });
-
         });
-
     });
 });

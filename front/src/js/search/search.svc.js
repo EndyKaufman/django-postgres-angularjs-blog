@@ -15,7 +15,7 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $http, $q, $locatio
     });
 
     service.doSearch=function(searchText){
-        $location.path(AppConst.search.urls.url.replace('#','')+'/'+searchText);
+        $location.path('/search/'+searchText);
     }
 
     service.init=function(reload){

@@ -16,13 +16,13 @@ import dj_database_url
 SITE_NAME = u'django-postgres-angularjs-blog'
 SITE_HASH_TAG = u'#myblog'
 SHORT_SITE_NAME = u'My Blog'
-ON_PRODUCTION = os.environ.get('ON_PRODUCTION', None) == '1'
+ENV = os.environ.get('ENV', 'development')
 USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'
 USE_FIXTURE = os.environ.get('USE_FIXTURE', None) == '1'
 
 # EMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1')=='1'
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1') == '1'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', ''))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
@@ -40,7 +40,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'i+acxn5(akgsn!sr4^qgf(^m&*@+g1@u^t@=8s@axc41ml*f=s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if ON_PRODUCTION:
+if ENV == 'production':
     DEBUG = False
     TEMPLATE_DEBUG_MODE = False
 else:
@@ -48,7 +48,7 @@ else:
     TEMPLATE_DEBUG_MODE = True
 
 # LOGGING
-if ON_PRODUCTION:
+if ENV == 'production':
     ADMINS = (
         ('Support', SUPPORT_EMAIL),
     )

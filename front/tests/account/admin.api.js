@@ -136,13 +136,8 @@ describe('Update user profile with admin role', function() {
                     expect(typeof logoutResponse).toEqual('object');
                     expect(logoutResponse.code).toEqual('ok');
                 });
-
             });
-
         });
-
       });
-
     });
-
 });

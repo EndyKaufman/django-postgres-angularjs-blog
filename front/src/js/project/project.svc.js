@@ -37,11 +37,11 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     }
 
     service.goList=function(){
-        $location.path(AppConst.project.urls.url.replace('#',''));
+        $location.path('/project');
     }
 
     service.goItem=function(projectName){
-        $location.path(AppConst.project.urls.url.replace('#','')+'/'+projectName);
+        $location.path('/project/'+projectName);
     }
 
     service.updateItemOnList=function(item){

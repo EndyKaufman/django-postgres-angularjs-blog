@@ -1,12 +1,12 @@
 <div class="container">
     <div class="page-header">
         <h1>
-            <span>Registration on site</span>
+            <span>Registration form</span>
         </h1>
     </div>
     <form name="accountForm">
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-4">
                 <div class="form-group has-feedback" show-errors>
                     <label for="email">Email</label>
                     <input type="email" class="form-control" name="email" id="email"
@@ -26,8 +26,6 @@
                 <button ng-click="AccountSvc.doReg(AccountSvc.item)" class="btn btn-success"
                         ng-disabled="!accountForm.$valid">Create
                 </button>
-            </div>
-            <div class="col-md-3">
             </div>
         </div>
     </form>

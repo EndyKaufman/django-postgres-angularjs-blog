@@ -2,7 +2,7 @@
     <div class="page-header">
         <h1>
             <span>My projects</span>
-            <a ng-href="{{AppConst.project.urls.url+'/create'}}"
+            <a ng-href="#/project/create"
                class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Create</a>
         </h1>
     </div>
@@ -11,13 +11,13 @@
             <p class="lead padding-left-15" ng-bind-html="AppConst.project.strings.description | unsafe"></p>
             <div>
                 <div class="col-md-6" ng-repeat="item in ProjectSvc.list">
-                    <div ng-include="AppConst.project.templates.list.item"></div>
+                    <div ng-include="'views/project/list-item.html'"></div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 padding-left-0">
             <p class="lead">Tags</p>
-            <div ng-include="AppConst.project.templates.list.tags"></div>
+            <div ng-include="'views/project/list-tags.html'"></div>
         </div>
     </div>
 </div>

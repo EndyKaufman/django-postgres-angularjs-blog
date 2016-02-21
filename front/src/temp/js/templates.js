@@ -82,24 +82,24 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <div class="col-md-9 padding-left-0">\n' +
     '                <div ng-repeat="allItem in TagSvc.allList">\n' +
     '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
-    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
-    '                    <div ng-include="AppConst.tag.templates.list.item"></div>\n' +
+    '                                              ng-href="{{\'/\'+allItem.name}}"></a></p>\n' +
+    '                    <div ng-include="\'views/tag/list-item.html\'"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3 padding-left-0">\n' +
     '                <p class="lead">Tags</p>\n' +
-    '                <div ng-include="AppConst.tag.templates.list.tags"></div>\n' +
+    '                <div ng-include="\'views/tag/list-tags.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/tag/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
     '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
 	a.put('views/tag/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
-    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
+    '    <div ng-include="\'views/\'+allItem.name+\'/list-item.html\'"></div>\n' +
     '</div>');
 	a.put('views/search/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -110,44 +110,37 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <div class="col-md-9 padding-left-0">\n' +
     '                <div ng-repeat="allItem in SearchSvc.allList">\n' +
     '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
-    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
-    '                <div ng-include="AppConst.search.templates.list.item"></div>\n' +
+    '                                              ng-href="{{\'/\'+allItem.name}}"></a></p>\n' +
+    '                <div ng-include="\'views/search/list-item.html\'"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3 padding-left-0">\n' +
     '                <p class="lead">Tags</p>\n' +
-    '                <div ng-include="AppConst.search.templates.list.tags"></div>\n' +
+    '                <div ng-include="\'views/search/list-tags.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/search/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
     '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
 	a.put('views/search/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
-    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
-    '</div>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '    <div ng-include="\'views/\'+allItem.name+\'/list-item.html\'"></div>\n' +
     '</div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>Edit project</span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/\'+ProjectSvc.item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-info">View</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Update</button>\n' +
     '                    <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project\n' +
@@ -157,7 +150,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -166,7 +159,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>My projects</span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/create\'}}"\n' +
+    '            <a ng-href="#/project/create"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Create</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
@@ -175,18 +168,18 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <p class="lead padding-left-15" ng-bind-html="AppConst.project.strings.description | unsafe"></p>\n' +
     '            <div>\n' +
     '                <div class="col-md-6" ng-repeat="item in ProjectSvc.list">\n' +
-    '                    <div ng-include="AppConst.project.templates.list.item"></div>\n' +
+    '                    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '        <div class="col-md-3 padding-left-0">\n' +
     '            <p class="lead">Tags</p>\n' +
-    '            <div ng-include="AppConst.project.templates.list.tags"></div>\n' +
+    '            <div ng-include="\'views/project/list-tags.html\'"></div>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/project/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
     '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in ProjectSvc.TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
@@ -196,13 +189,13 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <h3 ng-bind-html="item.title | unsafe"></h3>\n' +
     '        <p ng-bind-html="item.description | unsafe"></p>\n' +
     '        <p><span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                                <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
     '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
     '                            </span></p>\n' +
     '        <p class="text-right">\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/update/\'+item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
+    '            <a ng-href="{{\'#/project/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
     '        </p>\n' +
     '    </div>\n' +
     '</div>');
@@ -210,17 +203,17 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div class="page-header">\n' +
     '        <h1 class="hidden-sm hidden-md hidden-lg">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '        <h1 class="hidden-xs">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
-    '        <div ng-include="AppConst.project.templates.item.view"></div>\n' +
+    '        <div ng-include="\'views/project/item-view.html\'"></div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/project/item-view.html', '<div class="col-md-8 padding-left-15">\n' +
@@ -263,7 +256,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <h2>Tags</h2>\n' +
     '    <p class="lead">\n' +
     '        <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '            <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-md btn-default"\n' +
+    '            <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-md btn-default"\n' +
     '               ng-bind-html="tag.text | unsafe"></a>\n' +
     '        </span>\n' +
     '    </p>\n' +
@@ -294,7 +287,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>\n' +
     '                    <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image\n' +
@@ -302,10 +295,17 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
+    '</div>');
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
     '</div>');
 	a.put('views/account/resetpassword.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -342,12 +342,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/account/reg.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
-    '            <span>Registration on site</span>\n' +
+    '            <span>Registration form</span>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <form name="accountForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-9">\n' +
+    '            <div class="col-md-4">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email</label>\n' +
     '                    <input type="email" class="form-control" name="email" id="email"\n' +
@@ -367,8 +367,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <button ng-click="AccountSvc.doReg(AccountSvc.item)" class="btn btn-success"\n' +
     '                        ng-disabled="!accountForm.$valid">Create\n' +
     '                </button>\n' +
-    '            </div>\n' +
-    '            <div class="col-md-3">\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -486,8 +484,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AppConst.account.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AppConst.account.reg.url}}">registration form</a></p>\n' +
+    '    <p>If you lose password please click to <a ng-href="#/recovery">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="#/reg">registration form</a></p>\n' +
     '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
@@ -499,7 +497,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <span class="icon-bar"></span>\n' +
     '                <span class="icon-bar"></span>\n' +
     '            </button>\n' +
-    '            <a class="navbar-brand" ng-href="{{NavbarSvc.brand.url}}"\n' +
+    '            <a class="navbar-brand" ng-href="{{NavbarSvc.homeUrl}}"\n' +
     '               ng-if="!NavbarSvc.brand.hidden" ng-bind-html="NavbarSvc.brand.title | unsafe"></a>\n' +
     '        </div>\n' +
     '        <div id="navbar" class="collapse navbar-collapse">\n' +

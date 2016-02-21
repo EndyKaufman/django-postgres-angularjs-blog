@@ -7,13 +7,13 @@
             <div class="col-md-9 padding-left-0">
                 <div ng-repeat="allItem in SearchSvc.allList">
                     <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"
-                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>
-                <div ng-include="AppConst.search.templates.list.item"></div>
+                                              ng-href="{{'/'+allItem.name}}"></a></p>
+                <div ng-include="'views/search/list-item.html'"></div>
                 </div>
             </div>
             <div class="col-md-3 padding-left-0">
                 <p class="lead">Tags</p>
-                <div ng-include="AppConst.search.templates.list.tags"></div>
+                <div ng-include="'views/search/list-tags.html'"></div>
             </div>
         </div>
     </div>

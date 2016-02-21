@@ -74,9 +74,6 @@ describe('Create and delete user', function() {
                 expect(typeof deleteResponse).toEqual('object');
                 expect(deleteResponse.code).toEqual('ok');
             });
-
         });
-
     });
-
 });

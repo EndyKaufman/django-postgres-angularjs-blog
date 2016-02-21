@@ -20,6 +20,6 @@ else:
                 url(r'^update', actions.actionUpdate),
                 url(r'^reg', actions.actionReg),
                 url(r'^delete', actions.actionDelete),
-                url(r'^recovery', actions_fixture.actionRecovery),
-                url(r'^resetpassword', actions_fixture.actionResetpassword)
+                url(r'^recovery', actions.actionRecovery),
+                url(r'^resetpassword', actions.actionResetpassword)
         ]

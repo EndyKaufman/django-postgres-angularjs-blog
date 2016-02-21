@@ -3,6 +3,10 @@
 from django.contrib import auth
 import json
 from jsonview.decorators import json_view
+from project import helpers
+from app import home
+from django.conf import settings
+from django.template.loader import render_to_string
 
 
 # update profile
@@ -28,17 +32,17 @@ def actionUpdate(request):
     try:
         user = User.objects.get(pk=request.user.id)
     except User.DoesNotExist:
-        return {'code': 'account/usernofound', 'values': [json_data['email']]}, 404
+        return {'code': 'account/usernotfound', 'values': [json_data['email']]}, 404
 
-    #try:
+    # try:
     validateResult, validateCode = user.updateFromJsonObject(json_data)
     if validateCode != 200:
         return validateResult, validateCode
 
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.save()
-    #except:
-    #    return {'code': 'account/profile/fail/update'}, 404
+    # except:
+    #    return {'code': 'account/fail/update'}, 404
 
     return {'code': 'ok', 'data': [user.getUserData()]}
 
@@ -76,7 +80,7 @@ def actionLogin(request):
     try:
         user = User.objects.get(email=emailField)
     except User.DoesNotExist:
-        return {'code': 'account/usernofound', 'values': [emailField]}, 404
+        return {'code': 'account/usernotfound', 'values': [emailField]}, 404
 
     user = auth.authenticate(username=user.username, password=passwordField)
 
@@ -175,6 +179,7 @@ def actionDelete(request):
 
     return {'code': 'ok'}
 
+
 # Logout
 @json_view
 def actionLogout(request):
@@ -182,3 +187,100 @@ def actionLogout(request):
 
     auth.logout(request)
     return {'code': 'ok'}
+
+
+# Recovery
+@json_view
+def actionRecovery(request):
+    """Recovery action"""
+
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    from app.account.models import User, Code
+
+    validateResult, validateCode = User.validateRecoveryJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
+    try:
+        emailField = json_data['email']
+        emailField = emailField.lower()
+    except KeyError:
+        emailField = ''
+
+    try:
+        user = User.objects.get(email=emailField)
+    except User.DoesNotExist:
+        return {'code': 'account/usernotfound', 'values': [emailField]}, 404
+
+    code = Code.objects.create(text=helpers.makeCode(), created_user=user, type=1)
+
+    config = home.helpers.getConfig(request)
+    config['code'] = code.text
+    config['SHORT_SITE_NAME'] = settings.SHORT_SITE_NAME
+    config['user_first_name'] = user.first_name
+
+    helpers.sendmail(subject='Reset password',
+                     html_content=render_to_string('account/templates/resetpassword.email.htm', config),
+                     text_content=render_to_string('account/templates/resetpassword.email.txt', config),
+                     to_email=[emailField])
+
+    return {'code': 'ok', 'data': [emailField]}
+
+
+# Reset password
+@json_view
+def actionResetpassword(request):
+    """Reset password action"""
+
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    if json_data is False:
+        return {'code': 'nodata'}, 404
+
+    from app.account.models import User, Code
+
+    validateResult, validateCode = User.validateResetpasswordJsonObject(json_data)
+
+    if validateCode != 200:
+        return validateResult, validateCode
+
+    try:
+        codeField = json_data['code']
+        codeField = codeField.lower()
+    except KeyError:
+        codeField = ''
+    try:
+        passwordField = json_data['password']
+    except KeyError:
+        passwordField = ''
+
+    try:
+        code = Code.objects.get(text=codeField)
+    except Code.DoesNotExist:
+        return {'code': 'account/codenotfound', 'values': [codeField]}, 404
+
+    print code
+    user = User.objects.get(pk=code.created_user.id)
+
+    if user.is_active:
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        user.updateFromJsonObject(json_data)
+        user.save()
+        auth.login(request, user)
+        Code.objects.filter(created_user=user).delete()
+
+        return {'code': 'ok', 'data': [user.getUserData()]}
+    else:
+        auth.logout(request)
+        return {'code': 'account/notactive'}, 404

@@ -7,7 +7,7 @@
     <form name="projectForm">
         <div class="row">
             <div class="col-md-9">
-                <div ng-include="AppConst.project.templates.inputs.central"></div>
+                <div ng-include="'views/project/inputs/central.html'"></div>
                 <div>
                     <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>
                     <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image
@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div ng-include="AppConst.project.templates.inputs.right"></div>
+                <div ng-include="'views/project/inputs/right.html'"></div>
             </div>
         </div>
     </form>

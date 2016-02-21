@@ -38,7 +38,7 @@
     <h2>Tags</h2>
     <p class="lead">
         <span ng-repeat="tag in ProjectSvc.item.tags">
-            <a ng-href="{{AppConst.tag.urls.url+'/'+tag.text}}" class="btn btn-md btn-default"
+            <a ng-href="{{'#/tag/'+tag.text}}" class="btn btn-md btn-default"
                ng-bind-html="tag.text | unsafe"></a>
         </span>
     </p>

@@ -48,10 +48,14 @@ app.factory('AccountSvc', function ($q, $http, $location, AppConst, AccountRes, 
     });
 
     service.goResetpassword=function(){
-        $location.path(AppConst.account.resetpassword.url.replace('#',''));
+        $location.path('/account/resetpassword');
     }
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
+        if (($routeParams.navId=='login' || $routeParams.navId=='reg' || $routeParams.navId=='resetpassword' || $routeParams.navId=='recovery') && service.isLogged()){
+            NavbarSvc.goHome();
+            return;
+        }
         if ($routeParams.navId=='profile' && !service.isLogged()){
             NavbarSvc.goHome();
             return;

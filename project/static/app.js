@@ -57531,60 +57531,47 @@ app.config(function ($selectProvider, showErrorsConfigProvider, $carouselProvide
 app.constant('AccountConst',{
     reg:{
         title: 'Reg',
-        name: 'reg',
-        url: '#/reg',
-        action: '/account/reg'
+        name: 'reg'
     },
     login:{
         title: 'Login',
-        name: 'login',
-        url: '#/login',
-        action: '/account/login'
+        name: 'login'
     },
     logout:{
         title: 'Logout',
-        name: 'logout',
-        url: '#/logout',
-        action: '/account/logout'
+        name: 'logout'
     },
     profile:{
         title: 'Profile',
-        name: 'profile',
-        url: '#/profile',
-        action: '/account/profile'
-    },
-    update:{
-        action: '/account/update'
-    },
-    delete:{
-        action: '/account/delete'
+        name: 'profile'
     },
     recovery:{
         name: 'Recovery',
-        name: 'recovery',
-        url: '#/recovery',
-        action: '/account/recovery'
-    },
-    resetpassword:{
-        url: '#/resetpassword',
-        action: '/account/resetpassword'
+        name: 'recovery'
     },
     message:{
         'account/exists':'User with email <strong>%s</strong> is exists!',
         'account/noemail':'Email is empty!',
         'account/nopassword':'Password is empty!',
         'account/wrongemail':'Email is incorrect!',
-        'account/usernofound':'User not founded!',
+        'account/usernotfound':'User not founded!',
         'account/wrongpassword':'Wrong password!',
         'account/notactive':'User not activated!',
         'account/younotactive':'You not activated!',
         'account/login/success':'You authorizing!',
         'account/logout/success':'Bye-Bye!',
         'account/logout/confirm':'Do you really want to leave?',
-        'account/usernofound':'User with email <strong>%s</strong> not found!',
+        'account/usernotfound':'User with email <strong>%s</strong> not found!',
         'account/recovery/checkemail':'Check email <strong>%s</strong> for code to reset password',
         'account/delete/confirm':'Do you really want to delete account?'
     }
+});
+app.constant('BookmarkConst', {
+    strings:{
+        title:'My bookmarks'
+    }
+});
+app.constant('MessageConst', {
 });
 app.constant('NavbarConst', {
     left:[
@@ -57625,24 +57612,14 @@ app.constant('NavbarConst', {
         }
     ]
 });
-app.constant('MessageConst', {
-});
-app.constant('BookmarkConst', {
-    strings:{
-        title:'My bookmarks'
-    },
-    urls:{
-        url: '#/bookmark',
-        getData: '/bookmark'
-    }
-});
 app.constant('NoteConst', {
     strings:{
         title:'My notes'
-    },
-    urls:{
-        url: '#/note',
-        getData: '/note'
+    }
+});
+app.constant('SearchConst', {
+    strings:{
+        title:'Search'
     }
 });
 app.constant('ProjectConst', {
@@ -57650,75 +57627,29 @@ app.constant('ProjectConst', {
         title: 'My project',
         description: 'Projects descriptions'
     },
-    urls:{
-        url: '#/project',
-        getData: '/project',
-        action: '/project'
-    },
     types:[
         {id:1,title:'Text'},
         {id:2,title:'Html'},
         {id:3,title:'Url'},
         {id:4,title:'Markdown'}
     ],
-    templates:{
-        inputs:{
-            central: 'views/project/inputs/central.html',
-            right: 'views/project/inputs/right.html'
-        },
-        list:{
-            item: 'views/project/list-item.html',
-            tags: 'views/project/list-tags.html'
-        },
-        item:{
-            view: 'views/project/item-view.html'
-        }
-    },
     message:{
         'project/remove/confirm':'Do you really want to remove project <strong>%s</strong>?'
-    }
-});
-app.constant('SearchConst', {
-    strings:{
-        title:'Search'
-    },
-    urls:{
-        url: '#/search'
-    },
-    templates:{
-        list:{
-            item: 'views/search/list-item.html',
-            tags: 'views/search/list-tags.html'
-        }
     }
 });
 app.constant('TagConst', {
     strings:{
         title:'My tags'
-    },
-    urls:{
-        url: '#/tag',
-        getData: '/tag'
-    },
-    templates:{
-        list:{
-            item: 'views/tag/list-item.html',
-            tags: 'views/tag/list-tags.html'
-        }
     }
 });
 app.factory('AppConst', function(AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
 
     var service={
+        homeUrl:'/project',
         brand:{
             title: 'MY BLOG',
             name: 'MY_BLOG',
-            url: '#/project',
             image: '//2.gravatar.com/avatar/767fc9c115a1b989744c755db47feb60?s=132&d=wavatar'
-        },
-        templates:{
-            navbar: 'views/navbar.html',
-            footer:'views/footer.html'
         },
         navbar: NavbarConst,
         search: SearchConst,
@@ -57906,24 +57837,24 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <div class="col-md-9 padding-left-0">\n' +
     '                <div ng-repeat="allItem in TagSvc.allList">\n' +
     '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
-    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
-    '                    <div ng-include="AppConst.tag.templates.list.item"></div>\n' +
+    '                                              ng-href="{{\'/\'+allItem.name}}"></a></p>\n' +
+    '                    <div ng-include="\'views/tag/list-item.html\'"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3 padding-left-0">\n' +
     '                <p class="lead">Tags</p>\n' +
-    '                <div ng-include="AppConst.tag.templates.list.tags"></div>\n' +
+    '                <div ng-include="\'views/tag/list-tags.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/tag/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
     '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
 	a.put('views/tag/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
-    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
+    '    <div ng-include="\'views/\'+allItem.name+\'/list-item.html\'"></div>\n' +
     '</div>');
 	a.put('views/search/list.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -57934,44 +57865,37 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <div class="col-md-9 padding-left-0">\n' +
     '                <div ng-repeat="allItem in SearchSvc.allList">\n' +
     '                    <p class="lead padding-left-15">Place: <a ng-bind-html="AppConst[allItem.name].strings.title | unsafe"\n' +
-    '                                              ng-href="{{AppConst[allItem.name].urls.url}}"></a></p>\n' +
-    '                <div ng-include="AppConst.search.templates.list.item"></div>\n' +
+    '                                              ng-href="{{\'/\'+allItem.name}}"></a></p>\n' +
+    '                <div ng-include="\'views/search/list-item.html\'"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3 padding-left-0">\n' +
     '                <p class="lead">Tags</p>\n' +
-    '                <div ng-include="AppConst.search.templates.list.tags"></div>\n' +
+    '                <div ng-include="\'views/search/list-tags.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/search/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
     '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
 	a.put('views/search/list-item.html', '<div class="col-md-6" ng-repeat="item in allItem.list">\n' +
-    '    <div ng-include="AppConst[allItem.name].templates.list.item"></div>\n' +
-    '</div>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '    <div ng-include="\'views/\'+allItem.name+\'/list-item.html\'"></div>\n' +
     '</div>');
 	a.put('views/project/update.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>Edit project</span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/\'+ProjectSvc.item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-info">View</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Update</button>\n' +
     '                    <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project\n' +
@@ -57981,7 +57905,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -57990,7 +57914,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span>My projects</span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/create\'}}"\n' +
+    '            <a ng-href="#/project/create"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Create</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
@@ -57999,18 +57923,18 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <p class="lead padding-left-15" ng-bind-html="AppConst.project.strings.description | unsafe"></p>\n' +
     '            <div>\n' +
     '                <div class="col-md-6" ng-repeat="item in ProjectSvc.list">\n' +
-    '                    <div ng-include="AppConst.project.templates.list.item"></div>\n' +
+    '                    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '        <div class="col-md-3 padding-left-0">\n' +
     '            <p class="lead">Tags</p>\n' +
-    '            <div ng-include="AppConst.project.templates.list.tags"></div>\n' +
+    '            <div ng-include="\'views/project/list-tags.html\'"></div>\n' +
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/project/list-tags.html', '<div class="list-group">\n' +
-    '    <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
+    '    <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==ProjectSvc.TagSvc.tagText?\'active\':\'\'"\n' +
     '       ng-bind-html="tag.text | unsafe" class="list-group-item" ng-repeat="tag in ProjectSvc.TagSvc.list">\n' +
     '    </a>\n' +
     '</div>');
@@ -58020,13 +57944,13 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <h3 ng-bind-html="item.title | unsafe"></h3>\n' +
     '        <p ng-bind-html="item.description | unsafe"></p>\n' +
     '        <p><span ng-repeat="tag in item.tags">\n' +
-    '                                <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
+    '                                <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-default btn-xs"\n' +
     '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
     '                            </span></p>\n' +
     '        <p class="text-right">\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/update/\'+item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
+    '            <a ng-href="{{\'#/project/\'+item.name}}" class="btn btn-link">Detail...</a>\n' +
     '        </p>\n' +
     '    </div>\n' +
     '</div>');
@@ -58034,17 +57958,17 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div class="page-header">\n' +
     '        <h1 class="hidden-sm hidden-md hidden-lg">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '        <h1 class="hidden-xs">\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
-    '            <a ng-href="{{AppConst.project.urls.url+\'/update/\'+ProjectSvc.item.name}}"\n' +
+    '            <a ng-href="{{\'#/project/update/\'+ProjectSvc.item.name}}"\n' +
     '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()">Edit</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
-    '        <div ng-include="AppConst.project.templates.item.view"></div>\n' +
+    '        <div ng-include="\'views/project/item-view.html\'"></div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/project/item-view.html', '<div class="col-md-8 padding-left-15">\n' +
@@ -58087,7 +58011,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <h2>Tags</h2>\n' +
     '    <p class="lead">\n' +
     '        <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '            <a ng-href="{{AppConst.tag.urls.url+\'/\'+tag.text}}" class="btn btn-md btn-default"\n' +
+    '            <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-md btn-default"\n' +
     '               ng-bind-html="tag.text | unsafe"></a>\n' +
     '        </span>\n' +
     '    </p>\n' +
@@ -58118,7 +58042,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <form name="projectForm">\n' +
     '        <div class="row">\n' +
     '            <div class="col-md-9">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.central"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
     '                <div>\n' +
     '                    <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Create</button>\n' +
     '                    <button ng-click="ProjectSvc.doAddImage()" class="btn btn-primary pull-right">Add image\n' +
@@ -58126,10 +58050,17 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </div>\n' +
     '            </div>\n' +
     '            <div class="col-md-3">\n' +
-    '                <div ng-include="AppConst.project.templates.inputs.right"></div>\n' +
+    '                <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
+    '</div>');
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
     '</div>');
 	a.put('views/account/resetpassword.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -58166,12 +58097,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/account/reg.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
-    '            <span>Registration on site</span>\n' +
+    '            <span>Registration form</span>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <form name="accountForm">\n' +
     '        <div class="row">\n' +
-    '            <div class="col-md-9">\n' +
+    '            <div class="col-md-4">\n' +
     '                <div class="form-group has-feedback" show-errors>\n' +
     '                    <label for="email">Email</label>\n' +
     '                    <input type="email" class="form-control" name="email" id="email"\n' +
@@ -58191,8 +58122,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <button ng-click="AccountSvc.doReg(AccountSvc.item)" class="btn btn-success"\n' +
     '                        ng-disabled="!accountForm.$valid">Create\n' +
     '                </button>\n' +
-    '            </div>\n' +
-    '            <div class="col-md-3">\n' +
     '            </div>\n' +
     '        </div>\n' +
     '    </form>\n' +
@@ -58310,8 +58239,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '    </p>\n' +
-    '    <p>If you lose password please click to <a ng-href="{{AppConst.account.recovery.url}}">recovery password</a></p>\n' +
-    '    <p>For registration on site use <a ng-href="{{AppConst.account.reg.url}}">registration form</a></p>\n' +
+    '    <p>If you lose password please click to <a ng-href="#/recovery">recovery password</a></p>\n' +
+    '    <p>For registration on site use <a ng-href="#/reg">registration form</a></p>\n' +
     '</div>');
 	a.put('views/navbar.html', '<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
@@ -58323,7 +58252,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <span class="icon-bar"></span>\n' +
     '                <span class="icon-bar"></span>\n' +
     '            </button>\n' +
-    '            <a class="navbar-brand" ng-href="{{NavbarSvc.brand.url}}"\n' +
+    '            <a class="navbar-brand" ng-href="{{NavbarSvc.homeUrl}}"\n' +
     '               ng-if="!NavbarSvc.brand.hidden" ng-bind-html="NavbarSvc.brand.title | unsafe"></a>\n' +
     '        </div>\n' +
     '        <div id="navbar" class="collapse navbar-collapse">\n' +
@@ -58409,7 +58338,7 @@ app.factory('AccountRes', function ($http, AppConst) {
     var service={};
 
     service.actionLogin=function(email, password){
-        return $http.post(AppConst.account.login.action, {
+        return $http.post('/account/login', {
             email: email,
             password: password,
             csrfmiddlewaretoken: AppConfig.csrf_token
@@ -58417,7 +58346,7 @@ app.factory('AccountRes', function ($http, AppConst) {
     };
 
     service.actionLogout=function(){
-        return $http.post(AppConst.account.logout.action,{
+        return $http.post('/account/logout',{
             csrfmiddlewaretoken: AppConfig.csrf_token
         });
     };
@@ -58425,17 +58354,17 @@ app.factory('AccountRes', function ($http, AppConst) {
     service.actionReg=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
-        return $http.post(AppConst.account.reg.action, item);
+        return $http.post('/account/reg', item);
     }
 
     service.actionRecovery=function(email){
         var item={email:email};
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
-        return $http.post(AppConst.account.recovery.action, item);
+        return $http.post('/account/recovery', item);
     }
 
     service.actionResetpassword=function(code, password){
-        return $http.post(AppConst.account.resetpassword.action, {
+        return $http.post('/account/resetpassword', {
             code: code,
             password: password,
             csrfmiddlewaretoken: AppConfig.csrf_token
@@ -58443,7 +58372,7 @@ app.factory('AccountRes', function ($http, AppConst) {
     };
 
     service.actionDelete=function(){
-        return $http.post(AppConst.account.delete.action,{
+        return $http.post('/account/delete',{
             csrfmiddlewaretoken: AppConfig.csrf_token
         });
     }
@@ -58451,7 +58380,7 @@ app.factory('AccountRes', function ($http, AppConst) {
     service.actionUpdate=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
-        return $http.post(AppConst.account.update.action, item);
+        return $http.post('/account/update', item);
     }
 
     return service;
@@ -58462,41 +58391,41 @@ app.factory('ProjectRes', function ($http, AppConst) {
     service.getItem=function(name){
         return $http({
                   method: 'GET',
-                  url: AppConst.project.urls.getData+'/item/'+name
+                  url: '/project/item/'+name
                });
     };
     service.getList=function(){
         return $http({
                   method: 'GET',
-                  url: AppConst.project.urls.getData+'/list'
+                  url: '/project/list'
                });
     };
     service.getSearch=function(searchText){
         return $http({
                   method: 'GET',
-                  url: AppConst.project.urls.getData+'/search/'+searchText
+                  url: '/project/search/'+searchText
                });
     };
     service.getListByTag=function(tagText){
         return $http({
                   method: 'GET',
-                  url: AppConst.project.urls.getData+'/listbytag/'+tagText
+                  url: '/project/listbytag/'+tagText
                });
     };
     service.actionUpdate=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
-        return $http.post(AppConst.project.urls.action+'/update/'+item.id, item);
+        return $http.post('/project/update/'+item.id, item);
     }
     service.actionCreate=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
-        return $http.post(AppConst.project.urls.action+'/create', item);
+        return $http.post('/project/create', item);
     }
     service.actionDelete=function(item){
         var item=angular.copy(item);
         item['csrfmiddlewaretoken']=AppConfig.csrf_token;
-        return $http.post(AppConst.project.urls.action+'/delete/'+item.id, item);
+        return $http.post('/project/delete/'+item.id, item);
     }
 
     return service;
@@ -58507,7 +58436,7 @@ app.factory('TagRes', function ($http, AppConst) {
     service.getList=function(){
         return $http({
                   method: 'GET',
-                  url: AppConst.tag.urls.getData+'/list'
+                  url: '/tag/list'
                });
     };
 
@@ -58571,10 +58500,14 @@ app.factory('AccountSvc', function ($q, $http, $location, AppConst, AccountRes, 
     });
 
     service.goResetpassword=function(){
-        $location.path(AppConst.account.resetpassword.url.replace('#',''));
+        $location.path('/account/resetpassword');
     }
     service.init=function(reload){
         NavbarSvc.init($routeParams.navId);
+        if (($routeParams.navId=='login' || $routeParams.navId=='reg' || $routeParams.navId=='resetpassword' || $routeParams.navId=='recovery') && service.isLogged()){
+            NavbarSvc.goHome();
+            return;
+        }
         if ($routeParams.navId=='profile' && !service.isLogged()){
             NavbarSvc.goHome();
             return;
@@ -58906,12 +58839,18 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
 
         if (navItem.title!=undefined)
             item.title=navItem.title;
+
         if (navItem.url!=undefined)
             item.url=navItem.url;
+
         if (navItem.strings!=undefined && navItem.strings.title!=undefined)
             item.title=navItem.strings.title;
+
         if (navItem.urls!=undefined && navItem.urls.url!=undefined)
             item.url=navItem.urls.url;
+
+        if (item.url===undefined)
+            item.url='#/'+item.name;
 
         item.active=(item.name==$routeParams.navId);
         if (item.hiddenHandler!=undefined)
@@ -58929,7 +58868,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
             service.goHome();
     }
     service.goHome=function(){
-        $location.path(service.brand.url.replace('#',''));
+        $location.path(service.homeUrl);
     }
 
     service.init=function(navId){
@@ -58942,6 +58881,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
             $routeParams.navId=$route.current.params.navId;
 
+        service.homeUrl=AppConst.homeUrl;
         service.brand=AppConst.brand;
         service.items=AppConst.navbar;
         for (var i=0;i<service.items.left.length;i++){
@@ -58994,11 +58934,11 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $http, $q, $timeou
     }
 
     service.goList=function(){
-        $location.path(AppConst.project.urls.url.replace('#',''));
+        $location.path('/project');
     }
 
     service.goItem=function(projectName){
-        $location.path(AppConst.project.urls.url.replace('#','')+'/'+projectName);
+        $location.path('/project/'+projectName);
     }
 
     service.updateItemOnList=function(item){
@@ -59145,7 +59085,7 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $http, $q, $locatio
     });
 
     service.doSearch=function(searchText){
-        $location.path(AppConst.search.urls.url.replace('#','')+'/'+searchText);
+        $location.path('/search/'+searchText);
     }
 
     service.init=function(reload){

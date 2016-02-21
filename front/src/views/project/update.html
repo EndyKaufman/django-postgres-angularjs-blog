@@ -2,14 +2,14 @@
     <div class="page-header">
         <h1>
             <span>Edit project</span>
-            <a ng-href="{{AppConst.project.urls.url+'/'+ProjectSvc.item.name}}"
+            <a ng-href="{{'#/project/'+ProjectSvc.item.name}}"
                class="btn btn-info">View</a>
         </h1>
     </div>
     <form name="projectForm">
         <div class="row">
             <div class="col-md-9">
-                <div ng-include="AppConst.project.templates.inputs.central"></div>
+                <div ng-include="'views/project/inputs/central.html'"></div>
                 <div>
                     <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-success" ng-disabled="!projectForm.$valid">Update</button>
                     <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-danger">Delete project
@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div ng-include="AppConst.project.templates.inputs.right"></div>
+                <div ng-include="'views/project/inputs/right.html'"></div>
             </div>
         </div>
     </form>

@@ -31,7 +31,7 @@ def sendmail(subject, text_content, html_content=None, to_email=None, message_id
     if to_email == None:
         to_email = [settings.SERVER_EMAIL]
 
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
+    msg = EmailMultiAlternatives(subject, '', from_email, to_email)
     if html_content != None:
         msg.attach_alternative(html_content, "text/html")
         msg.content_subtype = "html"  # Main content is now text/html

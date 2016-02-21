@@ -7,4 +7,5 @@ result.xml
 .vagrant
 *.pyc
 .env
+env.sh
 .idea

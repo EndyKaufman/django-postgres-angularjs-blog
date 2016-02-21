@@ -60,7 +60,7 @@ def getItem(request, project_name):
     try:
         data = [Project.objects.get(name=project_name)]
     except Project.DoesNotExist:
-        return {'code': 'project/nofound', 'values': [project_name]}, 404
+        return {'code': 'project/notfound', 'values': [project_name]}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
@@ -91,7 +91,7 @@ def actionUpdate(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
-        return {'code': 'project/nofound', 'values': [project]}, 404
+        return {'code': 'project/notfound', 'values': [project]}, 404
 
     #try:
     validateResult, validateCode = project.updateFromJsonObject(json_data)
@@ -157,7 +157,7 @@ def actionDelete(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
-        return {'code': 'project/nofound', 'values': [project]}, 404
+        return {'code': 'project/notfound', 'values': [project]}, 404
 
     try:
         project.delete()
