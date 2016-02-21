@@ -6,9 +6,9 @@ from django.db import migrations
 import json
 
 
-def fill_from_fixtures(apps, schema_editor):
+def fill_from_mock(apps, schema_editor):
     try:
-        with open('app/project/fixtures/list.json') as f:
+        with open('mock/project/list.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -55,5 +55,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(fill_from_fixtures),
+        migrations.RunPython(fill_from_mock),
     ]

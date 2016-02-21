@@ -7,9 +7,9 @@ from app.account.models import User
 import json
 
 
-def fill_from_fixtures(apps, schema_editor):
+def fill_from_mock(apps, schema_editor):
     try:
-        with open('app/account/fixtures/users.json') as f:
+        with open('mock/account/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -75,5 +75,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(fill_from_fixtures),
+        migrations.RunPython(fill_from_mock),
     ]

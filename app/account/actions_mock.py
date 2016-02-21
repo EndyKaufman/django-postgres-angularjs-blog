@@ -38,7 +38,7 @@ def actionUpdate(request):
         return {'code': 'account/noemail'}, 404
 
     try:
-        with open('app/account/fixtures/users.json') as f:
+        with open('mock/account/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -113,7 +113,7 @@ def actionReg(request):
         return {'code': 'account/noemail'}, 404
 
     try:
-        with open('app/account/fixtures/users.json') as f:
+        with open('mock/account/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -188,7 +188,7 @@ def actionLogin(request):
         passwordField = ''
 
     try:
-        with open('app/account/fixtures/users.json') as f:
+        with open('mock/account/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -256,7 +256,7 @@ def actionRecovery(request):
         emailField = ''
 
     try:
-        with open('app/account/fixtures/users.json') as f:
+        with open('mock/account/users.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -320,7 +320,7 @@ def actionResetpassword(request):
         passwordField = ''
 
     try:
-        with open('app/account/fixtures/users.json') as f:
+        with open('mock/account/users.json') as f:
             content = f.read()
             f.close()
     except IOError:

@@ -57617,11 +57617,6 @@ app.constant('NoteConst', {
         title:'My notes'
     }
 });
-app.constant('SearchConst', {
-    strings:{
-        title:'Search'
-    }
-});
 app.constant('ProjectConst', {
     strings:{
         title: 'My project',
@@ -57635,6 +57630,11 @@ app.constant('ProjectConst', {
     ],
     message:{
         'project/remove/confirm':'Do you really want to remove project <strong>%s</strong>?'
+    }
+});
+app.constant('SearchConst', {
+    strings:{
+        title:'Search'
     }
 });
 app.constant('TagConst', {

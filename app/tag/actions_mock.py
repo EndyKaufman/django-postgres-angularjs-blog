@@ -9,7 +9,7 @@ def getList(request):
     """List data"""
 
     try:
-        with open('app/tag/fixtures/list.json') as f:
+        with open('mock/tag/list.json') as f:
             content = f.read()
             f.close()
     except IOError:

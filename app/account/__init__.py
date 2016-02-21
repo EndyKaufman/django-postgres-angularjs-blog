@@ -1,17 +1,17 @@
 from django.conf.urls import patterns, url
 from django.conf import settings
 import actions
-import actions_fixture
+import actions_mock
 
-if settings.USE_FIXTURE:
+if settings.USE_MOCK:
         urlpatterns = [
-                url(r'^login', actions_fixture.actionLogin),
-                url(r'^logout', actions_fixture.actionLogout),
-                url(r'^update', actions_fixture.actionUpdate),
-                url(r'^reg', actions_fixture.actionReg),
-                url(r'^delete', actions_fixture.actionDelete),
-                url(r'^recovery', actions_fixture.actionRecovery),
-                url(r'^resetpassword', actions_fixture.actionResetpassword)
+                url(r'^login', actions_mock.actionLogin),
+                url(r'^logout', actions_mock.actionLogout),
+                url(r'^update', actions_mock.actionUpdate),
+                url(r'^reg', actions_mock.actionReg),
+                url(r'^delete', actions_mock.actionDelete),
+                url(r'^recovery', actions_mock.actionRecovery),
+                url(r'^resetpassword', actions_mock.actionResetpassword)
         ]
 else:
         urlpatterns = [

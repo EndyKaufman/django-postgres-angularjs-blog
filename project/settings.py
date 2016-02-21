@@ -18,7 +18,7 @@ SITE_HASH_TAG = u'#myblog'
 SHORT_SITE_NAME = u'My Blog'
 ENV = os.environ.get('ENV', 'development')
 USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'
-USE_FIXTURE = os.environ.get('USE_FIXTURE', None) == '1'
+USE_MOCK = os.environ.get('USE_MOCK', None) == '1'
 
 # EMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

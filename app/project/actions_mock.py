@@ -18,7 +18,7 @@ def getList(request):
     """List data"""
 
     try:
-        with open('app/project/fixtures/list.json') as f:
+        with open('mock/project/list.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -34,7 +34,7 @@ def getSearch(request, search_text):
     """Search data"""
 
     try:
-        with open('app/project/fixtures/list.json') as f:
+        with open('mock/project/list.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -50,7 +50,7 @@ def getListByTag(request, tag_text):
     """List data by tag"""
 
     try:
-        with open('app/project/fixtures/list.json') as f:
+        with open('mock/project/list.json') as f:
             content = f.read()
             f.close()
     except IOError:
@@ -66,7 +66,7 @@ def getItem(request, project_name):
     """Item data"""
 
     try:
-        with open('app/project/fixtures/list.json') as f:
+        with open('mock/project/list.json') as f:
             content = f.read()
             f.close()
     except IOError:
