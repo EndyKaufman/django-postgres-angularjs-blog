@@ -57575,41 +57575,11 @@ app.constant('MessageConst', {
 });
 app.constant('NavbarConst', {
     left:[
-        {
-            name: 'project'
-        },
-        {
-            name: 'note',
-        },
-        {
-            name: 'bookmark',
-        }
     ],
     search:{
         placeholder: ''
     },
     right:[
-        {
-            name:'login',
-            parent:'account',
-            hiddenHandler: function(){
-                return (AppConfig.user.id!=undefined)
-            }
-        },
-        {
-            name: 'profile',
-            parent:'account',
-            hiddenHandler: function(){
-                return (AppConfig.user.id==undefined)
-            }
-        },
-        {
-            name:'logout',
-            parent:'account',
-            hiddenHandler: function(){
-                return (AppConfig.user.id==undefined)
-            }
-        }
     ]
 });
 app.constant('NoteConst', {
@@ -57643,15 +57613,51 @@ app.constant('TagConst', {
     }
 });
 app.factory('AppConst', function(AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
-
+    var navbar={
+        left:[
+            {
+                name: 'project'
+            },
+            {
+                name: 'note',
+            },
+            {
+                name: 'bookmark',
+            }
+        ],
+        right:[
+            {
+                name:'login',
+                parent:'account',
+                hiddenHandler: function(){
+                    return (AppConfig.user.id!=undefined)
+                }
+            },
+            {
+                name: 'profile',
+                parent:'account',
+                hiddenHandler: function(){
+                    return (AppConfig.user.id==undefined)
+                }
+            },
+            {
+                name:'logout',
+                parent:'account',
+                hiddenHandler: function(){
+                    return (AppConfig.user.id==undefined)
+                }
+            }
+        ]
+    };
+    var home={
+        url:'#/home',
+        title: 'MY BLOG',
+        name: 'MY_BLOG',
+        image: '//2.gravatar.com/avatar/767fc9c115a1b989744c755db47feb60?s=132&d=wavatar'
+    };
     var service={
-        homeUrl:'/project',
-        brand:{
-            title: 'MY BLOG',
-            name: 'MY_BLOG',
-            image: '//2.gravatar.com/avatar/767fc9c115a1b989744c755db47feb60?s=132&d=wavatar'
-        },
-        navbar: NavbarConst,
+        home: home,
+        navbar: angular.extend({}, NavbarConst, navbar),
         search: SearchConst,
         account: AccountConst,
         tag: TagConst,
@@ -57689,6 +57695,11 @@ app.config(function ($routeProvider, $locationProvider) {
         controller: 'AccountCtrl',
         navId: 'login'
       })
+      .when('/logout', {
+        templateUrl: 'views/empty.html',
+        controller: 'AccountCtrl',
+        navId: 'logout'
+      })
       .when('/profile', {
         templateUrl: 'views/account/profile.html',
         controller: 'AccountCtrl',
@@ -57716,6 +57727,11 @@ app.config(function ($routeProvider, $locationProvider) {
         templateUrl: 'views/project/list.html',
         controller: 'ProjectCtrl',
         list: true
+      })
+      .when('/home', {
+        templateUrl: 'views/project/list.html',
+        controller: 'ProjectCtrl',
+        list: true
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -57739,14 +57755,8 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
 }])
 .config(function ($routeProvider, $locationProvider) {
     $routeProvider
-      .when('/', {
-        templateUrl: 'views/home/content.html',
-      })
-      .when('/:navId', {
-        templateUrl: 'views/home/content.html'
-      })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/home'
       });
 
     $locationProvider.html5Mode({
@@ -58252,8 +58262,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <span class="icon-bar"></span>\n' +
     '                <span class="icon-bar"></span>\n' +
     '            </button>\n' +
-    '            <a class="navbar-brand" ng-href="{{NavbarSvc.homeUrl}}"\n' +
-    '               ng-if="!NavbarSvc.brand.hidden" ng-bind-html="NavbarSvc.brand.title | unsafe"></a>\n' +
+    '            <a class="navbar-brand" ng-href="{{AppConst.home.url}}"\n' +
+    '               ng-if="!NavbarSvc.brand.hidden" ng-bind-html="AppConst.home.title | unsafe"></a>\n' +
     '        </div>\n' +
     '        <div id="navbar" class="collapse navbar-collapse">\n' +
     '            <ul class="nav navbar-nav" ng-if="NavbarSvc.items.left.length>0">\n' +
@@ -58873,7 +58883,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
             service.goHome();
     }
     service.goHome=function(){
-        $location.path(service.homeUrl);
+        $location.path(AppConst.home.url.replace('#',''));
     }
 
     service.init=function(navId){
@@ -58886,8 +58896,6 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
             $routeParams.navId=$route.current.params.navId;
 
-        service.homeUrl=AppConst.homeUrl;
-        service.brand=AppConst.brand;
         service.items=AppConst.navbar;
         for (var i=0;i<service.items.left.length;i++){
             modifiItem(service.items.left[i]);

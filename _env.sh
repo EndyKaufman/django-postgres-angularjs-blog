@@ -9,6 +9,7 @@ export EMAIL_PORT=587
 export EMAIL_HOST_USER=
 export EMAIL_HOST_PASSWORD=
 export SUPPORT_EMAIL=
+export STATIC_DIR=../project/static/
 export ENV=development
 export USE_MOCK=1
 export USE_AMAZONE=0
