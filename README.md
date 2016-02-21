@@ -21,7 +21,7 @@ https://django-postgres-angularjs-blog.herokuapp.com
 
 # CREATE PROJECT
 ```
-git clone --recursive https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog
+git clone --recursive git@github.com:EndyKaufman/django-postgres-angularjs-blog.git blog
 cd blog 
 cp _env .env
 ```
@@ -139,7 +139,7 @@ read docs http://www.sitepoint.com/getting-started-vagrant-windows/
 
 ## clone and prepare project
 ```
-git clone --recursive https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog
+git clone --recursive git@github.com:EndyKaufman/django-postgres-angularjs-blog.git blog
 cd blog
 vagrant init ubuntu/trusty64
 vagrant up --provider virtualbox
@@ -233,9 +233,13 @@ python manage.py makemigrations --empty yourappname
 
 ## work with submodules
 ```
+eval "$(ssh-agent -s)"
+ssh-add
 git config status.submodulesummary 1
 git status
 git commit -m "updated my submodule"
 git submodule update --remote --merge
 git push --recurse-submodules=on-demand
+git remote remove origin
+git remote add origin git@github.com:EndyKaufman/django-postgres-angularjs-blog.git
 ```
