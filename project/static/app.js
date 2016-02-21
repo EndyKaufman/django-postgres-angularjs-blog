@@ -58222,8 +58222,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div class="page-header">\n' +
     '        <h1>Login on site</h1>\n' +
     '    </div>\n' +
-    '    <p class="lead">Please enter you email address and password for login on site <code>(admin@email.com,\n' +
-    '        user@email.com, author@email.com)</code></p>\n' +
+    '    <p class="lead">Please enter you email address and password for login on site</p>\n' +
     '    <p>\n' +
     '    <div class="row">\n' +
     '        <div class="col-sm-4">\n' +

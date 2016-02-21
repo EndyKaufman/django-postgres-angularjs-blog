@@ -12,8 +12,8 @@ https://django-postgres-angularjs-blog.herokuapp.com
 4. ~~Add test database on sqlite and move it mock data from tests~~
 5. ~~Make all methods and classes for authorization~~
 6. ~~Move frontend code to submodule~~
-7. **Migrate production to Postres SQL**
-8. Add uppload files from admin mode to Amazone S3
+7. ~~Migrate production to Postres SQL~~
+8. **Add uppload files from admin mode to Amazone S3**
 9. Make other parts (copy+past)
 10. Change standart bootstrap theme to beautiful and clear free template
 11. SEO optimizations for Google & Yandex
@@ -64,7 +64,7 @@ open on browser url http://127.0.0.1:5000 in local pc
 
 #TEST (on Protractor + Selenium with PhantomJS)
 
-## run tests (before run tests, you must run local server)
+## run tests (before run tests, you must run server)
 ```
 export $(cat .env)
 cd front
@@ -244,3 +244,13 @@ git push --recurse-submodules=on-demand
 git remote remove origin
 git remote add origin git@github.com:EndyKaufman/django-postgres-angularjs-blog.git
 ```
+
+## work with heroku
+```
+heroku login
+heroku ps:scale web=1 --app django-postgres-angularjs-blog
+heroku addons:create heroku-postgresql --app django-postgres-angularjs-blog
+heroku run python manage.py migrate --app django-postgres-angularjs-blog
+heroku run python manage.py createsuperuser --app django-postgres-angularjs-blog
+```
+
