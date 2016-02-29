@@ -2,11 +2,14 @@
 
 from django.shortcuts import render
 from django.conf import settings
+from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 import helpers
 import helpers_mock
 
+
 # Create your views here.
+@ensure_csrf_cookie
 def index(request):
     """Home page maker"""
     if settings.USE_MOCK:

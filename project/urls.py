@@ -17,7 +17,9 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
+from django.conf.urls.static import static
 import sys
+import app.file
 import app.account
 import app.tag
 import app.project
@@ -28,12 +30,14 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^$', app.home.views.index, name='index'),
+    url(r'^file/', include(app.file)),
     url(r'^account/', include(app.account)),
     url(r'^tag/', include(app.tag)),
     url(r'^project/', include(app.project)),
-    url(r'^admin/', admin.site.urls),
-]
+    url(r'^admin/', admin.site.urls)
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if 'livereload' in sys.argv:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
     urlpatterns += staticfiles_urlpatterns()

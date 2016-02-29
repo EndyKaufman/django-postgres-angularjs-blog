@@ -1,5 +1,6 @@
 venv
 staticfiles
+media
 .vagrant
 *.pyc
 .env

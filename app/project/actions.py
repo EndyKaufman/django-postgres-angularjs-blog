@@ -22,20 +22,22 @@ def getList(request):
 @json_view
 def getSearch(request, search_text):
     """Search data"""
+    if search_text == 'all':
+        return getList(request)
+    else:
+        from app.project.models import Project
 
-    from app.project.models import Project
+        data = Project.objects.filter(
+            Q(title__icontains=search_text) |
+            Q(name__icontains=search_text) |
+            Q(description__icontains=search_text) |
+            Q(url__icontains=search_text) |
+            Q(text__icontains=search_text) |
+            Q(html__icontains=search_text) |
+            Q(markdown__icontains=search_text)
+        ).order_by('-created').all()
 
-    data = Project.objects.filter(
-        Q(title__icontains=search_text) |
-        Q(name__icontains=search_text) |
-        Q(description__icontains=search_text) |
-        Q(url__icontains=search_text) |
-        Q(text__icontains=search_text) |
-        Q(html__icontains=search_text) |
-        Q(markdown__icontains=search_text)
-    ).order_by('-created').all()
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
 
 # search by tag
@@ -81,6 +83,13 @@ def actionUpdate(request, project_id):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
+    from app.account.models import User
+
+    try:
+        user = User.objects.get(pk=request.user.id)
+    except User.DoesNotExist:
+        return {'code': 'account/younotactive'}, 404
+
     from app.project.models import Project
 
     validateResult, validateCode = Project.validateJsonObject(json_data)
@@ -89,12 +98,20 @@ def actionUpdate(request, project_id):
         return validateResult, validateCode
 
     try:
+        project = Project.objects.get(name=json_data['name'])
+    except Project.DoesNotExist:
+        project = False
+
+    if (project is not False) and (int(project.id) != int(project_id)):
+        return {'code': 'project/exists', 'values': [json_data['name'], project.id]}, 404
+
+    try:
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
-        return {'code': 'project/notfound', 'values': [project]}, 404
+        return {'code': 'project/notfound', 'values': [project_id]}, 404
 
     # try:
-    updateResult, updateCode = project.updateFromJsonObject(json_data)
+    updateResult, updateCode = project.updateFromJsonObject(json_data, user)
     if updateCode != 200:
         return updateResult, updateCode
     project.save()
@@ -109,6 +126,9 @@ def actionUpdate(request, project_id):
 def actionCreate(request):
     """Create record"""
 
+    if not request.user.is_authenticated() or not request.user.is_superuser:
+        return {'code': 'noaccess'}, 404
+
     json_data = False
 
     if request.method == 'POST':
@@ -117,6 +137,13 @@ def actionCreate(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
+    from app.account.models import User
+
+    try:
+        user = User.objects.get(pk=request.user.id)
+    except User.DoesNotExist:
+        return {'code': 'account/younotactive'}, 404
+
     from app.project.models import Project
 
     validateResult, validateCode = Project.validateJsonObject(json_data)
@@ -124,10 +151,18 @@ def actionCreate(request):
     if validateCode != 200:
         return validateResult, validateCode
 
+    try:
+        project = Project.objects.get(name=json_data['name'])
+    except Project.DoesNotExist:
+        project = False
+
+    if project is not False:
+        return {'code': 'project/exists', 'values': [json_data['name']]}, 404
+
     project = Project.objects.create(name=json_data['name'], type=1)
 
     # try:
-    createResult, createCode = project.updateFromJsonObject(json_data)
+    createResult, createCode = project.updateFromJsonObject(json_data, user)
     if createCode != 200:
         return createResult, createCode
     project.save()
@@ -153,12 +188,19 @@ def actionDelete(request, project_id):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
+    from app.account.models import User
+
+    try:
+        user = User.objects.get(pk=request.user.id)
+    except User.DoesNotExist:
+        return {'code': 'account/younotactive'}, 404
+
     from app.project.models import Project
 
     try:
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
-        return {'code': 'project/notfound', 'values': [project]}, 404
+        return {'code': 'project/notfound', 'values': [project_id]}, 404
 
     try:
         project.delete()

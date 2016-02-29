@@ -35,7 +35,7 @@ class User(AbstractUser):
         try:
             emailField = jsonObject['email']
             emailField = emailField.lower()
-        except KeyError:
+        except:
             emailField = ''
 
         if emailField == '':
@@ -54,7 +54,7 @@ class User(AbstractUser):
         try:
             emailField = jsonObject['email']
             emailField = emailField.lower()
-        except KeyError:
+        except:
             emailField = ''
         try:
             passwordField = jsonObject['password']
@@ -81,7 +81,7 @@ class User(AbstractUser):
         try:
             emailField = jsonObject['email']
             emailField = emailField.lower()
-        except KeyError:
+        except:
             emailField = ''
 
         if emailField == '':
@@ -101,7 +101,7 @@ class User(AbstractUser):
         try:
             codeField = jsonObject['code']
             codeField = codeField.lower()
-        except KeyError:
+        except:
             codeField = ''
         try:
             passwordField = jsonObject['password']
@@ -120,7 +120,7 @@ class User(AbstractUser):
         try:
             emailField = jsonObject['email']
             emailField = emailField.lower()
-        except KeyError:
+        except:
             emailField = ''
         try:
             passwordField = jsonObject['password']

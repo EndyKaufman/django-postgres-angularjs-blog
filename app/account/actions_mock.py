@@ -31,7 +31,7 @@ def actionUpdate(request):
     try:
         emailField = json_data['email']
         emailField = emailField.lower()
-    except KeyError:
+    except:
         emailField = ''
 
     if emailField == '':
@@ -106,7 +106,7 @@ def actionReg(request):
     try:
         emailField = json_data['email']
         emailField = emailField.lower()
-    except KeyError:
+    except:
         emailField = ''
 
     if emailField == '':
@@ -180,7 +180,7 @@ def actionLogin(request):
     try:
         emailField = json_data['email']
         emailField = emailField.lower()
-    except KeyError:
+    except:
         emailField = ''
     try:
         passwordField = json_data['password']
@@ -252,7 +252,7 @@ def actionRecovery(request):
     try:
         emailField = json_data['email']
         emailField = emailField.lower()
-    except KeyError:
+    except:
         emailField = ''
 
     try:
@@ -312,7 +312,7 @@ def actionResetpassword(request):
     try:
         codeField = json_data['code']
         codeField = codeField.lower()
-    except KeyError:
+    except:
         codeField = ''
     try:
         passwordField = json_data['password']

@@ -3,15 +3,95 @@ from django.core import serializers
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+import os
 import json
 import inspect
 import string
 import random
 import hashlib
+import os.path
+import shutil
+from transliterate import slugify
 
 
 def is_method(obj, name):
     return hasattr(obj, name) and inspect.ismethod(getattr(obj, name))
+
+
+def mkdirRecursive(path, removeIfExists=False):
+    if removeIfExists and os.path.isdir(path):
+        shutil.rmtree(path)
+    if not os.path.isdir(path):
+        os.makedirs(path)
+
+
+def copydirRecursive(src, dest, ignore=None, removeIfExists=False):
+    if os.path.isdir(src):
+        mkdirRecursive(dest, removeIfExists)
+        files = os.listdir(src)
+        if ignore is not None:
+            ignored = ignore(src, files)
+        else:
+            ignored = set()
+        for f in files:
+            if f not in ignored:
+                copydirRecursive(os.path.join(src, f),
+                                 os.path.join(dest, f),
+                                 ignore, removeIfExists)
+    else:
+        shutil.copyfile(src, dest)
+
+
+def removeFile(path):
+    if os.path.isfile(path):
+        os.remove(path)
+    else:
+        path = settings.MEDIA_ROOT + '/' + path
+        if os.path.isfile(path):
+            os.remove(path)
+
+
+def saveFile(dest_path, f, filename=False):
+    original_name, file_extension = os.path.splitext(f.name)
+
+    filename_postfix_inc = 1
+    def_filename = False
+    while True:
+        if filename != False:
+            new_filename = u'%s' % filename
+        else:
+            new_filename = u'%s' % original_name
+
+        if def_filename == False:
+            def_filename = new_filename;
+
+        if dest_path == False:
+            try:
+                url = slugify(new_filename) + file_extension
+            except:
+                url = new_filename + file_extension
+            path = settings.MEDIA_ROOT + '/' + url
+        else:
+            url = dest_path + '/' + slugify(new_filename) + file_extension
+            path = settings.MEDIA_ROOT + '/' + url
+
+        if os.path.isfile(path) == False:
+            break
+
+        if os.path.isfile(path):
+            filename_postfix_inc = filename_postfix_inc + 1
+            filename = '%s-%s' % (def_filename, str(filename_postfix_inc))
+
+    if dest_path == False:
+        mkdirRecursive(settings.MEDIA_ROOT)
+    else:
+        mkdirRecursive(settings.MEDIA_ROOT + '/' + dest_path)
+
+    destination = open(path, 'wb+')
+    for chunk in f.chunks():
+        destination.write(chunk)
+    destination.close()
+    return url
 
 
 def md5(str):
@@ -56,7 +136,7 @@ def itemsToJsonObject(items):
                 fieldValue = None
             if fieldValue is not None and fieldValue != '' and 'http:' not in fieldValue.lower():
                 try:
-                    result['%sStatic' % staticField] = static(fieldValue)
+                    result['%sStatic' % staticField] = '%s%s' % (settings.MEDIA_URL, fieldValue)
                 except:
                     result['%sStatic' % staticField] = ''
 

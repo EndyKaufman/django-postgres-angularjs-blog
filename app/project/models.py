@@ -35,7 +35,7 @@ class Project(models.Model):
 
         return {'code': 'ok'}, 200
 
-    def updateFromJsonObject(self, jsonObject):
+    def updateFromJsonObject(self, jsonObject, user):
         try:
             self.title = jsonObject['title']
         except KeyError:
@@ -98,6 +98,8 @@ class Project(models.Model):
         for tagText in tagFieldTexts:
             tag, tagCreated = Tag.objects.get_or_create(text=tagText['text'])
             if tagCreated:
+                tag.created_user = user
+                tag.save()
                 reload_source['tag'] = True
             self.tags.add(tag)
 
@@ -120,8 +122,7 @@ class Project(models.Model):
                 imageSrc = None
             if imageId is not None:
                 imageFieldIds.append(imageId)
-            print imageId
-            print imageSrc
+
             if imageId is None and imageSrc is not None:
                 imageFieldSrcs.append(image)
 
@@ -132,6 +133,8 @@ class Project(models.Model):
         for imageSrc in imageFieldSrcs:
             image, imageCreated = Image.objects.get_or_create(src=imageSrc['src'])
             if imageCreated:
+                image.created_user = user
+                image.save()
                 reload_source['image'] = True
             self.images.add(image)
 

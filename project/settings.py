@@ -17,6 +17,7 @@ SITE_NAME = u'django-postgres-angularjs-blog'
 SITE_HASH_TAG = u'#myblog'
 SHORT_SITE_NAME = u'My Blog'
 ENV = os.environ.get('ENV', 'development')
+USE_SQLITE = os.environ.get('USE_SQLITE', None) == '1'
 USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'
 USE_MOCK = os.environ.get('USE_MOCK', None) == '1'
 
@@ -38,6 +39,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'i+acxn5(akgsn!sr4^qgf(^m&*@+g1@u^t@=8s@axc41ml*f=s'
+
+# SESSION_COOKIE_SECURE = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENV == 'production':
@@ -89,6 +92,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'storages',
     'jsonview',
+    'app.file',
     'app.account',
     'app.home',
     'app.tag',
@@ -120,6 +124,7 @@ TEMPLATES = [
         'OPTIONS': {
             'debug': TEMPLATE_DEBUG_MODE,
             'context_processors': [
+                'django.core.context_processors.media',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -151,13 +156,13 @@ USE_L10N = False
 USE_TZ = True
 
 # Parse database configuration from $DATABASE_URL
-if os.environ.get('DATABASE_URL', None) != None:
+if os.environ.get('DATABASE_URL', None) != None and not USE_SQLITE:
     DATABASES['default'] = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 
 # DATABASES['default']['ENGINE'] = 'django_postgrespool'
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
@@ -170,6 +175,9 @@ STATICFILES_LOCATION = 'static'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/%s/' % STATICFILES_LOCATION
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, STATICFILES_LOCATION),

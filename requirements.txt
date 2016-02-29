@@ -12,10 +12,12 @@ django-storages==1.1.8
 django-toolbelt==0.0.1
 gunicorn==19.4.1
 livereload==2.4.0
+lorem-ipsum-generator==0.3
 psycopg2==2.6.1
 singledispatch==3.4.0.3
 six==1.10.0
 static3==0.6.1
 tornado==4.3
+transliterate==1.7.6
 whitenoise==2.0.6
 wsgiref==0.1.2

@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from django.conf import settings
-# from django.contrib import auth
-# from app.account.models import User
-# from django.core.validators import validate_email
-# from django.core.exceptions import ValidationError
-
 import json
 from jsonview.decorators import json_view
+from project import helpers
 
 
 # list
@@ -25,7 +18,7 @@ def getList(request):
         content = '[]'
     data = json.loads(content)
 
-    return {'code': 'ok', 'data': data}
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
 
 # search
@@ -33,15 +26,18 @@ def getList(request):
 def getSearch(request, search_text):
     """Search data"""
 
-    try:
-        with open('mock/project/list.json') as f:
-            content = f.read()
-            f.close()
-    except IOError:
-        content = '[]'
-    data = json.loads(content)
+    if search_text == '*':
+        return getList(request)
+    else:
+        try:
+            with open('mock/project/list.json') as f:
+                content = f.read()
+                f.close()
+        except IOError:
+            content = '[]'
+        data = json.loads(content)
 
-    return {'code': 'ok', 'data': data}
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
 
 # search by tag
@@ -57,7 +53,7 @@ def getListByTag(request, tag_text):
         content = '[]'
     data = json.loads(content)
 
-    return {'code': 'ok', 'data': data}
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
 
 # item
@@ -73,12 +69,15 @@ def getItem(request, project_name):
         content = '[]'
     data = json.loads(content)
 
-    item = {}
+    item = False
     for record in data:
         if record['name'] == project_name:
             item = record
 
-    return {'code': 'ok', 'data': [item]}
+    if item is False:
+        return {'code': 'project/notfound', 'values': [project_name]}, 404
+
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}
 
 
 # update
@@ -101,7 +100,7 @@ def actionUpdate(request, project_id):
     if validateCode != 200:
         return validateResult, validateCode
 
-    return {'code': 'ok', 'data': [json_data], 'reload_source': {'tag': True, 'image': True}}
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject([json_data]), 'reload_source': {'tag': True, 'image': True}}
 
 
 # create
@@ -124,9 +123,11 @@ def actionCreate(request):
     if validateCode != 200:
         return validateResult, validateCode
 
-    json_data['tags'][0]['id'] = 101
-    json_data['images'][0]['id'] = 101
-    return {'code': 'ok', 'data': [json_data], 'reload_source': {'tag': True, 'image': True}}
+    if len(json_data['tags']) > 0:
+        json_data['tags'][0]['id'] = 101
+    if len(json_data['images']) > 0:
+        json_data['images'][0]['id'] = 101
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject([json_data]), 'reload_source': {'tag': True, 'image': True}}
 
 
 # delete

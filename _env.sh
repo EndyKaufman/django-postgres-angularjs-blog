@@ -11,6 +11,7 @@ export EMAIL_HOST_PASSWORD=
 export SUPPORT_EMAIL=
 export STATIC_DIR=../project/static/
 export ENV=development
+export USE_SQLITE=0
 export USE_MOCK=1
 export USE_AMAZONE=0
 export S3_BUCKET_NAME=bucket_name

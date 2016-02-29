@@ -11,7 +11,6 @@ def getConfig(request):
 
     config['host'] = '%s://%s' % (protocol, request.get_host())
     config['hostName'] = '%s://%s' % (protocol, request.get_host().decode('idna'))
-    config['csrf_token'] = django.middleware.csrf.get_token(request)
 
     try:
         user = User.objects.get(pk=request.user.id)

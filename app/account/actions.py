@@ -14,6 +14,9 @@ from django.template.loader import render_to_string
 def actionUpdate(request):
     """Update record"""
 
+    if not request.user.is_authenticated():
+        return {'code': 'noaccess'}, 404
+
     json_data = False
 
     if request.method == 'POST':
@@ -44,13 +47,16 @@ def actionUpdate(request):
     # except:
     #    return {'code': 'account/fail/update'}, 404
 
-    return {'code': 'ok', 'data': [user.getUserData()]}
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
 
 
 # Login
 @json_view
 def actionLogin(request):
     """Login action"""
+
+    if request.user.is_authenticated():
+        return {'code': 'noaccess'}, 404
 
     json_data = False
 
@@ -70,7 +76,7 @@ def actionLogin(request):
     try:
         emailField = json_data['email']
         emailField = emailField.lower()
-    except KeyError:
+    except:
         emailField = ''
     try:
         passwordField = json_data['password']
@@ -91,7 +97,7 @@ def actionLogin(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': [user.getUserData()]}
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
     else:
         auth.logout(request)
         return {'code': 'account/notactive'}, 404
@@ -101,6 +107,9 @@ def actionLogin(request):
 @json_view
 def actionReg(request):
     """Reg action"""
+
+    if request.user.is_authenticated():
+        return {'code': 'noaccess'}, 404
 
     json_data = False
 
@@ -120,11 +129,11 @@ def actionReg(request):
     try:
         emailField = json_data['email']
         emailField = emailField.lower()
-    except KeyError:
+    except:
         emailField = ''
     try:
         passwordField = json_data['password']
-    except KeyError:
+    except:
         passwordField = ''
 
     try:
@@ -147,7 +156,7 @@ def actionReg(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': [user.getUserData()]}
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
     else:
         auth.logout(request)
         return {'code': 'account/notactive'}, 404
@@ -157,6 +166,10 @@ def actionReg(request):
 @json_view
 def actionDelete(request):
     """Delete record"""
+
+    if not request.user.is_authenticated():
+        return {'code': 'noaccess'}, 404
+
     json_data = False
 
     if request.method == 'POST':
@@ -185,6 +198,9 @@ def actionDelete(request):
 def actionLogout(request):
     """Logout action"""
 
+    if not request.user.is_authenticated():
+        return {'code': 'noaccess'}, 404
+
     auth.logout(request)
     return {'code': 'ok'}
 
@@ -193,6 +209,9 @@ def actionLogout(request):
 @json_view
 def actionRecovery(request):
     """Recovery action"""
+
+    if request.user.is_authenticated():
+        return {'code': 'noaccess'}, 404
 
     json_data = False
 
@@ -212,7 +231,7 @@ def actionRecovery(request):
     try:
         emailField = json_data['email']
         emailField = emailField.lower()
-    except KeyError:
+    except:
         emailField = ''
 
     try:
@@ -240,6 +259,9 @@ def actionRecovery(request):
 def actionResetpassword(request):
     """Reset password action"""
 
+    if request.user.is_authenticated():
+        return {'code': 'noaccess'}, 404
+
     json_data = False
 
     if request.method == 'POST':
@@ -258,7 +280,7 @@ def actionResetpassword(request):
     try:
         codeField = json_data['code']
         codeField = codeField.lower()
-    except KeyError:
+    except:
         codeField = ''
     try:
         passwordField = json_data['password']
@@ -270,7 +292,6 @@ def actionResetpassword(request):
     except Code.DoesNotExist:
         return {'code': 'account/codenotfound', 'values': [codeField]}, 404
 
-    print code
     user = User.objects.get(pk=code.created_user.id)
 
     if user.is_active:
@@ -280,7 +301,7 @@ def actionResetpassword(request):
         auth.login(request, user)
         Code.objects.filter(created_user=user).delete()
 
-        return {'code': 'ok', 'data': [user.getUserData()]}
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
     else:
         auth.logout(request)
         return {'code': 'account/notactive'}, 404
