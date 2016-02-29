@@ -39,7 +39,8 @@ def copydirRecursive(src, dest, ignore=None, removeIfExists=False):
                                  os.path.join(dest, f),
                                  ignore, removeIfExists)
     else:
-        shutil.copyfile(src, dest)
+        if os.path.isdir(src):
+            shutil.copyfile(src, dest)
 
 
 def removeFile(path):
