@@ -39,6 +39,7 @@ sudo npm install node-sass --save-dev --no-bin-links
 sudo npm install --save-dev --no-bin-links
 sudo npm install gulpjs/gulp#4.0 --save-dev --no-bin-links
 sudo npm rebuild
+sudo rm -rf node_modules/.staging
 sudo npm install --save-dev --no-bin-links
 sudo npm rebuild
 sudo bower install --save --force-latest --allow-root
