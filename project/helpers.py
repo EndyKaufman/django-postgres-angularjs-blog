@@ -121,8 +121,10 @@ def sendmail(subject, text_content, html_content=None, to_email=None, message_id
 
 
 def itemsToJsonObject(items):
+
     json_items = serializers.serialize('json', items)
     data = json.loads(json_items)
+
     results = []
     index = 0
     for row in data:

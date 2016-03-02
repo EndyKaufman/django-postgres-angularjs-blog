@@ -18,7 +18,7 @@ def getList(request):
         content = '[]'
     data = json.loads(content)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return {'code': 'ok', 'data': data}
 
 
 # search
@@ -34,7 +34,7 @@ def getSearch(request, search_text):
         content = '[]'
     data = json.loads(content)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return {'code': 'ok', 'data': data}
 
 
 # item
@@ -58,7 +58,7 @@ def getItem(request, file_id):
     if item is False:
         return {'code': 'file/notfound', 'values': [file_id]}, 404
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return {'code': 'ok', 'data': data}
 
 
 # update
@@ -79,16 +79,13 @@ def actionUpdate(request, file_id):
     except:
         comment = None
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([json_data])}
+    return {'code': 'ok', 'data': [json_data]}
 
 
 # create
 @json_view
 def actionCreate(request):
     """Create record"""
-
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
 
     if request.method != 'POST':
         return {'code': 'nodata'}, 404
@@ -105,7 +102,7 @@ def actionCreate(request):
 
     file = {'id': 777, 'src': url, 'comment': comment}
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
+    return {'code': 'ok', 'data': [file]}
 
 
 # delete

@@ -18,7 +18,7 @@ def getList(request):
         content = '[]'
     data = json.loads(content)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return {'code': 'ok', 'data': data}
 
 
 # search
@@ -37,7 +37,7 @@ def getSearch(request, search_text):
             content = '[]'
         data = json.loads(content)
 
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+        return {'code': 'ok', 'data': data}
 
 
 # search by tag
@@ -53,7 +53,7 @@ def getListByTag(request, tag_text):
         content = '[]'
     data = json.loads(content)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return {'code': 'ok', 'data': data}
 
 
 # item
@@ -77,7 +77,7 @@ def getItem(request, project_name):
     if item is False:
         return {'code': 'project/notfound', 'values': [project_name]}, 404
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}
+    return {'code': 'ok', 'data': [item]}
 
 
 # update
@@ -100,7 +100,7 @@ def actionUpdate(request, project_id):
     if validateCode != 200:
         return validateResult, validateCode
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([json_data]), 'reload_source': {'tag': True, 'image': True}}
+    return {'code': 'ok', 'data': [json_data], 'reload_source': {'tag': True, 'image': True}}
 
 
 # create
@@ -127,7 +127,7 @@ def actionCreate(request):
         json_data['tags'][0]['id'] = 101
     if len(json_data['images']) > 0:
         json_data['images'][0]['id'] = 101
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([json_data]), 'reload_source': {'tag': True, 'image': True}}
+    return {'code': 'ok', 'data': [json_data], 'reload_source': {'tag': True, 'image': True}}
 
 
 # delete

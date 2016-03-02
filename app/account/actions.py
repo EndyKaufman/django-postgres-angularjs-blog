@@ -47,7 +47,7 @@ def actionUpdate(request):
     # except:
     #    return {'code': 'account/fail/update'}, 404
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
+    return {'code': 'ok', 'data': [user.getUserData()]}
 
 
 # Login
@@ -97,7 +97,7 @@ def actionLogin(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
+        return {'code': 'ok', 'data': [user.getUserData()]}
     else:
         auth.logout(request)
         return {'code': 'account/notactive'}, 404
@@ -156,7 +156,7 @@ def actionReg(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
+        return {'code': 'ok', 'data': [user.getUserData()]}
     else:
         auth.logout(request)
         return {'code': 'account/notactive'}, 404
@@ -301,7 +301,7 @@ def actionResetpassword(request):
         auth.login(request, user)
         Code.objects.filter(created_user=user).delete()
 
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject([user.getUserData()])}
+        return {'code': 'ok', 'data': [user.getUserData()]}
     else:
         auth.logout(request)
         return {'code': 'account/notactive'}, 404
