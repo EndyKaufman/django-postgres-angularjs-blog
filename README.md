@@ -13,7 +13,7 @@ https://django-postgres-angularjs-blog.herokuapp.com
 5. ~~Make all methods and classes for authorization~~
 6. ~~Move frontend code to submodule~~
 7. ~~Migrate production to Postres SQL~~
-8. **Add uppload files from admin mode to Amazone S3**
+8. **Add upload files from admin mode to Amazone S3**
 9. Make other parts (copy+past)
 10. Change standart bootstrap theme to beautiful and clear free template
 11. SEO optimizations for Google & Yandex
@@ -85,6 +85,14 @@ for test one file
 export $(cat .env)
 cd front
 gulp test --file account/recovery_access.email.api.js
+```
+
+if error in test, you may run tests on debug mode
+
+```
+export $(cat .env)
+cd front
+gulp test --debug true
 ```
 
 # DEVELOP
@@ -188,8 +196,9 @@ sudo apt-get install -y nodejs
 ```
 cd front
 sudo npm update -g
-sudo npm update --save-dev 
-sudo npm rebuild 
+sudo ncu -u
+sudo npm install --save-dev
+sudo npm rebuild
 sudo ncu -u -m bower
 sudo bower install --save --allow-root
 ```
