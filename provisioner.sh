@@ -15,7 +15,7 @@ sudo apt-get install xvfb -y
 sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic x11-apps -y
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 sudo apt-get update
-sudo apt-get install google-chrome-stable
+sudo apt-get install google-chrome-stable -y
 sudo apt-get install postgresql postgresql-contrib -y
 sudo apt-get install python-pip python-dev build-essential -y
 sudo apt-get install libpq-dev -y
