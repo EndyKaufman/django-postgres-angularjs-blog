@@ -9,10 +9,13 @@ sudo apt-get install -y default-jdk
 sudo apt-get install -y openjdk-7-jre
 sudo apt-get install -y openjdk-7-jdk
 sudo apt-get install firefox -y
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 sudo apt-get install xvfb -y
 sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic x11-apps -y
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 sudo apt-get update
+sudo apt-get install google-chrome-stable
 sudo apt-get install postgresql postgresql-contrib -y
 sudo apt-get install python-pip python-dev build-essential -y
 sudo apt-get install libpq-dev -y
