@@ -2,18 +2,9 @@ language: node_js
 node_js:
 - '5.7.1'
 install:
-- source install.travis.sh
+- source install.sh
 before_script:
-- source venv/bin/activate
-- export $(cat .env)
-- sudo rm -f db.sqlite3
-- python manage.py migrate
-- cd front
-- gulp build --env development
-- cd ../
-- python manage.py collectstatic --noinput
-- gunicorn project.wsgi -b 0.0.0.0:5000
+- source build.sh
 script:
-- export DISPLAY=:10
-- cd front
-- gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10 --debug true
+- nohup bash server.sh >>/dev/null 2>>/dev/null &
+- source test.sh
