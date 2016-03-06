@@ -1,6 +1,6 @@
 source venv/bin/activate
 export $(cat .env)
-rm -f db.sqlite3
+sudo rm -f db.sqlite3
 python manage.py migrate
 cd front
 gulp build --env development
