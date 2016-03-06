@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - '4.3.2'
 install:
-- source provisioner.sh
+- source install.travis.sh
 before_script:
 - git pull --strategy recursive origin master
 - source venv/bin/activate
