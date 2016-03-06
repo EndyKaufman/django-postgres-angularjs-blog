@@ -38,3 +38,4 @@ sudo npm install --save-dev
 sudo npm rebuild
 sudo bower install --save --force-latest --allow-root
 gulp webdriver_update
+cd ../

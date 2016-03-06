@@ -4,7 +4,6 @@ node_js:
 install:
 - source install.travis.sh
 before_script:
-- git pull --strategy recursive origin master
 - source venv/bin/activate
 - export $(cat .env)
 - sudo rm -f db.sqlite3
