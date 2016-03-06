@@ -3,13 +3,9 @@ node_js:
 - '5.7.1'
 sudo: required
 install:
-- source install.sh
+- source scripts/install.sh
 before_script:
-- source build.sh
+- source scripts/build.sh
 script:
-- nohup bash server.sh >>/dev/null 2>>/dev/null &
-- source venv/bin/activate
-- export $(cat .env)
-- export DISPLAY=:10
-- cd front
-- gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
+- nohup bash scripts/server.sh >>/dev/null 2>>/dev/null &
+- source scripts/test.sh
