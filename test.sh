@@ -1,4 +1,3 @@
-#!/bin/bash
 source venv/bin/activate
 export $(cat .env)
 export DISPLAY=:10

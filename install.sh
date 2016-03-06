@@ -1,4 +1,3 @@
-#!/bin/bash
 sudo apt-get update
 sudo apt-get install -y g++
 sudo apt-get autoremove nodejs -y

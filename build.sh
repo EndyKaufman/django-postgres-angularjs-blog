@@ -1,4 +1,3 @@
-#!/bin/bash
 source venv/bin/activate
 export $(cat .env)
 sudo rm -f db.sqlite3
