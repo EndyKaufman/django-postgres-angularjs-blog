@@ -1,8 +1,10 @@
-apt-get update
+sudo apt-get update
 sudo apt-get install -y g++
 sudo apt-get autoremove nodejs -y
 curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
 sudo apt-get install -y nodejs
+sudo apt-get install npm -y
+sudo npm install -g npm
 sudo apt-get install -y git
 sudo apt-get install -y default-jre
 sudo apt-get install -y default-jdk
@@ -21,8 +23,6 @@ sudo apt-get install python-pip python-dev build-essential -y
 sudo apt-get install libpq-dev -y
 sudo pip install --upgrade pip
 sudo pip install --upgrade virtualenv
-sudo apt-get install npm -y
-sudo npm install -g npm
 sudo npm install -g git+https://git@github.com/gulpjs/gulp.git#4.0
 sudo npm install -g karma-cli
 sudo npm install -g npm-check-updates
@@ -35,11 +35,6 @@ virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cd front
-sudo npm install node-sass --save-dev
 sudo npm install --save-dev
-sudo npm install git+https://git@github.com/gulpjs/gulp.git#4.0 --save-dev
-sudo npm rebuild
-sudo npm install --save-dev
-sudo npm rebuild
 sudo bower install --save --force-latest --allow-root
 gulp webdriver_update
