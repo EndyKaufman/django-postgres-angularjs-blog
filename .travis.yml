@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+- '4.3.2'
+install:
+- source provisioner.sh
+before_script:
+- git pull --strategy recursive origin master
+- source venv/bin/activate
+- export $(cat .env)
+- sudo rm -f db.sqlite3
+- python manage.py migrate
+- cd front
+- gulp build --env development
+- cd ../
+- python manage.py collectstatic --noinput
+- gunicorn project.wsgi -b 0.0.0.0:5000
+script:
+- export DISPLAY=:10
+- cd front
+- gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10 --debug true
