@@ -23,7 +23,7 @@ sudo pip install --upgrade pip
 sudo pip install --upgrade virtualenv
 sudo apt-get install npm -y
 sudo npm install -g npm
-sudo npm install -g gulpjs/gulp-cli#4.0
+sudo npm install -g git+https://git@github.com/gulpjs/gulp.git#4.0
 sudo npm install -g karma-cli
 sudo npm install -g npm-check-updates
 sudo npm install -g bower
@@ -40,7 +40,7 @@ pip install -r requirements.txt
 cd front
 sudo npm install node-sass --save-dev --no-bin-links
 sudo npm install --save-dev --no-bin-links
-sudo npm install gulpjs/gulp#4.0 --save-dev --no-bin-links
+sudo npm install git+https://git@github.com/gulpjs/gulp.git#4.0 --save-dev --no-bin-links
 sudo npm rebuild
 sudo rm -rf node_modules/.staging
 sudo npm install --save-dev --no-bin-links
