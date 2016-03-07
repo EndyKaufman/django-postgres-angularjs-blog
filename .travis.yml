@@ -9,7 +9,6 @@ before_script:
 script:
 - nohup bash scripts/server.sh >>/dev/null 2>>/dev/null &
 - source venv/bin/activate
-- export $(cat .env)
 - export DISPLAY=:10
 - cd front
-- gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10 --debug true
+- gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
