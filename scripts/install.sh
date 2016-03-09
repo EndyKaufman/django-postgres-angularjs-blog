@@ -13,6 +13,7 @@ sudo apt-get install -y openjdk-7-jdk
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 sudo apt-get install xvfb -y
+mkfontdir
 sudo apt-get install libgl1-mesa-dri -y
 sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic x11-apps -y
 sudo ln -s /usr/bin/nodejs /usr/bin/node
