@@ -14,9 +14,7 @@ https://django-postgres-angularjs-blog.herokuapp.com
 5. ~~Make all methods and classes for authorization~~
 6. ~~Move frontend code to submodule~~
 7. ~~Migrate production to Postres SQL~~
-8. **Add upload files from admin mode to Amazone S3**
-9. Make other parts (copy+past)
-10. Change standart bootstrap theme to beautiful and clear free template
+10. **Change standart bootstrap theme to beautiful and clear free template**
 11. SEO optimizations for Google & Yandex
 12. Add social publisher (Facebook, Twitter, Vkontakte)
 
@@ -160,7 +158,7 @@ cd blog
 vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
-source env.sh
+export $(cat .env)
 gunicorn project.wsgi -b 0.0.0.0:5000
 ```
 
@@ -169,16 +167,20 @@ gunicorn project.wsgi -b 0.0.0.0:5000
 cd blog
 vagrant ssh
 cd ../../vagrant
-source env.sh
+source venv/bin/activate
+export $(cat .env)
 cd front
-gulp test
+export DISPLAY=:10
+gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
 ```
 
 ## build front on vagrant
 ```
 cd blog
 vagrant ssh
-cd ../../vagrant/front
+source venv/bin/activate
+export $(cat .env)
+cd front
 gulp build
 ```
 
