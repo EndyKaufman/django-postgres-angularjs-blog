@@ -83,7 +83,7 @@ for test one file
 ```
 export $(cat .env)
 cd front
-gulp test --file account/recovery_access.email.api.js
+gulp test --file tests/account/recovery_access.email.api.js
 ```
 
 if error in test, you may run tests on debug mode
