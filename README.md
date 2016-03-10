@@ -151,6 +151,20 @@ cd blog
 vagrant init ubuntu/trusty64
 vagrant up --provider virtualbox
 ```
+## prepare
+```
+cd blog
+vagrant ssh
+cd ../../vagrant
+source venv/bin/activate
+export $(cat .env)
+sudo rm -f db.sqlite3
+python manage.py migrate
+cd front
+gulp build --env development
+cd ../
+python manage.py collectstatic --noinput
+```
 
 ## start server
 ```
@@ -172,16 +186,6 @@ export $(cat .env)
 cd front
 export DISPLAY=:10
 gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
-```
-
-## build front on vagrant
-```
-cd blog
-vagrant ssh
-source venv/bin/activate
-export $(cat .env)
-cd front
-gulp build
 ```
 
 # NOTES

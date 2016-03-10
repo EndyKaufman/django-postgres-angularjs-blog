@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source venv/bin/activate
 export DISPLAY=:10
 cd front

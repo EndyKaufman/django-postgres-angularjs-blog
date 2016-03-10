@@ -1,3 +1,5 @@
+#!/bin/bash
+
 source venv/bin/activate
 sudo rm -f db.sqlite3
 python manage.py migrate

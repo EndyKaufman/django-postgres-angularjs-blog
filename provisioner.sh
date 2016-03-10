@@ -12,8 +12,6 @@ sudo apt-get install firefox -y
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
 sudo apt-get install xvfb -y
-mkfontdir
-sudo apt-get install libgl1-mesa-dri -y
 sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic x11-apps -y
 sudo ln -s /usr/bin/nodejs /usr/bin/node
 sudo apt-get update
@@ -34,7 +32,6 @@ sudo npm install -g selenium-webdriver
 sudo npm install -g node-gyp
 sudo npm install -g git+https://git@github.com/Medium/phantomjs.git#v1.9.19
 cd ../../vagrant
-cp _env .env
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
