@@ -193,6 +193,7 @@ gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
 cd blog
 vagrant ssh
 cd ../../vagrant
+cp _env .env
 bash scripts/build.sh
 cd front
 gulp test:server
