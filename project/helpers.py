@@ -115,12 +115,17 @@ def sendmail(subject, text_content, html_content=None, to_email=None, message_id
     if html_content != None:
         msg.attach_alternative(html_content, "text/html")
         msg.content_subtype = "html"  # Main content is now text/html
-    msg.send()
+    try:
+        msg.send()
+    except:
+        tempDir = '%s/%s' % (settings.BASE_DIR, 'temp')
+        mkdirRecursive(tempDir)
+        with open("%s/%s.html" % (tempDir, to_email), "w") as text_file:
+            text_file.write("<!-- From: %s, To: %s, Subject: %s !-->%s" % (from_email, to_email, subject, html_content))
     return True
 
 
 def itemsToJsonObject(items):
-
     json_items = serializers.serialize('json', items)
     data = json.loads(json_items)
 
