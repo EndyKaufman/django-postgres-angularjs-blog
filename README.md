@@ -188,6 +188,16 @@ export DISPLAY=:10
 gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
 ```
 
+## fast prepare + run server and tests on vagrant
+```
+cd blog
+vagrant ssh
+cd ../../vagrant
+bash scripts/build.sh
+cd front
+gulp test:server
+```
+
 # NOTES
 
 ## for update nodejs and npm
