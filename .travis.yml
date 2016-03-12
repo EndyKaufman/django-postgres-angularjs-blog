@@ -8,4 +8,4 @@ before_script:
 - source scripts/build.sh
 script:
 - cd front
-- gulp test:server
+- gulp scripts:test
