@@ -14,9 +14,12 @@ https://django-postgres-angularjs-blog.herokuapp.com
 5. ~~Make all methods and classes for authorization~~
 6. ~~Move frontend code to submodule~~
 7. ~~Migrate production to Postres SQL~~
-10. **Change standart bootstrap theme to beautiful and clear free template**
+8. ~~Add Travis CI build~~
+8. ~~Add themes support~~
+10. **Change standard bootstrap theme to beautiful and clear free template**
 11. SEO optimizations for Google & Yandex
 12. Add social publisher (Facebook, Twitter, Vkontakte)
+13. Add multi languages support
 
 # CREATE PROJECT
 ```
@@ -188,15 +191,25 @@ export DISPLAY=:10
 gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
 ```
 
-## fast prepare + run server and tests on vagrant
+## fast prepare + run server and tests
 ```
 cd blog
 vagrant ssh
 cd ../../vagrant
 cp _env .env
-bash scripts/build.sh
 cd front
-gulp test:server
+gulp scripts:build
+gulp scripts:test
+```
+
+## fast run server
+```
+cd blog
+vagrant ssh
+cd ../../vagrant
+cp _env .env
+cd front
+gulp scripts:server
 ```
 
 # NOTES

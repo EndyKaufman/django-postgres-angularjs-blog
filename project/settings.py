@@ -34,6 +34,9 @@ SUPPORT_EMAIL = os.environ.get('SUPPORT_EMAIL', '')
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+# Theme support
+THEME = os.environ.get('THEME', 'default')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
