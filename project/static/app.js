@@ -73864,7 +73864,9 @@ app.factory('AccountRes', function (AppConst, AppRes) {
     }
 
     service.actionRecovery=function(email){
-        return AppRes.post('/account/recovery', item);
+        return AppRes.post('/account/recovery', {
+            email: email
+        });
     }
 
     service.actionResetpassword=function(code, password){
