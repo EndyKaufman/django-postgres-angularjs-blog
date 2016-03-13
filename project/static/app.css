@@ -12767,8 +12767,8 @@ body {
 /* Custom page CSS
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
-.layout-content > .container {
-  padding: 60px 15px 60px; }
+.layout-content > .container-fluid {
+  padding: 150px 200px 60px 200px; }
 
 .container .text-muted {
   margin: 20px 0; }
@@ -12782,3 +12782,128 @@ code {
 
 #navbar li {
   cursor: pointer; }
+
+body {
+  background-color: #f8f8f8;
+  color: #646464;
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: 0.1em; }
+
+.form-control {
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  font-size: 1em;
+  border-radius: 0px; }
+
+.btn {
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 0px; }
+
+.navbar-brand {
+  padding: 25px 25px 25px 25px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  font-size: 1em;
+  text-transform: uppercase; }
+
+#navbar .navbar-left {
+  border-left: solid 1px rgba(160, 160, 160, 0.3);
+  padding: 25px 0px 25px 0px; }
+
+#navbar .navbar-right {
+  border-right: solid 1px rgba(160, 160, 160, 0.3);
+  padding: 25px 0px 25px 0px; }
+
+#navbar .navbar-form {
+  border-right: 0;
+  padding: 10px 25px 10px 25px; }
+
+#navbar .navbar-nav li a {
+  border-right: solid 1px rgba(160, 160, 160, 0.3);
+  padding: 0px 25px 0px 25px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  font-size: 1em;
+  text-transform: uppercase; }
+
+#navbar .navbar-nav li:last-child a {
+  border-right: 0; }
+
+.thumbnail {
+  padding: 60px 50px 40px 50px;
+  border-radius: 0px; }
+
+.thumbnail-small {
+  padding: 30px 25px 20px 25px; }
+
+.navbar-default {
+  background-color: #fff; }
+
+.navbar-default .navbar-brand {
+  color: #3c3b3b; }
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  border-bottom-color: transparent;
+  color: #5e5e5e;
+  background-color: transparent; }
+
+.navbar-default .navbar-text {
+  color: #3c3b3b; }
+
+.navbar-default .navbar-nav > li > a,
+.navbar-default .navbar-nav > li > a:focus {
+  border-bottom-color: transparent;
+  color: #646464; }
+
+.navbar-default .navbar-nav > li > a:hover {
+  border-bottom-color: transparent;
+  color: #2ebaae;
+  background-color: #fff; }
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  border-bottom-color: transparent;
+  color: #2ebaae;
+  background-color: #fff; }
+
+.list-group-item:first-child {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px; }
+
+.list-group-item:last-child {
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px; }
+
+.page-header {
+  padding: 0;
+  margin: 0;
+  text-transform: uppercase;
+  border-bottom: 0; }
+
+.page-header h1 span, .page-header .h1 span {
+  font-weight: 900;
+  font-size: 1em; }
+
+.site-header {
+  padding: 60px 0px 40px 0px;
+  margin: 0;
+  text-transform: uppercase;
+  border-bottom: 0; }
+
+.site-header h1 span, .site-header .h1 span {
+  font-weight: 900;
+  font-size: 1.5em; }
+
+.tag-list .btn {
+  margin: 0px 5px 5px 0px; }
+
+h1, h2, h3, .h1, .h2, .h3 {
+  text-transform: uppercase;
+  color: #3c3b3b;
+  letter-spacing: 0.1em; }
