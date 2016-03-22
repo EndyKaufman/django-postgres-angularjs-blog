@@ -72914,6 +72914,21 @@ app.constant('BookmarkConst', {
         title:'My bookmarks'
     }
 });
+app.constant('FileConst', {
+});
+app.constant('HomeConst', {
+    url:'#/home',
+    title: 'MY BLOG',
+    description: 'description of blog',
+    name: 'MY_BLOG',
+    image: false,
+    social2:[
+        {
+            url:'http://google.com',
+            iconClass:'fa fa-google-plus'
+        }
+    ]
+});
 app.constant('MessageConst', {
 });
 app.constant('NavbarConst', {
@@ -72925,7 +72940,10 @@ app.constant('NavbarConst', {
     right:[
     ]
 });
-app.constant('FileConst', {
+app.constant('NoteConst', {
+    strings:{
+        title:'My notes'
+    }
 });
 app.constant('ProjectConst', {
     strings:{
@@ -72942,11 +72960,6 @@ app.constant('ProjectConst', {
         'project/remove/confirm':'Do you really want to remove project <strong>%s</strong>?'
     }
 });
-app.constant('NoteConst', {
-    strings:{
-        title:'My notes'
-    }
-});
 app.constant('SearchConst', {
     strings:{
         title:'Search'
@@ -72957,7 +72970,7 @@ app.constant('TagConst', {
         title:'My tags'
     }
 });
-app.factory('AppConst', function($rootScope, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
+app.factory('AppConst', function($rootScope, HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
     var navbar={
         left:[
             {
@@ -72997,15 +73010,8 @@ app.factory('AppConst', function($rootScope, AccountConst, TagConst, NoteConst, 
             }
         ]
     };
-    var home={
-        url:'#/home',
-        title: 'MY BLOG',
-        description: 'description of blog',
-        name: 'MY_BLOG',
-        image: '//2.gravatar.com/avatar/767fc9c115a1b989744c755db47feb60?s=132&d=wavatar'
-    };
     var service={
-        home: home,
+        home: HomeConst,
         navbar: angular.extend({}, NavbarConst, navbar),
         search: SearchConst,
         account: AccountConst,
@@ -73052,6 +73058,13 @@ app.config(function ($routeProvider, $locationProvider) {
 });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
+      .when('/home', {
+        templateUrl: 'views/home/list.html',
+        controller: 'HomeCtrl'
+      });
+});
+app.config(function ($routeProvider, $locationProvider) {
+    $routeProvider
       .when('/project/update/:projectName', {
         templateUrl: 'views/project/update.html',
         controller: 'ProjectCtrl',
@@ -73068,11 +73081,6 @@ app.config(function ($routeProvider, $locationProvider) {
         item: true
       })
       .when('/project', {
-        templateUrl: 'views/project/list.html',
-        controller: 'ProjectCtrl',
-        list: true
-      })
-      .when('/home', {
         templateUrl: 'views/project/list.html',
         controller: 'ProjectCtrl',
         list: true
@@ -73268,88 +73276,90 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </form>\n' +
     '</div>');
-	a.put('views/project/list.html', '<div class="container-fluid">\n' +
+	a.put('views/project/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
-    '        <div class="col-md-3 padding-left-0">\n' +
-    '            <div ng-include="\'views/intro.html\'" class="intro"></div>\n' +
-    '            <div ng-include="\'views/project/list-best.html\'" class="break-line-before"></div>\n' +
-    '            <div ng-include="\'views/project/list-tags.html\'" class="break-line-before"></div>\n' +
-    '        </div>\n' +
-    '        <div class="col-md-9 padding-left-0">\n' +
-    '            <div>\n' +
-    '                <div class="col-md-12">\n' +
-    '                    <div class="thumbnail">\n' +
-    '                        <div class="page-header">\n' +
-    '                            <h1>\n' +
-    '                                <span>My projects</span>\n' +
-    '                                <a ng-href="#/project/create"\n' +
-    '                                   class="btn btn-info" ng-if="AccountSvc.isAdmin()" id="projectCreate">Create</a>\n' +
-    '                            </h1>\n' +
-    '                            <p class="lead" ng-bind-html="AppConst.project.strings.description | unsafe"></p>\n' +
-    '                        </div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '                <div class="col-md-6" ng-repeat="item in ProjectSvc.list">\n' +
-    '                    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/project/list-tags.html', '<div class="tag-list">\n' +
-    '    <div class="caption">\n' +
-    '        <h3>Tags</h3>\n' +
-    '        <p><span ng-repeat="tag in TagSvc.list">\n' +
-    '                                <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-link btn-xs"\n' +
-    '                                   ng-bind-html="tag.text | unsafe"></a>\n' +
-    '                            </span></p>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/project/list-item.html', '<div class="thumbnail">\n' +
-    '    <img ng-src="{{AppConfig.static_url+item.images[0].srcStatic}}" ng-if="item.images.length>0" class="img-responsive">\n' +
-    '    <div class="caption">\n' +
-    '        <h3 ng-bind-html="item.title | unsafe"></h3>\n' +
-    '        <p ng-bind-html="item.description | unsafe"></p>\n' +
-    '        <div>\n' +
-    '            <span>\n' +
-    '                <a ng-href="{{\'#/project/update/\'+item.name}}"\n' +
-    '                   class="btn btn-info" ng-if="AccountSvc.isAdmin()" id="{{\'project\'+$index+\'Update\'}}">Edit</a>\n' +
-    '                <a ng-href="{{\'#/project/\'+item.name}}" class="btn btn-link" id="{{\'project\'+$index+\'Detail\'}}">Detail...</a>\n' +
-    '            </span>\n' +
-    '            <span class="pull-right">\n' +
-    '                <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn-tag"\n' +
-    '                   ng-bind-html="tag.text | unsafe" ng-repeat="tag in item.tags"></a>\n' +
-    '            </span>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/project/list-best.html', '<div ng-repeat="item in ProjectSvc.list">\n' +
-    '    <div class="thumbnail thumbnail-small">\n' +
-    '        <img ng-src="{{AppConfig.static_url+item.images[0].srcStatic}}" ng-if="item.images.length>0"\n' +
-    '             class="img-responsive">\n' +
-    '        <div class="caption">\n' +
-    '            <h3 ng-bind-html="item.title | unsafe"></h3>\n' +
-    '            <p ng-bind-html="item.description | unsafe"></p>\n' +
-    '            <div>\n' +
-    '            <span>\n' +
-    '                <a ng-href="{{\'#/project/update/\'+item.name}}"\n' +
-    '                   class="btn btn-info" ng-if="AccountSvc.isAdmin()" id="{{\'project\'+$index+\'Update\'}}">Edit</a>\n' +
-    '                <a ng-href="{{\'#/project/\'+item.name}}" class="btn btn-link" id="{{\'project\'+$index+\'Detail\'}}">Detail...</a>\n' +
-    '            </span>\n' +
-    '            <span class="pull-right">\n' +
-    '                <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-tag"\n' +
-    '                   ng-bind-html="tag.text | unsafe" ng-repeat="tag in item.tags"></a>\n' +
-    '            </span>\n' +
-    '            </div>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">\n' +
+    '                        <span ng-bind-html="AppConst.project.strings.title | unsafe"></span>\n' +
+    '                        <a ng-href="#/project/create"\n' +
+    '                           class="btn btn-cta-primary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectCreate">Create</a>\n' +
+    '                    </h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div class="item row" ng-repeat="item in ProjectSvc.list | limitTo:ProjectSvc.limit:ProjectSvc.begin">\n' +
+    '                            <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '                        </div><!--//item-->\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/project/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/project/list-tags.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-repeat="tag in TagSvc.list"><i class="fa fa-tag"></i> <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'" ng-bind-html="tag.text | unsafe">Etiam hendrerit urna nunc</a></li>\n' +
+    '</ul>');
+	a.put('views/project/list-item.html', '<a class="col-md-4 col-sm-4 col-xs-12" ng-href="{{\'#/project/\'+item.name}}" ng-if="item.images.length>0">\n' +
+    '    <img class="img-responsive project-image" ng-src="{{AppConfig.static_url+item.images[0].srcStatic}}"\n' +
+    '         ng-if="item.images.length>0"\n' +
+    '         alt="{{item.title}}"/>\n' +
+    '</a>\n' +
+    '<div class="desc col-md-8 col-sm-8 col-xs-12" ng-if="item.images.length>0">\n' +
+    '    <h3 class="title">\n' +
+    '        <a ng-href="{{\'#/project/\'+item.name}}" ng-bind-html="item.title | unsafe"></a>\n' +
+    '    </h3>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '    <p>\n' +
+    '        <a class="more-link" ng-href="{{\'#/project/\'+item.name}}" id="{{\'project\'+$index+\'Detail\'}}"><i\n' +
+    '                class="fa fa-link"></i> Detail...</a>\n' +
+    '        <a ng-href="{{\'#/project/update/\'+item.name}}"\n' +
+    '           class="btn btn-cta-secondary btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
+    '           id="{{\'project\'+$index+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit</a>\n' +
+    '    </p>\n' +
+    '</div><!--//desc-->\n' +
+    '<div class="desc col-md-12 col-sm-12 col-xs-12" ng-if="item.images.length==0">\n' +
+    '    <h3 class="title">\n' +
+    '        <a ng-href="{{\'#/project/\'+item.name}}" ng-bind-html="item.title | unsafe"></a>\n' +
+    '    </h3>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '    <p>\n' +
+    '        <a class="more-link" ng-href="{{\'#/project/\'+item.name}}" id="{{\'project\'+$index+\'Detail\'}}"><i\n' +
+    '                class="fa fa-link"></i> Detail...</a>\n' +
+    '        <a ng-href="{{\'#/project/update/\'+item.name}}"\n' +
+    '           class="btn btn-cta-secondary btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
+    '           id="{{\'project\'+$index+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit</a>\n' +
+    '    </p>\n' +
+    '</div><!--//desc-->\n' +
+    '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
+    '    <hr class="divider" ng-if="!$last"/>\n' +
+    '</div><!--//desc-->');
 	a.put('views/project/item.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>\n' +
     '            <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
-    '            <button ng-href="{{\'#/project/update/\'+ProjectSvc.item.name}}"\n' +
-    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()" id="projectUpdate">Edit</button>\n' +
+    '            <a ng-href="{{\'#/project/update/\'+ProjectSvc.item.name}}"\n' +
+    '               class="btn btn-primary" ng-if="AccountSvc.isAdmin()" id="projectUpdate">Edit</a>\n' +
     '        </h1>\n' +
     '    </div>\n' +
     '    <div class="row">\n' +
@@ -73396,8 +73406,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <h2>Tags</h2>\n' +
     '    <p class="lead">\n' +
     '        <span ng-repeat="tag in ProjectSvc.item.tags">\n' +
-    '            <button ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-md btn-default"\n' +
-    '               ng-bind-html="tag.text | unsafe"></button>\n' +
+    '            <a ng-href="{{\'#/tag/\'+tag.text}}" class="btn btn-md btn-default"\n' +
+    '               ng-bind-html="tag.text | unsafe"></a>\n' +
     '        </span>\n' +
     '    </p>\n' +
     '</div>\n' +
@@ -73440,6 +73450,54 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </form>\n' +
     '</div>');
+	a.put('views/home/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">\n' +
+    '                        <span ng-bind-html="AppConst.project.strings.title | unsafe"></span>\n' +
+    '                        <a ng-href="#/project/create"\n' +
+    '                           class="btn btn-cta-primary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectCreate"><i\n' +
+    '                                class="fa fa-plus"></i> Create</a>\n' +
+    '                    </h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-projects.html\'"></div>\n' +
+    '                        <a class="btn btn-cta-secondary" ng-href="#/project">All projects <i\n' +
+    '                                class="fa fa-chevron-right"></i></a>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/home/list-tags.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-repeat="tag in TagSvc.list"><i class="fa fa-tag"></i> <a ng-href="{{\'#/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'" ng-bind-html="tag.text | unsafe">Etiam hendrerit urna nunc</a></li>\n' +
+    '</ul>');
+	a.put('views/home/list-projects.html', '<div class="item row" ng-repeat="item in ProjectSvc.list | limitTo:ProjectSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '</div><!--//item-->');
 	a.put('views/home/content.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
     '        <h1>Page header</h1>\n' +
@@ -73742,61 +73800,71 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <p>If you lose password please click to <a ng-href="#/recovery">recovery password</a></p>\n' +
     '    <p>For registration on site use <a ng-href="#/reg">registration form</a></p>\n' +
     '</div>');
-	a.put('views/navbar.html', '<nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavbarCtrl">\n' +
-    '    <div class="container-fluid">\n' +
-    '        <div class="navbar-header">\n' +
-    '            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"\n' +
-    '                    aria-expanded="false" aria-controls="navbar">\n' +
-    '                <span class="sr-only">Toggle navigation</span>\n' +
-    '                <span class="icon-bar"></span>\n' +
-    '                <span class="icon-bar"></span>\n' +
-    '                <span class="icon-bar"></span>\n' +
-    '            </button>\n' +
-    '            <a class="navbar-brand" ng-href="{{AppConst.home.url}}"\n' +
-    '               ng-if="!NavbarSvc.brand.hidden" ng-bind-html="AppConst.home.title | unsafe"></a>\n' +
+	a.put('views/search.html', '<form role="search" name="searchForm" ng-controller="NavbarCtrl" ng-if="!NavbarSvc.items.search.hidden"\n' +
+    '      novalidate>\n' +
+    '    <div class="form-search search-only">\n' +
+    '        <div class="input-group">\n' +
+    '            <input type="text" class="form-control search-query"\n' +
+    '                   placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="SearchSvc.searchText"\n' +
+    '                   ng-enter="SearchSvc.doSearch(SearchSvc.searchText)" required/>\n' +
+    '                                    <span class="input-group-btn">\n' +
+    '                                        <button ng-click="SearchSvc.doSearch(SearchSvc.searchText)"\n' +
+    '                                                class="btn btn-cta-secondary" type="button"\n' +
+    '                                                ng-disabled="!searchForm.$valid" id="searchNav">\n' +
+    '                                            Search\n' +
+    '                                        </button>\n' +
+    '                                    </span>\n' +
     '        </div>\n' +
-    '        <div id="navbar" class="collapse navbar-collapse">\n' +
-    '            <ul class="nav navbar-nav  navbar-left" ng-if="NavbarSvc.items.left.length>0">\n' +
-    '                <li ng-repeat="item in NavbarSvc.items.left" ng-if="!item.hidden"\n' +
-    '                    ng-class="item.active==true ? \'active\' : \'\'">\n' +
-    '                    <a ng-click="item.click()" ng-bind-html="item.title | unsafe" ng-if="!item.url" id="{{item.name+\'Nav\'}}"></a>\n' +
-    '                    <a ng-href="{{item.url}}" ng-bind-html="item.title | unsafe" ng-if="item.url" id="{{item.name+\'Nav\'}}"></a>\n' +
-    '                </li>\n' +
-    '            </ul>\n' +
-    '            <form class="navbar-form navbar-right" role="search" name="searchForm" ng-if="!NavbarSvc.items.search.hidden"\n' +
-    '                  novalidate>\n' +
-    '                <div class="form-search search-only">\n' +
-    '                    <div class="input-group">\n' +
-    '                        <input type="text" class="form-control search-query"\n' +
-    '                               placeholder="{{NavbarSvc.items.search.placeholder}}" ng-model="SearchSvc.searchText"\n' +
-    '                               ng-enter="SearchSvc.doSearch(SearchSvc.searchText)"/>\n' +
-    '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="SearchSvc.doSearch(SearchSvc.searchText)" class="btn btn-primary" type="button" ng-disabled="!searchForm.$valid" id="searchNav">\n' +
-    '                                Search\n' +
-    '                            </button>\n' +
-    '                        </span>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '            </form>\n' +
-    '            <ul class="nav navbar-nav navbar-right" ng-if="NavbarSvc.items.right.length>0">\n' +
-    '                <li ng-repeat="item in NavbarSvc.items.right" ng-if="!item.hidden"\n' +
-    '                    ng-class="item.active==true ? \'active\' : \'\'">\n' +
-    '                    <a ng-click="item.click()" ng-bind-html="item.title | unsafe" ng-if="!item.url" id="{{item.name+\'Nav\'}}"></a>\n' +
-    '                    <a ng-href="{{item.url}}" ng-bind-html="item.title | unsafe" ng-if="item.url" id="{{item.name+\'Nav\'}}"></a>\n' +
-    '                </li>\n' +
-    '            </ul>\n' +
-    '        </div><!--/.nav-collapse -->\n' +
     '    </div>\n' +
-    '</nav>');
-	a.put('views/intro.html', '<h1>\n' +
-    '    <span ng-bind-html="AppConst.home.title | unsafe"></span>\n' +
-    '</h1>\n' +
-    '<p class="lead" ng-bind-html="AppConst.home.description | unsafe"></p>');
-	a.put('views/footer.html', '<footer class="footer">\n' +
+    '</form>');
+	a.put('views/header.html', '<!-- ******HEADER****** -->\n' +
+    '<header class="header" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
-    '        <p class="text-muted">Footer text</p>\n' +
-    '    </div>\n' +
-    '</footer>');
+    '        <img class="profile-image img-responsive pull-left" ng-src="{{AppConst.home.image}}" alt="{{AppConst.home.title}}" ng-if="AppConst.home.image"/>\n' +
+    '        <div class="profile-content pull-left">\n' +
+    '            <h1 class="name" ng-bind-html="AppConst.home.title | unsafe"></h1>\n' +
+    '            <h2 class="desc" ng-bind-html="AppConst.home.description | unsafe"></h2>\n' +
+    '            <ul class="social list-inline" ng-if="AppConst.home.social && AppConst.home.social.length>0">\n' +
+    '                <li ng-class="$last ? \'last-item\' : \'\'"\n' +
+    '                    ng-repeat="item in AppConst.home.social">\n' +
+    '                    <a ng-href="{{item.url}}"><i class="" ng-class="item.iconClass"></i></a>\n' +
+    '                </li>\n' +
+    '            </ul>\n' +
+    '        </div><!--//profile-->\n' +
+    '        <div ng-repeat="item in NavbarSvc.items.right | orderBy:\'$index\':true" ng-if="!item.hidden">\n' +
+    '            <a class="btn btn-cta-primary pull-right"\n' +
+    '               ng-click="item.click()"\n' +
+    '               ng-bind-html="item.title | unsafe" ng-if="!item.url" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '            <a class="btn btn-cta-primary pull-right"\n' +
+    '               ng-click="item.click()"\n' +
+    '               ng-href="{{item.url}}" ng-bind-html="item.title | unsafe" ng-if="item.url" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '\n' +
+    '        </div>\n' +
+    '\n' +
+    '        <div ng-repeat="item in NavbarSvc.items.left | orderBy:\'$index\':true" ng-if="!item.hidden">\n' +
+    '            <a class="btn btn-cta-primary pull-right"\n' +
+    '               ng-click="item.click()"\n' +
+    '               ng-bind-html="item.title | unsafe" ng-if="!item.url" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '            <a class="btn btn-cta-primary pull-right"\n' +
+    '               ng-click="item.click()"\n' +
+    '               ng-href="{{item.url}}" ng-bind-html="item.title | unsafe" ng-if="item.url" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '\n' +
+    '        </div>\n' +
+    '    </div><!--//container-->\n' +
+    '</header><!--//header-->');
+	a.put('views/footer.html', '<!-- ******FOOTER****** -->\n' +
+    '<footer class="footer" ng-controller="NavbarCtrl">\n' +
+    '    <div class="container text-center">\n' +
+    '        <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you\'d like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->\n' +
+    '        <small class="copyright"><i class="fa fa-copyright"></i> {{AppConst.home.title}}\n' +
+    '        </small>\n' +
+    '    </div><!--//container-->\n' +
+    '</footer><!--//footer-->\n' +
+    '');
 	a.put('views/empty.html', '');
 	 }]);
 app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
@@ -74675,6 +74743,9 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
     service.list=false;
 
     service.countItemsOnRow=2;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
 
     service.title=AppConst.project.strings.title;
 
@@ -74834,6 +74905,9 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
     service.allList=false;
 
     service.countItemsOnRow=3;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
 
     service.title=AppConst.search.strings.title;
     service.searchText='';
@@ -74878,6 +74952,9 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     service.allList=false;
 
     service.countItemsOnRow=3;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
 
     service.title=AppConst.tag.strings.title;
 
@@ -74954,6 +75031,16 @@ app.controller('AccountCtrl', function ($scope, AccountSvc) {
 app.controller('FileCtrl', function ($scope, FileSvc) {
 	$scope.FileSvc=FileSvc;
 });
+app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.FileSvc=FileSvc;
+
+	TagSvc.init();
+	ProjectSvc.init();
+    NavbarSvc.init('home');
+});
 app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
 	$scope.NavbarSvc=NavbarSvc;
 	$scope.SearchSvc=SearchSvc;
@@ -74980,4 +75067,29 @@ app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc) {
 	$scope.TagSvc=TagSvc;
 
 	TagSvc.init();
+});
+jQuery(document).ready(function($) {
+
+
+    /*======= Skillset *=======*/
+    
+    $('.level-bar-inner').css('width', '0');
+    
+    $(window).on('load', function() {
+
+        $('.level-bar-inner').each(function() {
+        
+            var itemWidth = $(this).data('level');
+            
+            $(this).animate({
+                width: itemWidth
+            }, 800);
+            
+        });
+
+    });
+    
+    /* Bootstrap Tooltip for Skillset */
+    $('.level-label').tooltip();
+
 });
