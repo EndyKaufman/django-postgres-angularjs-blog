@@ -152,7 +152,6 @@ read docs http://www.sitepoint.com/getting-started-vagrant-windows/
 ```
 git clone --recursive https://github.com/EndyKaufman/django-postgres-angularjs-blog.git blog
 cd blog
-vagrant init ubuntu/trusty64
 vagrant up --provider virtualbox
 ```
 ## prepare
