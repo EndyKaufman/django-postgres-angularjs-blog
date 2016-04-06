@@ -17,6 +17,8 @@
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
 
+
+
     </script>
     <meta name="description" content="">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -34,12 +36,13 @@
     your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<div ng-include="'views/navbar.html'" class="layout-navbar"></div>
+<div ng-include="'views/header.html'" class="layout-navbar"></div>
 <div ng-view class="layout-content"></div>
 <div ng-include="'views/footer.html'" class="layout-footer"></div>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
 <script src="{% static 'app.js' %}"></script>
 </body>
 </html>

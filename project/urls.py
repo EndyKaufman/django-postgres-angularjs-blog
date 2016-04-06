@@ -29,13 +29,15 @@ import app.home
 admin.autodiscover()
 
 urlpatterns = [
-    url(r'^$', app.home.views.index, name='index'),
-    url(r'^file/', include(app.file)),
-    url(r'^account/', include(app.account)),
-    url(r'^tag/', include(app.tag)),
-    url(r'^project/', include(app.project)),
-    url(r'^admin/', admin.site.urls)
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  url(r'^$', app.home.views.index, name='index'),
+                  url(r'^file/', include(app.file)),
+                  url(r'^account/', include(app.account)),
+                  url(r'^tag/', include(app.tag)),
+                  url(r'^project/', include(app.project)),
+                  url(r'^admin/', admin.site.urls)
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
+                  url(r'^.*$', app.home.views.index, name='index')
+              ]
 
 if 'livereload' in sys.argv:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
