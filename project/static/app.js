@@ -76050,7 +76050,7 @@ app.constant('BookmarkConst', {
 app.constant('FileConst', {
 });
 app.constant('HomeConst', {
-    url:'/home',
+    url:'/home'/*,
     title: 'MY BLOG',
     description: 'description of blog',
     name: 'MY_BLOG',
@@ -76072,7 +76072,7 @@ app.constant('HomeConst', {
             url:'http://youtube.com',
             iconClass:'fa fa-youtube'
         }
-    ]
+    ]*/
 });
 app.constant('MessageConst', {
 });
@@ -76088,6 +76088,21 @@ app.constant('NavbarConst', {
 app.constant('NoteConst', {
     strings:{
         title:'My notes'
+    }
+});
+app.constant('PostConst', {
+    strings:{
+        title: 'My post',
+        description: 'Posts descriptions'
+    },
+    types:[
+        {id:1,title:'Text'},
+        {id:2,title:'Html'},
+        {id:3,title:'Url'},
+        {id:4,title:'Markdown'}
+    ],
+    message:{
+        'post/remove/confirm':'Do you really want to remove post <strong>%s</strong>?'
     }
 });
 app.constant('ProjectConst', {
@@ -76115,17 +76130,41 @@ app.constant('TagConst', {
         title:'My tags'
     }
 });
-app.factory('AppConst', function($rootScope, HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, SearchConst, NavbarConst){
+app.factory('AppConst', function($rootScope, HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostConst, SearchConst, NavbarConst){
+    var home={
+        title: 'MY BLOG',
+        description: 'description of blog',
+        name: 'MY_BLOG',
+        image: 'https://avatars2.githubusercontent.com/u/4127109?v=3&s=460',
+        social:[
+            {
+                url:'http://google.com',
+                iconClass:'fa fa-google-plus'
+            },
+            {
+                url:'http://github.com',
+                iconClass:'fa fa-github'
+            },
+            {
+                url:'http://twitter.com',
+                iconClass:'fa fa-twitter'
+            },
+            {
+                url:'http://youtube.com',
+                iconClass:'fa fa-youtube'
+            }
+        ]
+    };
     var navbar={
         left:[
             {
                 name: 'project'
             },
             {
-                name: 'note',
+                name: 'post',
             },
             {
-                name: 'bookmark',
+                name: 'contact',
             }
         ],
         right:[
@@ -76156,14 +76195,15 @@ app.factory('AppConst', function($rootScope, HomeConst, AccountConst, TagConst, 
         ]
     };
     var service={
-        home: HomeConst,
+        home: angular.extend({}, HomeConst, home),
         navbar: angular.extend({}, NavbarConst, navbar),
         search: SearchConst,
         account: AccountConst,
         tag: TagConst,
         note: NoteConst,
         bookmark: BookmarkConst,
-        project: ProjectConst
+        project: ProjectConst,
+        post: PostConst
     };
 
     return service;
@@ -76206,6 +76246,29 @@ app.config(function ($routeProvider, $locationProvider) {
       .when('/home', {
         templateUrl: 'views/home/list.html',
         controller: 'HomeCtrl'
+      });
+});
+app.config(function ($routeProvider, $locationProvider) {
+    $routeProvider
+      .when('/post/update/:postName', {
+        templateUrl: 'views/post/update.html',
+        controller: 'PostCtrl',
+        update: true
+      })
+      .when('/post/create', {
+        templateUrl: 'views/post/create.html',
+        controller: 'PostCtrl',
+        create: true
+      })
+      .when('/post/:postName', {
+        templateUrl: 'views/post/item.html',
+        controller: 'PostCtrl',
+        item: true
+      })
+      .when('/post', {
+        templateUrl: 'views/post/list.html',
+        controller: 'PostCtrl',
+        list: true
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -76333,6 +76396,78 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        </span>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/post/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemName">Name</label>\n' +
+    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="PostSvc.item.name" required>\n' +
+    '    <span ng-show="postForm.$submitted || postForm.ItemName.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!postForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemType">Type</label>\n' +
+    '    <select class="form-control" id="ItemType" ng-model="PostSvc.item.type">\n' +
+    '        <option ng-repeat="type in AppConst.post.types"\n' +
+    '                ng-value="type.id"\n' +
+    '                ng-bind-html="type.title | unsafe"\n' +
+    '                ng-selected="PostSvc.item.type==type.id"></option>\n' +
+    '    </select>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemTags">Tags</label>\n' +
+    '    <tags-input id="ItemTags" ng-model="PostSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
+    '    </tags-input>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
+    '                          ng-model="PostSvc.item.description" required></textarea>\n' +
+    '</div>');
+	a.put('views/post/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemTitle">Title</label>\n' +
+    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="PostSvc.item.title"\n' +
+    '           ng-change="PostSvc.slugName(PostSvc.item.title)" required>\n' +
+    '    <span ng-show="postForm.$submitted || postForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!postForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==1">\n' +
+    '    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="PostSvc.item.text" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==2">\n' +
+    '    <label for="ItemHtml">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="PostSvc.item.html" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==3">\n' +
+    '    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="PostSvc.item.url" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==4">\n' +
+    '    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="PostSvc.item.markdown" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group" ng-repeat="image in PostSvc.item.images track by image.id">\n' +
+    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '    <div class="input-group has-feedback">\n' +
+    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '               ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
+    '                                    type="button" id="{{\'postSelect\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-check"></i> Select\n' +
+    '                            </button>\n' +
+    '                            <button ng-click="PostSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
+    '                                    type="button" id="{{\'postDelete\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-trash"></i> Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '    </div>\n' +
+    '</div>');
 	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -76355,6 +76490,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </div><!--//section-inner-->\n' +
     '                </section><!--//section-->\n' +
     '\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-post.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
     '            </div>\n' +
     '\n' +
     '        </div><!--//primary-->\n' +
@@ -76385,6 +76529,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div><!--//item-->\n' +
     '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
     '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/tag/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
 	a.put('views/search/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -76406,7 +76555,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        </div><!--//content-->\n' +
     '                    </div><!--//section-inner-->\n' +
     '                </section><!--//section-->\n' +
-    '\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
     '            </div>\n' +
     '\n' +
     '        </div><!--//primary-->\n' +
@@ -76436,6 +76593,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
     '</div><!--//item-->\n' +
     '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/search/list-post.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
     '        class="fa fa-chevron-right"></i></a>');
 	a.put('views/project/update.html', '<div class="container sections-wrapper">\n' +
     '    <form name="projectForm">\n' +
@@ -76712,6 +76874,281 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//row-->\n' +
     '    </form>\n' +
     '</div><!--//masonry-->');
+	a.put('views/post/update.html', '<div class="container sections-wrapper">\n' +
+    '    <form name="postForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '                <section class="latest section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h1 class="heading">\n' +
+    '                            <span>Edit post</span>\n' +
+    '                            <a ng-href="{{\'/post/\'+PostSvc.item.name}}"\n' +
+    '                               class="btn btn-cta-default pull-right btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
+    '                               id="postUpdate"><i class="fa fa-pencil-square-o"></i> View</a>\n' +
+    '                        </h1>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/post/inputs/central.html\'"></div>\n' +
+    '                            <div>\n' +
+    '                                <button ng-click="PostSvc.doUpdate(PostSvc.item)" class="btn btn-cta-secondary"\n' +
+    '                                        ng-disabled="!postForm.$valid" id="postSave">\n' +
+    '                                    <i class="fa fa-floppy-o"></i> Save\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="PostSvc.doDelete(PostSvc.item)" class="btn btn-cta-red"\n' +
+    '                                        id="postDelete">\n' +
+    '                                    <i class="fa fa-trash"></i> Delete post\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="PostSvc.doAddImage()" class="btn btn-cta-default pull-right"\n' +
+    '                                        id="postAddImage">\n' +
+    '                                    <i class="fa fa-plus"></i> Add image\n' +
+    '                                </button>\n' +
+    '                            </div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '\n' +
+    '            </div><!--//primary-->\n' +
+    '            <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '\n' +
+    '                <aside class="list tags aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading">Additionally</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/post/inputs/right.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//section-->\n' +
+    '\n' +
+    '                <aside class="info aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading sr-only">Search</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/search.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//aside-->\n' +
+    '\n' +
+    '            </div><!--//secondary-->\n' +
+    '        </div><!--//row-->\n' +
+    '    </form>\n' +
+    '</div><!--//masonry-->');
+	a.put('views/post/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div class="item row"\n' +
+    '                             ng-repeat="item in PostSvc.list | limitTo:PostSvc.limit:PostSvc.begin">\n' +
+    '                            <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '                        </div><!--//item-->\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/post/list-item.html', '<a class="col-md-4 col-sm-4 col-xs-12" ng-href="{{\'/post/\'+item.name}}" ng-if="item.images.length>0">\n' +
+    '    <img class="img-responsive post-image" ng-src="{{AppConfig.static_url+item.images[0].srcStatic}}"\n' +
+    '         ng-if="item.images.length>0"\n' +
+    '         alt="{{item.title}}"/>\n' +
+    '</a>\n' +
+    '<div class="desc col-xs-12" ng-class="item.images.length>0?\'col-md-8 col-sm-8\':\'col-md-12 col-sm-12\'">\n' +
+    '    <div class="pull-right">\n' +
+    '        <a ng-click="PostSvc.doDelete(item)" class="btn btn-cta-red btn-xs"\n' +
+    '           id="postDelete" ng-if="AccountSvc.isAdmin()">\n' +
+    '            <i class="fa fa-trash"></i>\n' +
+    '            <span class="hidden-xs">Delete</span>\n' +
+    '        </a>\n' +
+    '        <a ng-href="{{\'/post/update/\'+item.name}}"\n' +
+    '           class="btn btn-cta-default btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
+    '           id="{{\'post\'+$index+\'Update\'}}">\n' +
+    '            <i class="fa fa-pencil-square-o"></i>\n' +
+    '            <span class="hidden-xs">Edit</span>\n' +
+    '        </a>\n' +
+    '    </div>\n' +
+    '    <h3 class="title">\n' +
+    '        <a ng-href="{{\'/post/\'+item.name}}" ng-bind-html="item.title | unsafe"></a>\n' +
+    '    </h3>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '    <p>\n' +
+    '        <a class="more-link" ng-href="{{\'/post/\'+item.name}}" id="{{\'post\'+$index+\'Detail\'}}"><i\n' +
+    '                class="fa fa-link"></i> Detail...</a>\n' +
+    '    </p>\n' +
+    '</div><!--//desc-->\n' +
+    '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
+    '    <hr class="divider" ng-if="!$last"/>\n' +
+    '</div><!--//desc-->');
+	a.put('views/post/list-header.html', '<span ng-bind-html="AppConst.post.strings.title | unsafe"></span>\n' +
+    '<a ng-href="/post/create"\n' +
+    '   class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="postCreate"><i class="fa fa-plus"></i>  Create</a>');
+	a.put('views/post/item.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading">\n' +
+    '                        <span ng-bind-html="PostSvc.item.title | unsafe"></span>\n' +
+    '                        <a ng-href="{{\'/post/update/\'+PostSvc.item.name}}"\n' +
+    '                           class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="postUpdate"><i class="fa fa-pencil-square-o"></i> Edit</a>\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div class="item row">\n' +
+    '                            <div ng-include="\'views/post/item-content.html\'"></div>\n' +
+    '                        </div><!--//item-->\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="list description aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Description</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <span ng-bind-html="PostSvc.item.description | unsafe"></span>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/post/item-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/post/item-tags.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-repeat="tag in PostSvc.item.tags"><i class="fa fa-tag"></i> <a ng-href="{{\'/tag/\'+tag.text}}"\n' +
+    '                                                                             ng-bind-html="tag.text | unsafe"></a></li>\n' +
+    '</ul>');
+	a.put('views/post/item-content.html', '<div ng-if="PostSvc.item.images.length>0">\n' +
+    '    <div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
+    '        <div ng-if="PostSvc.item.images.length==1">\n' +
+    '            <img ng-src="{{AppConfig.static_url+PostSvc.item.images[0].srcStatic}}"\n' +
+    '                 class="img-responsive"/>\n' +
+    '        </div>\n' +
+    '        <div ng-if="PostSvc.item.images.length>1">\n' +
+    '            <div data-nq-carousel="">\n' +
+    '                <div data-carousel-item="" ng-repeat="image in PostSvc.item.images">\n' +
+    '                    <!--h3 class="carousel-title" nf-if="image.title!=\'\'"\n' +
+    '                        ng-bind-html="image.title | unsafe"></h3-->\n' +
+    '                    <img ng-src="{{AppConfig.static_url+image.srcStatic}}">\n' +
+    '                    <div class="carousel-caption" nf-if="image.description!=\'\'">\n' +
+    '                        <h4 ng-bind-html="image.description | unsafe"></h4>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '        <hr class="divider"/>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
+    '    <div ng-if="PostSvc.item.type==1 && PostSvc.item.text">\n' +
+    '        <p ng-bind-html="PostSvc.item.text | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="PostSvc.item.type==2 && PostSvc.item.html">\n' +
+    '        <p ng-bind-html="PostSvc.item.html | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="PostSvc.item.type==3 && PostSvc.item.url">\n' +
+    '        <p ng-bind-html="PostSvc.item.url | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="PostSvc.item.type==4 && PostSvc.item.markdown">\n' +
+    '        <markdown extensions="github, table, twitter" strip="true" allow-html="true"\n' +
+    '                  ng-model="PostSvc.item.markdown">\n' +
+    '        </markdown>\n' +
+    '    </div>\n' +
+    '</div><!--//desc-->');
+	a.put('views/post/create.html', '<div class="container sections-wrapper" ng-init="PostSvc.initEmptyItem()">\n' +
+    '    <form name="postForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '                <section class="latest section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h1 class="heading">\n' +
+    '                            <span>Create post</span>\n' +
+    '                        </h1>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/post/inputs/central.html\'"></div>\n' +
+    '                            <div>\n' +
+    '                                <button ng-click="PostSvc.doCreate(PostSvc.item)" class="btn btn-cta-secondary"\n' +
+    '                                        ng-disabled="!postForm.$valid" id="postCreate">\n' +
+    '                                    <i class="fa fa-check"></i> Create\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="PostSvc.doDelete(PostSvc.item)" class="btn btn-cta-red"\n' +
+    '                                        id="postDelete">\n' +
+    '                                    <i class="fa fa-trash"></i> Delete post\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="PostSvc.doAddImage()" class="btn btn-cta-default pull-right"\n' +
+    '                                        id="postAddImage">\n' +
+    '                                    <i class="fa fa-plus"></i> Add image\n' +
+    '                                </button>\n' +
+    '                            </div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '\n' +
+    '            </div><!--//primary-->\n' +
+    '            <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '\n' +
+    '                <aside class="list tags aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading">Additionally</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/post/inputs/right.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//section-->\n' +
+    '\n' +
+    '                <aside class="info aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading sr-only">Search</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/search.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//aside-->\n' +
+    '\n' +
+    '            </div><!--//secondary-->\n' +
+    '        </div><!--//row-->\n' +
+    '    </form>\n' +
+    '</div><!--//masonry-->');
 	a.put('views/message/prompt.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content">\n' +
@@ -76802,6 +77239,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </div><!--//section-inner-->\n' +
     '            </section><!--//section-->\n' +
     '\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                    </h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-posts.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
     '            <aside class="info aside section">\n' +
@@ -76837,6 +77283,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
     '</div><!--//item-->\n' +
     '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/home/list-post.html', '<div class="item row" ng-repeat="item in PostSvc.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
     '        class="fa fa-chevron-right"></i></a>');
 	a.put('views/home/content.html', '<div class="container">\n' +
     '    <div class="page-header">\n' +
@@ -77568,6 +78019,35 @@ app.factory('FileRes', function ($q, AppConst, uiUploader, AppRes) {
 
     return service;
   });
+app.factory('PostRes', function (AppConst, AppRes) {
+    var service={};
+
+    service.getItem=function(name){
+        return AppRes.get('/post/item/'+name);
+    };
+    service.getList=function(){
+        return AppRes.get('/post/list');
+    };
+    service.getSearch=function(searchText){
+        if (searchText==undefined)
+            searchText='all';
+        return AppRes.get('/post/search/'+searchText);
+    };
+    service.getListByTag=function(tagText){
+        return AppRes.get('/post/listbytag/'+tagText);
+    };
+    service.actionUpdate=function(item){
+        return AppRes.post('/post/update/'+item.id, item);
+    }
+    service.actionCreate=function(item){
+        return AppRes.post('/post/create', item);
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/post/delete/'+item.id, item);
+    }
+
+    return service;
+  });
 app.factory('ProjectRes', function (AppConst, AppRes) {
     var service={};
 
@@ -78201,81 +78681,190 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $mo
 
     return service;
   });
-app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
+app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc) {
     var service={};
 
-    $rootScope.$on('$routeChangeStart',function(event, current, previous){
-        service.init();
-        $rootScope.$broadcast('navbar.change', event, current, previous);
+    $rootScope.$on('post.delete',function(event, item){
+        MessageSvc.info('post/delete/success', {values:item});
+        service.goList();
     });
 
-    function modifiItem(item){
-        var navItem={};
+    $rootScope.$on('post.create',function(event, item){
+        MessageSvc.info('post/create/success', {values:item});
+        service.goItem(item.name);
+    });
 
-        if (item.parent!=undefined && AppConst[item.parent]!=undefined && AppConst[item.parent][item.name]!=undefined)
-            navItem=AppConst[item.parent][item.name];
+    $rootScope.$on('post.update',function(event, item){
+        MessageSvc.info('post/update/success', {values:item});
+        service.goItem(item.name);
+    });
 
-        if (AppConst[item.name]!=undefined)
-            navItem=AppConst[item.name];
+    service.item={};
+    service.list=false;
 
-        if (navItem.title!=undefined)
-            item.title=navItem.title;
+    service.countItemsOnRow=2;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
 
-        if (navItem.strings!=undefined && navItem.strings.title!=undefined)
-            item.title=navItem.strings.title;
+    service.title=AppConst.post.strings.title;
 
-        if (navItem.url!=undefined){
-            item.url=navItem.url;
-        }
+    service.init=function(reload){
+        NavbarSvc.init('post');
 
-        if (navItem.urls!=undefined && navItem.urls.url!=undefined)
-            item.url=navItem.urls.url;
+        $q.all([
+            TagSvc.load(),
+            service.load()
+        ]).then(function(responseList) {
 
-        if (item.url===undefined)
-            item.url='/'+item.name;
-
-        if (item.click!=undefined){
-            item.url=false;
-        }
-
-        item.active=(item.name==$routeParams.navId);
-        if (item.hiddenHandler!=undefined)
-            item.hidden=item.hiddenHandler();
-        else
-            if (item.hidden===undefined)
-                item.hidden=false;
+        });
     }
 
-    service.goBack=function(){
-        if ($window.history.length>2)
-            $window.history.back();
-        else
-            service.goHome();
-    }
-    service.goHome=function(){
-        $location.path(AppConst.home.url);
+    service.goList=function(){
+        $location.path('/post');
     }
 
-    service.init=function(navId){
-        if (navId!=undefined)
-            $routeParams.navId=navId;
-        else
-        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
-            $routeParams.navId=$route.current.$$route.navId
-        else
-        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
-            $routeParams.navId=$route.current.params.navId;
+    service.goItem=function(postName){
+        $location.path('/post/'+postName);
+    }
 
-        service.items=AppConst.navbar;
-        for (var i=0;i<service.items.left.length;i++){
-            modifiItem(service.items.left[i]);
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
         }
-        for (var i=0;i<service.items.right.length;i++){
-            modifiItem(service.items.right[i]);
-        }
-        $rootScope.$broadcast('navbar.change', false, {current:{params:{navId:$routeParams.navId}}}, false);
     }
 
+	service.doCreate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 PostRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('post.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 PostRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('post.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('post/remove/confirm', {values:[item.title]},
+         function(){
+             PostRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.item={};
+                        $rootScope.$broadcast('post.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+
+    service.doDeleteImage=function(index){
+        service.item.images.splice(index, 1);
+    }
+    service.doAddImage=function(text){
+        if (text===undefined)
+            text='';
+        if (service.item.images===undefined)
+            service.item.images=[];
+        service.item.images.push({
+            id: chance.guid(),
+            title: text
+        });
+    }
+    service.slugName=function(value){
+        service.item.name=getSlug(value, {
+            lang:'ru',
+            uric: true
+        });
+    }
+    service.initEmptyItem=function(){
+        service.item = {};
+        /*service.title = '';
+        service.name = '';
+        service.description = '';
+        service.url = '';
+        service.text = '';
+        service.html = '';
+        service.markdown = '';*/
+        service.item.type = 1;
+        service.item.tags = [];
+        service.item.images = [];
+    }
+    service.load=function(){
+        var deferred = $q.defer();
+        if ($routeParams.postName!=undefined){
+            if (service.item.name!==$routeParams.postName)
+                PostRes.getItem($routeParams.postName).then(
+                    function (response) {
+                        service.item=angular.copy(response.data.data[0]);
+                        deferred.resolve(service.item);
+                        $rootScope.$broadcast('post.item.load', service.item);
+                    },
+                    function (response) {
+                        service.item={};
+                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                            MessageSvc.error(response.data.code, response.data);
+                        deferred.resolve(service.item);
+                    }
+                );
+        }else{
+            if (service.list===false){
+                PostRes.getList().then(function (response) {
+                    service.list=angular.copy(response.data.data);
+                    deferred.resolve(service.list);
+                    $rootScope.$broadcast('post.load', service.list);
+                }, function (response) {
+                    service.list=[];
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                    deferred.resolve(service.list);
+                });
+            }else
+                deferred.resolve(service.list);
+        }
+        return deferred.promise;
+    }
     return service;
   });
 app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
@@ -78464,7 +79053,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
     }
     return service;
   });
-app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes) {
+app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes) {
     var service={};
 
     service.allList=false;
@@ -78496,12 +79085,18 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
             service.allList=[];
             $q.all([
                 TagSvc.load(),
-                ProjectRes.getSearch($routeParams.searchText)
+                ProjectRes.getSearch($routeParams.searchText),
+                PostRes.getSearch($routeParams.searchText)
             ]).then(function(responseList) {
                 for (var i=1;i<responseList.length;i++){
                     if (i==1)
                         service.allList.push({
                             name: 'project',
+                            list: responseList[i].data.data
+                        });
+                    if (i==2)
+                        service.allList.push({
+                            name: 'post',
                             list: responseList[i].data.data
                         });
                 }
@@ -78510,7 +79105,7 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
     }
     return service;
   });
-app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, NavbarSvc) {
+app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, NavbarSvc) {
     var service={};
 
     service.list=false;
@@ -78538,12 +79133,18 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
             service.allList=[];
             $q.all([
                 service.load(),
-                ProjectRes.getListByTag($routeParams.tagText)
+                ProjectRes.getListByTag($routeParams.tagText),
+                PostRes.getListByTag($routeParams.tagText)
             ]).then(function(responseList) {
                 for (var i=1;i<responseList.length;i++){
                     if (i==1)
                         service.allList.push({
                             name: 'project',
+                            list: responseList[i].data.data
+                        });
+                    if (i==2)
+                        service.allList.push({
+                            name: 'post',
                             list: responseList[i].data.data
                         });
                 }
@@ -78580,6 +79181,83 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     }
     return service;
   });
+app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
+    var service={};
+
+    $rootScope.$on('$routeChangeStart',function(event, current, previous){
+        service.init();
+        $rootScope.$broadcast('navbar.change', event, current, previous);
+    });
+
+    function modifiItem(item){
+        var navItem={};
+
+        if (item.parent!=undefined && AppConst[item.parent]!=undefined && AppConst[item.parent][item.name]!=undefined)
+            navItem=AppConst[item.parent][item.name];
+
+        if (AppConst[item.name]!=undefined)
+            navItem=AppConst[item.name];
+
+        if (navItem.title!=undefined)
+            item.title=navItem.title;
+
+        if (navItem.strings!=undefined && navItem.strings.title!=undefined)
+            item.title=navItem.strings.title;
+
+        if (navItem.url!=undefined){
+            item.url=navItem.url;
+        }
+
+        if (navItem.urls!=undefined && navItem.urls.url!=undefined)
+            item.url=navItem.urls.url;
+
+        if (item.url===undefined)
+            item.url='/'+item.name;
+
+        if (item.click!=undefined){
+            item.url=false;
+        }
+
+        item.active=(item.name==$routeParams.navId);
+        if (item.hiddenHandler!=undefined)
+            item.hidden=item.hiddenHandler();
+        else
+            if (item.hidden===undefined)
+                item.hidden=false;
+    }
+
+    service.goBack=function(){
+        if ($window.history.length>2)
+            $window.history.back();
+        else
+            service.goHome();
+    }
+    service.goHome=function(){
+        $location.path(AppConst.home.url);
+    }
+
+    service.init=function(navId){
+        if (navId!=undefined)
+            $routeParams.navId=navId;
+        else
+        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
+            $routeParams.navId=$route.current.$$route.navId
+        else
+        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
+            $routeParams.navId=$route.current.params.navId;
+
+        service.items=AppConst.navbar;
+        for (var i=0;i<service.items.left.length;i++){
+            modifiItem(service.items.left[i]);
+        }
+        for (var i=0;i<service.items.right.length;i++){
+            modifiItem(service.items.right[i]);
+        }
+        $rootScope.$broadcast('navbar.change', false, {current:{params:{navId:$routeParams.navId}}}, false);
+    }
+
+    return service;
+  });
 app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc) {
     $scope.AppConfig=AppConfig;
 
@@ -78601,21 +79279,26 @@ app.controller('AccountCtrl', function ($scope, $routeParams, AccountSvc, TagSvc
 app.controller('FileCtrl', function ($scope, FileSvc) {
 	$scope.FileSvc=FileSvc;
 });
-app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
+app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
 	$scope.TagSvc=TagSvc;
 	$scope.FileSvc=FileSvc;
 
 	TagSvc.init();
 	ProjectSvc.init();
+	PostSvc.init();
     NavbarSvc.init('home');
 });
-app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
-	$scope.NavbarSvc=NavbarSvc;
-	$scope.SearchSvc=SearchSvc;
+app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagSvc, FileSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.FileSvc=FileSvc;
 
-    NavbarSvc.init();
+	TagSvc.init();
+	PostSvc.init();
 });
 app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc) {
     $scope.AccountSvc=AccountSvc;
@@ -78626,23 +79309,33 @@ app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc
 	TagSvc.init();
 	ProjectSvc.init();
 });
-app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc) {
+app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.SearchSvc=SearchSvc;
 	$scope.TagSvc=TagSvc;
 	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
 
 	TagSvc.init();
 	ProjectSvc.init();
+	PostSvc.init();
 	SearchSvc.init();
 });
-app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc, ProjectSvc) {
+app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.TagSvc=TagSvc;
 	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
 
 	ProjectSvc.init();
+	PostSvc.init();
 	TagSvc.init();
+});
+app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
+	$scope.NavbarSvc=NavbarSvc;
+	$scope.SearchSvc=SearchSvc;
+
+    NavbarSvc.init();
 });
 jQuery(document).ready(function($) {
 

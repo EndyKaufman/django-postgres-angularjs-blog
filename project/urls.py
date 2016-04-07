@@ -34,6 +34,7 @@ urlpatterns = [
                   url(r'^account/', include(app.account)),
                   url(r'^tag/', include(app.tag)),
                   url(r'^project/', include(app.project)),
+                  url(r'^post/', include(app.post)),
                   url(r'^admin/', admin.site.urls)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
                   url(r'^.*$', app.home.views.index, name='index')

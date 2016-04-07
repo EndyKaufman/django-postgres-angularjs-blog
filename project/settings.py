@@ -100,7 +100,8 @@ INSTALLED_APPS = (
     'app.home',
     'app.tag',
     'app.image',
-    'app.project'
+    'app.project',
+    'app.post'
 )
 
 MIDDLEWARE_CLASSES = (
