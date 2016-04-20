@@ -3,6 +3,7 @@
 import json
 from jsonview.decorators import json_view
 from project import helpers
+from helpers import updateFromJsonObject, validate
 from django.db.models import Q
 
 
@@ -92,7 +93,7 @@ def actionUpdate(request, post_id):
 
     from app.post.models import Post
 
-    validateResult, validateCode = Post.validateJsonObject(json_data)
+    validateResult, validateCode = validate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -111,12 +112,12 @@ def actionUpdate(request, post_id):
         return {'code': 'post/notfound', 'values': [post_id]}, 404
 
     # try:
-    updateResult, updateCode = post.updateFromJsonObject(json_data, user)
+    updateResult, updateCode = updateFromJsonObject(post, json_data, user)
     if updateCode != 200:
         return updateResult, updateCode
     post.save()
     # except:
-    #    return {'code': 'post/fail/update'}, 404
+    #    return {'code': 'post/update/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([post]), 'reload_source': updateResult['reload_source']}
 
@@ -146,7 +147,7 @@ def actionCreate(request):
 
     from app.post.models import Post
 
-    validateResult, validateCode = Post.validateJsonObject(json_data)
+    validateResult, validateCode = validate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -162,12 +163,12 @@ def actionCreate(request):
     post = Post.objects.create(name=json_data['name'], type=1)
 
     # try:
-    createResult, createCode = post.updateFromJsonObject(json_data, user)
+    createResult, createCode = updateFromJsonObject(post, json_data, user)
     if createCode != 200:
         return createResult, createCode
     post.save()
     # except:
-    #     return {'code': 'post/fail/create'}, 404
+    #     return {'code': 'post/create/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([post]), 'reload_source': createResult['reload_source']}
 

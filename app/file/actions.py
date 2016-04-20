@@ -90,7 +90,7 @@ def actionUpdate(request, file_id):
     file.comment = comment
     file.save()
     # except:
-    #    return {'code': 'file/fail/update'}, 404
+    #    return {'code': 'file/update/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
 
@@ -137,7 +137,7 @@ def actionCreate(request):
         file.created_user = user
         file.save()
     # except:
-    #    return {'code': 'file/fail/create'}, 404
+    #    return {'code': 'file/create/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
 

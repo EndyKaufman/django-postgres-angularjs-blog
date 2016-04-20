@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.decorators.csrf import ensure_csrf_cookie
 import json
-from app.manager.helpers import getMetaTagList
+from app.manager.meta_tag.helpers import getMetaTagList
 
 
 # Create your views here.

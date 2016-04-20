@@ -2,7 +2,7 @@
 
 import json
 from jsonview.decorators import json_view
-from project import helpers
+from helpers import validate
 
 
 # list
@@ -93,9 +93,7 @@ def actionUpdate(request, project_id):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.project.models import Project
-
-    validateResult, validateCode = Project.validateJsonObject(json_data)
+    validateResult, validateCode = validate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -116,9 +114,7 @@ def actionCreate(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.project.models import Project
-
-    validateResult, validateCode = Project.validateJsonObject(json_data)
+    validateResult, validateCode = validate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode

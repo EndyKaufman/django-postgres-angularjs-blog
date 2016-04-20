@@ -3,6 +3,7 @@
 import json
 from jsonview.decorators import json_view
 from project import helpers
+from helpers import updateFromJsonObject, validate
 from django.db.models import Q
 
 
@@ -92,7 +93,7 @@ def actionUpdate(request, project_id):
 
     from app.project.models import Project
 
-    validateResult, validateCode = Project.validateJsonObject(json_data)
+    validateResult, validateCode = validate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -111,12 +112,12 @@ def actionUpdate(request, project_id):
         return {'code': 'project/notfound', 'values': [project_id]}, 404
 
     # try:
-    updateResult, updateCode = project.updateFromJsonObject(json_data, user)
+    updateResult, updateCode = updateFromJsonObject(project, json_data, user)
     if updateCode != 200:
         return updateResult, updateCode
     project.save()
     # except:
-    #    return {'code': 'project/fail/update'}, 404
+    #    return {'code': 'project/update/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([project]), 'reload_source': updateResult['reload_source']}
 
@@ -146,7 +147,7 @@ def actionCreate(request):
 
     from app.project.models import Project
 
-    validateResult, validateCode = Project.validateJsonObject(json_data)
+    validateResult, validateCode = validate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -162,12 +163,12 @@ def actionCreate(request):
     project = Project.objects.create(name=json_data['name'], type=1)
 
     # try:
-    createResult, createCode = project.updateFromJsonObject(json_data, user)
+    createResult, createCode = updateFromJsonObject(project, json_data, user)
     if createCode != 200:
         return createResult, createCode
     project.save()
     # except:
-    #     return {'code': 'project/fail/create'}, 404
+    #     return {'code': 'project/create/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([project]), 'reload_source': createResult['reload_source']}
 
