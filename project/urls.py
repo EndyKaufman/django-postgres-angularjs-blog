@@ -36,7 +36,8 @@ urlpatterns = [
                   url(r'^api/v1/tag/', include(app.tag)),
                   url(r'^api/v1/project/', include(app.project)),
                   url(r'^api/v1/post/', include(app.post)),
-                  url(r'^api/v1/contact/', include(app.contact))
+                  url(r'^api/v1/contact/', include(app.contact)),
+                  url(r'^api/v1/manager/', include(app.manager))
                   # url(r'^admin/', admin.site.urls)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
                   url(r'^.*$', app.home.views.index, name='index')

@@ -76079,6 +76079,18 @@ app.constant('HomeConst', {
         }
     ]*/
 });
+app.constant('ManagerConst', {
+    strings:{
+        title: 'Manager',
+        description: 'Manager descriptions'
+    },
+    meta_tag:{
+        title: 'Meta tags',
+        name: 'meta_tag'
+    },
+    message:{
+    }
+});
 app.constant('MessageConst', {
 });
 app.constant('NavbarConst', {
@@ -76136,7 +76148,7 @@ app.constant('TagConst', {
     }
 });
 app.factory('AppConst', function($rootScope,
-HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostConst, SearchConst, ContactConst, NavbarConst){
+HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostConst, SearchConst, ContactConst, ManagerConst, NavbarConst){
     var home={
         title: 'MY BLOG',
         description: 'description of blog',
@@ -76182,6 +76194,12 @@ HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostC
                 }
             },
             {
+                name: 'manager',
+                hiddenHandler: function(){
+                    return AppConfig.user.id==undefined || (AppConfig.user.id!=undefined && AppConfig.user.roles.indexOf('admin')==-1)
+                }
+            },
+            {
                 name: 'profile',
                 parent:'account',
                 hiddenHandler: function(){
@@ -76203,6 +76221,7 @@ HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostC
     var service={
         home: angular.extend({}, HomeConst, home),
         navbar: angular.extend({}, NavbarConst, navbar),
+        manager: ManagerConst,
         search: SearchConst,
         account: AccountConst,
         tag: TagConst,
@@ -76261,6 +76280,21 @@ app.config(function ($routeProvider, $locationProvider) {
       .when('/home', {
         templateUrl: 'views/home/list.html',
         controller: 'HomeCtrl'
+      });
+});
+app.config(function ($routeProvider, $locationProvider) {
+    $routeProvider
+      .when('/manager', {
+        templateUrl: 'views/manager/meta_tag.html',
+        controller: 'MetaTagCtrl',
+        navId: 'manager',
+        subNavId: 'meta_tag'
+      })
+      .when('/manager/meta_tag', {
+        templateUrl: 'views/manager/meta_tag.html',
+        controller: 'MetaTagCtrl',
+        navId: 'manager',
+        subNavId: 'meta_tag'
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -76481,6 +76515,105 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                                <i class="fa fa-trash"></i> Delete image\n' +
     '                            </button>\n' +
     '                        </span>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
+    '            <form name="meta_tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagUpdateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagUpdateConfirm">\n' +
+    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/list.html', '<table class="table table-hover">\n' +
+    '    <thead>\n' +
+    '    <tr>\n' +
+    '        <th>#</th>\n' +
+    '        <th>Name</th>\n' +
+    '        <th>Content</th>\n' +
+    '        <th>Attributes</th>\n' +
+    '        <th class="text-right">Actions</th>\n' +
+    '    </tr>\n' +
+    '    </thead>\n' +
+    '    <tbody>\n' +
+    '    <tr ng-repeat="item in MetaTagSvc.list"\n' +
+    '        ng-class="(MetaTagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind-html="item.id" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.name | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.content | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.attributes | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td class="text-right">\n' +
+    '            <button ng-click="MetaTagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'meta_tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
+    '            </button>\n' +
+    '            <button ng-click="MetaTagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'meta_tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '            </button>\n' +
+    '        </td>\n' +
+    '    </tr>\n' +
+    '    </tbody>\n' +
+    '</table>');
+	a.put('views/manager/meta_tag/list-header.html', '<span ng-bind-html="AppConst.manager.meta_tag.title | unsafe"></span>\n' +
+    '<button ng-click="MetaTagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
+    '        type="button" id="meta_tagCreate">\n' +
+    '    <i class="fa fa-plus"></i> Create\n' +
+    '</button>');
+	a.put('views/manager/meta_tag/inputs.html', '<div class="form-group">\n' +
+    '    <label for="MetaTagName">Name</label>\n' +
+    '    <input class="form-control" type="text" id="MetaTagName" ng-model="MetaTagSvc.item.name"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagContent">Content</label>\n' +
+    '    <input type="text" class="form-control" id="MetaTagContent"\n' +
+    '           ng-model="MetaTagSvc.item.content"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagAttributes">Attributes</label>\n' +
+    '    <input type="text" class="form-control" id="MetaTagAttributes"\n' +
+    '           ng-model="MetaTagSvc.item.attributes"/>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
+    '            <form name="meta_tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagCreateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagCreateConfirm">\n' +
+    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
@@ -77241,6 +77374,57 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/manager/meta_tag.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-include="\'views/manager/meta_tag/list-header.html\'">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/manager/meta_tag/list.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="list description aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Menu</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/manager/menu.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/manager/menu.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'meta_tag\'"><i class="fa fa-link"></i> <a ng-href="/manager/meta_tag">Meta tags</a></li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'contacts\'"><i class="fa fa-link"></i> <a ng-href="/manager/contacts">Contacts</a></li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'properties\'"><i class="fa fa-link"></i> <a ng-href="/manager/properties">Properties</a></li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'users\'"><i class="fa fa-link"></i> <a ng-href="/manager/users">Users</a></li>\n' +
+    '</ul>');
 	a.put('views/home/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -77393,11 +77577,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </tr>\n' +
     '    </thead>\n' +
     '    <tbody>\n' +
-    '    <tr ng-repeat="item in FileSvc.list" ng-click="FileSvc.selectItem(item)"\n' +
+    '    <tr ng-repeat="item in FileSvc.list"\n' +
     '        ng-class="(FileSvc.item.id==item.id)?\'bold\':\'\'">\n' +
-    '        <td ng-bind-html="item.id"></td>\n' +
-    '        <td ng-bind-html="item.src | unsafe"></td>\n' +
-    '        <td ng-bind-html="item.comment | unsafe"></td>\n' +
+    '        <td ng-bind-html="item.id" ng-click="FileSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.src | unsafe" ng-click="FileSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.comment | unsafe" ng-click="FileSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
     '            <button ng-click="FileSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
     '                    id="{{\'file\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
@@ -78032,6 +78216,47 @@ app.factory('AppRes', function ($q, $http, $cookies, uiUploader) {
     service.init();    
     return service;
   });
+app.factory('AccountRes', function (AppConst, AppRes) {
+    var service={};
+
+    service.actionLogin=function(email, password){
+        return AppRes.post('/api/v1/account/login', {
+            email: email,
+            password: password
+        });
+    };
+
+    service.actionLogout=function(){
+        return AppRes.post('/api/v1/account/logout');
+    };
+
+    service.actionReg=function(item){
+        return AppRes.post('/api/v1/account/reg', item);
+    }
+
+    service.actionRecovery=function(email){
+        return AppRes.post('/api/v1/account/recovery', {
+            email: email
+        });
+    }
+
+    service.actionResetpassword=function(code, password){
+        return AppRes.post('/api/v1/account/resetpassword', {
+            code: code,
+            password: password
+        });
+    };
+
+    service.actionDelete=function(){
+        return AppRes.post('/api/v1/account/delete');
+    }
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/account/update', item);
+    }
+
+    return service;
+  });
 app.factory('ContactRes', function (AppConst, AppRes) {
     var service={};
 
@@ -78132,47 +78357,6 @@ app.factory('ProjectRes', function (AppConst, AppRes) {
 
     return service;
   });
-app.factory('AccountRes', function (AppConst, AppRes) {
-    var service={};
-
-    service.actionLogin=function(email, password){
-        return AppRes.post('/api/v1/account/login', {
-            email: email,
-            password: password
-        });
-    };
-
-    service.actionLogout=function(){
-        return AppRes.post('/api/v1/account/logout');
-    };
-
-    service.actionReg=function(item){
-        return AppRes.post('/api/v1/account/reg', item);
-    }
-
-    service.actionRecovery=function(email){
-        return AppRes.post('/api/v1/account/recovery', {
-            email: email
-        });
-    }
-
-    service.actionResetpassword=function(code, password){
-        return AppRes.post('/api/v1/account/resetpassword', {
-            code: code,
-            password: password
-        });
-    };
-
-    service.actionDelete=function(){
-        return AppRes.post('/api/v1/account/delete');
-    }
-
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/account/update', item);
-    }
-
-    return service;
-  });
 app.factory('TagRes', function (AppRes, AppConst) {
     var service={};
 
@@ -78182,12 +78366,245 @@ app.factory('TagRes', function (AppRes, AppConst) {
 
     return service;
   });
+app.factory('MetaTagRes', function ($q, AppConst, AppRes) {
+    var service={};
+
+    service.getList=function(){
+        return AppRes.get('/api/v1/manager/meta_tag/list');
+    };
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/manager/meta_tag/update/'+item.id, item);
+    }
+
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/manager/meta_tag/create',item)
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/manager/meta_tag/delete/'+item.id, item);
+    }
+
+    return service;
+  });
 app.factory('AppSvc', function () {
     var service={};
 
     service.init=function(reload){
     }
     service.init();    
+    return service;
+  });
+app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
+    var service={};
+
+    $rootScope.$on('account.update',function(event, data){
+        MessageSvc.info('account/update/success');
+        AppConfig.user=service.item;
+    });
+
+    $rootScope.$on('account.create',function(event, data){
+        MessageSvc.info('account/create/success');
+        AppConfig.user=service.item;
+        NavbarSvc.init();
+        NavbarSvc.goBack();
+    });
+
+    $rootScope.$on('account.login',function(event, data){
+        MessageSvc.info('account/login/success');
+        AppConfig.user=service.item;
+        NavbarSvc.init();
+        NavbarSvc.goHome();
+    });
+
+    $rootScope.$on('account.doLogout',function(event, data){
+        service.doLogout();
+    });
+
+    $rootScope.$on('account.logout',function(event, data){
+        MessageSvc.info('account/logout/success');
+        AppConfig.user=service.item;
+        NavbarSvc.init();
+        NavbarSvc.goHome();
+    });
+
+    $rootScope.$on('account.delete',function(event, data){
+        MessageSvc.info('account/delete/success');
+        AppConfig.user=service.item;
+        NavbarSvc.init();
+        NavbarSvc.goHome();
+    });
+
+    $rootScope.$on('account.recovery',function(event, data){
+        service.goResetpassword();
+        MessageSvc.info('account/recovery/checkemail', {values:[data.email]});
+    });
+
+    service.item={};
+
+    service.goResetpassword=function(){
+        $location.path('/resetpassword');
+    }
+    service.init=function(reload){
+        NavbarSvc.init($routeParams.navId);
+        if (($routeParams.navId=='login' || $routeParams.navId=='reg' || $routeParams.navId=='resetpassword' || $routeParams.navId=='recovery') && service.isLogged()){
+            NavbarSvc.goHome();
+            return;
+        }
+        if ($routeParams.navId=='profile' && !service.isLogged()){
+            NavbarSvc.goHome();
+            return;
+        }
+        if ($routeParams.navId=='resetpassword'){
+            if ($routeParams.code!==undefined)
+                service.resetpasswordCode=$routeParams.code;
+            else
+                service.resetpasswordCode='';
+            return;
+        }
+
+        $q.all([
+            service.load()
+        ]).then(function(responseList) {
+
+        });
+    }
+
+    service.load=function(){
+        var deferred = $q.defer();
+        service.item=AppConfig.user;
+        deferred.resolve(service.item);
+        return deferred.promise;
+    }
+
+	service.doReg=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 AccountRes.actionReg(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+
+	service.doRecovery=function(email){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 AccountRes.actionRecovery(email).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    $rootScope.$broadcast('account.recovery', {email:email});
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+
+	service.doResetpassword=function(code, password){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 AccountRes.actionResetpassword(code, password).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.resetpassword', {code:code});
+                	$rootScope.$broadcast('account.login', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 AccountRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+
+	service.doLogin=function(email, password){
+	    AccountRes.actionLogin(email,password).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                	$rootScope.$broadcast('account.login', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+	}
+	service.doLogout=function(){
+         MessageSvc.confirm('account/logout/confirm', {},
+         function(){
+             AccountRes.actionLogout().then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        service.item={}
+                        $rootScope.$broadcast('account.logout', service.item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+        });
+    }
+	service.doDelete=function(){
+         MessageSvc.confirm('account/delete/confirm', {},
+         function(){
+             AccountRes.actionDelete().then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        service.item={}
+                        $rootScope.$broadcast('account.delete', service.item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+        });
+    }
+
+    service.isLogged=function(){
+        return AppConfig.user.id!=undefined;
+    }
+
+    service.isAdmin=function(){
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('admin')!=-1
+    }
+
+    service.isAuthor=function(){
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('author')!=-1
+    }
+
+    service.isUser=function(){
+        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('user')!=-1
+    }
+
     return service;
   });
 app.factory('ContactSvc', function ($q, $location, AppConst, ContactRes, MessageSvc, $rootScope, $routeParams, NavbarSvc, TagSvc) {
@@ -78308,12 +78725,12 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
     }
 
     service.selectItem=function(item){
-        service.item=item;
+        service.item=angular.copy(item);
     }
 
     service.showUpdate=function(item){
         service.mode='update';
-        service.item=item;
+        service.item=angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/file/update.modal.html',
@@ -78661,7 +79078,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         $location.path(AppConst.home.url);
     }
 
-    service.init=function(navId){
+    service.init=function(navId, subNavId){
         if (navId!=undefined)
             $routeParams.navId=navId;
         else
@@ -78671,6 +79088,15 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
             $routeParams.navId=$route.current.params.navId;
 
+        if (subNavId!=undefined)
+            $routeParams.subNavId=subNavId;
+        else
+        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.subNavId!=undefined)
+            $routeParams.subNavId=$route.current.$$route.subNavId
+        else
+        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.subNavId!=undefined)
+            $routeParams.subNavId=$route.current.params.subNavId;
+
         service.items=AppConst.navbar;
         for (var i=0;i<service.items.left.length;i++){
             modifiItem(service.items.left[i]);
@@ -78678,7 +79104,14 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         for (var i=0;i<service.items.right.length;i++){
             modifiItem(service.items.right[i]);
         }
-        $rootScope.$broadcast('navbar.change', false, {current:{params:{navId:$routeParams.navId}}}, false);
+        $rootScope.$broadcast('navbar.change', false, {
+            current:{
+                params:{
+                    navId:$routeParams.navId,
+                    subNavId:$routeParams.subNavId
+                }
+            }
+        }, false);
     }
 
     return service;
@@ -79055,219 +79488,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
     }
     return service;
   });
-app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
-    var service={};
-
-    $rootScope.$on('account.update',function(event, data){
-        MessageSvc.info('account/update/success');
-        AppConfig.user=service.item;
-    });
-
-    $rootScope.$on('account.create',function(event, data){
-        MessageSvc.info('account/create/success');
-        AppConfig.user=service.item;
-        NavbarSvc.init();
-        NavbarSvc.goBack();
-    });
-
-    $rootScope.$on('account.login',function(event, data){
-        MessageSvc.info('account/login/success');
-        AppConfig.user=service.item;
-        NavbarSvc.init();
-        NavbarSvc.goHome();
-    });
-
-    $rootScope.$on('account.doLogout',function(event, data){
-        service.doLogout();
-    });
-
-    $rootScope.$on('account.logout',function(event, data){
-        MessageSvc.info('account/logout/success');
-        AppConfig.user=service.item;
-        NavbarSvc.init();
-        NavbarSvc.goHome();
-    });
-
-    $rootScope.$on('account.delete',function(event, data){
-        MessageSvc.info('account/delete/success');
-        AppConfig.user=service.item;
-        NavbarSvc.init();
-        NavbarSvc.goHome();
-    });
-
-    $rootScope.$on('account.recovery',function(event, data){
-        service.goResetpassword();
-        MessageSvc.info('account/recovery/checkemail', {values:[data.email]});
-    });
-
-    service.item={};
-
-    service.goResetpassword=function(){
-        $location.path('/resetpassword');
-    }
-    service.init=function(reload){
-        NavbarSvc.init($routeParams.navId);
-        if (($routeParams.navId=='login' || $routeParams.navId=='reg' || $routeParams.navId=='resetpassword' || $routeParams.navId=='recovery') && service.isLogged()){
-            NavbarSvc.goHome();
-            return;
-        }
-        if ($routeParams.navId=='profile' && !service.isLogged()){
-            NavbarSvc.goHome();
-            return;
-        }
-        if ($routeParams.navId=='resetpassword'){
-            if ($routeParams.code!==undefined)
-                service.resetpasswordCode=$routeParams.code;
-            else
-                service.resetpasswordCode='';
-            return;
-        }
-
-        $q.all([
-            service.load()
-        ]).then(function(responseList) {
-
-        });
-    }
-
-    service.load=function(){
-        var deferred = $q.defer();
-        service.item=AppConfig.user;
-        deferred.resolve(service.item);
-        return deferred.promise;
-    }
-
-	service.doReg=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionReg(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    $rootScope.$broadcast('account.create', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-
-	service.doRecovery=function(email){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionRecovery(email).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    $rootScope.$broadcast('account.recovery', {email:email});
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-
-	service.doResetpassword=function(code, password){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionResetpassword(code, password).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    $rootScope.$broadcast('account.resetpassword', {code:code});
-                	$rootScope.$broadcast('account.login', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    $rootScope.$broadcast('account.update', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-
-	service.doLogin=function(email, password){
-	    AccountRes.actionLogin(email,password).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                	$rootScope.$broadcast('account.login', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-	}
-	service.doLogout=function(){
-         MessageSvc.confirm('account/logout/confirm', {},
-         function(){
-             AccountRes.actionLogout().then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        service.item={}
-                        $rootScope.$broadcast('account.logout', service.item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-        });
-    }
-	service.doDelete=function(){
-         MessageSvc.confirm('account/delete/confirm', {},
-         function(){
-             AccountRes.actionDelete().then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        service.item={}
-                        $rootScope.$broadcast('account.delete', service.item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-        });
-    }
-
-    service.isLogged=function(){
-        return AppConfig.user.id!=undefined;
-    }
-
-    service.isAdmin=function(){
-        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('admin')!=-1
-    }
-
-    service.isAuthor=function(){
-        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('author')!=-1
-    }
-
-    service.isUser=function(){
-        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('user')!=-1
-    }
-
-    return service;
-  });
 app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes) {
     var service={};
 
@@ -79396,6 +79616,163 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     }
     return service;
   });
+app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
+    var service={};
+
+    service.item={};
+    service.list=false;
+
+    service.initEmptyItem=function(){
+        service.item = {};
+        service.item.name = '';
+        service.item.content = '';
+        service.item.attributes='';
+    }
+
+    service.showCreate=function(){
+        service.mode='create';
+        service.initEmptyItem();
+        var boxOptions = {
+            title: 'Add new meta_tag',
+            confirmTemplate: 'views/manager/meta_tag/create.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Create',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doCreate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'meta_tagCreate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.selectItem=function(item){
+        service.item=angular.copy(item);
+    }
+
+    service.showUpdate=function(item){
+        service.mode='update';
+        service.item=angular.copy(item);
+        var boxOptions = {
+            title: 'Edit properties',
+            confirmTemplate: 'views/manager/meta_tag/update.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Save',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doUpdate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'meta_tagUpdate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		MetaTagRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('meta_tag.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		MetaTagRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('meta_tag.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('meta_tag/remove/confirm', {values:[item.src]},
+         function(){
+             MetaTagRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.item={};
+                        $rootScope.$broadcast('meta_tag.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+    
+    service.load=function(){
+        var deferred = $q.defer();
+        if (service.list===false){
+            MetaTagRes.getList().then(function (response) {
+                service.list=angular.copy(response.data.data);
+                deferred.resolve(service.list);
+                $rootScope.$broadcast('meta_tag.load', service.list);
+            }, function (response) {
+                service.list=[];
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+                deferred.resolve(service.list);
+            });
+        }else
+            deferred.resolve(service.list);
+        return deferred.promise;
+    }
+
+    service.init=function(reload){
+        NavbarSvc.init($routeParams.navId);
+
+        $q.all([
+            service.load()
+        ]).then(function(responseList) {
+
+        });
+    }
+    return service;
+  });
 app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc) {
     $scope.AppConfig=AppConfig;
 
@@ -79403,6 +79780,16 @@ app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountS
     $scope.AppConst=AppConst;
 	$scope.AppSvc=AppSvc;
 	$scope.MessageSvc=MessageSvc;
+});
+app.controller('AccountCtrl', function ($scope, $routeParams, AccountSvc, TagSvc, ProjectSvc) {
+    $scope.AccountSvc=AccountSvc;
+    $scope.TagSvc=TagSvc;
+    $scope.ProjectSvc=ProjectSvc;
+    $scope.$routeParams=$routeParams;
+
+	TagSvc.init();
+	ProjectSvc.init();
+	AccountSvc.init();
 });
 app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc, ProjectSvc) {
     $scope.ContactSvc=ContactSvc;
@@ -79414,6 +79801,18 @@ app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc
 });
 app.controller('FileCtrl', function ($scope, FileSvc) {
 	$scope.FileSvc=FileSvc;
+});
+app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.FileSvc=FileSvc;
+
+	TagSvc.init();
+	ProjectSvc.init();
+	PostSvc.init();
+    NavbarSvc.init('home');
 });
 app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
 	$scope.NavbarSvc=NavbarSvc;
@@ -79439,16 +79838,6 @@ app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc
 	TagSvc.init();
 	ProjectSvc.init();
 });
-app.controller('AccountCtrl', function ($scope, $routeParams, AccountSvc, TagSvc, ProjectSvc) {
-    $scope.AccountSvc=AccountSvc;
-    $scope.TagSvc=TagSvc;
-    $scope.ProjectSvc=ProjectSvc;
-    $scope.$routeParams=$routeParams;
-
-	TagSvc.init();
-	ProjectSvc.init();
-	AccountSvc.init();
-});
 app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.SearchSvc=SearchSvc;
@@ -79471,17 +79860,12 @@ app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc, ProjectSvc, Post
 	PostSvc.init();
 	TagSvc.init();
 });
-app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
-    $scope.AccountSvc=AccountSvc;
-	$scope.ProjectSvc=ProjectSvc;
-	$scope.PostSvc=PostSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.FileSvc=FileSvc;
+app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc) {
+	$scope.MetaTagSvc=MetaTagSvc;
+	$scope.AccountSvc=AccountSvc;
+	$scope.$routeParams=$routeParams;
 
-	TagSvc.init();
-	ProjectSvc.init();
-	PostSvc.init();
-    NavbarSvc.init('home');
+	MetaTagSvc.init();
 });
 jQuery(document).ready(function($) {
 
