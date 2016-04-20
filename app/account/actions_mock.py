@@ -3,6 +3,8 @@
 import json
 from jsonview.decorators import json_view
 from project import helpers
+from helpers import validateLogin, validateProfileUpdate, \
+    validateRecovery, validateResetpassword
 from app import home
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -21,9 +23,7 @@ def actionUpdate(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
-
-    validateResult, validateCode = User.validateProfileUpdateJsonObject(json_data)
+    validateResult, validateCode = validateProfileUpdate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -96,9 +96,7 @@ def actionReg(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
-
-    validateResult, validateCode = User.validateProfileUpdateJsonObject(json_data)
+    validateResult, validateCode = validateProfileUpdate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -170,9 +168,7 @@ def actionLogin(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
-
-    validateResult, validateCode = User.validateLoginJsonObject(json_data)
+    validateResult, validateCode = validateLogin(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -242,9 +238,7 @@ def actionRecovery(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
-
-    validateResult, validateCode = User.validateRecoveryJsonObject(json_data)
+    validateResult, validateCode = validateRecovery(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -302,9 +296,7 @@ def actionResetpassword(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
-
-    validateResult, validateCode = User.validateResetpasswordJsonObject(json_data)
+    validateResult, validateCode = validateResetpassword(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode

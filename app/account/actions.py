@@ -4,6 +4,8 @@ from django.contrib import auth
 import json
 from jsonview.decorators import json_view
 from project import helpers
+from helpers import validateLogin, updateFromJsonObject, validateProfileUpdate, \
+    validateRecovery, validateResetpassword
 from app import home
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -27,7 +29,7 @@ def actionUpdate(request):
 
     from app.account.models import User
 
-    validateResult, validateCode = User.validateProfileUpdateJsonObject(json_data)
+    validateResult, validateCode = validateProfileUpdate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -38,14 +40,14 @@ def actionUpdate(request):
         return {'code': 'account/usernotfound', 'values': [json_data['email']]}, 404
 
     # try:
-    validateResult, validateCode = user.updateFromJsonObject(json_data)
+    validateResult, validateCode = updateFromJsonObject(user, json_data)
     if validateCode != 200:
         return validateResult, validateCode
 
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.save()
     # except:
-    #    return {'code': 'account/fail/update'}, 404
+    #    return {'code': 'account/update/fail'}, 404
 
     return {'code': 'ok', 'data': [user.getUserData()]}
 
@@ -68,7 +70,7 @@ def actionLogin(request):
 
     from app.account.models import User
 
-    validateResult, validateCode = User.validateLoginJsonObject(json_data)
+    validateResult, validateCode = validateLogin(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -121,7 +123,7 @@ def actionReg(request):
 
     from app.account.models import User
 
-    validateResult, validateCode = User.validateLoginJsonObject(json_data)
+    validateResult, validateCode = validateLogin(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -223,7 +225,7 @@ def actionRecovery(request):
 
     from app.account.models import User, Code
 
-    validateResult, validateCode = User.validateRecoveryJsonObject(json_data)
+    validateResult, validateCode = validateRecovery(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -272,7 +274,7 @@ def actionResetpassword(request):
 
     from app.account.models import User, Code
 
-    validateResult, validateCode = User.validateResetpasswordJsonObject(json_data)
+    validateResult, validateCode = validateResetpassword(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
@@ -296,7 +298,7 @@ def actionResetpassword(request):
 
     if user.is_active:
         user.backend = 'django.contrib.auth.backends.ModelBackend'
-        user.updateFromJsonObject(json_data)
+        updateFromJsonObject(user, json_data)
         user.save()
         auth.login(request, user)
         Code.objects.filter(created_user=user).delete()
