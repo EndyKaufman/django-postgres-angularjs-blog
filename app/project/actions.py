@@ -160,7 +160,7 @@ def actionCreate(request):
     if project is not False:
         return {'code': 'project/exists', 'values': [json_data['name']]}, 404
 
-    project = Project.objects.create(name=json_data['name'], type=1)
+    project = Project.objects.create(name=json_data['name'], type=1, created_user=user)
 
     # try:
     createResult, createCode = updateFromJsonObject(project, json_data, user)

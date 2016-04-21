@@ -160,7 +160,7 @@ def actionCreate(request):
     if post is not False:
         return {'code': 'post/exists', 'values': [json_data['name']]}, 404
 
-    post = Post.objects.create(name=json_data['name'], type=1)
+    post = Post.objects.create(name=json_data['name'], type=1, created_user=user)
 
     # try:
     createResult, createCode = updateFromJsonObject(post, json_data, user)
