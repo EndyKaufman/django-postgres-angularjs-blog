@@ -11,3 +11,17 @@ class MetaTag(models.Model):
     created = models.DateTimeField('date created', auto_now_add=True, blank=True, null=True)
     updated = models.DateTimeField('date updated', auto_now=True, blank=True, null=True)
     created_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.SET_NULL)
+
+
+# PublicLink model
+class PublicLink(models.Model):
+    src = models.TextField(max_length=1024, unique=True)
+    title = models.TextField(max_length=512, blank=True, null=True)
+    description = models.TextField(max_length=1024, blank=True, null=True)
+    icon = models.TextField(max_length=512, blank=True, null=True)
+    in_header = models.IntegerField()
+    in_footer = models.IntegerField()
+    in_contact = models.IntegerField()
+    created = models.DateTimeField('date created', auto_now_add=True, blank=True, null=True)
+    updated = models.DateTimeField('date updated', auto_now=True, blank=True, null=True)
+    created_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.SET_NULL)
