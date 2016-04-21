@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import json
+from app.home import helpers
 from jsonview.decorators import json_view
 from project import helpers
-from django.db.models import Q
+import helpers as meta_tag_helpers
 
 
 # list
@@ -11,9 +11,7 @@ from django.db.models import Q
 def getList(request):
     """List data"""
 
-    from app.manager.models import MetaTag
-
-    data = MetaTag.objects.all().order_by('-created').all()
+    data = meta_tag_helpers.getList()
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
@@ -23,14 +21,12 @@ def getList(request):
 def getItem(request, id):
     """Item data"""
 
-    from app.manager.models import MetaTag
+    data = meta_tag_helpers.getItem(id)
 
-    try:
-        data = [MetaTag.objects.get(pk=id)]
-    except MetaTag.DoesNotExist:
+    if not data:
         return {'code': 'metatag/notfound', 'values': [id]}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    else:
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
 
 # update
@@ -38,48 +34,38 @@ def getItem(request, id):
 def actionUpdate(request, id):
     """Update record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
-    from app.manager.models import MetaTag
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'content', 'attributes'])
 
-    try:
-        item = MetaTag.objects.get(name=json_data['name'])
-    except MetaTag.DoesNotExist:
-        item = False
+    data = meta_tag_helpers.getItemByName(json_data['name'])
 
-    if (item is not False) and (int(item.id) != int(id)):
-        return {'code': 'metatag/exists', 'values': [json_data['name'], item.id]}, 404
+    if (data is not False) and (int(data[0].id) != int(id)):
+        return {'code': 'metatag/exists', 'values': [json_data['name']]}, 404
 
-    try:
-        item = MetaTag.objects.get(pk=id)
-    except MetaTag.DoesNotExist:
+    data = meta_tag_helpers.getItem(id)
+
+    if not data:
         return {'code': 'metatag/notfound', 'values': [id]}, 404
-
-    # try:
-    item.name = json_data['name']
-    item.content = json_data['content']
-    item.attributes = json_data['attributes']
-    item.save()
-    # except:
-    #    return {'code': 'metatag/update/fail'}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}
+    else:
+        try:
+            data[0].name = json_data['name']
+            data[0].content = json_data['content']
+            data[0].attributes = json_data['attributes']
+            data[0].save()
+        except:
+            return {'code': 'metatag/update/fail'}, 404
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
 
 # create
@@ -87,76 +73,58 @@ def actionUpdate(request, id):
 def actionCreate(request):
     """Create record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
-    from app.manager.models import MetaTag
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'content', 'attributes'])
 
-    try:
-        item = MetaTag.objects.get(name=json_data['name'])
-    except MetaTag.DoesNotExist:
-        item = False
+    json_data['created_user'] = user
 
-    if item is not False:
+    data = meta_tag_helpers.getItemByName(json_data['name'])
+
+    if data is not False:
         return {'code': 'metatag/exists', 'values': [json_data['name']]}, 404
 
-    # try:
-    item = MetaTag.objects.create(name=json_data['name'], content=json_data['content'],
-                                  attributes=json_data['attributes'])
-    # except:
-    #     return {'code': 'metatag/create/fail'}, 404
+    data = meta_tag_helpers.create(json_data)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}
+    if not data:
+        return {'code': 'metatag/create/fail'}, 404
+
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
 
 # delete
 @json_view
 def actionDelete(request, id):
     """Delete record"""
-
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
-    from app.manager.models import MetaTag
+    data = meta_tag_helpers.getItem(id)
 
-    try:
-        item = MetaTag.objects.get(pk=id)
-    except item.DoesNotExist:
+    if not data:
         return {'code': 'metatag/notfound', 'values': [id]}, 404
-
-    try:
-        item.delete()
-    except:
-        return {'code': 'metatag/delete/fail'}, 404
-
-    return {'code': 'ok'}
+    else:
+        try:
+            data[0].delete()
+        except:
+            return {'code': 'metatag/delete/fail'}, 404
+        return {'code': 'ok'}

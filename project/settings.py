@@ -96,15 +96,15 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'storages',
     'jsonview',
-    'app.file',
     'app.account',
+    'app.file',
     'app.home',
-    'app.manager',
     'app.tag',
     'app.image',
     'app.project',
     'app.post',
-    'app.contact'
+    'app.contact',
+    'app.manager'
 )
 
 MIDDLEWARE_CLASSES = (

@@ -1,11 +1,40 @@
 # -*- coding: utf-8 -*-
 
-from app.manager.models import MetaTag
+def getList():
+    from app.manager.models import MetaTag
 
-
-def getMetaTagList():
     try:
-        list = MetaTag.objects.all()
+        data = MetaTag.objects.all().order_by('-created').all()
     except MetaTag.DoesNotExist:
-        list = []
-    return list
+        data = []
+    return data
+
+
+def getItem(id):
+    from app.manager.models import MetaTag
+
+    try:
+        data = [MetaTag.objects.get(pk=id)]
+    except MetaTag.DoesNotExist:
+        data = False
+    return data
+
+
+def getItemByName(name):
+    from app.manager.models import MetaTag
+
+    try:
+        data = [MetaTag.objects.get(name=name)]
+    except MetaTag.DoesNotExist:
+        data = False
+    return data
+
+
+def create(data):
+    from app.manager.models import MetaTag
+
+    try:
+        return [MetaTag.objects.create(name=data['name'], content=data['content'],
+                                       attributes=data['attributes'], created_user=data['created_user'])]
+    except:
+        return False

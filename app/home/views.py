@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.decorators.csrf import ensure_csrf_cookie
 import json
-from app.manager.meta_tag.helpers import getMetaTagList
+from app.manager.meta_tag import helpers as meta_tag_helpers
 
 
 # Create your views here.
@@ -19,5 +19,5 @@ def index(request):
     return render(request, 'home/templates/%s/index.htm' % settings.THEME, {
         'config': json.dumps(getConfig(request), sort_keys=True, indent=4),
         'settings': settings,
-        'meta_tag_list': getMetaTagList()
+        'meta_tag_list': meta_tag_helpers.getList()
     })

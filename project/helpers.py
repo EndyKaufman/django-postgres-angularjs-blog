@@ -18,6 +18,48 @@ def is_method(obj, name):
     return hasattr(obj, name) and inspect.ismethod(getattr(obj, name))
 
 
+def getUser(request):
+    if not request.user.is_authenticated() or not request.user.is_superuser:
+        return False
+
+    from app.account.models import User
+
+    try:
+        user = User.objects.get(pk=request.user.id)
+    except User.DoesNotExist:
+        return None
+
+    return user
+
+
+def getValueByKey(obj, key):
+    try:
+        value = obj[key]
+    except:
+        value = None
+
+    return value
+
+
+def setNullValuesIfNotExist(data, keys):
+    for key in keys:
+        try:
+            value = data[key]
+        except:
+            value = None
+        data[key] = value
+    return data
+
+
+def getJson(request):
+    json_data = False
+
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+    return json_data
+
+
 def mkdirRecursive(path, removeIfExists=False):
     if removeIfExists and os.path.isdir(path):
         shutil.rmtree(path)
@@ -124,7 +166,8 @@ def sendmail(subject, text_content, html_content=None, to_email=None, message_id
 
         mkdirRecursive(tempDir)
         with open(tempFile, "w") as text_file:
-            text_file.write("<!-- From: %s, To: %s, Subject: %s !-->%s" % (from_email, to_email[0].encode('ascii', 'ignore'), subject, html_content))
+            text_file.write("<!-- From: %s, To: %s, Subject: %s !-->%s" % (
+                from_email, to_email[0].encode('ascii', 'ignore'), subject, html_content))
     return True
 
 
