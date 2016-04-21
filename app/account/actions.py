@@ -16,28 +16,20 @@ from django.template.loader import render_to_string
 def actionUpdate(request):
     """Update record"""
 
-    if not request.user.is_authenticated():
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
+
+    if not user:
+        return {'code': 'noaccess'}, 404
 
     validateResult, validateCode = validateProfileUpdate(json_data)
 
     if validateCode != 200:
         return validateResult, validateCode
-
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
-        return {'code': 'account/usernotfound', 'values': [json_data['email']]}, 404
 
     # try:
     validateResult, validateCode = updateFromJsonObject(user, json_data)
@@ -57,16 +49,15 @@ def actionUpdate(request):
 def actionLogin(request):
     """Login action"""
 
-    if request.user.is_authenticated():
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
+
+    user = helpers.getUser(request)
+
+    if user:
+        return {'code': 'noaccess'}, 404
 
     from app.account.models import User
 
@@ -110,16 +101,15 @@ def actionLogin(request):
 def actionReg(request):
     """Reg action"""
 
-    if request.user.is_authenticated():
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
+
+    user = helpers.getUser(request)
+
+    if user:
+        return {'code': 'noaccess'}, 404
 
     from app.account.models import User
 
@@ -169,22 +159,21 @@ def actionReg(request):
 def actionDelete(request):
     """Delete record"""
 
-    if not request.user.is_authenticated():
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user:
+        return {'code': 'noaccess'}, 404
+
+    user = helpers.getUser(request)
+
+    if not user:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
     user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -200,8 +189,12 @@ def actionDelete(request):
 def actionLogout(request):
     """Logout action"""
 
-    if not request.user.is_authenticated():
+    user = helpers.getUser(request)
+
+    if not user:
         return {'code': 'noaccess'}, 404
+    if user is None:
+        return {'code': 'account/younotactive'}, 404
 
     auth.logout(request)
     return {'code': 'ok'}
@@ -215,10 +208,7 @@ def actionRecovery(request):
     if request.user.is_authenticated():
         return {'code': 'noaccess'}, 404
 
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
@@ -264,10 +254,7 @@ def actionResetpassword(request):
     if request.user.is_authenticated():
         return {'code': 'noaccess'}, 404
 
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404

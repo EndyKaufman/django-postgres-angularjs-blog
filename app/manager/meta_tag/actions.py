@@ -41,7 +41,7 @@ def actionUpdate(request, id):
 
     user = helpers.getUser(request)
 
-    if not user:
+    if not user or not request.user.is_superuser:
         return {'code': 'noaccess'}, 404
     if user is None:
         return {'code': 'account/younotactive'}, 404
@@ -80,7 +80,7 @@ def actionCreate(request):
 
     user = helpers.getUser(request)
 
-    if not user:
+    if not user or not request.user.is_superuser:
         return {'code': 'noaccess'}, 404
     if user is None:
         return {'code': 'account/younotactive'}, 404
@@ -113,7 +113,7 @@ def actionDelete(request, id):
 
     user = helpers.getUser(request)
 
-    if not user:
+    if not user or not request.user.is_superuser:
         return {'code': 'noaccess'}, 404
     if user is None:
         return {'code': 'account/younotactive'}, 404

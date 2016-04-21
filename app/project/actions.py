@@ -73,22 +73,16 @@ def getItem(request, project_name):
 def actionUpdate(request, project_id):
     """Update record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user or not request.user.is_superuser:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
     from app.project.models import Project
@@ -127,22 +121,16 @@ def actionUpdate(request, project_id):
 def actionCreate(request):
     """Create record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user or not request.user.is_superuser:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
     from app.project.models import Project
@@ -178,22 +166,16 @@ def actionCreate(request):
 def actionDelete(request, project_id):
     """Delete record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user or not request.user.is_superuser:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
     from app.project.models import Project
@@ -206,6 +188,6 @@ def actionDelete(request, project_id):
     try:
         project.delete()
     except:
-        return {'code': 'project/fail/delete'}, 404
+        return {'code': 'project/delete/fail'}, 404
 
     return {'code': 'ok'}

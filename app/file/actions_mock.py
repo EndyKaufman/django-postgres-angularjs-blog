@@ -121,6 +121,6 @@ def actionDelete(request, file_id):
     try:
         helpers.removeFile('test.file')
     except:
-        return {'code': 'file/fail/delete'}, 404
+        return {'code': 'file/delete/fail'}, 404
 
     return {'code': 'ok'}

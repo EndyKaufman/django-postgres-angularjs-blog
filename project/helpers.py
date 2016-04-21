@@ -19,7 +19,7 @@ def is_method(obj, name):
 
 
 def getUser(request):
-    if not request.user.is_authenticated() or not request.user.is_superuser:
+    if not request.user.is_authenticated():
         return False
 
     from app.account.models import User

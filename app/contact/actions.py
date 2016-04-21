@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 from jsonview.decorators import json_view
 from project import helpers
 from django.conf import settings
@@ -14,51 +13,35 @@ from django.template.loader import render_to_string
 def actionSend(request):
     """Update record"""
 
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    try:
-        emailField = json_data['email']
-        emailField = emailField.lower()
-    except:
-        emailField = ''
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['email', 'username', 'message'])
+    json_data['email'] = json_data['email'].lower()
 
-    try:
-        usernameField = json_data['username']
-    except:
-        usernameField = ''
-
-    try:
-        messageField = json_data['message']
-    except:
-        messageField = ''
-
-    if emailField == '':
+    if json_data['email'] == '':
         return {'code': 'contact/noemail'}, 404
-    if usernameField == '':
+    if json_data['username'] == '':
         return {'code': 'contact/nousername'}, 404
-    if messageField == '':
+    if json_data['message'] == '':
         return {'code': 'contact/nomessage'}, 404
 
     # Validate values of fields
     try:
-        validate_email(emailField)
+        validate_email(json_data['email'])
     except ValidationError:
         return {'code': 'account/wrongemail'}, 404
 
     config = {}
     config['SHORT_SITE_NAME'] = settings.SHORT_SITE_NAME
-    config['email'] = emailField
-    config['username'] = usernameField
-    config['message'] = messageField
+    config['email'] = json_data['email']
+    config['username'] = json_data['username']
+    config['message'] = json_data['message']
 
     helpers.sendmail(subject='Message from contact form',
                      html_content=render_to_string('contact/templates/message.email.htm', config),
                      text_content=render_to_string('contact/templates/message.email.txt', config))
 
-    return {'code': 'ok', 'data': [emailField]}
+    return {'code': 'ok', 'data': [json_data['email']]}

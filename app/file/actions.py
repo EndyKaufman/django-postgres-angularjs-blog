@@ -56,28 +56,19 @@ def getItem(request, file_id):
 def actionUpdate(request, file_id):
     """Update record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user or not request.user.is_superuser:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
 
-    try:
-        comment = json_data['comment']
-    except:
-        comment = None
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
 
     from app.file.models import File
 
@@ -86,11 +77,11 @@ def actionUpdate(request, file_id):
     except File.DoesNotExist:
         return {'code': 'file/notfound', 'values': [file_id]}, 404
 
-    # try:
-    file.comment = comment
-    file.save()
-    # except:
-    #    return {'code': 'file/update/fail'}, 404
+    try:
+        file.comment = json_data['comment']
+        file.save()
+    except:
+        return {'code': 'file/update/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
 
@@ -100,18 +91,19 @@ def actionUpdate(request, file_id):
 def actionCreate(request):
     """Create record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+    json_data = request.POST
 
-    if request.method != 'POST':
+    if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User
+    user = helpers.getUser(request)
 
-    try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+    if not user or not request.user.is_superuser:
+        return {'code': 'noaccess'}, 404
+    if user is None:
         return {'code': 'account/younotactive'}, 404
+
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
 
     if request.FILES and request.FILES.get('file'):
         if user.is_superuser:
@@ -123,21 +115,16 @@ def actionCreate(request):
     else:
         url = ''
 
-    try:
-        comment = request.POST['comment']
-    except:
-        comment = None
-
     from app.file.models import File
 
-    # try:
-    file, created = File.objects.get_or_create(src=url)
-    if created:
-        file.comment = comment
-        file.created_user = user
-        file.save()
-    # except:
-    #    return {'code': 'file/create/fail'}, 404
+    try:
+        file, created = File.objects.get_or_create(src=url)
+        if created:
+            file.comment = json_data['comment']
+            file.created_user = user
+            file.save()
+    except:
+        return {'code': 'file/create/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
 
@@ -147,16 +134,17 @@ def actionCreate(request):
 def actionDelete(request, file_id):
     """Delete record"""
 
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
-
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
+    json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'nodata'}, 404
+
+    user = helpers.getUser(request)
+
+    if not user or not request.user.is_superuser:
+        return {'code': 'noaccess'}, 404
+    if user is None:
+        return {'code': 'account/younotactive'}, 404
 
     from app.file.models import File
 
@@ -169,6 +157,6 @@ def actionDelete(request, file_id):
         helpers.removeFile(file.src)
         file.delete()
     except:
-        return {'code': 'file/fail/delete'}, 404
+        return {'code': 'file/delete/fail'}, 404
 
     return {'code': 'ok'}
