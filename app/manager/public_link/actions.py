@@ -49,7 +49,7 @@ def actionUpdate(request, id):
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact'])
 
-    data = public_link_helpers.getItemByName(json_data['src'])
+    data = public_link_helpers.getItemBySrc(json_data['src'])
 
     if (data is not False) and (int(data[0].id) != int(id)):
         return {'code': 'public_link/exists', 'values': [json_data['src']]}, 404
@@ -89,14 +89,15 @@ def actionCreate(request):
     if user is None:
         return {'code': 'account/younotactive'}, 404
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'content', 'attributes'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,
+                                                ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact'])
 
     json_data['created_user'] = user
 
-    data = public_link_helpers.getItemByName(json_data['name'])
+    data = public_link_helpers.getItemBySrc(json_data['src'])
 
     if data is not False:
-        return {'code': 'public_link/exists', 'values': [json_data['name']]}, 404
+        return {'code': 'public_link/exists', 'values': [json_data['src']]}, 404
 
     data = public_link_helpers.create(json_data)
 

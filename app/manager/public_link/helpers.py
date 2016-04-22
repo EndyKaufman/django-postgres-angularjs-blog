@@ -20,11 +20,11 @@ def getItem(id):
     return data
 
 
-def getItemByName(name):
+def getItemBySrc(src):
     from app.manager.models import PublicLink
 
     try:
-        data = [PublicLink.objects.get(name=name)]
+        data = [PublicLink.objects.get(src=src)]
     except PublicLink.DoesNotExist:
         data = False
     return data

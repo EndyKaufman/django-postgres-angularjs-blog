@@ -39,6 +39,7 @@ sudo pip install --upgrade pip
 sudo pip install --upgrade virtualenv
 virtualenv venv
 source venv/bin/activate
+export $(cat .env)
 pip install -r requirements.txt
 ```
 
@@ -58,6 +59,7 @@ sudo bower install --save --allow-root
 ## run local server
 ```
 source venv/bin/activate
+export $(cat .env)
 python manage.py collectstatic --noinput
 gunicorn project.wsgi -b 0.0.0.0:5000
 ```
@@ -159,6 +161,7 @@ cd blog
 vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
+export $(cat .env)
 sudo rm -f db.sqlite3
 python manage.py migrate
 cd front
@@ -173,6 +176,7 @@ cd blog
 vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
+export $(cat .env)
 gunicorn project.wsgi -b 0.0.0.0:5000
 ```
 
@@ -182,6 +186,7 @@ cd blog
 vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
+export $(cat .env)
 cd front
 export DISPLAY=:10
 gulp test --host http://127.0.0.1:5000 --isvagrant true --display 10
@@ -194,8 +199,7 @@ vagrant ssh
 cd ../../vagrant
 cp _env .env
 cd front
-gulp scripts:build
-gulp scripts:test
+gulp scripts:build && gulp scripts:test
 ```
 
 ## fast run server
