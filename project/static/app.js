@@ -76365,176 +76365,7 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
         requireBase: false
     });
 });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemName">Name</label>\n' +
-    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="PostSvc.item.name" required>\n' +
-    '    <span ng-show="postForm.$submitted || postForm.ItemName.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!postForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemType">Type</label>\n' +
-    '    <select class="form-control" id="ItemType" ng-model="PostSvc.item.type">\n' +
-    '        <option ng-repeat="type in AppConst.post.types"\n' +
-    '                ng-value="type.id"\n' +
-    '                ng-bind-html="type.title | unsafe"\n' +
-    '                ng-selected="PostSvc.item.type==type.id"></option>\n' +
-    '    </select>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemTags">Tags</label>\n' +
-    '    <tags-input id="ItemTags" ng-model="PostSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
-    '    </tags-input>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="ItemDescription">Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
-    '                          ng-model="PostSvc.item.description" required></textarea>\n' +
-    '</div>');
-	a.put('views/post/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemTitle">Title</label>\n' +
-    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="PostSvc.item.title"\n' +
-    '           ng-change="PostSvc.slugName(PostSvc.item.title)" required>\n' +
-    '    <span ng-show="postForm.$submitted || postForm.ItemTitle.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!postForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==1">\n' +
-    '    <label for="ItemText">Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="PostSvc.item.text" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==2">\n' +
-    '    <label for="ItemHtml">Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="PostSvc.item.html" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==3">\n' +
-    '    <label for="ItemUrl">Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="PostSvc.item.url" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==4">\n' +
-    '    <label for="ItemMarkdown">Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="PostSvc.item.markdown" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group" ng-repeat="image in PostSvc.item.images track by image.id">\n' +
-    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
-    '    <div class="input-group has-feedback">\n' +
-    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
-    '               ng-model="image.src">\n' +
-    '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
-    '                                    type="button" id="{{\'postSelect\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-check"></i> Select\n' +
-    '                            </button>\n' +
-    '                            <button ng-click="PostSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
-    '                                    type="button" id="{{\'postDelete\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-trash"></i> Delete image\n' +
-    '                            </button>\n' +
-    '                        </span>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/manager/meta_tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
-    '            <form name="meta_tagForm">\n' +
-    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '                <div class="modal-body">\n' +
-    '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagUpdateCancel">\n' +
-    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
-    '                    </button>\n' +
-    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagUpdateConfirm">\n' +
-    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
-    '                    </button>\n' +
-    '                </div>\n' +
-    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                    <i class="fa fa-times"></i>\n' +
-    '                </button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/manager/meta_tag/list.html', '<table class="table table-hover">\n' +
-    '    <thead>\n' +
-    '    <tr>\n' +
-    '        <th>#</th>\n' +
-    '        <th>Name</th>\n' +
-    '        <th>Content</th>\n' +
-    '        <th class="text-right">Actions</th>\n' +
-    '    </tr>\n' +
-    '    </thead>\n' +
-    '    <tbody>\n' +
-    '    <tr ng-repeat="item in MetaTagSvc.list"\n' +
-    '        ng-class="(MetaTagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
-    '        <td ng-bind-html="item.id" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind-html="item.name | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind-html="item.content | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
-    '        <td class="text-right">\n' +
-    '            <button ng-click="MetaTagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
-    '                    id="{{\'meta_tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
-    '            </button>\n' +
-    '            <button ng-click="MetaTagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
-    '                    id="{{\'meta_tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
-    '            </button>\n' +
-    '        </td>\n' +
-    '    </tr>\n' +
-    '    </tbody>\n' +
-    '</table>');
-	a.put('views/manager/meta_tag/list-header.html', '<span ng-bind-html="AppConst.manager.meta_tag.title | unsafe"></span>\n' +
-    '<button ng-click="MetaTagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
-    '        type="button" id="meta_tagCreate">\n' +
-    '    <i class="fa fa-plus"></i> Create\n' +
-    '</button>');
-	a.put('views/manager/meta_tag/inputs.html', '<div class="form-group">\n' +
-    '    <label for="MetaTagName">Name</label>\n' +
-    '    <input class="form-control" type="text" id="MetaTagName" ng-model="MetaTagSvc.item.name"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="MetaTagContent">Content</label>\n' +
-    '    <input type="text" class="form-control" id="MetaTagContent"\n' +
-    '           ng-model="MetaTagSvc.item.content"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="MetaTagAttributes">Attributes</label>\n' +
-    '    <input type="text" class="form-control" id="MetaTagAttributes"\n' +
-    '           ng-model="MetaTagSvc.item.attributes"/>\n' +
-    '</div>');
-	a.put('views/manager/meta_tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
-    '            <form name="meta_tagForm">\n' +
-    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '                <div class="modal-body">\n' +
-    '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagCreateCancel">\n' +
-    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
-    '                    </button>\n' +
-    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagCreateConfirm">\n' +
-    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
-    '                    </button>\n' +
-    '                </div>\n' +
-    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                    <i class="fa fa-times"></i>\n' +
-    '                </button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="ItemName">Name</label>\n' +
     '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
     '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
@@ -76606,6 +76437,78 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inp
     '                        </span>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/post/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemName">Name</label>\n' +
+    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="PostSvc.item.name" required>\n' +
+    '    <span ng-show="postForm.$submitted || postForm.ItemName.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!postForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemType">Type</label>\n' +
+    '    <select class="form-control" id="ItemType" ng-model="PostSvc.item.type">\n' +
+    '        <option ng-repeat="type in AppConst.post.types"\n' +
+    '                ng-value="type.id"\n' +
+    '                ng-bind-html="type.title | unsafe"\n' +
+    '                ng-selected="PostSvc.item.type==type.id"></option>\n' +
+    '    </select>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemTags">Tags</label>\n' +
+    '    <tags-input id="ItemTags" ng-model="PostSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
+    '    </tags-input>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
+    '                          ng-model="PostSvc.item.description" required></textarea>\n' +
+    '</div>');
+	a.put('views/post/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemTitle">Title</label>\n' +
+    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="PostSvc.item.title"\n' +
+    '           ng-change="PostSvc.slugName(PostSvc.item.title)" required>\n' +
+    '    <span ng-show="postForm.$submitted || postForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!postForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==1">\n' +
+    '    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="PostSvc.item.text" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==2">\n' +
+    '    <label for="ItemHtml">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="PostSvc.item.html" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==3">\n' +
+    '    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="PostSvc.item.url" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==4">\n' +
+    '    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="PostSvc.item.markdown" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group" ng-repeat="image in PostSvc.item.images track by image.id">\n' +
+    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '    <div class="input-group has-feedback">\n' +
+    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '               ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
+    '                                    type="button" id="{{\'postSelect\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-check"></i> Select\n' +
+    '                            </button>\n' +
+    '                            <button ng-click="PostSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
+    '                                    type="button" id="{{\'postDelete\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-trash"></i> Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '    </div>\n' +
+    '</div>');
 	a.put('views/manager/public_link/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content" ng-controller="PublicLinkCtrl">\n' +
@@ -76645,7 +76548,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inp
     '    </tr>\n' +
     '    </thead>\n' +
     '    <tbody>\n' +
-    '    <tr ng-repeat="item in PublicLinkSvc.list"\n' +
+    '    <tr ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'"\n' +
     '        ng-class="(PublicLinkSvc.item.id==item.id)?\'bold\':\'\'">\n' +
     '        <td ng-bind-html="item.id" ng-click="PublicLinkSvc.selectItem(item)"></td>\n' +
     '        <td ng-click="PublicLinkSvc.selectItem(item)">\n' +
@@ -76698,6 +76601,10 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inp
     '        </span>\n' +
     '    </div>\n' +
     '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="PublicLinkPosition">Position</label>\n' +
+    '    <input class="form-control" type="text" id="PublicLinkPosition" ng-model="PublicLinkSvc.item.position"/>\n' +
+    '</div>\n' +
     '<div class="checkbox">\n' +
     '    <label>\n' +
     '        <input type="checkbox" ng-model="PublicLinkSvc.item.in_header" ng-true-value="1" ng-false-value="0"> In header\n' +
@@ -76729,6 +76636,107 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inp
     '                    </button>\n' +
     '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
     '                            ng-disabled="!public_linkForm.$valid" id="public_linkCreateConfirm">\n' +
+    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
+    '            <form name="meta_tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagUpdateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagUpdateConfirm">\n' +
+    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/list.html', '<table class="table table-hover">\n' +
+    '    <thead>\n' +
+    '    <tr>\n' +
+    '        <th>#</th>\n' +
+    '        <th>Name</th>\n' +
+    '        <th>Content</th>\n' +
+    '        <th class="text-right">Actions</th>\n' +
+    '    </tr>\n' +
+    '    </thead>\n' +
+    '    <tbody>\n' +
+    '    <tr ng-repeat="item in MetaTagSvc.list | orderBy:\'position\'"\n' +
+    '        ng-class="(MetaTagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind-html="item.id" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.name | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.content | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td class="text-right">\n' +
+    '            <button ng-click="MetaTagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'meta_tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
+    '            </button>\n' +
+    '            <button ng-click="MetaTagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'meta_tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '            </button>\n' +
+    '        </td>\n' +
+    '    </tr>\n' +
+    '    </tbody>\n' +
+    '</table>');
+	a.put('views/manager/meta_tag/list-header.html', '<span ng-bind-html="AppConst.manager.meta_tag.title | unsafe"></span>\n' +
+    '<button ng-click="MetaTagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
+    '        type="button" id="meta_tagCreate">\n' +
+    '    <i class="fa fa-plus"></i> Create\n' +
+    '</button>');
+	a.put('views/manager/meta_tag/inputs.html', '<div class="form-group">\n' +
+    '    <label for="MetaTagName">Name</label>\n' +
+    '    <input class="form-control" type="text" id="MetaTagName" ng-model="MetaTagSvc.item.name"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagContent">Content</label>\n' +
+    '    <input type="text" class="form-control" id="MetaTagContent"\n' +
+    '           ng-model="MetaTagSvc.item.content"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagAttributes">Attributes</label>\n' +
+    '    <input type="text" class="form-control" id="MetaTagAttributes"\n' +
+    '           ng-model="MetaTagSvc.item.attributes"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagPosition">Position</label>\n' +
+    '    <input class="form-control" type="text" id="MetaTagPosition" ng-model="MetaTagSvc.item.position"/>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
+    '            <form name="meta_tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagCreateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagCreateConfirm">\n' +
     '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
     '                    </button>\n' +
     '                </div>\n' +
@@ -77879,7 +77887,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inp
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
 	a.put('views/contact/links.html', '<ul class="list-unstyled">\n' +
-    '    <li ng-repeat="item in PublicLinkSvc.list" ng-if="item.in_contact"><i ng-class="item.icon"></i> <a\n' +
+    '    <li ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_contact"><i ng-class="item.icon"></i> <a\n' +
     '            ng-href="{{item.src}}" target="_blank" ng-bind="item.title"></a></li>\n' +
     '</ul>');
 	a.put('views/account/resetpassword.html', '<div class="container sections-wrapper">\n' +
@@ -78273,7 +78281,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inp
     '            <h2 class="desc cursor-pointer" ng-bind-html="AppConst.home.description | unsafe" ng-click="NavbarSvc.goHome()"></h2>\n' +
     '            <ul class="social list-inline" ng-if="PublicLinkSvc.list.length>0">\n' +
     '                <li ng-class="$last ? \'last-item\' : \'\'"\n' +
-    '                    ng-repeat="item in PublicLinkSvc.list" ng-if="item.in_header">\n' +
+    '                    ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_header">\n' +
     '                    <a ng-href="{{item.src}}" target="_blank"><i class="" ng-class="item.icon"></i></a>\n' +
     '                </li>\n' +
     '            </ul>\n' +
@@ -78308,7 +78316,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/post/inp
     '    <div class="container text-center">\n' +
     '        <small>\n' +
     '            <ul class="list-inline" ng-if="PublicLinkSvc.list.length>0">\n' +
-    '                <li ng-repeat="item in PublicLinkSvc.list" ng-if="item.in_footer">\n' +
+    '                <li ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_footer">\n' +
     '                    <a ng-href="{{item.src}}" target="_blank">\n' +
     '                        <i class="" ng-class="item.icon"></i>\n' +
     '                        <span ng-bind="item.title"></span>\n' +
@@ -78460,6 +78468,35 @@ app.factory('ContactRes', function (AppConst, AppRes) {
 
     return service;
   });
+app.factory('FileRes', function ($q, AppConst, uiUploader, AppRes) {
+    var service={};
+
+    service.getList=function(){
+        return AppRes.get('/api/v1/file/list');
+    };
+    service.getSearch=function(searchText){
+        if (searchText==undefined)
+            searchText='all';
+        return AppRes.get('/api/v1/file/search/'+searchText);
+    };
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/file/update/'+item.id, item);
+    }
+
+    service.actionCreate=function(item){
+        return AppRes.upload('/api/v1/file/create',item)
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/file/delete/'+item.id, item);
+    }
+
+    service.addFiles=function(files){
+        service.files = AppRes.addFiles(files);
+    }
+
+    return service;
+  });
 app.factory('PostRes', function (AppConst, AppRes) {
     var service={};
 
@@ -78524,35 +78561,6 @@ app.factory('TagRes', function (AppRes, AppConst) {
     service.getList=function(){
         return AppRes.get('/api/v1/tag/list');
     };
-
-    return service;
-  });
-app.factory('FileRes', function ($q, AppConst, uiUploader, AppRes) {
-    var service={};
-
-    service.getList=function(){
-        return AppRes.get('/api/v1/file/list');
-    };
-    service.getSearch=function(searchText){
-        if (searchText==undefined)
-            searchText='all';
-        return AppRes.get('/api/v1/file/search/'+searchText);
-    };
-
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/file/update/'+item.id, item);
-    }
-
-    service.actionCreate=function(item){
-        return AppRes.upload('/api/v1/file/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/file/delete/'+item.id, item);
-    }
-
-    service.addFiles=function(files){
-        service.files = AppRes.addFiles(files);
-    }
 
     return service;
   });
@@ -78855,6 +78863,208 @@ app.factory('ContactSvc', function ($q, $location, AppConst, ContactRes, Message
     }
     service.initEmptyItem=function(){
         service.item = {};
+    }
+
+    return service;
+  });
+app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $modal, MessageSvc) {
+    var service={};
+
+    $rootScope.$on('fileCreate.show',function(event, item){
+        var element = document.getElementById('FileUpload');
+        element.addEventListener('change', function(e) {
+            var files = e.target.files;
+            FileRes.addFiles(files);
+        });
+    });
+
+    service.item={};
+    service.list=false;
+
+    service.showList=function(item){
+        service.initEmptyItem();
+        service.load().then(function(){
+            for (var i=0;i<service.list.length;i++){
+                if (item.src==service.list[i].src)
+                    service.item=service.list[i];
+            }
+            var boxOptions = {
+                title: 'Select file',
+                confirmTemplate: 'views/file/list.modal.html',
+                size: 'lg',
+                boxType: 'confirm',
+                theme: 'alert',
+                effect: false,
+                confirmText: 'Select',
+                cancelText: 'Cancel',
+                afterConfirm: function(){
+                    if (item.src!==service.item.src){
+                        delete item.id;
+                        item.src=service.item.src;
+                        item.srcStatic=service.item.srcStatic;
+                    }
+                },
+                afterCancel: function(){
+
+                },
+                prefixEvent: 'fileList'
+            }
+            $modalBox(boxOptions);
+        });
+    }
+
+    service.initEmptyItem=function(){
+        service.item = {};
+        service.item.comment = '';
+        service.item.src='';
+    }
+
+    service.showCreate=function(){
+        service.mode='create';
+        service.initEmptyItem();
+        var boxOptions = {
+            title: 'Add new file',
+            confirmTemplate: 'views/file/create.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Create',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doCreate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'fileCreate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.selectItem=function(item){
+        service.item=angular.copy(item);
+    }
+
+    service.showUpdate=function(item){
+        service.mode='update';
+        service.item=angular.copy(item);
+        var boxOptions = {
+            title: 'Edit properties',
+            confirmTemplate: 'views/file/update.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Save',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doUpdate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'fileUpdate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		FileRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('file.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		FileRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('file.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('file/remove/confirm', {values:[item.src]},
+         function(){
+             FileRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.item={};
+                        $rootScope.$broadcast('file.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+    
+    service.load=function(){
+        var deferred = $q.defer();
+        if (service.list===false){
+            FileRes.getList().then(function (response) {
+                service.list=angular.copy(response.data.data);
+                deferred.resolve(service.list);
+                $rootScope.$broadcast('file.load', service.list);
+            }, function (response) {
+                service.list=[];
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+                deferred.resolve(service.list);
+            });
+        }else
+            deferred.resolve(service.list);
+        return deferred.promise;
+    }
+
+    service.doSearch=function(text){
+        var deferred = $q.defer();
+        FileRes.getSearch(text).then(function (response) {
+            service.list=angular.copy(response.data.data);
+            deferred.resolve(service.list);
+            $rootScope.$broadcast('file.load', service.list);
+        }, function (response) {
+            service.list=[];
+            if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                MessageSvc.error(response.data.code, response.data);
+            deferred.resolve(service.list);
+        });
+        return deferred.promise;
     }
 
     return service;
@@ -79624,208 +79834,6 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     }
     return service;
   });
-app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $modal, MessageSvc) {
-    var service={};
-
-    $rootScope.$on('fileCreate.show',function(event, item){
-        var element = document.getElementById('FileUpload');
-        element.addEventListener('change', function(e) {
-            var files = e.target.files;
-            FileRes.addFiles(files);
-        });
-    });
-
-    service.item={};
-    service.list=false;
-
-    service.showList=function(item){
-        service.initEmptyItem();
-        service.load().then(function(){
-            for (var i=0;i<service.list.length;i++){
-                if (item.src==service.list[i].src)
-                    service.item=service.list[i];
-            }
-            var boxOptions = {
-                title: 'Select file',
-                confirmTemplate: 'views/file/list.modal.html',
-                size: 'lg',
-                boxType: 'confirm',
-                theme: 'alert',
-                effect: false,
-                confirmText: 'Select',
-                cancelText: 'Cancel',
-                afterConfirm: function(){
-                    if (item.src!==service.item.src){
-                        delete item.id;
-                        item.src=service.item.src;
-                        item.srcStatic=service.item.srcStatic;
-                    }
-                },
-                afterCancel: function(){
-
-                },
-                prefixEvent: 'fileList'
-            }
-            $modalBox(boxOptions);
-        });
-    }
-
-    service.initEmptyItem=function(){
-        service.item = {};
-        service.item.comment = '';
-        service.item.src='';
-    }
-
-    service.showCreate=function(){
-        service.mode='create';
-        service.initEmptyItem();
-        var boxOptions = {
-            title: 'Add new file',
-            confirmTemplate: 'views/file/create.modal.html',
-            size: 'lg',
-            boxType: 'confirm',
-            theme: 'alert',
-            effect: false,
-            confirmText: 'Create',
-            cancelText: 'Cancel',
-            afterConfirm: function(){
-                service.doCreate(service.item);
-            },
-            afterCancel: function(){
-
-            },
-            prefixEvent: 'fileCreate'
-        }
-        $modalBox(boxOptions);
-    }
-
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
-
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
-        var boxOptions = {
-            title: 'Edit properties',
-            confirmTemplate: 'views/file/update.modal.html',
-            size: 'lg',
-            boxType: 'confirm',
-            theme: 'alert',
-            effect: false,
-            confirmText: 'Save',
-            cancelText: 'Cancel',
-            afterConfirm: function(){
-                service.doUpdate(service.item);
-            },
-            afterCancel: function(){
-
-            },
-            prefixEvent: 'fileUpdate'
-        }
-        $modalBox(boxOptions);
-    }
-
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
-            }
-        }
-    }
-
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		FileRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    service.list.push(service.item);
-                    $rootScope.$broadcast('file.create', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		FileRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    service.updateItemOnList(service.item);
-
-                    $rootScope.$broadcast('file.update', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('file/remove/confirm', {values:[item.src]},
-         function(){
-             FileRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
-                            }
-                        }
-                        service.item={};
-                        $rootScope.$broadcast('file.delete', item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(){
-        var deferred = $q.defer();
-        if (service.list===false){
-            FileRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
-                deferred.resolve(service.list);
-                $rootScope.$broadcast('file.load', service.list);
-            }, function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-                deferred.resolve(service.list);
-            });
-        }else
-            deferred.resolve(service.list);
-        return deferred.promise;
-    }
-
-    service.doSearch=function(text){
-        var deferred = $q.defer();
-        FileRes.getSearch(text).then(function (response) {
-            service.list=angular.copy(response.data.data);
-            deferred.resolve(service.list);
-            $rootScope.$broadcast('file.load', service.list);
-        }, function (response) {
-            service.list=[];
-            if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                MessageSvc.error(response.data.code, response.data);
-            deferred.resolve(service.list);
-        });
-        return deferred.promise;
-    }
-
-    return service;
-  });
 app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
     var service={};
 
@@ -79837,6 +79845,7 @@ app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modal
         service.item.name = '';
         service.item.content = '';
         service.item.attributes='';
+        service.item.position=0;
     }
 
     service.showCreate=function(){
@@ -79995,6 +80004,7 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
         service.item.title = '';
         service.item.description='';
         service.item.icon='';
+        service.item.position=0;
         service.item.in_header=0;
         service.item.in_footer=0;
         service.item.in_contact=1;
@@ -80172,6 +80182,9 @@ app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc
 	TagSvc.load();
 	ContactSvc.init();
 });
+app.controller('FileCtrl', function ($scope, FileSvc) {
+	$scope.FileSvc=FileSvc;
+});
 app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.ProjectSvc=ProjectSvc;
@@ -80224,9 +80237,6 @@ app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc, ProjectSvc, Post
 	$scope.PostSvc=PostSvc;
 
 	TagSvc.init();
-});
-app.controller('FileCtrl', function ($scope, FileSvc) {
-	$scope.FileSvc=FileSvc;
 });
 app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc) {
 	$scope.MetaTagSvc=MetaTagSvc;

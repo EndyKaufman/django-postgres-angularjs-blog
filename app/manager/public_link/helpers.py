@@ -4,7 +4,7 @@ def getList():
     from app.manager.models import PublicLink
 
     try:
-        data = PublicLink.objects.all().order_by('-created').all()
+        data = PublicLink.objects.order_by('position').all()
     except PublicLink.DoesNotExist:
         data = []
     return data
@@ -35,7 +35,8 @@ def create(data):
 
     try:
         return [PublicLink.objects.create(src=data['src'], title=data['title'],
-                                           icon=data['icon'], in_header=data['in_header'], in_footer=data['in_footer'],
-                                           in_contact=data['in_contact'])]
+                                          icon=data['icon'], in_header=data['in_header'], in_footer=data['in_footer'],
+                                          position=data['position'],
+                                          in_contact=data['in_contact'])]
     except:
         return False

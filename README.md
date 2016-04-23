@@ -266,6 +266,8 @@ vagrant resume
 
 ## django database commands
 ```
+source venv/bin/activate
+export $(cat .env)
 python manage.py migrate
 python manage.py makemigrations
 python manage.py makemigrations --empty yourappname

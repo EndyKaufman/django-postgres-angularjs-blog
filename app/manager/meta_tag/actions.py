@@ -46,7 +46,10 @@ def actionUpdate(request, id):
     if user is None:
         return {'code': 'account/younotactive'}, 404
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'content', 'attributes'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'content', 'attributes', 'position'])
+
+    if json_data['position'] == '':
+        json_data['position'] = None;
 
     data = meta_tag_helpers.getItemByName(json_data['name'])
 
@@ -62,6 +65,7 @@ def actionUpdate(request, id):
             data[0].name = json_data['name']
             data[0].content = json_data['content']
             data[0].attributes = json_data['attributes']
+            data[0].position = json_data['position']
             data[0].save()
         except:
             return {'code': 'meta_tag/update/fail'}, 404
@@ -85,7 +89,10 @@ def actionCreate(request):
     if user is None:
         return {'code': 'account/younotactive'}, 404
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'content', 'attributes'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'content', 'attributes', 'position'])
+
+    if json_data['position'] == '':
+        json_data['position'] = None;
 
     json_data['created_user'] = user
 

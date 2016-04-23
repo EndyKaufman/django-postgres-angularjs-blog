@@ -4,7 +4,7 @@ def getList():
     from app.manager.models import MetaTag
 
     try:
-        data = MetaTag.objects.all().order_by('-created').all()
+        data = MetaTag.objects.order_by('position').all()
     except MetaTag.DoesNotExist:
         data = []
     return data
@@ -35,6 +35,7 @@ def create(data):
 
     try:
         return [MetaTag.objects.create(name=data['name'], content=data['content'],
-                                       attributes=data['attributes'], created_user=data['created_user'])]
+                                       attributes=data['attributes'],
+                                       position=data['position'], created_user=data['created_user'])]
     except:
         return False
