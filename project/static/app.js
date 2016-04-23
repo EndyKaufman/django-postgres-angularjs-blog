@@ -80154,8 +80154,8 @@ app.controller('AccountCtrl', function ($scope, $routeParams, AccountSvc, TagSvc
     $scope.ProjectSvc=ProjectSvc;
     $scope.$routeParams=$routeParams;
 
-	TagSvc.init();
-	ProjectSvc.init();
+	TagSvc.load();
+	ProjectSvc.load();
 	AccountSvc.init();
 });
 app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc, ProjectSvc) {
@@ -80163,7 +80163,7 @@ app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc
     $scope.TagSvc=TagSvc;
     $scope.$routeParams=$routeParams;
 
-	TagSvc.init();
+	TagSvc.load();
 	ContactSvc.init();
 });
 app.controller('FileCtrl', function ($scope, FileSvc) {
@@ -80176,9 +80176,9 @@ app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, Acco
 	$scope.TagSvc=TagSvc;
 	$scope.FileSvc=FileSvc;
 
-	TagSvc.init();
-	ProjectSvc.init();
-	PostSvc.init();
+	TagSvc.load();
+	ProjectSvc.load();
+	PostSvc.load();
     NavbarSvc.init('home');
 });
 app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc) {
@@ -80193,7 +80193,6 @@ app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagS
 	$scope.TagSvc=TagSvc;
 	$scope.FileSvc=FileSvc;
 
-	TagSvc.init();
 	PostSvc.init();
 });
 app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc) {
@@ -80202,7 +80201,6 @@ app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc
 	$scope.TagSvc=TagSvc;
 	$scope.FileSvc=FileSvc;
 
-	TagSvc.init();
 	ProjectSvc.init();
 });
 app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
@@ -80212,9 +80210,6 @@ app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, Pr
 	$scope.ProjectSvc=ProjectSvc;
 	$scope.PostSvc=PostSvc;
 
-	TagSvc.init();
-	ProjectSvc.init();
-	PostSvc.init();
 	SearchSvc.init();
 });
 app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc, ProjectSvc, PostSvc) {
@@ -80223,8 +80218,6 @@ app.controller('TagCtrl', function ($scope, TagSvc, AccountSvc, ProjectSvc, Post
 	$scope.ProjectSvc=ProjectSvc;
 	$scope.PostSvc=PostSvc;
 
-	ProjectSvc.init();
-	PostSvc.init();
 	TagSvc.init();
 });
 app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc) {
