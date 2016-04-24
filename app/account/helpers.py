@@ -4,6 +4,35 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 
+def getUserByCode(code_text):
+    from app.account.models import User, Code
+
+    try:
+        code = Code.objects.get(text=code_text)
+    except Code.DoesNotExist:
+        code = False
+
+    if code:
+        try:
+            user = User.objects.get(pk=code.created_user.id)
+        except User.DoesNotExist:
+            user = False
+        return user, code
+    else:
+        return False, False
+
+
+def getUserByEmail(email):
+    from app.account.models import User
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        user = False
+
+    return user
+
+
 def updateFromJsonObject(user, jsonObject):
     try:
         emailField = jsonObject['email']
@@ -14,6 +43,10 @@ def updateFromJsonObject(user, jsonObject):
         passwordField = jsonObject['password']
     except KeyError:
         passwordField = ''
+    try:
+        usernameField = jsonObject['username']
+    except KeyError:
+        usernameField = ''
     try:
         first_nameField = jsonObject['firstname']
     except KeyError:

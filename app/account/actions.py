@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import auth
-import json
 from jsonview.decorators import json_view
 from project import helpers
-from helpers import validateLogin, updateFromJsonObject, validateProfileUpdate, \
-    validateRecovery, validateResetpassword
 from app import home
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+import helpers as account_helpers
 
 
 # update profile
@@ -21,25 +21,44 @@ def actionUpdate(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
+    json_data = helpers.setNullValuesIfNotExist(json_data,
+                                                ['email', 'password', 'username', 'firstname', 'lastname'])
+
+    if json_data['email'] is None:
+        return {'code': 'account/noemail'}, 404
+
+    json_data['email'] = json_data['email'].lower()
+
+    try:
+        validate_email(json_data['email'])
+    except ValidationError:
+        return {'code': 'account/wrongemail'}, 404
+
     user = helpers.getUser(request)
 
     if not user:
         return {'code': 'noaccess'}, 404
 
-    validateResult, validateCode = validateProfileUpdate(json_data)
+    try:
+        if json_data['email'] is not None:
+            user.email = json_data['email']
 
-    if validateCode != 200:
-        return validateResult, validateCode
+        if json_data['password'] is not None:
+            user.set_password(json_data['password'])
 
-    # try:
-    validateResult, validateCode = updateFromJsonObject(user, json_data)
-    if validateCode != 200:
-        return validateResult, validateCode
+        if json_data['username'] is not None:
+            user.username = json_data['username']
 
-    user.backend = 'django.contrib.auth.backends.ModelBackend'
-    user.save()
-    # except:
-    #    return {'code': 'account/update/fail'}, 404
+        if json_data['firstname'] is not None:
+            user.first_name = json_data['firstname']
+
+        if json_data['lastname'] is not None:
+            user.last_name = json_data['lastname']
+
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        user.save()
+    except:
+        return {'code': 'account/update/fail'}, 404
 
     return {'code': 'ok', 'data': [user.getUserData()]}
 
@@ -54,34 +73,28 @@ def actionLogin(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    user = helpers.getUser(request)
+    json_data = helpers.setNullValuesIfNotExist(json_data,
+                                                ['email', 'password'])
 
-    if user:
-        return {'code': 'noaccess'}, 404
+    if json_data['password'] is None:
+        return {'code': 'account/nopassword'}, 404
 
-    from app.account.models import User
+    if json_data['email'] is None:
+        return {'code': 'account/noemail'}, 404
 
-    validateResult, validateCode = validateLogin(json_data)
-
-    if validateCode != 200:
-        return validateResult, validateCode
-
-    try:
-        emailField = json_data['email']
-        emailField = emailField.lower()
-    except:
-        emailField = ''
-    try:
-        passwordField = json_data['password']
-    except KeyError:
-        passwordField = ''
+    json_data['email'] = json_data['email'].lower()
 
     try:
-        user = User.objects.get(email=emailField)
-    except User.DoesNotExist:
-        return {'code': 'account/usernotfound', 'values': [emailField]}, 404
+        validate_email(json_data['email'])
+    except ValidationError:
+        return {'code': 'account/wrongemail'}, 404
 
-    user = auth.authenticate(username=user.username, password=passwordField)
+    user = account_helpers.getUserByEmail(json_data['email'])
+
+    if not user:
+        return {'code': 'account/usernotfound', 'values': [json_data['email']]}, 404
+
+    user = auth.authenticate(username=user.username, password=json_data['password'])
 
     if user is None:
         return {'code': 'account/wrongpassword'}, 404
@@ -106,43 +119,37 @@ def actionReg(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    user = helpers.getUser(request)
+    json_data = helpers.setNullValuesIfNotExist(json_data,
+                                                ['email', 'password'])
+
+    if json_data['password'] is None:
+        return {'code': 'account/nopassword'}, 404
+
+    if json_data['email'] is None:
+        return {'code': 'account/noemail'}, 404
+
+    json_data['email'] = json_data['email'].lower()
+
+    try:
+        validate_email(json_data['email'])
+    except ValidationError:
+        return {'code': 'account/wrongemail'}, 404
+
+    user = account_helpers.getUserByEmail(json_data['email'])
 
     if user:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'account/exists', 'values': [json_data['email']]}, 404
 
     from app.account.models import User
 
-    validateResult, validateCode = validateLogin(json_data)
-
-    if validateCode != 200:
-        return validateResult, validateCode
-
-    try:
-        emailField = json_data['email']
-        emailField = emailField.lower()
-    except:
-        emailField = ''
-    try:
-        passwordField = json_data['password']
-    except:
-        passwordField = ''
-
-    try:
-        user = User.objects.get(email=emailField)
-    except User.DoesNotExist:
-        user = False
-
-    if user != False:
-        return {'code': 'account/exists', 'values': [emailField]}, 404
-
-    user = User.objects.create_user(email=emailField, password=passwordField, username=emailField)
+    user = User.objects.create_user(email=json_data['email'], password=json_data['password'],
+                                    username=json_data['email'])
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.is_staff = True
     user.is_superuser = False
     user.is_active = True
     user.save()
-    user = auth.authenticate(username=user.username, password=passwordField)
+    user = auth.authenticate(username=user.username, password=json_data['password'])
 
     if user.is_active:
         user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -213,23 +220,25 @@ def actionRecovery(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User, Code
+    json_data = helpers.setNullValuesIfNotExist(json_data,
+                                                ['email'])
 
-    validateResult, validateCode = validateRecovery(json_data)
+    if json_data['email'] is None:
+        return {'code': 'account/noemail'}, 404
 
-    if validateCode != 200:
-        return validateResult, validateCode
-
-    try:
-        emailField = json_data['email']
-        emailField = emailField.lower()
-    except:
-        emailField = ''
+    json_data['email'] = json_data['email'].lower()
 
     try:
-        user = User.objects.get(email=emailField)
-    except User.DoesNotExist:
-        return {'code': 'account/usernotfound', 'values': [emailField]}, 404
+        validate_email(json_data['email'])
+    except ValidationError:
+        return {'code': 'account/wrongemail'}, 404
+
+    from app.account.models import Code
+
+    user = account_helpers.getUserByEmail(json_data['email'])
+
+    if not user:
+        return {'code': 'account/usernotfound', 'values': [json_data['email']]}, 404
 
     code = Code.objects.create(text=helpers.makeCode(), created_user=user, type=1)
 
@@ -241,9 +250,9 @@ def actionRecovery(request):
     helpers.sendmail(subject='Reset password',
                      html_content=render_to_string('account/templates/resetpassword.email.htm', config),
                      text_content=render_to_string('account/templates/resetpassword.email.txt', config),
-                     to_email=[emailField])
+                     to_email=[json_data['email']])
 
-    return {'code': 'ok', 'data': [emailField]}
+    return {'code': 'ok', 'data': [json_data['email']]}
 
 
 # Reset password
@@ -259,36 +268,45 @@ def actionResetpassword(request):
     if json_data is False:
         return {'code': 'nodata'}, 404
 
-    from app.account.models import User, Code
+    json_data = helpers.setNullValuesIfNotExist(json_data,
+                                                ['code', 'password'])
 
-    validateResult, validateCode = validateResetpassword(json_data)
+    if json_data['code'] is None:
+        return {'code': 'account/nocode'}, 404
 
-    if validateCode != 200:
-        return validateResult, validateCode
+    json_data['code'] = json_data['code'].lower()
 
-    try:
-        codeField = json_data['code']
-        codeField = codeField.lower()
-    except:
-        codeField = ''
-    try:
-        passwordField = json_data['password']
-    except KeyError:
-        passwordField = ''
+    if json_data['password'] is None:
+        return {'code': 'account/nopassword'}, 404
 
-    try:
-        code = Code.objects.get(text=codeField)
-    except Code.DoesNotExist:
-        return {'code': 'account/codenotfound', 'values': [codeField]}, 404
+    user, code = account_helpers.getUserByCode(json_data['code'])
 
-    user = User.objects.get(pk=code.created_user.id)
+    if not code:
+        return {'code': 'account/codenotfound', 'values': [json_data['code']]}, 404
 
-    if user.is_active:
-        user.backend = 'django.contrib.auth.backends.ModelBackend'
-        updateFromJsonObject(user, json_data)
-        user.save()
+    if user.is_active and code:
+        try:
+            if json_data['email'] is not None:
+                user.email = json_data['email']
+
+            if json_data['password'] is not None:
+                user.set_password(json_data['password'])
+
+            if json_data['username'] is not None:
+                user.username = json_data['username']
+
+            if json_data['firstname'] is not None:
+                user.first_name = json_data['firstname']
+
+            if json_data['lastname'] is not None:
+                user.last_name = json_data['lastname']
+
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            user.save()
+        except:
+            return {'code': 'account/update/fail'}, 404
         auth.login(request, user)
-        Code.objects.filter(created_user=user).delete()
+        code.delete()
 
         return {'code': 'ok', 'data': [user.getUserData()]}
     else:
