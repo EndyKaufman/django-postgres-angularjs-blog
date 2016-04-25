@@ -63,7 +63,7 @@ def getItem(request, post_name):
     try:
         data = [Post.objects.get(name=post_name)]
     except Post.DoesNotExist:
-        return {'code': 'post/notfound', 'values': [post_name]}, 404
+        return {'code': 'post/not_found', 'values': [post_name]}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
@@ -76,14 +76,14 @@ def actionUpdate(request, post_id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     from app.post.models import Post
 
@@ -103,7 +103,7 @@ def actionUpdate(request, post_id):
     try:
         post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
-        return {'code': 'post/notfound', 'values': [post_id]}, 404
+        return {'code': 'post/not_found', 'values': [post_id]}, 404
 
     # try:
     updateResult, updateCode = updateFromJsonObject(post, json_data, user)
@@ -124,14 +124,14 @@ def actionCreate(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     from app.post.models import Post
 
@@ -169,21 +169,21 @@ def actionDelete(request, post_id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     from app.post.models import Post
 
     try:
         post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
-        return {'code': 'post/notfound', 'values': [post_id]}, 404
+        return {'code': 'post/not_found', 'values': [post_id]}, 404
 
     try:
         post.delete()

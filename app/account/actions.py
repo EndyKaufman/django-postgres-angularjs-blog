@@ -19,25 +19,25 @@ def actionUpdate(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['email', 'password', 'username', 'firstname', 'lastname'])
 
     if json_data['email'] is None:
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     json_data['email'] = json_data['email'].lower()
 
     try:
         validate_email(json_data['email'])
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     user = helpers.getUser(request)
 
     if not user:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
 
     try:
         if json_data['email'] is not None:
@@ -71,33 +71,33 @@ def actionLogin(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['email', 'password'])
 
     if json_data['password'] is None:
-        return {'code': 'account/nopassword'}, 404
+        return {'code': 'account/no_password'}, 404
 
     if json_data['email'] is None:
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     json_data['email'] = json_data['email'].lower()
 
     try:
         validate_email(json_data['email'])
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     user = account_helpers.getUserByEmail(json_data['email'])
 
     if not user:
-        return {'code': 'account/usernotfound', 'values': [json_data['email']]}, 404
+        return {'code': 'account/user_not_found', 'values': [json_data['email']]}, 404
 
     user = auth.authenticate(username=user.username, password=json_data['password'])
 
     if user is None:
-        return {'code': 'account/wrongpassword'}, 404
+        return {'code': 'account/nodata'}, 404
 
     if user.is_active:
         user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -106,7 +106,7 @@ def actionLogin(request):
         return {'code': 'ok', 'data': [user.getUserData()]}
     else:
         auth.logout(request)
-        return {'code': 'account/notactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
 
 # create
@@ -117,23 +117,23 @@ def actionReg(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['email', 'password'])
 
     if json_data['password'] is None:
-        return {'code': 'account/nopassword'}, 404
+        return {'code': 'account/no_password'}, 404
 
     if json_data['email'] is None:
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     json_data['email'] = json_data['email'].lower()
 
     try:
         validate_email(json_data['email'])
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     user = account_helpers.getUserByEmail(json_data['email'])
 
@@ -158,7 +158,7 @@ def actionReg(request):
         return {'code': 'ok', 'data': [user.getUserData()]}
     else:
         auth.logout(request)
-        return {'code': 'account/notactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
 
 # delete account
@@ -169,19 +169,19 @@ def actionDelete(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
 
     user = helpers.getUser(request)
 
     if not user:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.delete()
@@ -199,9 +199,9 @@ def actionLogout(request):
     user = helpers.getUser(request)
 
     if not user:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     auth.logout(request)
     return {'code': 'ok'}
@@ -213,32 +213,32 @@ def actionRecovery(request):
     """Recovery action"""
 
     if request.user.is_authenticated():
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
 
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['email'])
 
     if json_data['email'] is None:
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     json_data['email'] = json_data['email'].lower()
 
     try:
         validate_email(json_data['email'])
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     from app.account.models import Code
 
     user = account_helpers.getUserByEmail(json_data['email'])
 
     if not user:
-        return {'code': 'account/usernotfound', 'values': [json_data['email']]}, 404
+        return {'code': 'account/user_not_found', 'values': [json_data['email']]}, 404
 
     code = Code.objects.create(text=helpers.makeCode(), created_user=user, type=1)
 
@@ -261,28 +261,28 @@ def actionResetpassword(request):
     """Reset password action"""
 
     if request.user.is_authenticated():
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
 
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['code', 'password'])
 
     if json_data['code'] is None:
-        return {'code': 'account/nocode'}, 404
+        return {'code': 'account/no_code'}, 404
 
     json_data['code'] = json_data['code'].lower()
 
     if json_data['password'] is None:
-        return {'code': 'account/nopassword'}, 404
+        return {'code': 'account/no_password'}, 404
 
     user, code = account_helpers.getUserByCode(json_data['code'])
 
     if not code:
-        return {'code': 'account/codenotfound', 'values': [json_data['code']]}, 404
+        return {'code': 'account/code_not_found', 'values': [json_data['code']]}, 404
 
     if user.is_active and code:
         try:
@@ -311,4 +311,4 @@ def actionResetpassword(request):
         return {'code': 'ok', 'data': [user.getUserData()]}
     else:
         auth.logout(request)
-        return {'code': 'account/notactive'}, 404
+        return {'code': 'account/not_active'}, 404

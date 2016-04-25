@@ -75,7 +75,7 @@ def getItem(request, post_name):
             item = record
 
     if item is False:
-        return {'code': 'post/notfound', 'values': [post_name]}, 404
+        return {'code': 'post/not_found', 'values': [post_name]}, 404
 
     return {'code': 'ok', 'data': [item]}
 
@@ -91,7 +91,7 @@ def actionUpdate(request, post_id):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validate(json_data)
 
@@ -112,7 +112,7 @@ def actionCreate(request):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validate(json_data)
 

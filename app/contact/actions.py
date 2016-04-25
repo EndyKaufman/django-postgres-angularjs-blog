@@ -16,13 +16,13 @@ def actionSend(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data, ['email', 'username', 'message'])
     json_data['email'] = json_data['email'].lower()
 
     if json_data['email'] == '':
-        return {'code': 'contact/noemail'}, 404
+        return {'code': 'contact/not_email'}, 404
     if json_data['username'] == '':
         return {'code': 'contact/nousername'}, 404
     if json_data['message'] == '':
@@ -32,7 +32,7 @@ def actionSend(request):
     try:
         validate_email(json_data['email'])
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     config = {}
     config['SHORT_SITE_NAME'] = settings.SHORT_SITE_NAME

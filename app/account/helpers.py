@@ -79,13 +79,13 @@ def validateProfileUpdate(jsonObject):
         emailField = ''
 
     if emailField == '':
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     # Validate values of fields
     try:
         validate_email(emailField)
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     return {'code': 'ok'}, 200
 
@@ -102,16 +102,16 @@ def validateLogin(jsonObject):
         passwordField = ''
 
     if emailField == '':
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     if passwordField == '':
-        return {'code': 'account/nopassword'}, 404
+        return {'code': 'account/no_password'}, 404
 
     # Validate values of fields
     try:
         validate_email(emailField)
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     return {'code': 'ok'}, 200
 
@@ -124,13 +124,13 @@ def validateRecovery(jsonObject):
         emailField = ''
 
     if emailField == '':
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     # Validate values of fields
     try:
         validate_email(emailField)
     except ValidationError:
-        return {'code': 'account/wrongemail'}, 404
+        return {'code': 'account/wrong_email'}, 404
 
     return {'code': 'ok'}, 200
 
@@ -147,9 +147,9 @@ def validateResetpassword(jsonObject):
         passwordField = ''
 
     if codeField == '':
-        return {'code': 'account/nocode'}, 404
+        return {'code': 'account/no_code'}, 404
 
     if passwordField == '':
-        return {'code': 'account/nopassword'}, 404
+        return {'code': 'account/no_password'}, 404
 
     return {'code': 'ok'}, 200

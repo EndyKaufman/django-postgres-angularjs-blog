@@ -24,7 +24,7 @@ def getItem(request, id):
     data = public_link_helpers.getItem(id)
 
     if not data:
-        return {'code': 'public_link/notfound', 'values': [id]}, 404
+        return {'code': 'public_link/not_found', 'values': [id]}, 404
     else:
         return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
@@ -37,14 +37,14 @@ def actionUpdate(request, id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact',
@@ -60,7 +60,7 @@ def actionUpdate(request, id):
     data = public_link_helpers.getItem(id)
 
     if not data:
-        return {'code': 'public_link/notfound', 'values': [id]}, 404
+        return {'code': 'public_link/not_found', 'values': [id]}, 404
     else:
         try:
             data[0].src = json_data['src']
@@ -84,14 +84,14 @@ def actionCreate(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
                                                 ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact',
@@ -121,19 +121,19 @@ def actionDelete(request, id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     data = public_link_helpers.getItem(id)
 
     if not data:
-        return {'code': 'public_link/notfound', 'values': [id]}, 404
+        return {'code': 'public_link/not_found', 'values': [id]}, 404
     else:
         try:
             data[0].delete()

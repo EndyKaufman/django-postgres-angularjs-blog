@@ -76686,6 +76686,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <thead>\n' +
     '    <tr>\n' +
     '        <th>#</th>\n' +
+    '        <th>Comment</th>\n' +
     '        <th>Name</th>\n' +
     '        <th>Value</th>\n' +
     '        <th class="text-right">Actions</th>\n' +
@@ -76694,15 +76695,16 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <tbody>\n' +
     '    <tr ng-repeat="item in PropertiesSvc.list | orderBy:\'position\'"\n' +
     '        ng-class="(PropertiesSvc.item.id==item.id)?\'bold\':\'\'">\n' +
-    '        <td ng-bind-html="item.id" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind-html="item.name | unsafe" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind-html="item.value | unsafe" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.id" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.comment" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.name" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.value" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
     '            <button ng-click="PropertiesSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
     '                    id="{{\'properties\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
     '            </button>\n' +
     '            <button ng-click="PropertiesSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
-    '                    id="{{\'properties\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '                    id="{{\'properties\'+item.id+\'Delete\'}}" ng-if="item.only_update==1"><i class="fa fa-trash"></i> Delete\n' +
     '            </button>\n' +
     '        </td>\n' +
     '    </tr>\n' +
@@ -76714,8 +76716,13 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <i class="fa fa-plus"></i> Create\n' +
     '</button>');
 	a.put('views/manager/properties/inputs.html', '<div class="form-group">\n' +
+    '    <label for="PropertiesComment">Comment</label>\n' +
+    '    <textarea class="form-control" id="PropertiesComment"\n' +
+    '              ng-model="PropertiesSvc.item.comment" ng-disabled="PropertiesSvc.item.only_update==1"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
     '    <label for="PropertiesName">Name</label>\n' +
-    '    <input class="form-control" type="text" id="PropertiesName" ng-model="PropertiesSvc.item.name"/>\n' +
+    '    <input class="form-control" type="text" id="PropertiesName" ng-model="PropertiesSvc.item.name" ng-disabled="PropertiesSvc.item.only_update==1"/>\n' +
     '</div>\n' +
     '<div class="form-group">\n' +
     '    <label for="PropertiesValue">Value</label>\n' +
@@ -80244,6 +80251,7 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
         service.item = {};
         service.item.name = '';
         service.item.value = '';
+        service.item.comment = '';
     }
 
     service.showCreate=function(){

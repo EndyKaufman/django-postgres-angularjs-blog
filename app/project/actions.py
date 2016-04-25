@@ -63,7 +63,7 @@ def getItem(request, project_name):
     try:
         data = [Project.objects.get(name=project_name)]
     except Project.DoesNotExist:
-        return {'code': 'project/notfound', 'values': [project_name]}, 404
+        return {'code': 'project/not_found', 'values': [project_name]}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
@@ -76,14 +76,14 @@ def actionUpdate(request, project_id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     from app.project.models import Project
 
@@ -103,7 +103,7 @@ def actionUpdate(request, project_id):
     try:
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
-        return {'code': 'project/notfound', 'values': [project_id]}, 404
+        return {'code': 'project/not_found', 'values': [project_id]}, 404
 
     # try:
     updateResult, updateCode = updateFromJsonObject(project, json_data, user)
@@ -124,14 +124,14 @@ def actionCreate(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     from app.project.models import Project
 
@@ -169,21 +169,21 @@ def actionDelete(request, project_id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     from app.project.models import Project
 
     try:
         project = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
-        return {'code': 'project/notfound', 'values': [project_id]}, 404
+        return {'code': 'project/not_found', 'values': [project_id]}, 404
 
     try:
         project.delete()

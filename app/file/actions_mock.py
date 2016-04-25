@@ -56,7 +56,7 @@ def getItem(request, file_id):
             item = record
 
     if item is False:
-        return {'code': 'file/notfound', 'values': [file_id]}, 404
+        return {'code': 'file/not_found', 'values': [file_id]}, 404
 
     return {'code': 'ok', 'data': data}
 
@@ -72,7 +72,7 @@ def actionUpdate(request, file_id):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     try:
         comment = json_data['comment']
@@ -88,7 +88,7 @@ def actionCreate(request):
     """Create record"""
 
     if request.method != 'POST':
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     if request.FILES and request.FILES.get('file'):
         url = helpers.saveFile(False, request.FILES.get('file'), 'test.file')
@@ -116,7 +116,7 @@ def actionDelete(request, file_id):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     try:
         helpers.removeFile('test.file')

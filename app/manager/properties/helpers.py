@@ -34,6 +34,7 @@ def create(data):
     from app.manager.models import Properties
 
     try:
-        return [Properties.objects.create(name=data['name'], value=data['value'], created_user=data['created_user'])]
+        return [Properties.objects.create(name=data['name'], value=data['value'], comment=data['comment'],
+                                          created_user=data['created_user'], only_update=0)]
     except:
         return False

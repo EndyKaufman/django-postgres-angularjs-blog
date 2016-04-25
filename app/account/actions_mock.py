@@ -21,7 +21,7 @@ def actionUpdate(request):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validateProfileUpdate(json_data)
 
@@ -35,7 +35,7 @@ def actionUpdate(request):
         emailField = ''
 
     if emailField == '':
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     try:
         with open('mock/account/users.json') as f:
@@ -78,7 +78,7 @@ def actionUpdate(request):
             user['id'] = 7
             user['email'] = emailField
         else:
-            return {'code': 'account/usernotfound', 'values': [emailField]}, 404
+            return {'code': 'account/user_not_found', 'values': [emailField]}, 404
 
     return {'code': 'ok', 'data': [user]}
 
@@ -94,7 +94,7 @@ def actionReg(request):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validateProfileUpdate(json_data)
 
@@ -108,7 +108,7 @@ def actionReg(request):
         emailField = ''
 
     if emailField == '':
-        return {'code': 'account/noemail'}, 404
+        return {'code': 'account/not_email'}, 404
 
     try:
         with open('mock/account/users.json') as f:
@@ -166,7 +166,7 @@ def actionLogin(request):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validateLogin(json_data)
 
@@ -203,7 +203,7 @@ def actionLogin(request):
             user['id'] = 7
             user['email'] = emailField
         else:
-            return {'code': 'account/usernotfound', 'values': [emailField]}, 404
+            return {'code': 'account/user_not_found', 'values': [emailField]}, 404
     return {'code': 'ok', 'data': [user]}
 
 
@@ -236,7 +236,7 @@ def actionRecovery(request):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validateRecovery(json_data)
 
@@ -269,7 +269,7 @@ def actionRecovery(request):
             user['id'] = 7
             user['email'] = emailField
         else:
-            return {'code': 'account/usernotfound', 'values': [emailField]}, 404
+            return {'code': 'account/user_not_found', 'values': [emailField]}, 404
 
     config = home.helpers.getConfig(request)
     config['code'] = helpers.makeCode()
@@ -294,7 +294,7 @@ def actionResetpassword(request):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validateResetpassword(json_data)
 

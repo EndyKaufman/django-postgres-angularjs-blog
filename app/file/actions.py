@@ -46,7 +46,7 @@ def getItem(request, file_id):
     try:
         data = [File.objects.get(pk=file_id)]
     except File.DoesNotExist:
-        return {'code': 'file/notfound', 'values': [file_id]}, 404
+        return {'code': 'file/not_found', 'values': [file_id]}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
@@ -59,14 +59,14 @@ def actionUpdate(request, file_id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
 
@@ -75,7 +75,7 @@ def actionUpdate(request, file_id):
     try:
         file = File.objects.get(pk=file_id)
     except File.DoesNotExist:
-        return {'code': 'file/notfound', 'values': [file_id]}, 404
+        return {'code': 'file/not_found', 'values': [file_id]}, 404
 
     try:
         file.comment = json_data['comment']
@@ -94,14 +94,14 @@ def actionCreate(request):
     json_data = request.POST
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
 
@@ -137,21 +137,21 @@ def actionDelete(request, file_id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     from app.file.models import File
 
     try:
         file = File.objects.get(pk=file_id)
     except File.DoesNotExist:
-        return {'code': 'file/notfound', 'values': [file_id]}, 404
+        return {'code': 'file/not_found', 'values': [file_id]}, 404
 
     try:
         helpers.removeFile(file.src)

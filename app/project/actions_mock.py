@@ -75,7 +75,7 @@ def getItem(request, project_name):
             item = record
 
     if item is False:
-        return {'code': 'project/notfound', 'values': [project_name]}, 404
+        return {'code': 'project/not_found', 'values': [project_name]}, 404
 
     return {'code': 'ok', 'data': [item]}
 
@@ -91,7 +91,7 @@ def actionUpdate(request, project_id):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validate(json_data)
 
@@ -112,7 +112,7 @@ def actionCreate(request):
         json_data = json.loads(request.body)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     validateResult, validateCode = validate(json_data)
 

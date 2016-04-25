@@ -24,7 +24,7 @@ def getItem(request, id):
     data = properties_helpers.getItem(id)
 
     if not data:
-        return {'code': 'properties/notfound', 'values': [id]}, 404
+        return {'code': 'properties/not_found', 'values': [id]}, 404
     else:
         return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
 
@@ -37,16 +37,16 @@ def actionUpdate(request, id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'value'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'value', 'comment'])
 
     data = properties_helpers.getItemByName(json_data['name'])
 
@@ -56,11 +56,15 @@ def actionUpdate(request, id):
     data = properties_helpers.getItem(id)
 
     if not data:
-        return {'code': 'properties/notfound', 'values': [id]}, 404
+        return {'code': 'properties/not_found', 'values': [id]}, 404
     else:
         try:
-            data[0].name = json_data['name']
-            data[0].content = json_data['value']
+            if data[0].only_update == 0:
+                data[0].name = json_data['name']
+                data[0].value = json_data['value']
+                data[0].comment = json_data['comment']
+            else:
+                data[0].value = json_data['value']
             data[0].save()
         except:
             return {'code': 'properties/update/fail'}, 404
@@ -75,16 +79,16 @@ def actionCreate(request):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'value'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'value', 'comment'])
 
     json_data['created_user'] = user
 
@@ -108,20 +112,22 @@ def actionDelete(request, id):
     json_data = helpers.getJson(request)
 
     if json_data is False:
-        return {'code': 'nodata'}, 404
+        return {'code': 'no_data'}, 404
 
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
-        return {'code': 'noaccess'}, 404
+        return {'code': 'no_access'}, 404
     if user is None:
-        return {'code': 'account/younotactive'}, 404
+        return {'code': 'account/not_active'}, 404
 
     data = properties_helpers.getItem(id)
 
     if not data:
-        return {'code': 'properties/notfound', 'values': [id]}, 404
+        return {'code': 'properties/not_found', 'values': [id]}, 404
     else:
+        if data[0].only_update == 1:
+            return {'code': 'properties/delete/not_allowed', 'values': [id]}, 404
         try:
             data[0].delete()
         except:
