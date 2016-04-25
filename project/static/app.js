@@ -76704,7 +76704,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    id="{{\'properties\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
     '            </button>\n' +
     '            <button ng-click="PropertiesSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
-    '                    id="{{\'properties\'+item.id+\'Delete\'}}" ng-if="item.only_update==1"><i class="fa fa-trash"></i> Delete\n' +
+    '                    id="{{\'properties\'+item.id+\'Delete\'}}" ng-if="item.only_update==0"><i class="fa fa-trash"></i> Delete\n' +
     '            </button>\n' +
     '        </td>\n' +
     '    </tr>\n' +
