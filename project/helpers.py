@@ -41,12 +41,12 @@ def getValueByKey(obj, key):
     return value
 
 
-def setNullValuesIfNotExist(data, keys):
+def setNullValuesIfNotExist(data, keys, null_value=None):
     for key in keys:
         try:
             value = data[key]
         except:
-            value = None
+            value = null_value
         data[key] = value
     return data
 

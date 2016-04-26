@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+from project import helpers
+
+
+def getListOfNames(names):
+    list_of = getList()
+    list_of_names = helpers.setNullValuesIfNotExist({}, names, '')
+    if len(names) > 0:
+        for item in list_of:
+            for name in names:
+                if item.name == name:
+                    list_of_names[name] = item.value
+    else:
+        for item in list_of:
+            list_of_names[item.name] = item.value
+    return list_of_names
+
 
 def getList():
     from app.manager.models import Properties
