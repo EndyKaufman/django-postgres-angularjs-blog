@@ -76088,6 +76088,10 @@ app.constant('ManagerConst', {
         title: 'Meta tags',
         name: 'meta_tag'
     },
+    tag:{
+        title: 'Tags',
+        name: 'tag'
+    },
     public_link:{
         title: 'Public links',
         name: 'public_link'
@@ -76297,6 +76301,12 @@ app.config(function ($routeProvider, $locationProvider) {
         controller: 'PropertiesCtrl',
         navId: 'manager',
         subNavId: 'properties'
+      })
+      .when('/manager/tag', {
+        templateUrl: 'views/manager/tag.html',
+        controller: 'TagCtrl',
+        navId: 'manager',
+        subNavId: 'tag'
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -76375,22 +76385,166 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
         requireBase: false
     });
 });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/meta_tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemName">Name</label>\n' +
+    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
+    '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!projectForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemType">Type</label>\n' +
+    '    <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
+    '        <option ng-repeat="type in AppConst.project.types"\n' +
+    '                ng-value="type.id"\n' +
+    '                ng-bind-html="type.title | unsafe"\n' +
+    '                ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
+    '    </select>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemTags">Tags</label>\n' +
+    '    <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
+    '    </tags-input>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
+    '                          ng-model="ProjectSvc.item.description" required></textarea>\n' +
+    '</div>');
+	a.put('views/project/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemTitle">Title</label>\n' +
+    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="ProjectSvc.item.title"\n' +
+    '           ng-change="ProjectSvc.slugName(ProjectSvc.item.title)" required>\n' +
+    '    <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!projectForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==1">\n' +
+    '    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==2">\n' +
+    '    <label for="ItemHtml">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==3">\n' +
+    '    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==4">\n' +
+    '    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
+    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '    <div class="input-group has-feedback">\n' +
+    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '               ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
+    '                                    type="button" id="{{\'projectSelect\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-check"></i> Select\n' +
+    '                            </button>\n' +
+    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
+    '                                    type="button" id="{{\'projectDelete\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-trash"></i> Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/post/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemName">Name</label>\n' +
+    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="PostSvc.item.name" required>\n' +
+    '    <span ng-show="postForm.$submitted || postForm.ItemName.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!postForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemType">Type</label>\n' +
+    '    <select class="form-control" id="ItemType" ng-model="PostSvc.item.type">\n' +
+    '        <option ng-repeat="type in AppConst.post.types"\n' +
+    '                ng-value="type.id"\n' +
+    '                ng-bind-html="type.title | unsafe"\n' +
+    '                ng-selected="PostSvc.item.type==type.id"></option>\n' +
+    '    </select>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemTags">Tags</label>\n' +
+    '    <tags-input id="ItemTags" ng-model="PostSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
+    '    </tags-input>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
+    '                          ng-model="PostSvc.item.description" required></textarea>\n' +
+    '</div>');
+	a.put('views/post/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemTitle">Title</label>\n' +
+    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="PostSvc.item.title"\n' +
+    '           ng-change="PostSvc.slugName(PostSvc.item.title)" required>\n' +
+    '    <span ng-show="postForm.$submitted || postForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!postForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==1">\n' +
+    '    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="PostSvc.item.text" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==2">\n' +
+    '    <label for="ItemHtml">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="PostSvc.item.html" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==3">\n' +
+    '    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="PostSvc.item.url" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==4">\n' +
+    '    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="PostSvc.item.markdown" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group" ng-repeat="image in PostSvc.item.images track by image.id">\n' +
+    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '    <div class="input-group has-feedback">\n' +
+    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '               ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
+    '                                    type="button" id="{{\'postSelect\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-check"></i> Select\n' +
+    '                            </button>\n' +
+    '                            <button ng-click="PostSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
+    '                                    type="button" id="{{\'postDelete\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-trash"></i> Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
-    '            <form name="meta_tagForm">\n' +
+    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
+    '            <form name="tagForm">\n' +
     '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
     '                <div class="modal-body">\n' +
     '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
     '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagUpdateCancel">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagUpdateCancel">\n' +
     '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
     '                    </button>\n' +
     '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagUpdateConfirm">\n' +
+    '                            ng-disabled="!tagForm.$valid" id="tagUpdateConfirm">\n' +
     '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
     '                    </button>\n' +
     '                </div>\n' +
@@ -76401,71 +76555,63 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/manager/meta_tag/list.html', '<table class="table table-hover">\n' +
+	a.put('views/manager/tag/list.html', '<table class="table table-hover">\n' +
     '    <thead>\n' +
     '    <tr>\n' +
     '        <th>#</th>\n' +
-    '        <th>Name</th>\n' +
-    '        <th>Content</th>\n' +
+    '        <th>Text</th>\n' +
+    '        <th>Description</th>\n' +
     '        <th class="text-right">Actions</th>\n' +
     '    </tr>\n' +
     '    </thead>\n' +
     '    <tbody>\n' +
-    '    <tr ng-repeat="item in MetaTagSvc.list | orderBy:\'position\'"\n' +
-    '        ng-class="(MetaTagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
-    '        <td ng-bind-html="item.id" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind-html="item.name | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind-html="item.content | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '    <tr ng-repeat="item in TagSvc.list | orderBy:\'position\'"\n' +
+    '        ng-class="(TagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind-html="item.id" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.text | unsafe" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.description | unsafe" ng-click="TagSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
-    '            <button ng-click="MetaTagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
-    '                    id="{{\'meta_tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
+    '            <button ng-click="TagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
     '            </button>\n' +
-    '            <button ng-click="MetaTagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
-    '                    id="{{\'meta_tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '            <button ng-click="TagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
     '            </button>\n' +
     '        </td>\n' +
     '    </tr>\n' +
     '    </tbody>\n' +
     '</table>');
-	a.put('views/manager/meta_tag/list-header.html', '<span ng-bind-html="AppConst.manager.meta_tag.title | unsafe"></span>\n' +
-    '<button ng-click="MetaTagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
-    '        type="button" id="meta_tagCreate">\n' +
+	a.put('views/manager/tag/list-header.html', '<span ng-bind-html="AppConst.manager.tag.title | unsafe"></span>\n' +
+    '<button ng-click="TagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
+    '        type="button" id="tagCreate">\n' +
     '    <i class="fa fa-plus"></i> Create\n' +
     '</button>');
-	a.put('views/manager/meta_tag/inputs.html', '<div class="form-group">\n' +
-    '    <label for="MetaTagName">Name</label>\n' +
-    '    <input class="form-control" type="text" id="MetaTagName" ng-model="MetaTagSvc.item.name"/>\n' +
+	a.put('views/manager/tag/inputs.html', '<div class="form-group">\n' +
+    '    <label for="TagText">Text</label>\n' +
+    '    <input type="text" class="form-control" id="TagText"\n' +
+    '           ng-model="TagSvc.item.text"/>\n' +
     '</div>\n' +
     '<div class="form-group">\n' +
-    '    <label for="MetaTagContent">Content</label>\n' +
-    '    <input type="text" class="form-control" id="MetaTagContent"\n' +
-    '           ng-model="MetaTagSvc.item.content"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="MetaTagAttributes">Attributes</label>\n' +
-    '    <input type="text" class="form-control" id="MetaTagAttributes"\n' +
-    '           ng-model="MetaTagSvc.item.attributes"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="MetaTagPosition">Position</label>\n' +
-    '    <input class="form-control" type="text" id="MetaTagPosition" ng-model="MetaTagSvc.item.position"/>\n' +
+    '    <label for="TagDescription">Description</label>\n' +
+    '    <textarea class="form-control" id="TagDescription"\n' +
+    '              ng-model="TagSvc.item.description"></textarea>\n' +
     '</div>');
-	a.put('views/manager/meta_tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+	a.put('views/manager/tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
-    '            <form name="meta_tagForm">\n' +
+    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
+    '            <form name="tagForm">\n' +
     '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
     '                <div class="modal-body">\n' +
     '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
     '                    </div>\n' +
     '                </div>\n' +
     '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagCreateCancel">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagCreateCancel">\n' +
     '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
     '                    </button>\n' +
     '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagCreateConfirm">\n' +
+    '                            ng-disabled="!tagForm.$valid" id="tagCreateConfirm">\n' +
     '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
     '                    </button>\n' +
     '                </div>\n' +
@@ -76613,150 +76759,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemName">Name</label>\n' +
-    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
-    '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!projectForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemType">Type</label>\n' +
-    '    <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
-    '        <option ng-repeat="type in AppConst.project.types"\n' +
-    '                ng-value="type.id"\n' +
-    '                ng-bind-html="type.title | unsafe"\n' +
-    '                ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
-    '    </select>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemTags">Tags</label>\n' +
-    '    <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
-    '    </tags-input>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="ItemDescription">Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
-    '                          ng-model="ProjectSvc.item.description" required></textarea>\n' +
-    '</div>');
-	a.put('views/project/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemTitle">Title</label>\n' +
-    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="ProjectSvc.item.title"\n' +
-    '           ng-change="ProjectSvc.slugName(ProjectSvc.item.title)" required>\n' +
-    '    <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!projectForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==1">\n' +
-    '    <label for="ItemText">Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==2">\n' +
-    '    <label for="ItemHtml">Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==3">\n' +
-    '    <label for="ItemUrl">Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==4">\n' +
-    '    <label for="ItemMarkdown">Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
-    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
-    '    <div class="input-group has-feedback">\n' +
-    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
-    '               ng-model="image.src">\n' +
-    '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
-    '                                    type="button" id="{{\'projectSelect\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-check"></i> Select\n' +
-    '                            </button>\n' +
-    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
-    '                                    type="button" id="{{\'projectDelete\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-trash"></i> Delete image\n' +
-    '                            </button>\n' +
-    '                        </span>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/post/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemName">Name</label>\n' +
-    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="PostSvc.item.name" required>\n' +
-    '    <span ng-show="postForm.$submitted || postForm.ItemName.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!postForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemType">Type</label>\n' +
-    '    <select class="form-control" id="ItemType" ng-model="PostSvc.item.type">\n' +
-    '        <option ng-repeat="type in AppConst.post.types"\n' +
-    '                ng-value="type.id"\n' +
-    '                ng-bind-html="type.title | unsafe"\n' +
-    '                ng-selected="PostSvc.item.type==type.id"></option>\n' +
-    '    </select>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemTags">Tags</label>\n' +
-    '    <tags-input id="ItemTags" ng-model="PostSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
-    '    </tags-input>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="ItemDescription">Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
-    '                          ng-model="PostSvc.item.description" required></textarea>\n' +
-    '</div>');
-	a.put('views/post/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemTitle">Title</label>\n' +
-    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="PostSvc.item.title"\n' +
-    '           ng-change="PostSvc.slugName(PostSvc.item.title)" required>\n' +
-    '    <span ng-show="postForm.$submitted || postForm.ItemTitle.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!postForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==1">\n' +
-    '    <label for="ItemText">Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="PostSvc.item.text" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==2">\n' +
-    '    <label for="ItemHtml">Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="PostSvc.item.html" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==3">\n' +
-    '    <label for="ItemUrl">Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="PostSvc.item.url" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==4">\n' +
-    '    <label for="ItemMarkdown">Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="PostSvc.item.markdown" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group" ng-repeat="image in PostSvc.item.images track by image.id">\n' +
-    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
-    '    <div class="input-group has-feedback">\n' +
-    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
-    '               ng-model="image.src">\n' +
-    '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
-    '                                    type="button" id="{{\'postSelect\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-check"></i> Select\n' +
-    '                            </button>\n' +
-    '                            <button ng-click="PostSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
-    '                                    type="button" id="{{\'postDelete\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-trash"></i> Delete image\n' +
-    '                            </button>\n' +
-    '                        </span>\n' +
-    '    </div>\n' +
-    '</div>');
 	a.put('views/manager/properties/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content" ng-controller="PropertiesCtrl">\n' +
@@ -76856,6 +76858,107 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/manager/meta_tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
+    '            <form name="meta_tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagUpdateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagUpdateConfirm">\n' +
+    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/list.html', '<table class="table table-hover">\n' +
+    '    <thead>\n' +
+    '    <tr>\n' +
+    '        <th>#</th>\n' +
+    '        <th>Name</th>\n' +
+    '        <th>Content</th>\n' +
+    '        <th class="text-right">Actions</th>\n' +
+    '    </tr>\n' +
+    '    </thead>\n' +
+    '    <tbody>\n' +
+    '    <tr ng-repeat="item in MetaTagSvc.list | orderBy:\'position\'"\n' +
+    '        ng-class="(MetaTagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind-html="item.id" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.name | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind-html="item.content | unsafe" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td class="text-right">\n' +
+    '            <button ng-click="MetaTagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'meta_tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
+    '            </button>\n' +
+    '            <button ng-click="MetaTagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'meta_tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '            </button>\n' +
+    '        </td>\n' +
+    '    </tr>\n' +
+    '    </tbody>\n' +
+    '</table>');
+	a.put('views/manager/meta_tag/list-header.html', '<span ng-bind-html="AppConst.manager.meta_tag.title | unsafe"></span>\n' +
+    '<button ng-click="MetaTagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
+    '        type="button" id="meta_tagCreate">\n' +
+    '    <i class="fa fa-plus"></i> Create\n' +
+    '</button>');
+	a.put('views/manager/meta_tag/inputs.html', '<div class="form-group">\n' +
+    '    <label for="MetaTagName">Name</label>\n' +
+    '    <input class="form-control" type="text" id="MetaTagName" ng-model="MetaTagSvc.item.name"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagContent">Content</label>\n' +
+    '    <input type="text" class="form-control" id="MetaTagContent"\n' +
+    '           ng-model="MetaTagSvc.item.content"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagAttributes">Attributes</label>\n' +
+    '    <input type="text" class="form-control" id="MetaTagAttributes"\n' +
+    '           ng-model="MetaTagSvc.item.attributes"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="MetaTagPosition">Position</label>\n' +
+    '    <input class="form-control" type="text" id="MetaTagPosition" ng-model="MetaTagSvc.item.position"/>\n' +
+    '</div>');
+	a.put('views/manager/meta_tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
+    '            <form name="meta_tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/meta_tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="meta_tagCreateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagCreateConfirm">\n' +
+    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
 	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -76864,11 +76967,14 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '                    <h1 class="heading">\n' +
     '                        Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span>\n' +
     '                    </h1>\n' +
+    '                    <div class="content" ng-if="TagSvc.allListSumSize==0">\n' +
+    '                        Nothing...\n' +
+    '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </section><!--//section-->\n' +
     '\n' +
-    '            <div ng-repeat="allItem in TagSvc.allList">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\'">\n' +
+    '            <div ng-repeat="allItem in TagSvc.allList" ng-if="TagSvc.allListSumSize>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -76877,8 +76983,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '                        </div><!--//content-->\n' +
     '                    </div><!--//section-inner-->\n' +
     '                </section><!--//section-->\n' +
-    '\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\'">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -76930,11 +77035,14 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '                    <h1 class="heading">\n' +
     '                        Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"\n' +
     '                    </h1>\n' +
+    '                    <div class="content" ng-if="SearchSvc.allListSumSize==0">\n' +
+    '                        Nothing...\n' +
+    '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </section><!--//section-->\n' +
     '\n' +
-    '            <div ng-repeat="allItem in SearchSvc.allList">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\'">\n' +
+    '            <div ng-repeat="allItem in SearchSvc.allList" ng-if="SearchSvc.allListSumSize>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -76943,7 +77051,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '                        </div><!--//content-->\n' +
     '                    </div><!--//section-inner-->\n' +
     '                </section><!--//section-->\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\'">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -77616,6 +77724,52 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/manager/tag.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-include="\'views/manager/tag/list-header.html\'">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/manager/tag/list.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="list manager-menu aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Menu</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/manager/menu.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
 	a.put('views/manager/public_link.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
     '    <div class="row">\n' +
@@ -77756,6 +77910,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/
     '</div><!--//masonry-->');
 	a.put('views/manager/menu.html', '<ul class="list-unstyled">\n' +
     '    <li ng-if="$routeParams.subNavId!=\'meta_tag\'"><i class="fa fa-link"></i> <a ng-href="/manager/meta_tag">Meta tags</a></li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'tag\'"><i class="fa fa-link"></i> <a ng-href="/manager/tag">Tags</a></li>\n' +
     '    <li ng-if="$routeParams.subNavId!=\'public_link\'"><i class="fa fa-link"></i> <a ng-href="/manager/public_link">Public links</a></li>\n' +
     '    <li ng-if="$routeParams.subNavId!=\'properties\'"><i class="fa fa-link"></i> <a ng-href="/manager/properties">Properties</a></li>\n' +
     '    <li ng-if="$routeParams.subNavId!=\'users\'"><i class="fa fa-link"></i> <a ng-href="/manager/users">Users</a></li>\n' +
@@ -78726,35 +78881,6 @@ app.factory('FileRes', function ($q, AppConst, uiUploader, AppRes) {
 
     return service;
   });
-app.factory('ProjectRes', function (AppConst, AppRes) {
-    var service={};
-
-    service.getItem=function(name){
-        return AppRes.get('/api/v1/project/item/'+name);
-    };
-    service.getList=function(){
-        return AppRes.get('/api/v1/project/list');
-    };
-    service.getSearch=function(searchText){
-        if (searchText==undefined)
-            searchText='all';
-        return AppRes.get('/api/v1/project/search/'+searchText);
-    };
-    service.getListByTag=function(tagText){
-        return AppRes.get('/api/v1/project/listbytag/'+tagText);
-    };
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/project/update/'+item.id, item);
-    }
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/project/create', item);
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/project/delete/'+item.id, item);
-    }
-
-    return service;
-  });
 app.factory('PostRes', function (AppConst, AppRes) {
     var service={};
 
@@ -78784,12 +78910,52 @@ app.factory('PostRes', function (AppConst, AppRes) {
 
     return service;
   });
+app.factory('ProjectRes', function (AppConst, AppRes) {
+    var service={};
+
+    service.getItem=function(name){
+        return AppRes.get('/api/v1/project/item/'+name);
+    };
+    service.getList=function(){
+        return AppRes.get('/api/v1/project/list');
+    };
+    service.getSearch=function(searchText){
+        if (searchText==undefined)
+            searchText='all';
+        return AppRes.get('/api/v1/project/search/'+searchText);
+    };
+    service.getListByTag=function(tagText){
+        return AppRes.get('/api/v1/project/listbytag/'+tagText);
+    };
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/project/update/'+item.id, item);
+    }
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/project/create', item);
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/project/delete/'+item.id, item);
+    }
+
+    return service;
+  });
 app.factory('TagRes', function (AppRes, AppConst) {
     var service={};
 
     service.getList=function(){
         return AppRes.get('/api/v1/tag/list');
     };
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/tag/update/'+item.id, item);
+    }
+
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/tag/create',item)
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/tag/delete/'+item.id, item);
+    }
 
     return service;
   });
@@ -78813,26 +78979,6 @@ app.factory('MetaTagRes', function ($q, AppConst, AppRes) {
 
     return service;
   });
-app.factory('PublicLinkRes', function ($q, AppConst, AppRes) {
-    var service={};
-
-    service.getList=function(){
-        return AppRes.get('/api/v1/manager/public_link/list');
-    };
-
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/manager/public_link/update/'+item.id, item);
-    }
-
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/manager/public_link/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/manager/public_link/delete/'+item.id, item);
-    }
-
-    return service;
-  });
 app.factory('PropertiesRes', function ($q, AppConst, AppRes) {
     var service={};
 
@@ -78849,6 +78995,26 @@ app.factory('PropertiesRes', function ($q, AppConst, AppRes) {
     }
     service.actionDelete=function(item){
         return AppRes.post('/api/v1/manager/properties/delete/'+item.id, item);
+    }
+
+    return service;
+  });
+app.factory('PublicLinkRes', function ($q, AppConst, AppRes) {
+    var service={};
+
+    service.getList=function(){
+        return AppRes.get('/api/v1/manager/public_link/list');
+    };
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/manager/public_link/update/'+item.id, item);
+    }
+
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/manager/public_link/create',item)
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/manager/public_link/delete/'+item.id, item);
     }
 
     return service;
@@ -79318,99 +79484,6 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
 
     return service;
   });
-app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
-    var service={};
-
-    $rootScope.$on('$routeChangeStart',function(event, current, previous){
-        service.init();
-        $rootScope.$broadcast('navbar.change', event, current, previous);
-    });
-
-    function modifiItem(item){
-        var navItem={};
-
-        if (item.parent!=undefined && AppConst[item.parent]!=undefined && AppConst[item.parent][item.name]!=undefined)
-            navItem=AppConst[item.parent][item.name];
-
-        if (AppConst[item.name]!=undefined)
-            navItem=AppConst[item.name];
-
-        if (navItem.title!=undefined)
-            item.title=navItem.title;
-
-        if (navItem.strings!=undefined && navItem.strings.title!=undefined)
-            item.title=navItem.strings.title;
-
-        if (navItem.url!=undefined){
-            item.url=navItem.url;
-        }
-
-        if (navItem.urls!=undefined && navItem.urls.url!=undefined)
-            item.url=navItem.urls.url;
-
-        if (item.url===undefined)
-            item.url='/'+item.name;
-
-        if (item.click!=undefined){
-            item.url=false;
-        }
-
-        item.active=(item.name==$routeParams.navId);
-        if (item.hiddenHandler!=undefined)
-            item.hidden=item.hiddenHandler();
-        else
-            if (item.hidden===undefined)
-                item.hidden=false;
-    }
-
-    service.goBack=function(){
-        if ($window.history.length>2)
-            $window.history.back();
-        else
-            service.goHome();
-    }
-    service.goHome=function(){
-        $location.path(AppConst.home.url);
-    }
-
-    service.init=function(navId, subNavId){
-        if (navId!=undefined)
-            $routeParams.navId=navId;
-        else
-        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
-            $routeParams.navId=$route.current.$$route.navId
-        else
-        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
-            $routeParams.navId=$route.current.params.navId;
-
-        if (subNavId!=undefined)
-            $routeParams.subNavId=subNavId;
-        else
-        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.subNavId!=undefined)
-            $routeParams.subNavId=$route.current.$$route.subNavId
-        else
-        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.subNavId!=undefined)
-            $routeParams.subNavId=$route.current.params.subNavId;
-
-        service.items=AppConst.navbar;
-        for (var i=0;i<service.items.left.length;i++){
-            modifiItem(service.items.left[i]);
-        }
-        for (var i=0;i<service.items.right.length;i++){
-            modifiItem(service.items.right[i]);
-        }
-        $rootScope.$broadcast('navbar.change', false, {
-            current:{
-                params:{
-                    navId:$routeParams.navId,
-                    subNavId:$routeParams.subNavId
-                }
-            }
-        }, false);
-    }
-
-    return service;
-  });
 app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $modal) {
     var service={};
 
@@ -79583,190 +79656,97 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $mo
 
     return service;
   });
-app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
+app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
     var service={};
 
-    $rootScope.$on('project.delete',function(event, item){
-        MessageSvc.info('project/delete/success', {values:item});
-        service.goList();
+    $rootScope.$on('$routeChangeStart',function(event, current, previous){
+        service.init();
+        $rootScope.$broadcast('navbar.change', event, current, previous);
     });
 
-    $rootScope.$on('project.create',function(event, item){
-        MessageSvc.info('project/create/success', {values:item});
-        service.goItem(item.name);
-    });
+    function modifiItem(item){
+        var navItem={};
 
-    $rootScope.$on('project.update',function(event, item){
-        MessageSvc.info('project/update/success', {values:item});
-        service.goItem(item.name);
-    });
+        if (item.parent!=undefined && AppConst[item.parent]!=undefined && AppConst[item.parent][item.name]!=undefined)
+            navItem=AppConst[item.parent][item.name];
 
-    service.item={};
-    service.list=false;
+        if (AppConst[item.name]!=undefined)
+            navItem=AppConst[item.name];
 
-    service.countItemsOnRow=2;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
+        if (navItem.title!=undefined)
+            item.title=navItem.title;
 
-    service.title=AppConst.project.strings.title;
+        if (navItem.strings!=undefined && navItem.strings.title!=undefined)
+            item.title=navItem.strings.title;
 
-    service.init=function(reload){
-        NavbarSvc.init('project');
-
-        $q.all([
-            TagSvc.load(),
-            service.load()
-        ]).then(function(responseList) {
-
-        });
-    }
-
-    service.goList=function(){
-        $location.path('/project');
-    }
-
-    service.goItem=function(projectName){
-        $location.path('/project/'+projectName);
-    }
-
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
-            }
+        if (navItem.url!=undefined){
+            item.url=navItem.url;
         }
-    }
 
-	service.doCreate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 ProjectRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
-                        TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
-                    service.list.push(service.item);
-                    $rootScope.$broadcast('project.create', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doUpdate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 ProjectRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
-                        TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
-                    service.updateItemOnList(service.item);
+        if (navItem.urls!=undefined && navItem.urls.url!=undefined)
+            item.url=navItem.urls.url;
 
-                    $rootScope.$broadcast('project.update', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('project/remove/confirm', {values:[item.title]},
-         function(){
-             ProjectRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
-                            }
-                        }
-                        service.initEmptyItem();
-                        $rootScope.$broadcast('project.delete', item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
+        if (item.url===undefined)
+            item.url='/'+item.name;
 
-    service.doDeleteImage=function(index){
-        service.item.images.splice(index, 1);
-    }
-    service.doAddImage=function(text){
-        if (text===undefined)
-            text='';
-        if (service.item.images===undefined)
-            service.item.images=[];
-        service.item.images.push({
-            id: chance.guid(),
-            title: text
-        });
-    }
-    service.slugName=function(value){
-        service.item.name=getSlug(value, {
-            lang:'ru',
-            uric: true
-        });
-    }
-    service.initEmptyItem=function(){
-        service.item = {};
-        /*service.title = '';
-        service.name = '';
-        service.description = '';
-        service.url = '';
-        service.text = '';
-        service.html = '';
-        service.markdown = '';*/
-        service.item.type = 1;
-        service.item.tags = [];
-        service.item.images = [];
-    }
-    service.load=function(){
-        var deferred = $q.defer();
-        if ($routeParams.projectName!=undefined){
-            if (service.item.name!==$routeParams.projectName)
-                ProjectRes.getItem($routeParams.projectName).then(
-                    function (response) {
-                        service.item=angular.copy(response.data.data[0]);
-                        deferred.resolve(service.item);
-                        $rootScope.$broadcast('project.item.load', service.item);
-                    },
-                    function (response) {
-                        service.item={};
-                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                            MessageSvc.error(response.data.code, response.data);
-                        deferred.resolve(service.item);
-                    }
-                );
-        }else{
-            if (service.list===false){
-                ProjectRes.getList().then(function (response) {
-                    service.list=angular.copy(response.data.data);
-                    deferred.resolve(service.list);
-                    $rootScope.$broadcast('project.load', service.list);
-                }, function (response) {
-                    service.list=[];
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                    deferred.resolve(service.list);
-                });
-            }else
-                deferred.resolve(service.list);
+        if (item.click!=undefined){
+            item.url=false;
         }
-        return deferred.promise;
+
+        item.active=(item.name==$routeParams.navId);
+        if (item.hiddenHandler!=undefined)
+            item.hidden=item.hiddenHandler();
+        else
+            if (item.hidden===undefined)
+                item.hidden=false;
     }
+
+    service.goBack=function(){
+        if ($window.history.length>2)
+            $window.history.back();
+        else
+            service.goHome();
+    }
+    service.goHome=function(){
+        $location.path(AppConst.home.url);
+    }
+
+    service.init=function(navId, subNavId){
+        if (navId!=undefined)
+            $routeParams.navId=navId;
+        else
+        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
+            $routeParams.navId=$route.current.$$route.navId
+        else
+        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
+            $routeParams.navId=$route.current.params.navId;
+
+        if (subNavId!=undefined)
+            $routeParams.subNavId=subNavId;
+        else
+        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.subNavId!=undefined)
+            $routeParams.subNavId=$route.current.$$route.subNavId
+        else
+        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.subNavId!=undefined)
+            $routeParams.subNavId=$route.current.params.subNavId;
+
+        service.items=AppConst.navbar;
+        for (var i=0;i<service.items.left.length;i++){
+            modifiItem(service.items.left[i]);
+        }
+        for (var i=0;i<service.items.right.length;i++){
+            modifiItem(service.items.right[i]);
+        }
+        $rootScope.$broadcast('navbar.change', false, {
+            current:{
+                params:{
+                    navId:$routeParams.navId,
+                    subNavId:$routeParams.subNavId
+                }
+            }
+        }, false);
+    }
+
     return service;
   });
 app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc) {
@@ -79955,6 +79935,192 @@ app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $locati
     }
     return service;
   });
+app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
+    var service={};
+
+    $rootScope.$on('project.delete',function(event, item){
+        MessageSvc.info('project/delete/success', {values:item});
+        service.goList();
+    });
+
+    $rootScope.$on('project.create',function(event, item){
+        MessageSvc.info('project/create/success', {values:item});
+        service.goItem(item.name);
+    });
+
+    $rootScope.$on('project.update',function(event, item){
+        MessageSvc.info('project/update/success', {values:item});
+        service.goItem(item.name);
+    });
+
+    service.item={};
+    service.list=false;
+
+    service.countItemsOnRow=2;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
+
+    service.title=AppConst.project.strings.title;
+
+    service.init=function(reload){
+        NavbarSvc.init('project');
+
+        $q.all([
+            TagSvc.load(),
+            service.load()
+        ]).then(function(responseList) {
+
+        });
+    }
+
+    service.goList=function(){
+        $location.path('/project');
+    }
+
+    service.goItem=function(projectName){
+        $location.path('/project/'+projectName);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 ProjectRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('project.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 ProjectRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('project.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('project/remove/confirm', {values:[item.title]},
+         function(){
+             ProjectRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.initEmptyItem();
+                        $rootScope.$broadcast('project.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+
+    service.doDeleteImage=function(index){
+        service.item.images.splice(index, 1);
+    }
+    service.doAddImage=function(text){
+        if (text===undefined)
+            text='';
+        if (service.item.images===undefined)
+            service.item.images=[];
+        service.item.images.push({
+            id: chance.guid(),
+            title: text
+        });
+    }
+    service.slugName=function(value){
+        service.item.name=getSlug(value, {
+            lang:'ru',
+            uric: true
+        });
+    }
+    service.initEmptyItem=function(){
+        service.item = {};
+        /*service.title = '';
+        service.name = '';
+        service.description = '';
+        service.url = '';
+        service.text = '';
+        service.html = '';
+        service.markdown = '';*/
+        service.item.type = 1;
+        service.item.tags = [];
+        service.item.images = [];
+    }
+    service.load=function(){
+        var deferred = $q.defer();
+        if ($routeParams.projectName!=undefined){
+            if (service.item.name!==$routeParams.projectName)
+                ProjectRes.getItem($routeParams.projectName).then(
+                    function (response) {
+                        service.item=angular.copy(response.data.data[0]);
+                        deferred.resolve(service.item);
+                        $rootScope.$broadcast('project.item.load', service.item);
+                    },
+                    function (response) {
+                        service.item={};
+                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                            MessageSvc.error(response.data.code, response.data);
+                        deferred.resolve(service.item);
+                    }
+                );
+        }else{
+            if (service.list===false){
+                ProjectRes.getList().then(function (response) {
+                    service.list=angular.copy(response.data.data);
+                    deferred.resolve(service.list);
+                    $rootScope.$broadcast('project.load', service.list);
+                }, function (response) {
+                    service.list=[];
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                    deferred.resolve(service.list);
+                });
+            }else
+                deferred.resolve(service.list);
+        }
+        return deferred.promise;
+    }
+    return service;
+  });
 app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes) {
     var service={};
 
@@ -79985,12 +80151,15 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
 
         if ($routeParams.searchText!=undefined){
             service.allList=[];
+            service.allListSumSize=0;
             $q.all([
                 TagSvc.load(),
                 ProjectRes.getSearch($routeParams.searchText),
                 PostRes.getSearch($routeParams.searchText)
             ]).then(function(responseList) {
                 for (var i=1;i<responseList.length;i++){
+                    if (responseList[i].data.data && responseList[i].data.data.length>0)
+                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
                     if (i==1)
                         service.allList.push({
                             name: 'project',
@@ -80007,9 +80176,10 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
     }
     return service;
   });
-app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, NavbarSvc) {
+app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
     var service={};
 
+    service.item={};
     service.list=false;
     service.allList=false;
 
@@ -80026,19 +80196,143 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
         }
     });
 
-    service.init=function(reload){
-        NavbarSvc.init('tag');
 
+    service.initEmptyItem=function(){
+        service.item = {};
+        service.item.text = '';
+        service.item.description='';
+    }
+
+    service.showCreate=function(){
+        service.mode='create';
+        service.initEmptyItem();
+        var boxOptions = {
+            title: 'Add new tag',
+            confirmTemplate: 'views/manager/tag/create.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Create',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doCreate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'tagCreate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.selectItem=function(item){
+        service.item=angular.copy(item);
+    }
+
+    service.showUpdate=function(item){
+        service.mode='update';
+        service.item=angular.copy(item);
+        var boxOptions = {
+            title: 'Edit properties',
+            confirmTemplate: 'views/manager/tag/update.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Save',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doUpdate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'tagUpdate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		TagRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('tag.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		TagRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('tag.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('tag/remove/confirm', {values:[item.src]},
+         function(){
+             TagRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.item={};
+                        $rootScope.$broadcast('tag.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+    
+    service.init=function(reload){
         service.tagText=$routeParams.tagText;
 
         if ($routeParams.tagText!=undefined){
+            NavbarSvc.init('tag');
             service.allList=[];
+            service.allListSumSize=0;
             $q.all([
                 service.load(),
                 ProjectRes.getListByTag($routeParams.tagText),
                 PostRes.getListByTag($routeParams.tagText)
             ]).then(function(responseList) {
                 for (var i=1;i<responseList.length;i++){
+                    if (responseList[i].data.data && responseList[i].data.data.length>0)
+                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
                     if (i==1)
                         service.allList.push({
                             name: 'project',
@@ -80050,6 +80344,13 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
                             list: responseList[i].data.data
                         });
                 }
+            });
+        }else{
+            NavbarSvc.init($routeParams.navId);
+            $q.all([
+                service.load()
+            ]).then(function(responseList) {
+    
             });
         }
     }
@@ -80241,6 +80542,163 @@ app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modal
     }
     return service;
   });
+app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
+    var service={};
+
+    service.item={};
+    service.list=false;
+
+    service.initEmptyItem=function(){
+        service.item = {};
+        service.item.name = '';
+        service.item.value = '';
+        service.item.comment = '';
+    }
+
+    service.showCreate=function(){
+        service.mode='create';
+        service.initEmptyItem();
+        var boxOptions = {
+            title: 'Add new properties',
+            confirmTemplate: 'views/manager/properties/create.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Create',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doCreate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'propertiesCreate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.selectItem=function(item){
+        service.item=angular.copy(item);
+    }
+
+    service.showUpdate=function(item){
+        service.mode='update';
+        service.item=angular.copy(item);
+        var boxOptions = {
+            title: 'Edit properties',
+            confirmTemplate: 'views/manager/properties/update.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Save',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doUpdate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'propertiesUpdate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		PropertiesRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('properties.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		PropertiesRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('properties.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('properties/remove/confirm', {values:[item.src]},
+         function(){
+             PropertiesRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.item={};
+                        $rootScope.$broadcast('properties.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+    
+    service.load=function(){
+        var deferred = $q.defer();
+        if (service.list===false){
+            PropertiesRes.getList().then(function (response) {
+                service.list=angular.copy(response.data.data);
+                deferred.resolve(service.list);
+                $rootScope.$broadcast('properties.load', service.list);
+            }, function (response) {
+                service.list=[];
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+                deferred.resolve(service.list);
+            });
+        }else
+            deferred.resolve(service.list);
+        return deferred.promise;
+    }
+
+    service.init=function(reload){
+        NavbarSvc.init($routeParams.navId);
+
+        $q.all([
+            service.load()
+        ]).then(function(responseList) {
+
+        });
+    }
+    return service;
+  });
 app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
     var service={};
 
@@ -80403,163 +80861,6 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
     }
     return service;
   });
-app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
-    var service={};
-
-    service.item={};
-    service.list=false;
-
-    service.initEmptyItem=function(){
-        service.item = {};
-        service.item.name = '';
-        service.item.value = '';
-        service.item.comment = '';
-    }
-
-    service.showCreate=function(){
-        service.mode='create';
-        service.initEmptyItem();
-        var boxOptions = {
-            title: 'Add new properties',
-            confirmTemplate: 'views/manager/properties/create.modal.html',
-            size: 'lg',
-            boxType: 'confirm',
-            theme: 'alert',
-            effect: false,
-            confirmText: 'Create',
-            cancelText: 'Cancel',
-            afterConfirm: function(){
-                service.doCreate(service.item);
-            },
-            afterCancel: function(){
-
-            },
-            prefixEvent: 'propertiesCreate'
-        }
-        $modalBox(boxOptions);
-    }
-
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
-
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
-        var boxOptions = {
-            title: 'Edit properties',
-            confirmTemplate: 'views/manager/properties/update.modal.html',
-            size: 'lg',
-            boxType: 'confirm',
-            theme: 'alert',
-            effect: false,
-            confirmText: 'Save',
-            cancelText: 'Cancel',
-            afterConfirm: function(){
-                service.doUpdate(service.item);
-            },
-            afterCancel: function(){
-
-            },
-            prefixEvent: 'propertiesUpdate'
-        }
-        $modalBox(boxOptions);
-    }
-
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
-            }
-        }
-    }
-
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		PropertiesRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    service.list.push(service.item);
-                    $rootScope.$broadcast('properties.create', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		PropertiesRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    service.updateItemOnList(service.item);
-
-                    $rootScope.$broadcast('properties.update', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('properties/remove/confirm', {values:[item.src]},
-         function(){
-             PropertiesRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
-                            }
-                        }
-                        service.item={};
-                        $rootScope.$broadcast('properties.delete', item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(){
-        var deferred = $q.defer();
-        if (service.list===false){
-            PropertiesRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
-                deferred.resolve(service.list);
-                $rootScope.$broadcast('properties.load', service.list);
-            }, function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-                deferred.resolve(service.list);
-            });
-        }else
-            deferred.resolve(service.list);
-        return deferred.promise;
-    }
-
-    service.init=function(reload){
-        NavbarSvc.init($routeParams.navId);
-
-        $q.all([
-            service.load()
-        ]).then(function(responseList) {
-
-        });
-    }
-    return service;
-  });
 app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc) {
     $scope.AppConfig=AppConfig;
 
@@ -80591,14 +80892,6 @@ app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc
 app.controller('FileCtrl', function ($scope, FileSvc) {
 	$scope.FileSvc=FileSvc;
 });
-app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc, PublicLinkSvc) {
-	$scope.NavbarSvc=NavbarSvc;
-	$scope.SearchSvc=SearchSvc;
-	$scope.PublicLinkSvc=PublicLinkSvc;
-
-    PublicLinkSvc.load();
-    NavbarSvc.init();
-});
 app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.ProjectSvc=ProjectSvc;
@@ -80611,13 +80904,13 @@ app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, Acco
 	PostSvc.load();
     NavbarSvc.init('home');
 });
-app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc) {
-    $scope.AccountSvc=AccountSvc;
-	$scope.ProjectSvc=ProjectSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.FileSvc=FileSvc;
+app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc, PublicLinkSvc) {
+	$scope.NavbarSvc=NavbarSvc;
+	$scope.SearchSvc=SearchSvc;
+	$scope.PublicLinkSvc=PublicLinkSvc;
 
-	ProjectSvc.init();
+    PublicLinkSvc.load();
+    NavbarSvc.init();
 });
 app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagSvc, FileSvc) {
     $scope.AccountSvc=AccountSvc;
@@ -80626,6 +80919,14 @@ app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagS
 	$scope.FileSvc=FileSvc;
 
 	PostSvc.init();
+});
+app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.FileSvc=FileSvc;
+
+	ProjectSvc.init();
 });
 app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
@@ -80653,15 +80954,6 @@ app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, Accoun
     TagSvc.load();
 	MetaTagSvc.init();
 });
-app.controller('PublicLinkCtrl', function ($scope, PublicLinkSvc, $routeParams, AccountSvc, TagSvc) {
-	$scope.PublicLinkSvc=PublicLinkSvc;
-	$scope.AccountSvc=AccountSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.$routeParams=$routeParams;
-
-    TagSvc.load();
-	PublicLinkSvc.init();
-});
 app.controller('PropertiesCtrl', function ($scope, PropertiesSvc, $routeParams, AccountSvc, TagSvc) {
 	$scope.PropertiesSvc=PropertiesSvc;
 	$scope.AccountSvc=AccountSvc;
@@ -80670,6 +80962,15 @@ app.controller('PropertiesCtrl', function ($scope, PropertiesSvc, $routeParams, 
 
     TagSvc.load();
 	PropertiesSvc.init();
+});
+app.controller('PublicLinkCtrl', function ($scope, PublicLinkSvc, $routeParams, AccountSvc, TagSvc) {
+	$scope.PublicLinkSvc=PublicLinkSvc;
+	$scope.AccountSvc=AccountSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.$routeParams=$routeParams;
+
+    TagSvc.load();
+	PublicLinkSvc.init();
 });
 jQuery(document).ready(function($) {
 

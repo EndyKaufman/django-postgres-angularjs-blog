@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from app.home import helpers
 from jsonview.decorators import json_view
 from project import helpers
 import helpers as public_link_helpers
