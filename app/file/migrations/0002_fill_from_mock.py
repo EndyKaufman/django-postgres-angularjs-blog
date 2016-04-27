@@ -18,7 +18,7 @@ def fill_from_mock(apps, schema_editor):
     records = json.loads(content)
 
     File = apps.get_model("file", "File")
-    File.objects.all().delete()
+
     for record in records:
         file, created = File.objects.get_or_create(pk=record['id'], src=record['src'], comment=record['comment'])
 

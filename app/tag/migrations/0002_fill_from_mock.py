@@ -16,7 +16,7 @@ def fill_from_mock(apps, schema_editor):
     records = json.loads(content)
 
     Tag = apps.get_model("tag", "Tag")
-    Tag.objects.all().delete()
+
     for record in records:
         tag, created = Tag.objects.get_or_create(text=record['text'])
 

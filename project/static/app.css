@@ -1739,6 +1739,9 @@ aside.tags .content {
 .cursor-pointer {
   cursor: pointer; }
 
+.break-word {
+  word-break: break-word; }
+
 .carousel-control.right, .carousel-control.left {
   cursor: pointer; }
 
@@ -1891,6 +1894,20 @@ a.dotted-link {
 a.dotted-link:hover {
   text-decoration: none;
   color: #49515a;
+}
+a.list-link {
+  color: #778492;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -ms-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+}
+a.list-link:hover {
+  text-decoration: underline;
+  color: #5f6b77;
+}
+a.list-link:focus {
+  text-decoration: none;
 }
 /*
 iframe {
