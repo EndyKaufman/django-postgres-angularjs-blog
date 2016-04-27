@@ -9,21 +9,20 @@
 <html class="no-js" lang="en" ng-app="app" ng-controller="AppCtrl"> <!--<![endif]-->
 <head>
     {% load staticfiles %}
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     {% for meta_tag_item in meta_tag_list %}{% if meta_tag_item.content != '' %}
     <meta name="{{ meta_tag_item.name }}" content="{{ meta_tag_item.content }}" {{ meta_tag_item.attributes }}/>
         {% endif %}{% endfor %}
-    <title>{{ properties_list.SITE_TITLE }}</title>
-
+    <title ng-bind="AppSvc.item.title">{{ properties_list.SITE_TITLE }}</title>
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
     </script>
-    <meta name="description" content="{{ properties_list.SITE_DESCRIPTION }}">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'app.css' %}">
+    {% verbatim %}<meta name="description" content="{{ AppSvc.item.description }}"/>{% endverbatim %}
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{% static 'app.css' %}"/>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>

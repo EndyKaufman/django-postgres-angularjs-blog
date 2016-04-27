@@ -76931,6 +76931,142 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading">\n' +
+    '                        Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span>\n' +
+    '                    </h1>\n' +
+    '                    <div class="content" ng-if="TagSvc.allListSumSize==0">\n' +
+    '                        No results found...\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '            <div ng-repeat="allItem in TagSvc.allList" ng-if="TagSvc.allListSumSize>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '            </div>\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/tag/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/tag/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/search/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading">\n' +
+    '                        Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"\n' +
+    '                    </h1>\n' +
+    '                    <div class="content" ng-if="SearchSvc.allListSumSize==0">\n' +
+    '                        No results found...\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '            <div ng-repeat="allItem in SearchSvc.allList" ng-if="SearchSvc.allListSumSize>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '            </div>\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/search/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/search/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
 	a.put('views/project/update.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
     '    <form name="projectForm">\n' +
@@ -77496,142 +77632,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//row-->\n' +
     '    </form>\n' +
     '</div><!--//masonry-->');
-	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span>\n' +
-    '                    </h1>\n' +
-    '                    <div class="content" ng-if="TagSvc.allListSumSize==0">\n' +
-    '                        No results found...\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '            <div ng-repeat="allItem in TagSvc.allList" ng-if="TagSvc.allListSumSize>0">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '            </div>\n' +
-    '\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/tag/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/tag/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/search/list.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"\n' +
-    '                    </h1>\n' +
-    '                    <div class="content" ng-if="SearchSvc.allListSumSize==0">\n' +
-    '                        No results found...\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '            <div ng-repeat="allItem in SearchSvc.allList" ng-if="SearchSvc.allListSumSize>0">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '            </div>\n' +
-    '\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/search/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/search/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
 	a.put('views/message/prompt.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content">\n' +
@@ -77708,76 +77708,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            </button>\n' +
     '        </div>\n' +
     '    </div>\n' +
-    '</div>');
-	a.put('views/home/list.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
-    '                    </h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-projects.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
-    '                    </h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-posts.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/home/list-tags.html', '<ul class="list-unstyled">\n' +
-    '    <li ng-repeat="tag in TagSvc.list | limitTo:TagSvc.limitOnHome">\n' +
-    '        <i class="fa fa-tag"></i> <a ng-href="{{\'/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
-    '                                     ng-bind-html="tag.text | unsafe"></a></li>\n' +
-    '</ul>\n' +
-    '<a class="btn btn-default btn-block" ng-click="TagSvc.limitOnHome=10000" ng-if="TagSvc.limitOnHome<10000">Show all <i\n' +
-    '        class="fa fa-chevron-down"></i></a>\n' +
-    '');
-	a.put('views/home/list-projects.html', '<div class="item row" ng-repeat="item in ProjectSvc.list | limitTo:ProjectSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/home/list-posts.html', '<div class="item row" ng-repeat="item in PostSvc.list | limitTo:PostSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
     '</div>');
 	a.put('views/manager/tag.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
@@ -77970,6 +77900,76 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <li ng-if="$routeParams.subNavId!=\'properties\'"><i class="fa fa-link"></i> <a ng-href="/manager/properties">Properties</a></li>\n' +
     '    <li ng-if="$routeParams.subNavId!=\'users\'"><i class="fa fa-link"></i> <a ng-href="/manager/users">Users</a></li>\n' +
     '</ul>');
+	a.put('views/home/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
+    '                    </h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-projects.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                    </h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-posts.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/home/list-tags.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-repeat="tag in TagSvc.list | limitTo:TagSvc.limitOnHome">\n' +
+    '        <i class="fa fa-tag"></i> <a ng-href="{{\'/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
+    '                                     ng-bind-html="tag.text | unsafe"></a></li>\n' +
+    '</ul>\n' +
+    '<a class="btn btn-default btn-block" ng-click="TagSvc.limitOnHome=10000" ng-if="TagSvc.limitOnHome<10000">Show all <i\n' +
+    '        class="fa fa-chevron-down"></i></a>\n' +
+    '');
+	a.put('views/home/list-projects.html', '<div class="item row" ng-repeat="item in ProjectSvc.list | limitTo:ProjectSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/project">All projects <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/home/list-posts.html', '<div class="item row" ng-repeat="item in PostSvc.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/home/content.html', '<div class="container">\n' +
+    '    <div class="page-header">\n' +
+    '        <h1>Page header</h1>\n' +
+    '    </div>\n' +
+    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
+    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
+    '</div>');
 	a.put('views/file/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content" ng-controller="FileCtrl">\n' +
@@ -78643,11 +78643,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/header.html', '<!-- ******HEADER****** -->\n' +
     '<header class="header" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
-    '        <img class="profile-image cursor-pointer img-responsive img-circle pull-left" ng-src="{{PropertiesSvc.listOfNames.SITE_LOGO.value}}"\n' +
-    '             alt="{{PropertiesSvc.listOfNames.SITE_TITLE.value}}" ng-if="PropertiesSvc.listOfNames.SITE_LOGO.value" ng-click="NavbarSvc.goHome()"/>\n' +
+    '        <img class="profile-image cursor-pointer img-responsive img-circle pull-left"\n' +
+    '             ng-src="{{PropertiesSvc.listOfNames.SITE_LOGO.value}}"\n' +
+    '             alt="{{PropertiesSvc.listOfNames.SITE_TITLE.value}}" ng-if="PropertiesSvc.listOfNames.SITE_LOGO.value"\n' +
+    '             ng-click="NavbarSvc.goHome()"/>\n' +
     '        <div class="profile-content pull-left">\n' +
-    '            <h1 class="name cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_TITLE.value | unsafe" ng-click="NavbarSvc.goHome()"></h1>\n' +
-    '            <h2 class="desc cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_DESCRIPTION.value | unsafe" ng-click="NavbarSvc.goHome()"></h2>\n' +
+    '            <h1 class="name cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_TITLE.value | unsafe"\n' +
+    '                ng-click="NavbarSvc.goHome()"></h1>\n' +
+    '            <h2 class="desc cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_DESCRIPTION.value | unsafe"\n' +
+    '                ng-click="NavbarSvc.goHome()"></h2>\n' +
     '            <ul class="social list-inline" ng-if="PublicLinkSvc.list.length>0">\n' +
     '                <li ng-class="$last ? \'last-item\' : \'\'"\n' +
     '                    ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_header">\n' +
@@ -78866,35 +78870,6 @@ app.factory('FileRes', function ($q, AppConst, uiUploader, AppRes) {
 
     return service;
   });
-app.factory('PostRes', function (AppConst, AppRes) {
-    var service={};
-
-    service.getItem=function(name){
-        return AppRes.get('/api/v1/post/item/'+name);
-    };
-    service.getList=function(){
-        return AppRes.get('/api/v1/post/list');
-    };
-    service.getSearch=function(searchText){
-        if (searchText==undefined)
-            searchText='all';
-        return AppRes.get('/api/v1/post/search/'+searchText);
-    };
-    service.getListByTag=function(tagText){
-        return AppRes.get('/api/v1/post/listbytag/'+tagText);
-    };
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/post/update/'+item.id, item);
-    }
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/post/create', item);
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/post/delete/'+item.id, item);
-    }
-
-    return service;
-  });
 app.factory('ProjectRes', function (AppConst, AppRes) {
     var service={};
 
@@ -78920,6 +78895,35 @@ app.factory('ProjectRes', function (AppConst, AppRes) {
     }
     service.actionDelete=function(item){
         return AppRes.post('/api/v1/project/delete/'+item.id, item);
+    }
+
+    return service;
+  });
+app.factory('PostRes', function (AppConst, AppRes) {
+    var service={};
+
+    service.getItem=function(name){
+        return AppRes.get('/api/v1/post/item/'+name);
+    };
+    service.getList=function(){
+        return AppRes.get('/api/v1/post/list');
+    };
+    service.getSearch=function(searchText){
+        if (searchText==undefined)
+            searchText='all';
+        return AppRes.get('/api/v1/post/search/'+searchText);
+    };
+    service.getListByTag=function(tagText){
+        return AppRes.get('/api/v1/post/listbytag/'+tagText);
+    };
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/post/update/'+item.id, item);
+    }
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/post/create', item);
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/post/delete/'+item.id, item);
     }
 
     return service;
@@ -79004,12 +79008,23 @@ app.factory('PublicLinkRes', function ($q, AppConst, AppRes) {
 
     return service;
   });
-app.factory('AppSvc', function () {
+app.factory('AppSvc', function ($rootScope, $q, PropertiesSvc) {
     var service={};
 
-    service.init=function(reload){
+    service.item={
+        title:'',
+        description:''
+    };
+
+    service.init=function(){
+        $q.all([
+            PropertiesSvc.load()
+        ]).then(function(responseList) {
+            service.item.title=PropertiesSvc.listOfNames.SITE_TITLE.value;
+            service.item.description=PropertiesSvc.listOfNames.SITE_DESCRIPTION.value;
+        });
     }
-    service.init();    
+
     return service;
   });
 app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
@@ -79470,6 +79485,26 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
 
     return service;
   });
+app.factory('HomeSvc', function ($q, NavbarSvc, PropertiesSvc, AppSvc, TagSvc, PostSvc, ProjectSvc, PropertiesSvc) {
+    var service={};
+
+    service.init=function(reload){
+        NavbarSvc.init('home');
+
+        $q.all([
+            PropertiesSvc.load(),
+            TagSvc.load(),
+            ProjectSvc.load(),
+            PostSvc.load()
+        ]).then(function(responseList) {
+            service.title=PropertiesSvc.listOfNames.SITE_TITLE.value;
+            AppSvc.item.title=PropertiesSvc.listOfNames.SITE_TITLE.value;
+            AppSvc.item.description=PropertiesSvc.listOfNames.SITE_DESCRIPTION.value;
+        });
+
+    }
+    return service;
+  });
 app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $modal) {
     var service={};
 
@@ -79737,193 +79772,6 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
 
     return service;
   });
-app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc) {
-    var service={};
-
-    $rootScope.$on('post.delete',function(event, item){
-        MessageSvc.info('post/delete/success', {values:item});
-        service.goList();
-    });
-
-    $rootScope.$on('post.create',function(event, item){
-        MessageSvc.info('post/create/success', {values:item});
-        service.goItem(item.name);
-    });
-
-    $rootScope.$on('post.update',function(event, item){
-        MessageSvc.info('post/update/success', {values:item});
-        service.goItem(item.name);
-    });
-
-    service.item={};
-    service.list=[];
-
-    service.countItemsOnRow=2;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
-
-    service.title=AppConst.post.strings.title;
-
-    service.init=function(reload){
-        NavbarSvc.init('post');
-
-        $q.all([
-            TagSvc.load(),
-            service.load()
-        ]).then(function(responseList) {
-
-        });
-    }
-
-    service.goList=function(){
-        $location.path('/post');
-    }
-
-    service.goItem=function(postName){
-        $location.path('/post/'+postName);
-    }
-
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
-            }
-        }
-    }
-
-	service.doCreate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 PostRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
-                        TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
-                    service.list.push(service.item);
-                    $rootScope.$broadcast('post.create', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doUpdate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 PostRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
-                        TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
-                    service.updateItemOnList(service.item);
-
-                    $rootScope.$broadcast('post.update', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('post/remove/confirm', {values:[item.title]},
-         function(){
-             PostRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
-                            }
-                        }
-                        service.initEmptyItem();
-                        $rootScope.$broadcast('post.delete', item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-
-    service.doDeleteImage=function(index){
-        service.item.images.splice(index, 1);
-    }
-    service.doAddImage=function(text){
-        if (text===undefined)
-            text='';
-        if (service.item.images===undefined)
-            service.item.images=[];
-        service.item.images.push({
-            id: chance.guid(),
-            title: text
-        });
-    }
-    service.slugName=function(value){
-        service.item.name=getSlug(value, {
-            lang:'ru',
-            uric: true
-        });
-    }
-    service.initEmptyItem=function(){
-        service.item = {};
-        /*service.title = '';
-        service.name = '';
-        service.description = '';
-        service.url = '';
-        service.text = '';
-        service.html = '';
-        service.markdown = '';*/
-        service.item.type = 1;
-        service.item.tags = [];
-        service.item.images = [];
-    }
-    service.load=function(reload){
-        var deferred = $q.defer();
-        if ($routeParams.postName!=undefined){
-            if (service.item.name!==$routeParams.postName)
-                PostRes.getItem($routeParams.postName).then(
-                    function (response) {
-                        service.item=angular.copy(response.data.data[0]);
-                        deferred.resolve(service.item);
-                        $rootScope.$broadcast('post.item.load', service.item);
-                    },
-                    function (response) {
-                        service.item={};
-                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                            MessageSvc.error(response.data.code, response.data);
-                        deferred.resolve(service.item);
-                    }
-                );
-        }else{
-            if (service.loaded!==true || reload===true){
-                service.loaded=true;
-                PostRes.getList().then(function (response) {
-                    service.list=angular.copy(response.data.data);
-                    deferred.resolve(service.list);
-                    $rootScope.$broadcast('post.load', service.list);
-                }, function (response) {
-                    service.list=[];
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                    deferred.resolve(service.list);
-                });
-            }else
-                deferred.resolve(service.list);
-        }
-        return deferred.promise;
-    }
-    return service;
-  });
 app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
     var service={};
 
@@ -80163,6 +80011,193 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
                 }
             });
         }
+    }
+    return service;
+  });
+app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc) {
+    var service={};
+
+    $rootScope.$on('post.delete',function(event, item){
+        MessageSvc.info('post/delete/success', {values:item});
+        service.goList();
+    });
+
+    $rootScope.$on('post.create',function(event, item){
+        MessageSvc.info('post/create/success', {values:item});
+        service.goItem(item.name);
+    });
+
+    $rootScope.$on('post.update',function(event, item){
+        MessageSvc.info('post/update/success', {values:item});
+        service.goItem(item.name);
+    });
+
+    service.item={};
+    service.list=[];
+
+    service.countItemsOnRow=2;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
+
+    service.title=AppConst.post.strings.title;
+
+    service.init=function(reload){
+        NavbarSvc.init('post');
+
+        $q.all([
+            TagSvc.load(),
+            service.load()
+        ]).then(function(responseList) {
+
+        });
+    }
+
+    service.goList=function(){
+        $location.path('/post');
+    }
+
+    service.goItem=function(postName){
+        $location.path('/post/'+postName);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 PostRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('post.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 PostRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('post.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('post/remove/confirm', {values:[item.title]},
+         function(){
+             PostRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.initEmptyItem();
+                        $rootScope.$broadcast('post.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+
+    service.doDeleteImage=function(index){
+        service.item.images.splice(index, 1);
+    }
+    service.doAddImage=function(text){
+        if (text===undefined)
+            text='';
+        if (service.item.images===undefined)
+            service.item.images=[];
+        service.item.images.push({
+            id: chance.guid(),
+            title: text
+        });
+    }
+    service.slugName=function(value){
+        service.item.name=getSlug(value, {
+            lang:'ru',
+            uric: true
+        });
+    }
+    service.initEmptyItem=function(){
+        service.item = {};
+        /*service.title = '';
+        service.name = '';
+        service.description = '';
+        service.url = '';
+        service.text = '';
+        service.html = '';
+        service.markdown = '';*/
+        service.item.type = 1;
+        service.item.tags = [];
+        service.item.images = [];
+    }
+    service.load=function(reload){
+        var deferred = $q.defer();
+        if ($routeParams.postName!=undefined){
+            if (service.item.name!==$routeParams.postName)
+                PostRes.getItem($routeParams.postName).then(
+                    function (response) {
+                        service.item=angular.copy(response.data.data[0]);
+                        deferred.resolve(service.item);
+                        $rootScope.$broadcast('post.item.load', service.item);
+                    },
+                    function (response) {
+                        service.item={};
+                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                            MessageSvc.error(response.data.code, response.data);
+                        deferred.resolve(service.item);
+                    }
+                );
+        }else{
+            if (service.loaded!==true || reload===true){
+                service.loaded=true;
+                PostRes.getList().then(function (response) {
+                    service.list=angular.copy(response.data.data);
+                    deferred.resolve(service.list);
+                    $rootScope.$broadcast('post.load', service.list);
+                }, function (response) {
+                    service.list=[];
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                    deferred.resolve(service.list);
+                });
+            }else
+                deferred.resolve(service.list);
+        }
+        return deferred.promise;
     }
     return service;
   });
@@ -80874,7 +80909,7 @@ app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountS
 	$scope.MessageSvc=MessageSvc;
 	$scope.PropertiesSvc=PropertiesSvc;
 
-	PropertiesSvc.load();
+	AppSvc.init();
 });
 app.controller('AccountCtrl', function ($scope, $routeParams, AccountSvc, TagSvc, ProjectSvc) {
     $scope.AccountSvc=AccountSvc;
@@ -80899,17 +80934,14 @@ app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc
 app.controller('FileCtrl', function ($scope, FileSvc) {
 	$scope.FileSvc=FileSvc;
 });
-app.controller('HomeCtrl', function ($scope, $timeout, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
+app.controller('HomeCtrl', function ($scope, HomeSvc, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.ProjectSvc=ProjectSvc;
 	$scope.PostSvc=PostSvc;
 	$scope.TagSvc=TagSvc;
 	$scope.FileSvc=FileSvc;
 
-	TagSvc.load();
-	ProjectSvc.load();
-	PostSvc.load();
-    NavbarSvc.init('home');
+    HomeSvc.init();
 });
 app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc, PublicLinkSvc) {
 	$scope.NavbarSvc=NavbarSvc;
@@ -80918,14 +80950,6 @@ app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc, PublicLinkS
 
     PublicLinkSvc.load();
     NavbarSvc.init();
-});
-app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagSvc, FileSvc) {
-    $scope.AccountSvc=AccountSvc;
-	$scope.PostSvc=PostSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.FileSvc=FileSvc;
-
-	PostSvc.init();
 });
 app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc) {
     $scope.AccountSvc=AccountSvc;
@@ -80943,6 +80967,14 @@ app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, Pr
 	$scope.PostSvc=PostSvc;
 
 	SearchSvc.init();
+});
+app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagSvc, FileSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.FileSvc=FileSvc;
+
+	PostSvc.init();
 });
 app.controller('TagCtrl', function ($scope, $routeParams, TagSvc, AccountSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
