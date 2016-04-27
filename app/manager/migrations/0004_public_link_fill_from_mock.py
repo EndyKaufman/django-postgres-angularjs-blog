@@ -16,7 +16,7 @@ def fill_from_mock(apps, schema_editor):
     records = json.loads(content)
 
     PublicLink = apps.get_model("manager", "PublicLink")
-
+    PublicLink.objects.all().delete()
     for record in records:
         item, created = PublicLink.objects.get_or_create(src=record['src'], title=record['title'],
                                                          description=record['description'],

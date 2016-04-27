@@ -17,11 +17,14 @@ def fill_from_mock(apps, schema_editor):
     records = json.loads(content)
 
     Properties = apps.get_model("manager", "Properties")
-
+    Properties.objects.all().delete()
     for record in records:
         record = helpers.setNullValuesIfNotExist(record, ['name', 'value', 'comment', 'only_update'])
-        item, created = Properties.objects.get_or_create(name=record['name'], value=record['value'],
-                                                         comment=record['comment'], only_update=record['only_update'])
+        item, created = Properties.objects.get_or_create(name=record['name'])
+        item.value = record['value']
+        item.comment = record['comment']
+        item.only_update = record['only_update']
+        item.save()
 
 
 class Migration(migrations.Migration):

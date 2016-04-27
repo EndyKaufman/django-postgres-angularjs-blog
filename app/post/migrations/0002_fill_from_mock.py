@@ -16,7 +16,7 @@ def fill_from_mock(apps, schema_editor):
     records = json.loads(content)
 
     Post = apps.get_model("post", "Post")
-
+    Post.objects.all().delete()
     Image = apps.get_model("image", "Image")
     Tag = apps.get_model("tag", "Tag")
 

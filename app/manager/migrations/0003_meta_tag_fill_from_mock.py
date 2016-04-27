@@ -16,10 +16,12 @@ def fill_from_mock(apps, schema_editor):
     records = json.loads(content)
 
     MetaTag = apps.get_model("manager", "MetaTag")
-
+    MetaTag.objects.all().delete()
     for record in records:
-        item, created = MetaTag.objects.get_or_create(name=record['name'], content=record['content'],
-                                                      attributes=record['attributes'])
+        item, created = MetaTag.objects.get_or_create(name=record['name'])
+        item.content = record['content']
+        item.attributes = record['attributes']
+        item.save()
 
 
 class Migration(migrations.Migration):
