@@ -76007,37 +76007,42 @@ app.config(function ($selectProvider, showErrorsConfigProvider, $carouselProvide
 app.constant('AccountConst',{
     reg:{
         title: 'Reg',
-        name: 'reg'
+        name: 'reg',
+        description: 'Registration on site'
     },
     login:{
         title: 'Login',
-        name: 'login'
+        name: 'login',
+        description: 'Authorization on site'
     },
     logout:{
         title: 'Logout',
-        name: 'logout'
+        name: 'logout',
+        description: 'Logout from site'
     },
     profile:{
         title: 'Profile',
-        name: 'profile'
+        name: 'profile',
+        description: 'Profile of user'
     },
     recovery:{
         name: 'Recovery',
-        name: 'recovery'
+        name: 'recovery',
+        description: 'Recovery access to site'
     },
     message:{
         'account/exists':'User with email <strong>%s</strong> is exists!',
-        'account/noemail':'Email is empty!',
-        'account/nopassword':'Password is empty!',
-        'account/wrongemail':'Email is incorrect!',
-        'account/usernotfound':'User not founded!',
-        'account/wrongpassword':'Wrong password!',
-        'account/notactive':'User not activated!',
-        'account/younotactive':'You not activated!',
+        'account/no_email':'Email is empty!',
+        'account/no_password':'Password is empty!',
+        'account/wrong_email':'Email is incorrect!',
+        'account/user_not_found':'User not founded!',
+        'account/wrong_password':'Wrong password!',
+        'account/not_active':'User not activated!',
+        'account/you_not_active':'You not activated!',
         'account/login/success':'You authorizing!',
         'account/logout/success':'Bye-Bye!',
         'account/logout/confirm':'Do you really want to leave?',
-        'account/usernotfound':'User with email <strong>%s</strong> not found!',
+        'account/user_not_found':'User with email <strong>%s</strong> not found!',
         'account/recovery/checkemail':'Check email <strong>%s</strong> for code to reset password',
         'account/delete/confirm':'Do you really want to delete account?'
     }
@@ -76049,7 +76054,8 @@ app.constant('BookmarkConst', {
 });
 app.constant('ContactConst',{
     strings:{
-        title: 'Contact us'
+        title: 'Contact us',
+        description: 'Contact us'
     }
 });
 app.constant('FileConst', {
@@ -76064,19 +76070,23 @@ app.constant('ManagerConst', {
     },
     meta_tag:{
         title: 'Meta tags',
-        name: 'meta_tag'
+        name: 'meta_tag',
+        description: 'Meta tags'
     },
     tag:{
         title: 'Tags',
-        name: 'tag'
+        name: 'tag',
+        description: 'Tags'
     },
     public_link:{
         title: 'Public links',
-        name: 'public_link'
+        name: 'public_link',
+        description: 'Public links'
     },
     properties:{
         title: 'Properties',
-        name: 'properties'
+        name: 'properties',
+        description: 'Properties'
     },
     message:{
     }
@@ -76129,12 +76139,14 @@ app.constant('ProjectConst', {
 });
 app.constant('SearchConst', {
     strings:{
-        title:'Search'
+        title:'Search',
+        description: 'Search descriptions'
     }
 });
 app.constant('TagConst', {
     strings:{
-        title:'My tags'
+        title:'Tags',
+        description: 'Tags descriptions'
     }
 });
 app.factory('AppConst', function($rootScope,
@@ -78870,35 +78882,6 @@ app.factory('FileRes', function ($q, AppConst, uiUploader, AppRes) {
 
     return service;
   });
-app.factory('ProjectRes', function (AppConst, AppRes) {
-    var service={};
-
-    service.getItem=function(name){
-        return AppRes.get('/api/v1/project/item/'+name);
-    };
-    service.getList=function(){
-        return AppRes.get('/api/v1/project/list');
-    };
-    service.getSearch=function(searchText){
-        if (searchText==undefined)
-            searchText='all';
-        return AppRes.get('/api/v1/project/search/'+searchText);
-    };
-    service.getListByTag=function(tagText){
-        return AppRes.get('/api/v1/project/listbytag/'+tagText);
-    };
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/project/update/'+item.id, item);
-    }
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/project/create', item);
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/project/delete/'+item.id, item);
-    }
-
-    return service;
-  });
 app.factory('PostRes', function (AppConst, AppRes) {
     var service={};
 
@@ -78924,6 +78907,35 @@ app.factory('PostRes', function (AppConst, AppRes) {
     }
     service.actionDelete=function(item){
         return AppRes.post('/api/v1/post/delete/'+item.id, item);
+    }
+
+    return service;
+  });
+app.factory('ProjectRes', function (AppConst, AppRes) {
+    var service={};
+
+    service.getItem=function(name){
+        return AppRes.get('/api/v1/project/item/'+name);
+    };
+    service.getList=function(){
+        return AppRes.get('/api/v1/project/list');
+    };
+    service.getSearch=function(searchText){
+        if (searchText==undefined)
+            searchText='all';
+        return AppRes.get('/api/v1/project/search/'+searchText);
+    };
+    service.getListByTag=function(tagText){
+        return AppRes.get('/api/v1/project/listbytag/'+tagText);
+    };
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/project/update/'+item.id, item);
+    }
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/project/create', item);
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/project/delete/'+item.id, item);
     }
 
     return service;
@@ -79696,11 +79708,13 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
         if (AppConst[item.name]!=undefined)
             navItem=AppConst[item.name];
 
-        if (navItem.title!=undefined)
+        if (navItem.title!=undefined){
             item.title=navItem.title;
+        }
 
-        if (navItem.strings!=undefined && navItem.strings.title!=undefined)
+        if (navItem.strings!=undefined && navItem.strings.title!=undefined){
             item.title=navItem.strings.title;
+        }
 
         if (navItem.url!=undefined){
             item.url=navItem.url;
@@ -79772,7 +79786,204 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
 
     return service;
   });
-app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc) {
+app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc) {
+    var service={};
+
+    $rootScope.$on('post.delete',function(event, item){
+        MessageSvc.info('post/delete/success', {values:item});
+        service.goList();
+    });
+
+    $rootScope.$on('post.create',function(event, item){
+        MessageSvc.info('post/create/success', {values:item});
+        service.goItem(item.name);
+    });
+
+    $rootScope.$on('post.update',function(event, item){
+        MessageSvc.info('post/update/success', {values:item});
+        service.goItem(item.name);
+    });
+
+    service.item={};
+    service.list=[];
+
+    service.countItemsOnRow=2;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
+
+    service.title=AppConst.post.strings.title;
+
+    service.init=function(reload){
+        NavbarSvc.init('post');
+
+        $q.all([
+            TagSvc.load(),
+            service.load()
+        ]).then(function(responseList) {
+            if ($routeParams.postName!=undefined){
+                AppSvc.item.title=[service.item.title,AppConst.post.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
+                if (AppSvc.item.description){
+                    AppSvc.item.description=service.item.description;
+                }
+            }else{
+                AppSvc.item.title=[AppConst.post.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
+                if (AppConst.post.strings.description){
+                    AppSvc.item.description=AppConst.post.strings.description;
+                }
+            }
+        });
+    }
+
+    service.goList=function(){
+        $location.path('/post');
+    }
+
+    service.goItem=function(postName){
+        $location.path('/post/'+postName);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 PostRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('post.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    service.slugName(item.name);
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 PostRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    if (response.data.reload_source.tag==true)
+                        TagSvc.load(true);
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('post.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('post/remove/confirm', {values:[item.title]},
+         function(){
+             PostRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.initEmptyItem();
+                        $rootScope.$broadcast('post.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+
+    service.doDeleteImage=function(index){
+        service.item.images.splice(index, 1);
+    }
+    service.doAddImage=function(text){
+        if (text===undefined)
+            text='';
+        if (service.item.images===undefined)
+            service.item.images=[];
+        service.item.images.push({
+            id: chance.guid(),
+            title: text
+        });
+    }
+    service.slugName=function(value){
+        service.item.name=getSlug(value, {
+            lang:'ru',
+            uric: true
+        });
+    }
+    service.initEmptyItem=function(){
+        service.item = {};
+        /*service.title = '';
+        service.name = '';
+        service.description = '';
+        service.url = '';
+        service.text = '';
+        service.html = '';
+        service.markdown = '';*/
+        service.item.type = 1;
+        service.item.tags = [];
+        service.item.images = [];
+    }
+    service.load=function(reload){
+        var deferred = $q.defer();
+        if ($routeParams.postName!=undefined){
+            if (service.item.name!==$routeParams.postName)
+                PostRes.getItem($routeParams.postName).then(
+                    function (response) {
+                        service.item=angular.copy(response.data.data[0]);
+                        deferred.resolve(service.item);
+                        $rootScope.$broadcast('post.item.load', service.item);
+                    },
+                    function (response) {
+                        service.item={};
+                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                            MessageSvc.error(response.data.code, response.data);
+                        deferred.resolve(service.item);
+                    }
+                );
+        }else{
+            if (service.loaded!==true || reload===true){
+                service.loaded=true;
+                PostRes.getList().then(function (response) {
+                    service.list=angular.copy(response.data.data);
+                    deferred.resolve(service.list);
+                    $rootScope.$broadcast('post.load', service.list);
+                }, function (response) {
+                    service.list=[];
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                    deferred.resolve(service.list);
+                });
+            }else
+                deferred.resolve(service.list);
+        }
+        return deferred.promise;
+    }
+    return service;
+  });
+app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, ProjectRes, TagSvc, NavbarSvc, MessageSvc, AppSvc, PropertiesSvc) {
     var service={};
 
     $rootScope.$on('project.delete',function(event, item){
@@ -79807,7 +80018,17 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
             TagSvc.load(),
             service.load()
         ]).then(function(responseList) {
-
+            if ($routeParams.projectName!=undefined){
+                AppSvc.item.title=[service.item.title,AppConst.project.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
+                if (AppSvc.item.description){
+                    AppSvc.item.description=service.item.description;
+                }
+            }else{
+                AppSvc.item.title=[AppConst.project.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
+                if (AppConst.project.strings.description){
+                    AppSvc.item.description=AppConst.project.strings.description;
+                }
+            }
         });
     }
 
@@ -80011,193 +80232,6 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
                 }
             });
         }
-    }
-    return service;
-  });
-app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc) {
-    var service={};
-
-    $rootScope.$on('post.delete',function(event, item){
-        MessageSvc.info('post/delete/success', {values:item});
-        service.goList();
-    });
-
-    $rootScope.$on('post.create',function(event, item){
-        MessageSvc.info('post/create/success', {values:item});
-        service.goItem(item.name);
-    });
-
-    $rootScope.$on('post.update',function(event, item){
-        MessageSvc.info('post/update/success', {values:item});
-        service.goItem(item.name);
-    });
-
-    service.item={};
-    service.list=[];
-
-    service.countItemsOnRow=2;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
-
-    service.title=AppConst.post.strings.title;
-
-    service.init=function(reload){
-        NavbarSvc.init('post');
-
-        $q.all([
-            TagSvc.load(),
-            service.load()
-        ]).then(function(responseList) {
-
-        });
-    }
-
-    service.goList=function(){
-        $location.path('/post');
-    }
-
-    service.goItem=function(postName){
-        $location.path('/post/'+postName);
-    }
-
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
-            }
-        }
-    }
-
-	service.doCreate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 PostRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
-                        TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
-                    service.list.push(service.item);
-                    $rootScope.$broadcast('post.create', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doUpdate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 PostRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
-                        TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
-                    service.updateItemOnList(service.item);
-
-                    $rootScope.$broadcast('post.update', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('post/remove/confirm', {values:[item.title]},
-         function(){
-             PostRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
-                            }
-                        }
-                        service.initEmptyItem();
-                        $rootScope.$broadcast('post.delete', item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-
-    service.doDeleteImage=function(index){
-        service.item.images.splice(index, 1);
-    }
-    service.doAddImage=function(text){
-        if (text===undefined)
-            text='';
-        if (service.item.images===undefined)
-            service.item.images=[];
-        service.item.images.push({
-            id: chance.guid(),
-            title: text
-        });
-    }
-    service.slugName=function(value){
-        service.item.name=getSlug(value, {
-            lang:'ru',
-            uric: true
-        });
-    }
-    service.initEmptyItem=function(){
-        service.item = {};
-        /*service.title = '';
-        service.name = '';
-        service.description = '';
-        service.url = '';
-        service.text = '';
-        service.html = '';
-        service.markdown = '';*/
-        service.item.type = 1;
-        service.item.tags = [];
-        service.item.images = [];
-    }
-    service.load=function(reload){
-        var deferred = $q.defer();
-        if ($routeParams.postName!=undefined){
-            if (service.item.name!==$routeParams.postName)
-                PostRes.getItem($routeParams.postName).then(
-                    function (response) {
-                        service.item=angular.copy(response.data.data[0]);
-                        deferred.resolve(service.item);
-                        $rootScope.$broadcast('post.item.load', service.item);
-                    },
-                    function (response) {
-                        service.item={};
-                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                            MessageSvc.error(response.data.code, response.data);
-                        deferred.resolve(service.item);
-                    }
-                );
-        }else{
-            if (service.loaded!==true || reload===true){
-                service.loaded=true;
-                PostRes.getList().then(function (response) {
-                    service.list=angular.copy(response.data.data);
-                    deferred.resolve(service.list);
-                    $rootScope.$broadcast('post.load', service.list);
-                }, function (response) {
-                    service.list=[];
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                    deferred.resolve(service.list);
-                });
-            }else
-                deferred.resolve(service.list);
-        }
-        return deferred.promise;
     }
     return service;
   });
@@ -80951,6 +80985,14 @@ app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc, PublicLinkS
     PublicLinkSvc.load();
     NavbarSvc.init();
 });
+app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagSvc, FileSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.FileSvc=FileSvc;
+
+	PostSvc.init();
+});
 app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc, TagSvc, FileSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.ProjectSvc=ProjectSvc;
@@ -80967,14 +81009,6 @@ app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, Pr
 	$scope.PostSvc=PostSvc;
 
 	SearchSvc.init();
-});
-app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagSvc, FileSvc) {
-    $scope.AccountSvc=AccountSvc;
-	$scope.PostSvc=PostSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.FileSvc=FileSvc;
-
-	PostSvc.init();
 });
 app.controller('TagCtrl', function ($scope, $routeParams, TagSvc, AccountSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
