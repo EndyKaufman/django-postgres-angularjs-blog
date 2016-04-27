@@ -76055,29 +76055,7 @@ app.constant('ContactConst',{
 app.constant('FileConst', {
 });
 app.constant('HomeConst', {
-    url:'/home'/*,
-    title: 'MY BLOG',
-    description: 'description of blog',
-    name: 'MY_BLOG',
-    image: 'https://avatars2.githubusercontent.com/u/4127109?v=3&s=460',
-    social:[
-        {
-            url:'http://google.com',
-            iconClass:'fa fa-google-plus'
-        },
-        {
-            url:'http://github.com',
-            iconClass:'fa fa-github'
-        },
-        {
-            url:'http://twitter.com',
-            iconClass:'fa fa-twitter'
-        },
-        {
-            url:'http://youtube.com',
-            iconClass:'fa fa-youtube'
-        }
-    ]*/
+    url:'/home'
 });
 app.constant('ManagerConst', {
     strings:{
@@ -76161,12 +76139,6 @@ app.constant('TagConst', {
 });
 app.factory('AppConst', function($rootScope,
 HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostConst, SearchConst, ContactConst, ManagerConst, NavbarConst){
-    var home={
-        title: 'MY BLOG',
-        description: 'description of blog',
-        name: 'MY_BLOG',
-        image: 'https://avatars2.githubusercontent.com/u/4127109?v=3&s=460'
-    };
     var navbar={
         left:[
             {
@@ -76213,7 +76185,7 @@ HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostC
         ]
     };
     var service={
-        home: angular.extend({}, HomeConst, home),
+        home: HomeConst,
         navbar: angular.extend({}, NavbarConst, navbar),
         manager: ManagerConst,
         search: SearchConst,
@@ -78658,11 +78630,11 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/header.html', '<!-- ******HEADER****** -->\n' +
     '<header class="header" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
-    '        <img class="profile-image cursor-pointer img-responsive img-circle pull-left" ng-src="{{AppConst.home.image}}"\n' +
-    '             alt="{{AppConst.home.title}}" ng-if="AppConst.home.image" ng-click="NavbarSvc.goHome()"/>\n' +
+    '        <img class="profile-image cursor-pointer img-responsive img-circle pull-left" ng-src="{{PropertiesSvc.listOfNames.SITE_LOGO.value}}"\n' +
+    '             alt="{{PropertiesSvc.listOfNames.SITE_TITLE.value}}" ng-if="PropertiesSvc.listOfNames.SITE_LOGO.value" ng-click="NavbarSvc.goHome()"/>\n' +
     '        <div class="profile-content pull-left">\n' +
-    '            <h1 class="name cursor-pointer" ng-bind-html="AppConst.home.title | unsafe" ng-click="NavbarSvc.goHome()"></h1>\n' +
-    '            <h2 class="desc cursor-pointer" ng-bind-html="AppConst.home.description | unsafe" ng-click="NavbarSvc.goHome()"></h2>\n' +
+    '            <h1 class="name cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_TITLE.value | unsafe" ng-click="NavbarSvc.goHome()"></h1>\n' +
+    '            <h2 class="desc cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_DESCRIPTION.value | unsafe" ng-click="NavbarSvc.goHome()"></h2>\n' +
     '            <ul class="social list-inline" ng-if="PublicLinkSvc.list.length>0">\n' +
     '                <li ng-class="$last ? \'last-item\' : \'\'"\n' +
     '                    ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_header">\n' +
@@ -78708,7 +78680,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </li>\n' +
     '            </ul>\n' +
     '        </small>\n' +
-    '        <small class="copyright"><i class="fa fa-copyright"></i> {{AppConst.home.title}}\n' +
+    '        <small class="copyright"><i class="fa fa-copyright"></i> {{PropertiesSvc.listOfNames.SITE_TITLE.value}}\n' +
     '        </small>\n' +
     '    </div><!--//container-->\n' +
     '</footer><!--//footer-->\n' +
@@ -80547,6 +80519,7 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
 
     service.item={};
     service.list=false;
+    service.listOfNames=false;
 
     service.initEmptyItem=function(){
         service.item = {};
@@ -80605,9 +80578,16 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
         $modalBox(boxOptions);
     }
 
+    service.fillListOfNames=function(){
+        service.listOfNames={};
+        for (var i=0;i<service.list.length;i++){
+            service.listOfNames[service.list[i].name]=service.list[i];
+        }
+    }
     service.updateItemOnList=function(item){
         for (var i=0;i<service.list.length;i++){
             if (item.id===service.list[i].id){
+                service.listOfNames[service.list[i].name]=service.list[i];
                 angular.extend(service.list[i],angular.copy(item));
             }
         }
@@ -80675,10 +80655,12 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
         if (service.list===false){
             PropertiesRes.getList().then(function (response) {
                 service.list=angular.copy(response.data.data);
+                service.fillListOfNames();
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('properties.load', service.list);
             }, function (response) {
                 service.list=[];
+                service.fillListOfNames();
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
@@ -80861,13 +80843,16 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
     }
     return service;
   });
-app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc) {
+app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc, PropertiesSvc) {
     $scope.AppConfig=AppConfig;
 
     $scope.UtilsSvc=UtilsSvc;
     $scope.AppConst=AppConst;
 	$scope.AppSvc=AppSvc;
 	$scope.MessageSvc=MessageSvc;
+	$scope.PropertiesSvc=PropertiesSvc;
+
+	PropertiesSvc.load();
 });
 app.controller('AccountCtrl', function ($scope, $routeParams, AccountSvc, TagSvc, ProjectSvc) {
     $scope.AccountSvc=AccountSvc;
