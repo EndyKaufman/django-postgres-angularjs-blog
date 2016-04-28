@@ -2,8 +2,9 @@
 
 import json
 from jsonview.decorators import json_view
-from project import helpers
+from project import helpers, settings
 from django.db.models import Q
+import resource, validator
 
 
 # list
@@ -86,47 +87,23 @@ def actionUpdate(request, file_id):
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
 
 
-# create
 @json_view
 def actionCreate(request):
     """Create record"""
 
-    json_data = request.POST
+    data, code, valid = validator.create(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
-
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
-
-    if request.FILES and request.FILES.get('file'):
-        if user.is_superuser:
-            url = helpers.saveFile(False,
-                                   request.FILES.get('file'))
+    if valid:
+        if settings.ENV != 'production':
+            try:
+                item = resource.create(request)
+            except:
+                return {'code': 'file/create/fail'}, 404
         else:
-            url = helpers.saveFile(str(user.id),
-                                   request.FILES.get('file'))
-    else:
-        url = ''
+            item = resource.create(request)
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, code
 
-    from app.file.models import File
-
-    #try:
-    file, created = File.objects.get_or_create(src=url)
-    if created:
-        file.comment = json_data['comment']
-        file.created_user = user
-        file.save()
-    #except:
-    #    return {'code': 'file/create/fail'}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
+    return data, code
 
 
 # delete
