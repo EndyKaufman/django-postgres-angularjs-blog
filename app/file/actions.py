@@ -117,14 +117,14 @@ def actionCreate(request):
 
     from app.file.models import File
 
-    try:
-        file, created = File.objects.get_or_create(src=url)
-        if created:
-            file.comment = json_data['comment']
-            file.created_user = user
-            file.save()
-    except:
-        return {'code': 'file/create/fail'}, 404
+    #try:
+    file, created = File.objects.get_or_create(src=url)
+    if created:
+        file.comment = json_data['comment']
+        file.created_user = user
+        file.save()
+    #except:
+    #    return {'code': 'file/create/fail'}, 404
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
 
