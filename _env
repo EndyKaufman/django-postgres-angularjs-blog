@@ -12,7 +12,6 @@ SUPPORT_EMAIL=
 STATIC_DIR=../project/static/
 ENV=development
 USE_SQLITE=0
-USE_MOCK=1
 
 USE_AMAZONE=0
 S3_BUCKET_NAME=bucket_name

@@ -1,10 +1,5 @@
-from django.conf.urls import patterns, url
-from django.conf import settings
-
-if settings.USE_MOCK:
-    import app.post.actions_mock as actions
-else:
-    import app.post.actions
+from django.conf.urls import url
+import app.post.actions
 
 urlpatterns = [
     url(r'^create', actions.actionCreate),

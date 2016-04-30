@@ -71,19 +71,19 @@ def get_item(request, file_id):
     from app.file.models import File
 
     try:
-        data = [File.objects.get(pk=file_id)]
+        item = File.objects.get(pk=file_id)
     except File.DoesNotExist:
         return {'code': 'file/not_found', 'values': [file_id]}, 404, False
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}, 200, data[0]
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, 200, item
 
 
 def get_list(request):
     from app.file.models import File
 
-    data = File.objects.all().order_by('created').all()
+    items = File.objects.all().order_by('created').all()
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}, 200, data
+    return {'code': 'ok', 'data': helpers.itemsToJsonObject(items)}, 200, items
 
 
 def get_search(request, search_text):
@@ -92,9 +92,9 @@ def get_search(request, search_text):
     else:
         from app.file.models import File
 
-        data = File.objects.filter(
+        items = File.objects.filter(
             Q(comment__icontains=search_text) |
             Q(src__icontains=search_text)
         ).order_by('created').all()
 
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}, 200, data
+        return {'code': 'ok', 'data': helpers.itemsToJsonObject(items)}, 200, items

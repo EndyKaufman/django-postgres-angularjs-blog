@@ -168,7 +168,7 @@ def reset_password(request):
     json_data = helpers.getJson(request)
 
     json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['code', 'password'])
+                                                ['code', 'password', 'email', 'username', 'firstname', 'lastname'])
 
     json_data['code'] = json_data['code'].lower()
 

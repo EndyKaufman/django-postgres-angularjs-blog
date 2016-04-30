@@ -1,10 +1,5 @@
 from django.conf.urls import url
-from django.conf import settings
-
-if settings.USE_MOCK:
-    import app.project.actions_mock as actions
-else:
-    import app.project.actions
+import app.project.actions
 
 urlpatterns = [
     url(r'^create', actions.actionCreate),

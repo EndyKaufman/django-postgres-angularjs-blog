@@ -64,7 +64,6 @@ def update(request, file_id):
                 return {'code': 'file/update/fail'}, 404
         else:
             data, code, item = resource.update(request, file_id)
-        return data, code
 
     return data, code
 
@@ -83,7 +82,6 @@ def create(request):
                 return {'code': 'file/create/fail'}, 404
         else:
             data, code, item = resource.create(request)
-        return data, code
 
     return data, code
 
@@ -102,6 +100,5 @@ def delete(request, file_id):
                 return {'code': 'file/delete/fail'}, 404
         else:
             data, code = resource.delete(request, file_id)
-        return data, code
 
     return data, code

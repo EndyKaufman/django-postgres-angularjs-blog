@@ -77507,7 +77507,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    <h1 class="heading">\n' +
     '                        <span ng-bind-html="PostSvc.item.title | unsafe"></span>\n' +
     '                        <a ng-href="{{\'/post/update/\'+PostSvc.item.name}}"\n' +
-    '                           class="btn btn-cta-secondary pull-right btn-xs" id="postUpdate"><i class="fa fa-pencil-square-o"></i> Edit</a>\n' +
+    '                           class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="postUpdate"><i class="fa fa-pencil-square-o"></i> Edit</a>\n' +
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <div class="item row">\n' +

@@ -19,7 +19,6 @@ SHORT_SITE_NAME = u'My Blog'
 ENV = os.environ.get('ENV', 'development')
 USE_SQLITE = os.environ.get('USE_SQLITE', None) == '1'
 USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'
-USE_MOCK = os.environ.get('USE_MOCK', None) == '1'
 
 # EMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -12,10 +12,7 @@ from app.manager.properties import helpers as properties_helpers
 @ensure_csrf_cookie
 def index(request):
     """Home page maker"""
-    if settings.USE_MOCK:
-        from helpers_mock import getConfig
-    else:
-        from helpers import getConfig
+    from helpers import getConfig
 
     config = getConfig(request)
     config['properties'] = properties_helpers.getListOfNames(
