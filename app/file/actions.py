@@ -1,139 +1,107 @@
 # -*- coding: utf-8 -*-
 
-import json
 from jsonview.decorators import json_view
-from project import helpers, settings
-from django.db.models import Q
-import resource, validator
+from project import settings
+import resource
+import validator
 
 
-# list
 @json_view
-def getList(request):
+def get_list(request):
     """List data"""
 
-    from app.file.models import File
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_list(request)
+        except:
+            return {'code': 'file/get_list/fail'}, 404
+    else:
+        data, code, items = resource.get_list(request)
 
-    data = File.objects.all().order_by('created').all()
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return data, code
 
 
-# search
 @json_view
-def getSearch(request, search_text):
+def get_search(request, search_text):
     """Search data"""
 
-    if search_text == 'all':
-        return getList(request)
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_search(request, search_text)
+        except:
+            return {'code': 'file/get_search/fail'}, 404
     else:
-        from app.file.models import File
+        data, code, items = resource.get_search(request, search_text)
 
-        data = File.objects.filter(
-            Q(comment__icontains=search_text) |
-            Q(src__icontains=search_text)
-        ).order_by('created').all()
-
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return data, code
 
 
-# item
 @json_view
-def getItem(request, file_id):
+def get_item(request, file_id):
     """Item data"""
 
-    from app.file.models import File
+    if settings.ENV == 'production':
+        try:
+            data, code, item = resource.get_item(request, file_id)
+        except:
+            return {'code': 'file/get_item/fail'}, 404
+    else:
+        data, code, item = resource.get_item(request, file_id)
+    return data, code
 
-    try:
-        data = [File.objects.get(pk=file_id)]
-    except File.DoesNotExist:
-        return {'code': 'file/not_found', 'values': [file_id]}, 404
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
-
-
-# update
 @json_view
-def actionUpdate(request, file_id):
+def update(request, file_id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.update(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.update(request, file_id)
+            except:
+                return {'code': 'file/update/fail'}, 404
+        else:
+            data, code, item = resource.update(request, file_id)
+        return data, code
 
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
-
-    from app.file.models import File
-
-    try:
-        file = File.objects.get(pk=file_id)
-    except File.DoesNotExist:
-        return {'code': 'file/not_found', 'values': [file_id]}, 404
-
-    try:
-        file.comment = json_data['comment']
-        file.save()
-    except:
-        return {'code': 'file/update/fail'}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([file])}
+    return data, code
 
 
 @json_view
-def actionCreate(request):
+def create(request):
     """Create record"""
 
     data, code, valid = validator.create(request)
 
     if valid:
-        if settings.ENV != 'production':
+        if settings.ENV == 'production':
             try:
-                item = resource.create(request)
+                data, code, item = resource.create(request)
             except:
                 return {'code': 'file/create/fail'}, 404
         else:
-            item = resource.create(request)
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, code
+            data, code, item = resource.create(request)
+        return data, code
 
     return data, code
 
 
-# delete
 @json_view
-def actionDelete(request, file_id):
+def delete(request, file_id):
     """Delete record"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.delete(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code = resource.delete(request, file_id)
+            except:
+                return {'code': 'file/delete/fail'}, 404
+        else:
+            data, code = resource.delete(request, file_id)
+        return data, code
 
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    from app.file.models import File
-
-    try:
-        file = File.objects.get(pk=file_id)
-    except File.DoesNotExist:
-        return {'code': 'file/not_found', 'values': [file_id]}, 404
-
-    try:
-        helpers.removeFile(file.src)
-        file.delete()
-    except:
-        return {'code': 'file/delete/fail'}, 404
-
-    return {'code': 'ok'}
+    return data, code
