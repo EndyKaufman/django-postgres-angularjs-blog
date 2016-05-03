@@ -34,7 +34,6 @@ sudo npm install -g node-gyp
 sudo npm rebuild
 sudo virtualenv venv
 source venv/bin/activate
-pip install django-toolbelt
 pip install -r requirements.txt
 cd front
 sudo npm install --save-dev
