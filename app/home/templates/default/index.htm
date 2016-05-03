@@ -7,6 +7,7 @@
 <html class="no-js lt-ie9" lang="en" ng-app="app" ng-controller="AppCtrl"> <![endif]-->
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="en" ng-app="app" ng-controller="AppCtrl"> <!--<![endif]-->
+{% load django_seo_js %}
 <head>
     {% load staticfiles %}
     <meta charset="utf-8"/>
@@ -15,11 +16,11 @@
     {% for meta_tag_item in meta_tag_list %}{% if meta_tag_item.content != '' %}
     <meta name="{{ meta_tag_item.name }}" content="{{ meta_tag_item.content }}" {{ meta_tag_item.attributes }}/>
         {% endif %}{% endfor %}
-    <title ng-bind="AppSvc.item.title">{{ properties_list.SITE_TITLE }}</title>
+    {% verbatim %}<title>{{ AppSvc.item.title }}</title>
+    <meta name="description" content="{{ AppSvc.item.description }}"/>{% endverbatim %}
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
     </script>
-    {% verbatim %}<meta name="description" content="{{ AppSvc.item.description }}"/>{% endverbatim %}
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="{% static 'app.css' %}"/>

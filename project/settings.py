@@ -91,10 +91,10 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'livereload',
     'django.contrib.staticfiles',
     'storages',
     'jsonview',
+    'django_seo_js',
     'app.account',
     'app.file',
     'app.home',
@@ -115,6 +115,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'django_seo_js.middleware.UserAgentMiddleware',  # If you want to detect by user agent
 )
 
 ROOT_URLCONF = 'project.urls'
@@ -203,3 +204,34 @@ else:
     AWS_PRELOAD_METADATA = True  # necessary to fix manage.py collectstatic command to only upload changed files instead of all files
 
     STATIC_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, STATICFILES_LOCATION)
+
+# Backend to use
+SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', '')
+
+SEO_JS_BACKEND = "django_seo_js.backends.PrerenderIO"  # Default
+
+# Whether to run the middlewares and update_cache_for_url.  Useful to set False for unit testing.
+SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
+
+# User-agents to render for, if you're using the UserAgentMiddleware
+# Defaults to the most popular.  If you have custom needs, pull from the full list:
+# http://www.useragentstring.com/pages/Crawlerlist/
+SEO_JS_USER_AGENTS = [
+    "Googlebot",
+    "Yahoo",
+    "bingbot",
+    "Badiu",
+    "Ask Jeeves",
+    "Yandex"
+]
+
+# Urls to skip the rendering backend, and always render in-app.
+# Defaults to excluding sitemap.xml.
+SEO_JS_IGNORE_URLS = [
+    "/sitemap.xml",
+]
+SEO_JS_IGNORE_EXTENSIONS = [
+    ".xml",
+    ".txt",
+    # See helpers.py for full list of extensions ignored by default.
+]

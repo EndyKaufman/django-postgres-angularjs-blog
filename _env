@@ -17,3 +17,5 @@ USE_AMAZONE=0
 S3_BUCKET_NAME=bucket_name
 AWS_SECRET_ACCESS_KEY=secret_key
 AWS_ACCESS_KEY_ID=access_key
+
+SEO_JS_PRERENDER_TOKEN=access_token

@@ -1,0 +1,1 @@
+{{ properties_list.ROBOT_TXT |safe }}

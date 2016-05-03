@@ -30,3 +30,28 @@ def index(request):
         'meta_tag_list': meta_tag_list,
         'properties_list': properties_list
     })
+
+
+def robots_txt(request):
+    """Robots.txt page"""
+    properties_list = properties_helpers.getListOfNames(
+        ['ROBOT_TXT'])
+    return render(request, 'home/templates/%s/robots.txt' % settings.THEME, {'properties_list': properties_list})
+
+
+def sitemap_xml(request):
+    """Sitemap page"""
+    from helpers import getConfig
+    config = getConfig(request)
+
+    from app.project.models import Project
+    project_list = Project.objects.all().order_by('-created').all()
+
+    from app.post.models import Post
+    post_list = Post.objects.all().order_by('-created').all()
+
+    return render(request, 'home/templates/%s/sitemap.xml' % settings.THEME, {
+        'config': config,
+        'project_list': project_list,
+        'post_list': post_list
+    })

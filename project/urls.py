@@ -24,12 +24,16 @@ import app.account
 import app.tag
 import app.project
 import app.contact
+import app.post
+import app.manager
 import app.home.views
 import app.home
 
 admin.autodiscover()
 
 urlpatterns = [
+                  url(r'^robots\.txt$', app.home.views.robots_txt, name='robots_txt'),
+                  url(r'^sitemap\.xml$', app.home.views.sitemap_xml, name='sitemap_xml'),
                   url(r'^$', app.home.views.index, name='index'),
                   url(r'^api/v1/file/', include(app.file)),
                   url(r'^api/v1/account/', include(app.account)),
@@ -42,8 +46,3 @@ urlpatterns = [
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
                   url(r'^.*$', app.home.views.index, name='index')
               ]
-
-if 'livereload' in sys.argv:
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
-    urlpatterns += staticfiles_urlpatterns()
