@@ -21,3 +21,4 @@ static3==0.6.1
 tornado==4.3
 transliterate==1.7.6
 whitenoise==3.0
+virtualenv==15.0.1

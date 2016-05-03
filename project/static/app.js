@@ -79517,6 +79517,180 @@ app.factory('HomeSvc', function ($q, NavbarSvc, PropertiesSvc, AppSvc, TagSvc, P
     }
     return service;
   });
+app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $modal) {
+    var service={};
+
+    service.list={};
+    service.infoEnable=true;
+    service.confirmEnable=true;
+
+    var extVSprintF=function(message, data){
+        var new_data=[]
+        var new_message=message;
+
+        if (Array.isArray(data)){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_data.push(data[key]);
+            }
+        }
+        else
+        if (typeof data === 'object'){
+            for (var key in data){
+                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
+                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
+            }
+        }
+        else
+        if (data!=undefined)
+            new_data.push(data);
+        return vsprintf(new_message, new_data);
+    }
+
+    service.error=function(message, data, callbackOk){
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='Error';
+
+        if (callbackOk===undefined)
+            callbackOk=function(){
+            }
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        var boxOptions = {
+            title: data.title,
+            content: extVSprintF(message, data.values),
+            theme: 'danger',
+            confirmTemplate: 'views/message/confirm.modal.html',
+            promptTemplate: 'views/message/prompt.modal.html',
+            alertTemplate: 'views/message/alert.modal.html',
+            effect: false,
+            afterOk: callbackOk,
+            html: true
+        }
+
+        $modalBox(boxOptions);
+        $rootScope.$broadcast('message.error', message, data, callbackOk);
+    }
+
+    service.alert=function(message, data, callbackOk){
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='Info';
+
+        if (callbackOk===undefined)
+            callbackOk=function(){
+            }
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        var boxOptions = {
+            title: data.title,
+            content: extVSprintF(message, data.values),
+            theme: 'alert',
+            confirmTemplate: 'views/message/confirm.modal.html',
+            promptTemplate: 'views/message/prompt.modal.html',
+            alertTemplate: 'views/message/alert.modal.html',
+            effect: false,
+            afterOk: callbackOk,
+            html: true
+        }
+        $modalBox(boxOptions);
+        $rootScope.$broadcast('message.alert', message, data, callbackOk);
+    }
+
+    service.confirm=function(message, data, callbackOk, callbackCancel){
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='Message';
+
+        if (callbackOk===undefined)
+            callbackOk=function(){
+            }
+        if (callbackCancel===undefined)
+            callbackCancel=function(){
+            }
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        if (service.confirmEnable===false){
+            callbackOk();
+            return;
+        }
+
+        var boxOptions = {
+            title: data.title,
+            content: extVSprintF(message, data.values),
+            boxType: 'confirm',
+            theme: 'alert',
+            confirmTemplate: 'views/message/confirm.modal.html',
+            promptTemplate: 'views/message/prompt.modal.html',
+            alertTemplate: 'views/message/alert.modal.html',
+            effect: false,
+            confirmText: 'Yes',
+            cancelText: 'No',
+            afterConfirm: callbackOk,
+            afterCancel: callbackCancel,
+            html: true
+        }
+
+        $modalBox(boxOptions);
+        $rootScope.$broadcast('message.confirm', message, data, callbackOk);
+    }
+
+
+    service.info=function(message, data, type){
+
+        if (service.infoEnable===false)
+            return;
+
+        service.alert(message, data);
+/*
+        if (data===undefined)
+            data={values:[]};
+
+        if (data.title===undefined)
+            data.title='';
+        if (data.alertType===undefined)
+            data.alertType='info';
+        if (data.placement===undefined)
+            data.placement='bottom-right';
+
+        if (service.list[message]!==undefined)
+            message=service.list[message];
+
+        $alert({
+            content: extVSprintF(message, data.values),
+            title: data.title,
+            alertType: data.alertType,
+            placement: data.placement
+        });
+*/
+    }
+
+    service.load=function(reload){
+        if (service.loaded!==true || reload===true){
+            service.loaded=true;
+            service.list={};
+            for (var key in AppConst){
+                if (AppConst[key]['message']!==undefined){
+                    angular.extend(service.list, AppConst[key]['message']);
+                }
+            }
+        }
+    }
+
+    service.load();
+
+    return service;
+  });
 app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
     var service={};
 
@@ -80008,61 +80182,6 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
     }
     return service;
   });
-app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes) {
-    var service={};
-
-    service.allList=[];
-
-    service.countItemsOnRow=3;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
-
-    service.title=AppConst.search.strings.title;
-    service.searchText='';
-
-    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
-        if (current.params!=undefined && current.params.navId!='search'){
-            service.searchText='';
-        }
-    });
-
-    service.doSearch=function(searchText){
-        $location.path('/search/'+searchText);
-    }
-
-    service.init=function(reload){
-        NavbarSvc.init('search');
-
-        service.searchText=$routeParams.searchText;
-
-        if ($routeParams.searchText!=undefined){
-            service.allList=[];
-            service.allListSumSize=0;
-            $q.all([
-                TagSvc.load(),
-                ProjectRes.getSearch($routeParams.searchText),
-                PostRes.getSearch($routeParams.searchText)
-            ]).then(function(responseList) {
-                for (var i=1;i<responseList.length;i++){
-                    if (responseList[i].data.data && responseList[i].data.data.length>0)
-                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
-                    if (i==1)
-                        service.allList.push({
-                            name: 'project',
-                            list: responseList[i].data.data
-                        });
-                    if (i==2)
-                        service.allList.push({
-                            name: 'post',
-                            list: responseList[i].data.data
-                        });
-                }
-            });
-        }
-    }
-    return service;
-  });
 app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
     var service={};
 
@@ -80272,178 +80391,59 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     }
     return service;
   });
-app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $modal) {
+app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes) {
     var service={};
 
-    service.list={};
-    service.infoEnable=true;
-    service.confirmEnable=true;
+    service.allList=[];
 
-    var extVSprintF=function(message, data){
-        var new_data=[]
-        var new_message=message;
+    service.countItemsOnRow=3;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
 
-        if (Array.isArray(data)){
-            for (var key in data){
-                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
-                    new_data.push(data[key]);
-            }
+    service.title=AppConst.search.strings.title;
+    service.searchText='';
+
+    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
+        if (current.params!=undefined && current.params.navId!='search'){
+            service.searchText='';
         }
-        else
-        if (typeof data === 'object'){
-            for (var key in data){
-                if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
-                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
-            }
-        }
-        else
-        if (data!=undefined)
-            new_data.push(data);
-        return vsprintf(new_message, new_data);
+    });
+
+    service.doSearch=function(searchText){
+        $location.path('/search/'+searchText);
     }
 
-    service.error=function(message, data, callbackOk){
-        if (data===undefined)
-            data={values:[]};
+    service.init=function(reload){
+        NavbarSvc.init('search');
 
-        if (data.title===undefined)
-            data.title='Error';
+        service.searchText=$routeParams.searchText;
 
-        if (callbackOk===undefined)
-            callbackOk=function(){
-            }
-        if (service.list[message]!==undefined)
-            message=service.list[message];
-
-        var boxOptions = {
-            title: data.title,
-            content: extVSprintF(message, data.values),
-            theme: 'danger',
-            confirmTemplate: 'views/message/confirm.modal.html',
-            promptTemplate: 'views/message/prompt.modal.html',
-            alertTemplate: 'views/message/alert.modal.html',
-            effect: false,
-            afterOk: callbackOk,
-            html: true
-        }
-
-        $modalBox(boxOptions);
-        $rootScope.$broadcast('message.error', message, data, callbackOk);
-    }
-
-    service.alert=function(message, data, callbackOk){
-        if (data===undefined)
-            data={values:[]};
-
-        if (data.title===undefined)
-            data.title='Info';
-
-        if (callbackOk===undefined)
-            callbackOk=function(){
-            }
-        if (service.list[message]!==undefined)
-            message=service.list[message];
-
-        var boxOptions = {
-            title: data.title,
-            content: extVSprintF(message, data.values),
-            theme: 'alert',
-            confirmTemplate: 'views/message/confirm.modal.html',
-            promptTemplate: 'views/message/prompt.modal.html',
-            alertTemplate: 'views/message/alert.modal.html',
-            effect: false,
-            afterOk: callbackOk,
-            html: true
-        }
-        $modalBox(boxOptions);
-        $rootScope.$broadcast('message.alert', message, data, callbackOk);
-    }
-
-    service.confirm=function(message, data, callbackOk, callbackCancel){
-        if (data===undefined)
-            data={values:[]};
-
-        if (data.title===undefined)
-            data.title='Message';
-
-        if (callbackOk===undefined)
-            callbackOk=function(){
-            }
-        if (callbackCancel===undefined)
-            callbackCancel=function(){
-            }
-        if (service.list[message]!==undefined)
-            message=service.list[message];
-
-        if (service.confirmEnable===false){
-            callbackOk();
-            return;
-        }
-
-        var boxOptions = {
-            title: data.title,
-            content: extVSprintF(message, data.values),
-            boxType: 'confirm',
-            theme: 'alert',
-            confirmTemplate: 'views/message/confirm.modal.html',
-            promptTemplate: 'views/message/prompt.modal.html',
-            alertTemplate: 'views/message/alert.modal.html',
-            effect: false,
-            confirmText: 'Yes',
-            cancelText: 'No',
-            afterConfirm: callbackOk,
-            afterCancel: callbackCancel,
-            html: true
-        }
-
-        $modalBox(boxOptions);
-        $rootScope.$broadcast('message.confirm', message, data, callbackOk);
-    }
-
-
-    service.info=function(message, data, type){
-
-        if (service.infoEnable===false)
-            return;
-
-        service.alert(message, data);
-/*
-        if (data===undefined)
-            data={values:[]};
-
-        if (data.title===undefined)
-            data.title='';
-        if (data.alertType===undefined)
-            data.alertType='info';
-        if (data.placement===undefined)
-            data.placement='bottom-right';
-
-        if (service.list[message]!==undefined)
-            message=service.list[message];
-
-        $alert({
-            content: extVSprintF(message, data.values),
-            title: data.title,
-            alertType: data.alertType,
-            placement: data.placement
-        });
-*/
-    }
-
-    service.load=function(reload){
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            service.list={};
-            for (var key in AppConst){
-                if (AppConst[key]['message']!==undefined){
-                    angular.extend(service.list, AppConst[key]['message']);
+        if ($routeParams.searchText!=undefined){
+            service.allList=[];
+            service.allListSumSize=0;
+            $q.all([
+                TagSvc.load(),
+                ProjectRes.getSearch($routeParams.searchText),
+                PostRes.getSearch($routeParams.searchText)
+            ]).then(function(responseList) {
+                for (var i=1;i<responseList.length;i++){
+                    if (responseList[i].data.data && responseList[i].data.data.length>0)
+                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
+                    if (i==1)
+                        service.allList.push({
+                            name: 'project',
+                            list: responseList[i].data.data
+                        });
+                    if (i==2)
+                        service.allList.push({
+                            name: 'post',
+                            list: responseList[i].data.data
+                        });
                 }
-            }
+            });
         }
     }
-
-    service.load();
-
     return service;
   });
 app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
@@ -81003,15 +81003,6 @@ app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc
 
 	ProjectSvc.init();
 });
-app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
-    $scope.AccountSvc=AccountSvc;
-	$scope.SearchSvc=SearchSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.ProjectSvc=ProjectSvc;
-	$scope.PostSvc=PostSvc;
-
-	SearchSvc.init();
-});
 app.controller('TagCtrl', function ($scope, $routeParams, TagSvc, AccountSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.TagSvc=TagSvc;
@@ -81020,6 +81011,15 @@ app.controller('TagCtrl', function ($scope, $routeParams, TagSvc, AccountSvc, Pr
 	$scope.$routeParams=$routeParams;
 
 	TagSvc.init();
+});
+app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.SearchSvc=SearchSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+
+	SearchSvc.init();
 });
 app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc, TagSvc) {
 	$scope.MetaTagSvc=MetaTagSvc;
