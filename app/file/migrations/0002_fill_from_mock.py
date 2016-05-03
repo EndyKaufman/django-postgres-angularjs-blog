@@ -3,12 +3,12 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from project import helpers
+from project import helpers, settings
 import json
 
 
 def fill_from_mock(apps, schema_editor):
-    helpers.copydirRecursive('mock/file/media', 'project/media', removeIfExists=True)
+    helpers.copydirRecursive('mock/file/media', settings.MEDIA_ROOT, removeIfExists=True)
     try:
         with open('mock/file/list.json') as f:
             content = f.read()

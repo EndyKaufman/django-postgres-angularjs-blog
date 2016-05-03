@@ -1,5 +1,6 @@
 venv
 temp
+media
 staticfiles
 .vagrant
 *.pyc
