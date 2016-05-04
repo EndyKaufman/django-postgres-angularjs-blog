@@ -32,6 +32,7 @@ sudo npm install -g protractor
 sudo npm install -g selenium-webdriver
 sudo npm install -g node-gyp
 sudo npm rebuild
+pip install -r requirements.txt
 virtualenv venv
 source venv/bin/activate
 pip install django-toolbelt
