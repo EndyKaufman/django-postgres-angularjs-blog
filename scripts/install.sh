@@ -4,6 +4,7 @@ sudo apt-get autoremove nodejs -y
 curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
 sudo apt-get install -y nodejs
 sudo apt-get install npm -y
+sudo npm update -g
 sudo npm install -g npm
 sudo apt-get install -y git
 sudo apt-get install -y default-jre
