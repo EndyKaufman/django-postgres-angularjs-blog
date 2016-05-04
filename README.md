@@ -4,6 +4,7 @@
 https://django-postgres-angularjs-blog.herokuapp.com
 
 [![Build Status](https://travis-ci.org/EndyKaufman/django-postgres-angularjs-blog.svg?branch=master)](https://travis-ci.org/EndyKaufman/django-postgres-angularjs-blog)
+[![Requirements Status](https://requires.io/github/EndyKaufman/django-postgres-angularjs-blog/requirements.svg?branch=master)](https://requires.io/github/EndyKaufman/django-postgres-angularjs-blog/requirements/?branch=master)
 
 ## current progress of project
 

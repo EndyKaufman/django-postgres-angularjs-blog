@@ -1080,6 +1080,32 @@ ag-grid-ng2 {
   overflow: hidden;
   position: absolute;
 }
+.ag-fade-out {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+  margin-right: 5px;
+  -webkit-transition: opacity 3s, margin-right 3s;
+  -moz-transition: opacity 3s, margin-right 3s;
+  -o-transition: opacity 3s, margin-right 3s;
+  -ms-transition: opacity 3s, margin-right 3s;
+  transition: opacity 3s, margin-right 3s;
+  -webkit-transition-timing-function: linear;
+  -moz-transition-timing-function: linear;
+  -o-transition-timing-function: linear;
+  -ms-transition-timing-function: linear;
+  transition-timing-function: linear;
+}
+.ag-fade-out-end {
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+  margin-right: 10px;
+}
+.ag-cell-edit-input {
+  width: 100%;
+  height: 100%;
+}
 .ag-group-cell-entire-row {
   width: 100%;
   display: inline-block;
@@ -1106,6 +1132,13 @@ ag-grid-ng2 {
 }
 .ag-large .ag-root {
   font-size: 20px;
+}
+.ag-popup-editor {
+  position: absolute;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .ag-menu {
   position: absolute;
@@ -1143,21 +1176,35 @@ ag-grid-ng2 {
 .ag-menu-separator-cell {
   display: table-cell;
 }
-.ag-filter-list-viewport {
+.ag-virtual-list-viewport {
   overflow-x: auto;
-  height: 200px;
-  width: 200px;
+  height: 100%;
+  width: 100%;
 }
-.ag-filter-list-container {
+.ag-virtual-list-container {
   position: relative;
   overflow: hidden;
 }
-.ag-filter-item {
+.ag-rich-select {
+  outline: none;
+}
+.ag-rich-select-list {
+  width: 200px;
+  height: 200px;
+}
+.ag-set-filter-list {
+  width: 200px;
+  height: 200px;
+}
+.ag-set-filter-item {
   -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+.ag-virtual-list-item {
   position: absolute;
+  width: 100%;
 }
 .ag-filter-filter {
   width: 170px;
@@ -1338,7 +1385,7 @@ ag-grid-ng2 {
   padding: 4px;
   background-color: #f0f0f0;
 }
-.ag-fresh .ag-cell {
+.ag-fresh .ag-cell-not-inline-editing {
   padding: 2px;
 }
 .ag-fresh .ag-cell-range-selected-1:not(.ag-cell-focus) {
@@ -1384,6 +1431,73 @@ ag-grid-ng2 {
   -o-transition: border 1s;
   -ms-transition: border 1s;
   transition: border 1s;
+}
+.ag-fresh .ag-cell-data-changed {
+  background-color: #add8e6;
+}
+.ag-fresh .ag-cell-data-changed-animation {
+  -webkit-transition: background-color 1s;
+  -moz-transition: background-color 1s;
+  -o-transition: background-color 1s;
+  -ms-transition: background-color 1s;
+  transition: background-color 1s;
+}
+.ag-fresh .ag-cell-data-changed:not(.ag-cell-focus) {
+  background-color: #add8e6;
+}
+.ag-fresh .ag-cell-data-changed-animation:not(.ag-cell-focus) {
+  -webkit-transition: background-color 1s;
+  -moz-transition: background-color 1s;
+  -o-transition: background-color 1s;
+  -ms-transition: background-color 1s;
+  transition: background-color 1s;
+}
+.ag-fresh .ag-value-change-delta {
+  padding-right: 2px;
+}
+.ag-fresh .ag-value-change-delta-up {
+  color: #006400;
+}
+.ag-fresh .ag-value-change-delta-down {
+  color: #8b0000;
+}
+.ag-fresh .ag-value-change-value {
+  background-color: transparent;
+  -webkit-border-radius: 1px;
+  border-radius: 1px;
+  padding-left: 1px;
+  padding-right: 1px;
+  -webkit-transition: background-color 1s;
+  -moz-transition: background-color 1s;
+  -o-transition: background-color 1s;
+  -ms-transition: background-color 1s;
+  transition: background-color 1s;
+}
+.ag-fresh .ag-value-change-value-highlight {
+  background-color: #cec;
+  -webkit-transition: background-color 0.1s;
+  -moz-transition: background-color 0.1s;
+  -o-transition: background-color 0.1s;
+  -ms-transition: background-color 0.1s;
+  transition: background-color 0.1s;
+}
+.ag-fresh .ag-rich-select {
+  font-size: 14px;
+  border: 1px solid #000;
+  background-color: #f6f6f6;
+}
+.ag-fresh .ag-rich-select-value {
+  padding: 2px;
+}
+.ag-fresh .ag-rich-select-list {
+  background-color: #fff;
+  border-top: 1px solid #aaa;
+}
+.ag-fresh .ag-rich-select-row {
+  padding: 2px;
+}
+.ag-fresh .ag-rich-select-row-selected {
+  background-color: #ddebf7;
 }
 .ag-fresh .ag-header {
   background: -webkit-linear-gradient(#fff, #d3d3d3);
@@ -1502,7 +1616,16 @@ ag-grid-ng2 {
 .ag-fresh .ag-group-cell {
   font-style: italic;
 }
-.ag-fresh .ag-group-expand {
+.ag-fresh .ag-group-expanded {
+  padding-right: 2px;
+}
+.ag-fresh .ag-group-contracted {
+  padding-right: 2px;
+}
+.ag-fresh .ag-group-value {
+  padding-right: 2px;
+}
+.ag-fresh .ag-group-checkbox {
   padding-right: 2px;
 }
 .ag-fresh .ag-footer-cell {
