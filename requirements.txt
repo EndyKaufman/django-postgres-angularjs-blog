@@ -14,11 +14,10 @@ gunicorn==19.4.5
 lorem-ipsum-generator==0.3
 pkg-resources==0.0.0
 psycopg2==2.6.1
-requests==2.10.0
+requests==2.2.1
 singledispatch==3.4.0.3
 six==1.10.0
 static3==0.6.1
 tornado==4.3
 transliterate==1.7.6
 whitenoise==3.0
-virtualenv==15.0.1
