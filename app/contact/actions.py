@@ -1,47 +1,24 @@
 # -*- coding: utf-8 -*-
 
 from jsonview.decorators import json_view
-from project import helpers
 from django.conf import settings
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.template.loader import render_to_string
+import validator
+import resource
 
 
-# send message
 @json_view
-def actionSend(request):
-    """Update record"""
+def send(request):
+    """Send message"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.send(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, email = resource.send(request)
+            except:
+                return {'code': 'contact/send/fail'}, 404
+        else:
+            data, code, user = resource.send(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['email', 'username', 'message'])
-    json_data['email'] = json_data['email'].lower()
-
-    if json_data['email'] == '':
-        return {'code': 'contact/not_email'}, 404
-    if json_data['username'] == '':
-        return {'code': 'contact/nousername'}, 404
-    if json_data['message'] == '':
-        return {'code': 'contact/nomessage'}, 404
-
-    # Validate values of fields
-    try:
-        validate_email(json_data['email'])
-    except ValidationError:
-        return {'code': 'account/wrong_email'}, 404
-
-    config = {}
-    config['SHORT_SITE_NAME'] = settings.SHORT_SITE_NAME
-    config['email'] = json_data['email']
-    config['username'] = json_data['username']
-    config['message'] = json_data['message']
-
-    helpers.sendmail(subject='Message from contact form',
-                     html_content=render_to_string('contact/templates/message.email.htm', config),
-                     text_content=render_to_string('contact/templates/message.email.txt', config))
-
-    return {'code': 'ok', 'data': [json_data['email']]}
+    return data, code

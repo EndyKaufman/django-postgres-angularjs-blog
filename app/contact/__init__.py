@@ -1,7 +1,6 @@
-from django.conf.urls import patterns, url
-from django.conf import settings
+from django.conf.urls import url
 import app.contact.actions
 
 urlpatterns = [
-    url(r'^send', actions.actionSend)
+    url(r'^send', actions.send)
 ]

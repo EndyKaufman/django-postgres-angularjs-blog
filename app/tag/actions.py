@@ -1,130 +1,104 @@
 # -*- coding: utf-8 -*-
 
 from jsonview.decorators import json_view
-from project import helpers
-import helpers as tag_helpers
+from project import settings
+import resource
+import validator
 
 
-# list
 @json_view
-def getList(request):
+def get_list(request):
     """List data"""
 
-    data = tag_helpers.getList()
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_list(request)
+        except:
+            return {'code': 'tag/get_list/fail'}, 404
+    else:
+        data, code, items = resource.get_list(request)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return data, code
 
 
-# item
 @json_view
-def getItem(request, id):
+def get_search(request, search_text):
+    """Search data"""
+
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_search(request, search_text)
+        except:
+            return {'code': 'tag/get_search/fail'}, 404
+    else:
+        data, code, items = resource.get_search(request, search_text)
+
+    return data, code
+
+
+@json_view
+def get_item(request, tag_id):
     """Item data"""
 
-    data = tag_helpers.getItem(id)
-
-    if not data:
-        return {'code': 'tag/not_found', 'values': [id]}, 404
+    if settings.ENV == 'production':
+        try:
+            data, code, item = resource.get_item(request, tag_id)
+        except:
+            return {'code': 'tag/get_item/fail'}, 404
     else:
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+        data, code, item = resource.get_item(request, tag_id)
+    return data, code
 
 
-# update
 @json_view
-def actionUpdate(request, id):
+def update(request, tag_id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.update(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.update(request, tag_id)
+            except:
+                return {'code': 'tag/update/fail'}, 404
+        else:
+            data, code, item = resource.update(request, tag_id)
 
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['text', 'description'])
-
-    data = tag_helpers.getItemByText(json_data['text'])
-
-    if (data is not False) and (int(data[0].id) != int(id)):
-        return {'code': 'tag/exists', 'values': [json_data['text']]}, 404
-
-    data = tag_helpers.getItem(id)
-
-    if not data:
-        return {'code': 'tag/not_found', 'values': [id]}, 404
-    else:
-        try:
-            data[0].text = json_data['text']
-            data[0].description = json_data['description']
-            data[0].save()
-        except:
-            return {'code': 'tag/update/fail'}, 404
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return data, code
 
 
-# create
 @json_view
-def actionCreate(request):
+def create(request):
     """Create record"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.create(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.create(request)
+            except:
+                return {'code': 'tag/create/fail'}, 404
+        else:
+            data, code, item = resource.create(request)
 
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['text', 'description'])
-
-    json_data['created_user'] = user
-
-    data = tag_helpers.getItemByText(json_data['text'])
-
-    if data is not False:
-        return {'code': 'tag/exists', 'values': [json_data['text']]}, 404
-
-    data = tag_helpers.create(json_data)
-
-    if not data:
-        return {'code': 'tag/create/fail'}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return data, code
 
 
-# delete
 @json_view
-def actionDelete(request, id):
+def delete(request, tag_id):
     """Delete record"""
-    json_data = helpers.getJson(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    data, code, valid = validator.delete(request)
 
-    user = helpers.getUser(request)
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code = resource.delete(request, tag_id)
+            except:
+                return {'code': 'tag/delete/fail'}, 404
+        else:
+            data, code = resource.delete(request, tag_id)
 
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    data = tag_helpers.getItem(id)
-
-    if not data:
-        return {'code': 'tag/not_found', 'values': [id]}, 404
-    else:
-        try:
-            data[0].delete()
-        except:
-            return {'code': 'tag/delete/fail'}, 404
-        return {'code': 'ok'}
+    return data, code
