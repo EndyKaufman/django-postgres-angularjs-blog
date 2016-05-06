@@ -4,12 +4,19 @@ import resource
 
 
 def create(request):
-    """Create record"""
-
     json_data = helpers.getJson(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
+
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'title', 'description'])
+
+    if json_data['name'] is None:
+        return {'code': 'project/no_name'}, 404
+    if json_data['title'] is None:
+        return {'code': 'project/no_title'}, 404
+    if json_data['description'] is None:
+        return {'code': 'project/no_description'}, 404
 
     user = helpers.getUser(request)
 
@@ -18,15 +25,15 @@ def create(request):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    item = resource.get_item_by_text(json_data['text'])
+    data, code, item = resource.get_item_by_name(request, json_data['name'])
 
     if item is not False:
-        return {'code': 'tag/exists', 'values': [json_data['text']]}, 404, False
+        return {'code': 'project/exists', 'values': [json_data['name']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
 
-def update(request, tag_id):
+def update(request, project_id):
     """Update record"""
 
     json_data = helpers.getJson(request)
@@ -34,6 +41,15 @@ def update(request, tag_id):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
+    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'title', 'description'])
+
+    if json_data['name'] is None:
+        return {'code': 'project/no_name'}, 404
+    if json_data['title'] is None:
+        return {'code': 'project/no_title'}, 404
+    if json_data['description'] is None:
+        return {'code': 'project/no_description'}, 404
+
     user = helpers.getUser(request)
 
     if not user or not request.user.is_superuser:
@@ -41,10 +57,10 @@ def update(request, tag_id):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    item = resource.get_item_by_text(json_data['text'])
+    data, code, item = resource.get_item_by_name(request, json_data['name'])
 
-    if (item is not False) and (int(item.id) != int(tag_id)):
-        return {'code': 'tag/exists', 'values': [json_data['text']]}, 404, False
+    if (item is not False) and (int(item.id) != int(project_id)):
+        return {'code': 'project/exists', 'values': [json_data['text']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 

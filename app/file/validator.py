@@ -3,6 +3,8 @@ from project import helpers
 
 
 def create(request):
+    """Create record"""
+
     json_data = request.POST
 
     if json_data is False:

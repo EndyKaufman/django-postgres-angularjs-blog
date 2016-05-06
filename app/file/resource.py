@@ -4,6 +4,8 @@ from django.db.models import Q
 
 
 def create(request):
+    """Create record"""
+
     json_data = request.POST
 
     user = helpers.getUser(request)

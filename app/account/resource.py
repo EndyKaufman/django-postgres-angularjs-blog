@@ -6,7 +6,7 @@ from project import settings
 from django.template.loader import render_to_string
 
 
-def get_user_by_email(email):
+def get_item_by_email(email):
     from app.account.models import User
     try:
         user = User.objects.get(email=email)
@@ -108,7 +108,7 @@ def login(request):
 
     json_data['email'] = json_data['email'].lower()
 
-    user = get_user_by_email(json_data['email'])
+    user = get_item_by_email(json_data['email'])
 
     user = auth.authenticate(username=user.username, password=json_data['password'])
 
@@ -143,7 +143,7 @@ def recovery(request):
 
     from app.account.models import Code
 
-    user = get_user_by_email(json_data['email'])
+    user = get_item_by_email(json_data['email'])
 
     code = Code.objects.create(text=helpers.makeCode(), created_user=user, type=1)
 

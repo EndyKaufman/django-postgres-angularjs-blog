@@ -27,7 +27,7 @@ def create(request):
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
-    user = resource.get_user_by_email(json_data['email'])
+    user = resource.get_item_by_email(json_data['email'])
 
     if user:
         return {'code': 'account/exists', 'values': [json_data['email']]}, 404, False
@@ -104,7 +104,7 @@ def login(request):
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
-    user = resource.get_user_by_email(json_data['email'])
+    user = resource.get_item_by_email(json_data['email'])
 
     if not user:
         return {'code': 'account/user_not_found', 'values': [json_data['email']]}, 404, False
@@ -149,7 +149,7 @@ def recovery(request):
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
-    user = resource.get_user_by_email(json_data['email'])
+    user = resource.get_item_by_email(json_data['email'])
 
     if not user:
         return {'code': 'account/user_not_found', 'values': [json_data['email']]}, 404, False
