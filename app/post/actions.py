@@ -1,193 +1,132 @@
 # -*- coding: utf-8 -*-
 
-import json
 from jsonview.decorators import json_view
-from project import helpers
-from helpers import updateFromJsonObject, validate
-from django.db.models import Q
+from project import settings
+import resource
+import validator
 
 
-# list
 @json_view
-def getList(request):
+def get_list(request):
     """List data"""
 
-    from app.post.models import Post
-
-    data = Post.objects.all().order_by('-created').all()
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
-
-
-# search
-@json_view
-def getSearch(request, search_text):
-    """Search data"""
-    if search_text == 'all':
-        return getList(request)
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_list(request)
+        except:
+            return {'code': 'post/get_list/fail'}, 404
     else:
-        from app.post.models import Post
+        data, code, items = resource.get_list(request)
 
-        data = Post.objects.filter(
-            Q(title__icontains=search_text) |
-            Q(name__icontains=search_text) |
-            Q(description__icontains=search_text) |
-            Q(url__icontains=search_text) |
-            Q(text__icontains=search_text) |
-            Q(html__icontains=search_text) |
-            Q(markdown__icontains=search_text)
-        ).order_by('-created').all()
-
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return data, code
 
 
-# search by tag
 @json_view
-def getListByTag(request, tag_text):
-    """List data by tag"""
+def get_list_by_tag(request, tag_text):
+    """List data"""
 
-    from app.post.models import Post
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_list_by_tag(request, tag_text)
+        except:
+            return {'code': 'post/get_list_by_tag/fail'}, 404
+    else:
+        data, code, items = resource.get_list_by_tag(request, tag_text)
 
-    data = Post.objects.filter(tags__text=tag_text).order_by('-created').all()
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return data, code
 
 
-# item
 @json_view
-def getItem(request, post_name):
+def get_search(request, search_text):
+    """Search data"""
+
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_search(request, search_text)
+        except:
+            return {'code': 'post/get_search/fail'}, 404
+    else:
+        data, code, items = resource.get_search(request, search_text)
+
+    return data, code
+
+
+@json_view
+def get_item_by_name(request, post_name):
     """Item data"""
 
-    from app.post.models import Post
+    if settings.ENV == 'production':
+        try:
+            data, code, item = resource.get_item_by_name(request, post_name)
+        except:
+            return {'code': 'post/get_item/fail'}, 404
+    else:
+        data, code, item = resource.get_item_by_name(request, post_name)
+    return data, code
 
-    try:
-        data = [Post.objects.get(name=post_name)]
-    except Post.DoesNotExist:
-        return {'code': 'post/not_found', 'values': [post_name]}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
-
-
-# update
 @json_view
-def actionUpdate(request, post_id):
+def get_item(request, post_id):
+    """Item data"""
+
+    if settings.ENV == 'production':
+        try:
+            data, code, item = resource.get_item(request, post_id)
+        except:
+            return {'code': 'post/get_item/fail'}, 404
+    else:
+        data, code, item = resource.get_item(request, post_id)
+    return data, code
+
+
+@json_view
+def update(request, post_id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.update(request, post_id)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.update(request, post_id)
+            except:
+                return {'code': 'post/update/fail'}, 404
+        else:
+            data, code, item = resource.update(request, post_id)
 
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    from app.post.models import Post
-
-    validateResult, validateCode = validate(json_data)
-
-    if validateCode != 200:
-        return validateResult, validateCode
-
-    try:
-        post = Post.objects.get(name=json_data['name'])
-    except Post.DoesNotExist:
-        post = False
-
-    if (post is not False) and (int(post.id) != int(post_id)):
-        return {'code': 'post/exists', 'values': [json_data['name'], post.id]}, 404
-
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return {'code': 'post/not_found', 'values': [post_id]}, 404
-
-    # try:
-    updateResult, updateCode = updateFromJsonObject(post, json_data, user)
-    if updateCode != 200:
-        return updateResult, updateCode
-    post.save()
-    # except:
-    #    return {'code': 'post/update/fail'}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([post]), 'reload_source': updateResult['reload_source']}
+    return data, code
 
 
-# create
 @json_view
-def actionCreate(request):
+def create(request):
     """Create record"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.create(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.create(request)
+            except:
+                return {'code': 'post/create/fail'}, 404
+        else:
+            data, code, item = resource.create(request)
 
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    from app.post.models import Post
-
-    validateResult, validateCode = validate(json_data)
-
-    if validateCode != 200:
-        return validateResult, validateCode
-
-    try:
-        post = Post.objects.get(name=json_data['name'])
-    except Post.DoesNotExist:
-        post = False
-
-    if post is not False:
-        return {'code': 'post/exists', 'values': [json_data['name']]}, 404
-
-    post = Post.objects.create(name=json_data['name'], type=1, created_user=user)
-
-    # try:
-    createResult, createCode = updateFromJsonObject(post, json_data, user)
-    if createCode != 200:
-        return createResult, createCode
-    post.save()
-    # except:
-    #     return {'code': 'post/create/fail'}, 404
-
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([post]), 'reload_source': createResult['reload_source']}
+    return data, code
 
 
-# delete
 @json_view
-def actionDelete(request, post_id):
+def delete(request, post_id):
     """Delete record"""
 
-    json_data = helpers.getJson(request)
+    data, code, valid = validator.delete(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code = resource.delete(request, post_id)
+            except:
+                return {'code': 'post/delete/fail'}, 404
+        else:
+            data, code = resource.delete(request, post_id)
 
-    user = helpers.getUser(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    from app.post.models import Post
-
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return {'code': 'post/not_found', 'values': [post_id]}, 404
-
-    try:
-        post.delete()
-    except:
-        return {'code': 'post/delete/fail'}, 404
-
-    return {'code': 'ok'}
+    return data, code
