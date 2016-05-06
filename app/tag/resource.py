@@ -3,7 +3,7 @@ from project import helpers
 from django.db.models import Q
 
 
-def get_item_by_text(text):
+def get_item_by_text(request, text):
     from app.tag.models import Tag
     try:
         item = Tag.objects.get(text=text)

@@ -18,7 +18,7 @@ def create(request):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    item = resource.get_item_by_text(json_data['text'])
+    item = resource.get_item_by_text(request, json_data['text'])
 
     if item is not False:
         return {'code': 'tag/exists', 'values': [json_data['text']]}, 404, False
@@ -41,7 +41,7 @@ def update(request, tag_id):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    item = resource.get_item_by_text(json_data['text'])
+    item = resource.get_item_by_text(request, json_data['text'])
 
     if (item is not False) and (int(item.id) != int(tag_id)):
         return {'code': 'tag/exists', 'values': [json_data['text']]}, 404, False

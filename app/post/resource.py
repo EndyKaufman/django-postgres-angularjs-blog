@@ -3,7 +3,7 @@ from project import helpers
 from django.db.models import Q
 
 
-def update_from_json_data(post, json_data, user):
+def update_from_json_data(request, post, json_data, user):
     from app.image.models import Image
     from app.tag.models import Tag
 
@@ -113,6 +113,8 @@ def update_from_json_data(post, json_data, user):
         image = Image.objects.get(pk=imageId)
         post.images.add(image)
 
+    post.save()
+
     return reload_source
 
 
@@ -128,8 +130,7 @@ def create(request):
     item, created = Post.objects.get_or_create(name=json_data['name'], type=1, created_user=user)
     reload_source = []
     if created:
-        reload_source = update_from_json_data(item, json_data, user)
-        item.save()
+        reload_source = update_from_json_data(request, item, json_data, user)
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([item]), 'reload_source': reload_source}, 200, item
 
@@ -150,8 +151,7 @@ def update(request, post_id):
     except Post.DoesNotExist:
         return {'code': 'post/not_found', 'values': [post_id]}, 404, False
 
-    reload_source = update_from_json_data(item, json_data, user)
-    item.save()
+    reload_source = update_from_json_data(request, item, json_data, user)
 
     return {'code': 'ok', 'data': helpers.itemsToJsonObject([item]), 'reload_source': reload_source}, 200, item
 
