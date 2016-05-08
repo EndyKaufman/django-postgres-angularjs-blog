@@ -24,11 +24,17 @@ def index(request):
         ['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME', 'SITE_LOGO', 'HOME_HEADER_BOTTOM_HTML',
          'HOME_BODY_TOP_HTML', 'HOME_BODY_BOTTOM_HTML'])
 
+    if "_escaped_fragment_" not in request.GET:
+        escaped_fragment_tag = '<meta name="fragment" content="!">'
+    else:
+        escaped_fragment_tag = ''
+
     return render(request, 'home/templates/%s/index.htm' % settings.THEME, {
         'config': json.dumps(config, sort_keys=True, indent=4),
         'settings': settings,
         'meta_tag_list': meta_tag_list,
-        'properties_list': properties_list
+        'properties_list': properties_list,
+        'escaped_fragment_tag': escaped_fragment_tag
     })
 
 

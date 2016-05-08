@@ -7,9 +7,8 @@
 <html class="no-js lt-ie9" lang="en" ng-app="app" ng-controller="AppCtrl"> <![endif]-->
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="en" ng-app="app" ng-controller="AppCtrl"> <!--<![endif]-->
-{% load django_seo_js %}
 <head>
-    <meta name="fragment" content="!">
+    {{ escaped_fragment_tag |safe }}
     {% load staticfiles %}
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
