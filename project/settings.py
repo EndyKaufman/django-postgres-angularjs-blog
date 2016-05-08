@@ -108,7 +108,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django_seo_js.middleware.EscapedFragmentMiddleware',  # If you're using #!
-    #'django_seo_js.middleware.UserAgentMiddleware',  # If you want to detect by user agent
+    'django_seo_js.middleware.UserAgentMiddleware',  # If you want to detect by user agent
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -223,10 +223,6 @@ SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
 SEO_JS_PRERENDER_TIMEOUT = float(os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False))
 
 SEO_JS_USER_AGENTS = [
-    'bot',
-    "Yahoo",
-    "bing",
-    "spider",
-    "robot",
-    "crawler"
+    'Facebot',
+    "Twitterbot"
 ]
