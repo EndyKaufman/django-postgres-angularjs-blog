@@ -17,7 +17,10 @@
     <meta name="{{ meta_tag_item.name }}" content="{{ meta_tag_item.content }}" {{ meta_tag_item.attributes }}/>
         {% endif %}{% endfor %}
     <title ng-bind="AppSvc.item.title">{{ properties_list.SITE_TITLE |safe }}</title>
-    {% verbatim %}<meta name="description" content="{{ AppSvc.item.description }}"/>{% endverbatim %}
+    {% verbatim %}<meta name="description" content="{{ AppSvc.item.description }}"/>
+    <meta property="og:title" content="{{ AppSvc.item.title }}" />
+    <meta property="og:description" content="{{ AppSvc.item.description }}" />
+    <meta property="og:image" content="{{ AppSvc.item.image }}" />{% endverbatim %}
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
     </script>
