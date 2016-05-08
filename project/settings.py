@@ -214,3 +214,5 @@ SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', '')
 
 # Whether to run the middlewares and update_cache_for_url.  Useful to set False for unit testing.
 SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
+
+SEO_JS_PRERENDER_TIMEOUT = os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False)
