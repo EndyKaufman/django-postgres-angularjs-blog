@@ -108,6 +108,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django_seo_js.middleware.EscapedFragmentMiddleware',  # If you're using #!
+    'django_seo_js.middleware.UserAgentMiddleware',  # If you want to detect by user agent
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -208,15 +209,25 @@ else:
 # Backend to use
 SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', False)
 
-if SEO_JS_PRERENDER_TOKEN:
-    SEO_JS_BACKEND = "django_seo_js.backends.PrerenderIO"
-else:
+if SEO_JS_PRERENDER_TOKEN == '' or not SEO_JS_PRERENDER_TOKEN:
     SEO_JS_BACKEND = "django_seo_js.backends.PrerenderHosted"
+else:
+    SEO_JS_BACKEND = "django_seo_js.backends.PrerenderIO"
 
-SEO_JS_PRERENDER_URL = os.environ.get('SEO_JS_PRERENDER_URL', 'http://service.prerender.io/')  # Note trailing slash.
-SEO_JS_PRERENDER_RECACHE_URL = os.environ.get('SEO_JS_PRERENDER_RECACHE_URL', 'http://service.prerender.io/recache')
+SEO_JS_PRERENDER_URL = os.environ.get('SEO_JS_PRERENDER_URL', '')  # Note trailing slash.
+SEO_JS_PRERENDER_RECACHE_URL = os.environ.get('SEO_JS_PRERENDER_RECACHE_URL', '')
 
 # Whether to run the middlewares and update_cache_for_url.  Useful to set False for unit testing.
 SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
 
 SEO_JS_PRERENDER_TIMEOUT = float(os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False))
+
+SEO_JS_USER_AGENTS = [
+    "TelegramBot",
+    "TwitterBot",
+    "Googlebot",
+    "Yahoo",
+    "bingbot",
+    "Badiu",
+    "Ask Jeeves",
+]
