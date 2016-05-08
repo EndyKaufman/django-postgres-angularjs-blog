@@ -3,6 +3,10 @@ from project import helpers
 from django.db.models import Q
 
 
+def get_fields():
+    return ['text', 'description']
+
+
 def get_item_by_text(request, text):
     from app.tag.models import Tag
     try:
@@ -11,6 +15,7 @@ def get_item_by_text(request, text):
         item = False
     return item
 
+
 def create(request):
     """Create record"""
 
@@ -18,7 +23,7 @@ def create(request):
 
     user = helpers.getUser(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['text', 'description'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
 
     from app.tag.models import Tag
 
@@ -36,7 +41,7 @@ def update(request, tag_id):
 
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['text', 'description'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
 
     from app.tag.models import Tag
 

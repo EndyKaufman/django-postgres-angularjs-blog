@@ -9,7 +9,7 @@ def create(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'title', 'description'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
 
     if json_data['name'] is None:
         return {'code': 'post/no_name'}, 404
@@ -41,7 +41,7 @@ def update(request, post_id):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'title', 'description'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
 
     if json_data['name'] is None:
         return {'code': 'post/no_name'}, 404

@@ -4,10 +4,13 @@ from project import settings
 from django.template.loader import render_to_string
 
 
+def get_fields():
+    return ['email', 'username', 'message']
+
 def send(request):
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['email', 'username', 'message'], '')
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields(), '')
 
     json_data['email'] = json_data['email'].lower()
 

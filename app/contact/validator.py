@@ -2,7 +2,7 @@
 from project import helpers
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
+import resource
 
 def send(request):
     """Send message"""
@@ -12,7 +12,7 @@ def send(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['email', 'username', 'message'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
     json_data['email'] = json_data['email'].lower()
 
     if json_data['email'] == '':

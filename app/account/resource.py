@@ -5,6 +5,8 @@ from django.contrib import auth
 from project import settings
 from django.template.loader import render_to_string
 
+def get_fields():
+    return ['email', 'password', 'username', 'firstname', 'lastname']
 
 def get_item_by_email(request, email):
     from app.account.models import User
@@ -27,8 +29,7 @@ def get_code(request, text):
 def create(request):
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['email', 'password'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -58,8 +59,7 @@ def update(request):
 
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['email', 'password', 'username', 'firstname', 'lastname'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -103,8 +103,7 @@ def login(request):
 
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['email', 'password'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -137,7 +136,7 @@ def recovery(request):
 
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['email'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -167,8 +166,7 @@ def reset_password(request):
 
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['code', 'password', 'email', 'username', 'firstname', 'lastname'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
 
     json_data['code'] = json_data['code'].lower()
 

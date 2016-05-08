@@ -3,6 +3,9 @@ from project import helpers
 from django.db.models import Q
 
 
+def get_fields():
+    return ['comment']
+
 def create(request):
     """Create record"""
 
@@ -10,7 +13,7 @@ def create(request):
 
     user = helpers.getUser(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
 
     if request.FILES and request.FILES.get('file'):
         if user.is_superuser:
@@ -38,7 +41,7 @@ def update(request, file_id):
 
     json_data = helpers.getJson(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['comment'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
 
     from app.file.models import File
 

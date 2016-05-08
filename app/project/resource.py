@@ -118,12 +118,16 @@ def update_from_json_data(request, project, json_data, user):
     return reload_source
 
 
+def get_fields():
+    return ['name', 'title', 'description']
+
+
 def create(request):
     json_data = helpers.getJson(request)
 
     user = helpers.getUser(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'title'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
 
     from app.project.models import Project
 
@@ -142,7 +146,7 @@ def update(request, project_id):
 
     user = helpers.getUser(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, ['name', 'title'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
 
     from app.project.models import Project
 

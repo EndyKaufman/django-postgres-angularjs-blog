@@ -11,8 +11,7 @@ def create(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['email', 'password'])
+    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
 
     if json_data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
@@ -43,8 +42,7 @@ def update(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['email', 'password', 'username', 'firstname', 'lastname'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
 
     if json_data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
@@ -88,8 +86,7 @@ def login(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['email', 'password'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
 
     if json_data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
@@ -136,8 +133,7 @@ def recovery(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['email'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
 
     if json_data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
@@ -168,8 +164,7 @@ def reset_password(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['code', 'password'])
+    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
 
     if json_data['code'] is None:
         return {'code': 'account/no_code'}, 404, False
