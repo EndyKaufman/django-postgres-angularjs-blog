@@ -108,7 +108,7 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django_seo_js.middleware.EscapedFragmentMiddleware',  # If you're using #!
-    'django_seo_js.middleware.UserAgentMiddleware',  # If you want to detect by user agent
+    #'django_seo_js.middleware.UserAgentMiddleware',  # If you want to detect by user agent
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
