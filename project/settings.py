@@ -205,12 +205,16 @@ else:
 
     STATIC_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, STATICFILES_LOCATION)
 
-SEO_JS_BACKEND = "django_seo_js.backends.PrerenderHosted"
+# Backend to use
+SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', False)
+
+if SEO_JS_PRERENDER_TOKEN:
+    SEO_JS_BACKEND = "django_seo_js.backends.PrerenderIO"
+else:
+    SEO_JS_BACKEND = "django_seo_js.backends.PrerenderHosted"
+
 SEO_JS_PRERENDER_URL = os.environ.get('SEO_JS_PRERENDER_URL', 'http://service.prerender.io/')  # Note trailing slash.
 SEO_JS_PRERENDER_RECACHE_URL = os.environ.get('SEO_JS_PRERENDER_RECACHE_URL', 'http://service.prerender.io/recache')
-
-# Backend to use
-SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', '')
 
 # Whether to run the middlewares and update_cache_for_url.  Useful to set False for unit testing.
 SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
