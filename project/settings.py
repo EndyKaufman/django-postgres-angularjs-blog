@@ -107,6 +107,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django_seo_js.middleware.EscapedFragmentMiddleware',  # If you're using #!
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -115,7 +116,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django_seo_js.middleware.UserAgentMiddleware',  # If you want to detect by user agent
 )
 
 ROOT_URLCONF = 'project.urls'
@@ -205,33 +205,12 @@ else:
 
     STATIC_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, STATICFILES_LOCATION)
 
+SEO_JS_BACKEND = "django_seo_js.backends.PrerenderHosted"
+SEO_JS_PRERENDER_URL = os.environ.get('SEO_JS_PRERENDER_URL', 'http://service.prerender.io/')  # Note trailing slash.
+SEO_JS_PRERENDER_RECACHE_URL = os.environ.get('SEO_JS_PRERENDER_RECACHE_URL', 'http://service.prerender.io/recache')
+
 # Backend to use
 SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', '')
 
-SEO_JS_BACKEND = "django_seo_js.backends.PrerenderIO"  # Default
-
 # Whether to run the middlewares and update_cache_for_url.  Useful to set False for unit testing.
 SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
-
-# User-agents to render for, if you're using the UserAgentMiddleware
-# Defaults to the most popular.  If you have custom needs, pull from the full list:
-# http://www.useragentstring.com/pages/Crawlerlist/
-SEO_JS_USER_AGENTS = [
-    "Googlebot",
-    "Yahoo",
-    "bingbot",
-    "Badiu",
-    "Ask Jeeves",
-    "Yandex"
-]
-
-# Urls to skip the rendering backend, and always render in-app.
-# Defaults to excluding sitemap.xml.
-SEO_JS_IGNORE_URLS = [
-    "/sitemap.xml",
-]
-SEO_JS_IGNORE_EXTENSIONS = [
-    ".xml",
-    ".txt",
-    # See helpers.py for full list of extensions ignored by default.
-]
