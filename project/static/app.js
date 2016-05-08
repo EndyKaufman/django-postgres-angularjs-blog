@@ -82488,7 +82488,7 @@ app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, 
 
     return service;
   });
-app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc) {
+app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc, AppSvc, PropertiesSvc) {
     var service={};
 
     $rootScope.$on('post.delete',function(event, item){

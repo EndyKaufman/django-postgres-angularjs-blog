@@ -24,7 +24,7 @@ USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1') == '1'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', ''))
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 SERVER_EMAIL = os.environ.get('EMAIL_HOST_USER', '')
@@ -215,4 +215,4 @@ SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', '')
 # Whether to run the middlewares and update_cache_for_url.  Useful to set False for unit testing.
 SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
 
-SEO_JS_PRERENDER_TIMEOUT = os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False)
+SEO_JS_PRERENDER_TIMEOUT = float(os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False))
