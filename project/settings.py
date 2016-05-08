@@ -223,11 +223,10 @@ SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
 SEO_JS_PRERENDER_TIMEOUT = float(os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False))
 
 SEO_JS_USER_AGENTS = [
-    "TelegramBot",
-    "TwitterBot",
-    "Googlebot",
+    'bot',
     "Yahoo",
-    "bingbot",
-    "Badiu",
-    "Ask Jeeves",
+    "bing",
+    "spider",
+    "robot",
+    "crawler"
 ]
