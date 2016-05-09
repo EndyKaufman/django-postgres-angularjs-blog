@@ -30,6 +30,7 @@ def index(request):
         escaped_fragment_tag = ''
 
     return render(request, 'home/templates/%s/index.htm' % settings.THEME, {
+        'referer': request.META['HTTP_REFERER'],
         'host_url': '//' + request.get_host(),
         'config': json.dumps(config, sort_keys=True, indent=4),
         'settings': settings,

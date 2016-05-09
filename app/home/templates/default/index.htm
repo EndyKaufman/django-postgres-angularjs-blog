@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     {% for meta_tag_item in meta_tag_list %}{% if meta_tag_item.content != '' %}
     <meta name="{{ meta_tag_item.name }}" content="{{ meta_tag_item.content }}" {{ meta_tag_item.attributes }}/>
+    <meta name="referer" content="{{ referer }}"/>
         {% endif %}{% endfor %}
     <title ng-bind="AppSvc.item.title">{{ properties_list.SITE_TITLE |safe }}</title>
     {% verbatim %}<meta name="description" content="{{ AppSvc.item.description }}"/>
