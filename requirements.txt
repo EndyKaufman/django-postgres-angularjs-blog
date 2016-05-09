@@ -7,7 +7,7 @@ dj-database-url==0.4.1
 dj-static==0.0.6
 Django==1.9.6
 django-jsonview==0.5.0
-git+https://github.com/EndyKaufman/django-seo-js.git
+git+https://github.com/EndyKaufman/django-seo-js.git#master
 django-storages==1.4.1
 django-toolbelt==0.0.1
 gunicorn==19.4.5
