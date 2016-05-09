@@ -3,117 +3,117 @@ from project import helpers
 from django.db.models import Q
 
 
-def update_from_json_data(request, project, json_data, user):
+def update_from_json_data(request, item, json_data, user):
     from app.image.models import Image
     from app.tag.models import Tag
 
     try:
-        project.title = json_data['title']
+        item.title = json_data['title']
     except KeyError:
-        project.title = None
+        item.title = None
     try:
-        project.name = json_data['name']
+        item.name = json_data['name']
     except KeyError:
-        project.name = None
+        item.name = None
     try:
-        project.description = json_data['description']
+        item.description = json_data['description']
     except KeyError:
-        project.description = None
+        item.description = None
     try:
-        project.url = json_data['url']
+        item.url = json_data['url']
     except KeyError:
-        project.url = None
+        item.url = None
     try:
-        project.text = json_data['text']
+        item.text = json_data['text']
     except KeyError:
-        project.text = None
+        item.text = None
     try:
-        project.html = json_data['html']
+        item.html = json_data['html']
     except KeyError:
-        project.html = None
+        item.html = None
     try:
-        project.markdown = json_data['markdown']
+        item.markdown = json_data['markdown']
     except KeyError:
-        project.markdown = None
+        item.markdown = None
     try:
-        project.type = json_data['type']
+        item.type = json_data['type']
     except KeyError:
-        project.type = None
+        item.type = None
 
-    if project.type == None:
-        project.type = 1
+    if item.type is None:
+        item.type = 1
 
     reload_source = {}
 
     # tags
-    tagFieldIds = []
-    tagFieldTexts = []
+    tag_field_ids = []
+    tag_field_texts = []
     for tag in json_data['tags']:
         try:
-            tagId = tag['id']
+            tag_id = tag['id']
         except KeyError:
-            tagId = None
+            tag_id = None
         try:
-            tagText = tag['text']
+            tag_text = tag['text']
         except KeyError:
-            tagText = None
-        if tagId is not None:
-            tagFieldIds.append(tagId)
-        if tagId is None and tagText is not None:
-            tagFieldTexts.append(tag)
+            tag_text = None
+        if tag_id is not None:
+            tag_field_ids.append(tag_id)
+        if tag_id is None and tag_text is not None:
+            tag_field_texts.append(tag)
 
-    for tag in project.tags.all():
-        if tag.id not in tagFieldIds:
-            project.tags.remove(tag)
+    for tag in item.tags.all():
+        if tag.id not in tag_field_ids:
+            item.tags.remove(tag)
 
-    for tagText in tagFieldTexts:
-        tag, tagCreated = Tag.objects.get_or_create(text=tagText['text'])
-        if tagCreated:
+    for tag_text in tag_field_texts:
+        tag, tag_created = Tag.objects.get_or_create(text=tag_text['text'])
+        if tag_created:
             tag.created_user = user
             tag.save()
             reload_source['tag'] = True
-        project.tags.add(tag)
+        item.tags.add(tag)
 
-    for tagId in tagFieldIds:
-        tag = Tag.objects.get(pk=tagId)
-        project.tags.add(tag)
+    for tag_id in tag_field_ids:
+        tag = Tag.objects.get(pk=tag_id)
+        item.tags.add(tag)
 
     # images
-    imageFieldIds = []
-    imageFieldSrcs = []
+    image_field_ids = []
+    image_field_srcs = []
     for image in json_data['images']:
         try:
-            imageId = int(image['id'])
+            image_id = int(image['id'])
         except:
-            imageId = None
+            image_id = None
 
         try:
-            imageSrc = image['src']
+            image_src = image['src']
         except KeyError:
-            imageSrc = None
-        if imageId is not None:
-            imageFieldIds.append(imageId)
+            image_src = None
+        if image_id is not None:
+            image_field_ids.append(image_id)
 
-        if imageId is None and imageSrc is not None:
-            imageFieldSrcs.append(image)
+        if image_id is None and image_src is not None:
+            image_field_srcs.append(image)
 
-    for image in project.images.all():
-        if image.id not in imageFieldIds:
-            project.images.remove(image)
+    for image in item.images.all():
+        if image.id not in image_field_ids:
+            item.images.remove(image)
 
-    for imageSrc in imageFieldSrcs:
-        image, imageCreated = Image.objects.get_or_create(src=imageSrc['src'])
-        if imageCreated:
+    for image_src in image_field_srcs:
+        image, image_created = Image.objects.get_or_create(src=image_src['src'])
+        if image_created:
             image.created_user = user
             image.save()
             reload_source['image'] = True
-        project.images.add(image)
+        item.images.add(image)
 
-    for imageId in imageFieldIds:
-        image = Image.objects.get(pk=imageId)
-        project.images.add(image)
+    for image_id in image_field_ids:
+        image = Image.objects.get(pk=image_id)
+        item.images.add(image)
 
-    project.save()
+    item.save()
 
     return reload_source
 
