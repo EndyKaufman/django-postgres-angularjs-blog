@@ -2,6 +2,7 @@
 
 from project import helpers
 
+
 def getConfig(request):
     protocol = 'https' if request.is_secure() else 'http'
 
