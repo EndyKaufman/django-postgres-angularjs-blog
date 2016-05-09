@@ -123,11 +123,11 @@ def get_fields():
 
 
 def create(request):
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     from app.project.models import Project
 
@@ -136,17 +136,17 @@ def create(request):
     if created:
         reload_source = update_from_json_data(request, item, json_data, user)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item]), 'reload_source': reload_source}, 200, item
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, [item]), 'reload_source': reload_source}, 200, item
 
 
 def update(request, project_id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     from app.project.models import Project
 
@@ -157,7 +157,7 @@ def update(request, project_id):
 
     reload_source = update_from_json_data(request, item, json_data, user)
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item]), 'reload_source': reload_source}, 200, item
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, [item]), 'reload_source': reload_source}, 200, item
 
 
 def delete(request, project_id):
@@ -183,7 +183,7 @@ def get_item(request, project_id):
     except Project.DoesNotExist:
         return {'code': 'project/not_found', 'values': [project_id]}, 404, False
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, 200, item
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
 def get_item_by_name(request, project_name):
@@ -194,7 +194,7 @@ def get_item_by_name(request, project_name):
     except Project.DoesNotExist:
         return {'code': 'project/not_found', 'values': [project_name]}, 404, False
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, 200, item
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
 def get_list(request):
@@ -202,7 +202,7 @@ def get_list(request):
 
     items = Project.objects.all().order_by('-created').all()
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(items)}, 200, items
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
 def get_list_by_tag(request, tag_text):
@@ -210,7 +210,7 @@ def get_list_by_tag(request, tag_text):
 
     items = Project.objects.filter(tags__text=tag_text).order_by('-created').all()
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(items)}, 200, items
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
 def get_search(request, search_text):
@@ -229,4 +229,4 @@ def get_search(request, search_text):
             Q(markdown__icontains=search_text)
         ).order_by('-created').all()
 
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(items)}, 200, items
+        return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items

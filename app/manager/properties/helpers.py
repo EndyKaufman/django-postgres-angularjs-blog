@@ -4,7 +4,7 @@ from project import helpers
 
 def getListOfNames(names):
     list_of = getList()
-    list_of_names = helpers.setNullValuesIfNotExist({}, names, '')
+    list_of_names = helpers.set_null_values_If_not_exist({}, names, '')
     if len(names) > 0:
         for item in list_of:
             for name in names:

@@ -20,13 +20,15 @@
     {% verbatim %}<meta name="description" content="{{ AppSvc.item.description }}"/>
     <meta property="og:title" content="{{ AppSvc.item.title }}" />
     <meta property="og:description" content="{{ AppSvc.item.description }}" />
-    <meta property="og:image" content="{{ AppSvc.item.image }}" />{% endverbatim %}
+    <meta property="og:image" content="{{ AppSvc.item.image }}" />
+    <meta property="og:type" content="{{ AppSvc.item.type }}" />
+    <meta property="og:url" content="{{ AppSvc.item.url }}" />{% endverbatim %}
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
     </script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="{% static 'app.css' %}"/>
+    <link rel="stylesheet" href="{{ host_url }}{% static 'app.css' %}"/>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -48,7 +50,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
-<script src="{% static 'app.js' %}"></script>
+<script src="{{ host_url }}{% static 'app.js' %}"></script>
 {{ properties_list.HOME_BODY_BOTTOM_HTML |safe }}
 </body>
 </html>

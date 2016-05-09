@@ -6,12 +6,12 @@ from django.core.exceptions import ValidationError
 
 
 def create(request):
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
 
     if json_data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
@@ -37,12 +37,12 @@ def create(request):
 def update(request):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
 
     if json_data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
@@ -54,7 +54,7 @@ def update(request):
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user:
         return {'code': 'no_access'}, 404, False
@@ -65,12 +65,12 @@ def update(request):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user:
         return {'code': 'no_access'}, 404, False
@@ -81,12 +81,12 @@ def delete(request):
 
 
 def login(request):
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
 
     if json_data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
@@ -112,7 +112,7 @@ def login(request):
 def logout(request):
     """Update record"""
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user:
         return {'code': 'no_access'}, 404, False
@@ -128,12 +128,12 @@ def recovery(request):
     if request.user.is_authenticated():
         return {'code': 'no_access'}, 404, False
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
 
     if json_data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
@@ -159,12 +159,12 @@ def reset_password(request):
     if request.user.is_authenticated():
         return {'code': 'no_access'}, 404, False
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
 
     if json_data['code'] is None:
         return {'code': 'account/no_code'}, 404, False

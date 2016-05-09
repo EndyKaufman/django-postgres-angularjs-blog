@@ -13,9 +13,6 @@ import os
 import dj_database_url
 
 # SITE CONFIG
-SITE_NAME = u'django-postgres-angularjs-blog'
-SITE_HASH_TAG = u'#myblog'
-SHORT_SITE_NAME = u'My Blog'
 ENV = os.environ.get('ENV', 'development')
 USE_SQLITE = os.environ.get('USE_SQLITE', None) == '1'
 USE_AMAZONE = os.environ.get('USE_AMAZONE', None) == '1'

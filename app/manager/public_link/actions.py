@@ -12,7 +12,7 @@ def getList(request):
 
     data = public_link_helpers.getList()
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
 
 
 # item
@@ -25,7 +25,7 @@ def getItem(request, id):
     if not data:
         return {'code': 'public_link/not_found', 'values': [id]}, 404
     else:
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+        return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
 
 
 # update
@@ -33,20 +33,20 @@ def getItem(request, id):
 def actionUpdate(request, id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404
     if user is None:
         return {'code': 'account/not_active'}, 404
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact',
+    json_data = helpers.set_null_values_If_not_exist(json_data,
+                                                     ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact',
                                                  'position'])
     if json_data['position'] == '':
         json_data['position'] = None;
@@ -72,7 +72,7 @@ def actionUpdate(request, id):
             data[0].save()
         except:
             return {'code': 'public_link/update/fail'}, 404
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+        return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
 
 
 # create
@@ -80,20 +80,20 @@ def actionUpdate(request, id):
 def actionCreate(request):
     """Create record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404
     if user is None:
         return {'code': 'account/not_active'}, 404
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,
-                                                ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact',
+    json_data = helpers.set_null_values_If_not_exist(json_data,
+                                                     ['src', 'title', 'icon', 'in_header', 'in_footer', 'in_contact',
                                                  'position'])
     if json_data['position'] == '':
         json_data['position'] = None;
@@ -110,19 +110,19 @@ def actionCreate(request):
     if not data:
         return {'code': 'public_link/create/fail'}, 404
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(data)}
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
 
 
 # delete
 @json_view
 def actionDelete(request, id):
     """Delete record"""
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404

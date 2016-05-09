@@ -19,7 +19,7 @@ def fill_from_mock(apps, schema_editor):
     Properties = apps.get_model("manager", "Properties")
     Properties.objects.all().delete()
     for record in records:
-        record = helpers.setNullValuesIfNotExist(record, ['name', 'value', 'comment', 'only_update'])
+        record = helpers.set_null_values_If_not_exist(record, ['name', 'value', 'comment', 'only_update'])
         item, created = Properties.objects.get_or_create(name=record['name'])
         item.value = record['value']
         item.comment = record['comment']

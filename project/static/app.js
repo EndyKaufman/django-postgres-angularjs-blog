@@ -78708,12 +78708,12 @@ app.config(function ($selectProvider, showErrorsConfigProvider, $carouselProvide
 });
 app.constant('AccountConst',{
     reg:{
-        title: 'Reg',
+        title: 'Registration form',
         name: 'reg',
         description: 'Registration on site'
     },
     login:{
-        title: 'Login',
+        title: 'Login on site',
         name: 'login',
         description: 'Authorization on site'
     },
@@ -78728,9 +78728,14 @@ app.constant('AccountConst',{
         description: 'Profile of user'
     },
     recovery:{
-        name: 'Recovery',
+        title: 'Recovery access',
         name: 'recovery',
         description: 'Recovery access to site'
+    },
+    reset_password:{
+        title: 'Reset password',
+        name: 'reset_password',
+        description: 'Reset password for account'
     },
     message:{
         'account/exists':'User with email <strong>%s</strong> is exists!',
@@ -78749,11 +78754,6 @@ app.constant('AccountConst',{
         'account/delete/confirm':'Do you really want to delete account?'
     }
 });
-app.constant('BookmarkConst', {
-    strings:{
-        title:'My bookmarks'
-    }
-});
 app.constant('ContactConst',{
     strings:{
         title: 'Contact us',
@@ -78763,7 +78763,7 @@ app.constant('ContactConst',{
 app.constant('FileConst', {
 });
 app.constant('HomeConst', {
-    url:'/home'
+    url:'/'
 });
 app.constant('ManagerConst', {
     strings:{
@@ -78790,6 +78790,11 @@ app.constant('ManagerConst', {
         name: 'properties',
         description: 'Properties'
     },
+    users:{
+        title: 'Users',
+        name: 'users',
+        description: 'Site users'
+    },
     message:{
     }
 });
@@ -78803,11 +78808,6 @@ app.constant('NavbarConst', {
     },
     right:[
     ]
-});
-app.constant('NoteConst', {
-    strings:{
-        title:'My notes'
-    }
 });
 app.constant('PostConst', {
     strings:{
@@ -78842,17 +78842,17 @@ app.constant('ProjectConst', {
 app.constant('SearchConst', {
     strings:{
         title:'Search',
-        description: 'Search descriptions'
+        description: 'Search result for text "%s"'
     }
 });
 app.constant('TagConst', {
     strings:{
         title:'Tags',
-        description: 'Tags descriptions'
+        description: 'Tag: %s'
     }
 });
 app.factory('AppConst', function($rootScope,
-HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostConst, SearchConst, ContactConst, ManagerConst, NavbarConst){
+HomeConst, AccountConst, TagConst, ProjectConst, PostConst, SearchConst, ContactConst, ManagerConst, NavbarConst){
     var navbar={
         left:[
             {
@@ -78889,7 +78889,7 @@ HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostC
             {
                 name:'logout',
                 parent:'account',
-                click:function(){
+                click:function(){console.log('hoi');
                     $rootScope.$broadcast('account.doLogout', true);
                 },
                 hiddenHandler: function(){
@@ -78905,8 +78905,6 @@ HomeConst, AccountConst, TagConst, NoteConst, BookmarkConst, ProjectConst, PostC
         search: SearchConst,
         account: AccountConst,
         tag: TagConst,
-        note: NoteConst,
-        bookmark: BookmarkConst,
         project: ProjectConst,
         post: PostConst,
         contact: ContactConst
@@ -78919,32 +78917,44 @@ app.config(function ($routeProvider, $locationProvider) {
       .when('/reg', {
         templateUrl: 'views/account/reg.html',
         controller: 'AccountCtrl',
-        navId: 'reg'
+        params:{
+            navId: 'reg'
+        }
       })
       .when('/recovery', {
         templateUrl: 'views/account/recovery.html',
         controller: 'AccountCtrl',
-        navId: 'recovery'
+        params:{
+            navId: 'recovery'
+        }
       })
-      .when('/resetpassword/:code', {
-        templateUrl: 'views/account/resetpassword.html',
+      .when('/reset_password/:code', {
+        templateUrl: 'views/account/reset_password.html',
         controller: 'AccountCtrl',
-        navId: 'resetpassword'
+        params:{
+            navId: 'reset_password'
+        }
       })
-      .when('/resetpassword', {
-        templateUrl: 'views/account/resetpassword.html',
+      .when('/reset_password', {
+        templateUrl: 'views/account/reset_password.html',
         controller: 'AccountCtrl',
-        navId: 'resetpassword'
+        params:{
+            navId: 'reset_password'
+        }
       })
       .when('/login', {
         templateUrl: 'views/account/login.html',
         controller: 'AccountCtrl',
-        navId: 'login'
+        params:{
+            navId: 'login'
+        }
       })
       .when('/profile', {
         templateUrl: 'views/account/profile.html',
         controller: 'AccountCtrl',
-        navId: 'profile'
+        params:{
+            navId: 'profile'
+        }
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -78952,14 +78962,19 @@ app.config(function ($routeProvider, $locationProvider) {
       .when('/contact', {
         templateUrl: 'views/contact/list.html',
         controller: 'ContactCtrl',
-        navId: 'contact'
+        params:{
+            navId: 'contact'
+        }
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
-      .when('/home', {
+      .when('/', {
         templateUrl: 'views/home/list.html',
-        controller: 'HomeCtrl'
+        controller: 'HomeCtrl',
+        params:{
+            navId: 'home'
+        }
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -78967,32 +78982,42 @@ app.config(function ($routeProvider, $locationProvider) {
       .when('/manager', {
         templateUrl: 'views/manager/meta_tag.html',
         controller: 'MetaTagCtrl',
-        navId: 'manager',
-        subNavId: 'meta_tag'
+        params:{
+            navId: 'manager',
+            subNavId: 'meta_tag'
+        }
       })
       .when('/manager/meta_tag', {
         templateUrl: 'views/manager/meta_tag.html',
         controller: 'MetaTagCtrl',
-        navId: 'manager',
-        subNavId: 'meta_tag'
+        params:{
+            navId: 'manager',
+            subNavId: 'meta_tag'
+        }
       })
       .when('/manager/public_link', {
         templateUrl: 'views/manager/public_link.html',
         controller: 'PublicLinkCtrl',
-        navId: 'manager',
-        subNavId: 'public_link'
+        params:{
+            navId: 'manager',
+            subNavId: 'public_link'
+        }
       })
       .when('/manager/properties', {
         templateUrl: 'views/manager/properties.html',
         controller: 'PropertiesCtrl',
-        navId: 'manager',
-        subNavId: 'properties'
+        params:{
+            navId: 'manager',
+            subNavId: 'properties'
+        }
       })
       .when('/manager/tag', {
         templateUrl: 'views/manager/tag.html',
         controller: 'TagCtrl',
-        navId: 'manager',
-        subNavId: 'tag'
+        params:{
+            navId: 'manager',
+            subNavId: 'tag'
+        }
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -79000,22 +79025,34 @@ app.config(function ($routeProvider, $locationProvider) {
       .when('/post/update/:postName', {
         templateUrl: 'views/post/update.html',
         controller: 'PostCtrl',
-        update: true
+        params:{
+            navId: 'post',
+            update: true
+        }
       })
       .when('/post/create', {
         templateUrl: 'views/post/create.html',
         controller: 'PostCtrl',
-        create: true
+        params:{
+            navId: 'post',
+            create: true
+        }
       })
       .when('/post/:postName', {
         templateUrl: 'views/post/item.html',
         controller: 'PostCtrl',
-        item: true
+        params:{
+            navId: 'post',
+            item: true
+        }
       })
       .when('/post', {
         templateUrl: 'views/post/list.html',
         controller: 'PostCtrl',
-        list: true
+        params:{
+            navId: 'post',
+            list: true
+        }
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
@@ -79023,36 +79060,54 @@ app.config(function ($routeProvider, $locationProvider) {
       .when('/project/update/:projectName', {
         templateUrl: 'views/project/update.html',
         controller: 'ProjectCtrl',
-        update: true
+        params:{
+            navId: 'project',
+            update: true
+        }
       })
       .when('/project/create', {
         templateUrl: 'views/project/create.html',
         controller: 'ProjectCtrl',
-        create: true
+        params:{
+            navId: 'project',
+            create: true
+        }
       })
       .when('/project/:projectName', {
         templateUrl: 'views/project/item.html',
         controller: 'ProjectCtrl',
-        item: true
+        params:{
+            navId: 'project',
+            item: true
+        }
       })
       .when('/project', {
         templateUrl: 'views/project/list.html',
         controller: 'ProjectCtrl',
-        list: true
+        params:{
+            navId: 'project',
+            list: true
+        }
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
       .when('/search/:searchText', {
         templateUrl: 'views/search/list.html',
-        controller: 'SearchCtrl'
+        controller: 'SearchCtrl',
+        params:{
+            navId: 'search'
+        }
       });
 });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
       .when('/tag/:tagText', {
         templateUrl: 'views/tag/list.html',
-        controller: 'TagCtrl'
+        controller: 'TagCtrl',
+        params:{
+            navId: 'tag'
+        }
       });
 });
 app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$httpProvider) {
@@ -79063,7 +79118,7 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
 .config(function ($routeProvider, $locationProvider) {
     $routeProvider
       .otherwise({
-        redirectTo: '/home'
+        redirectTo: '/'
       });
 
     $locationProvider.html5Mode({
@@ -79071,76 +79126,97 @@ app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$htt
         requireBase: false
     });
 });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemName">Name</label>\n' +
-    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
-    '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!projectForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemType">Type</label>\n' +
-    '    <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
-    '        <option ng-repeat="type in AppConst.project.types"\n' +
-    '                ng-value="type.id"\n' +
-    '                ng-bind-html="type.title | unsafe"\n' +
-    '                ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
-    '    </select>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback">\n' +
-    '    <label for="ItemTags">Tags</label>\n' +
-    '    <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
-    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
-    '    </tags-input>\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
+    '            <form name="tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagUpdateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!tagForm.$valid" id="tagUpdateConfirm">\n' +
+    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/tag/list.html', '<table class="table table-hover">\n' +
+    '    <thead>\n' +
+    '    <tr>\n' +
+    '        <th>#</th>\n' +
+    '        <th>Text</th>\n' +
+    '        <th>Description</th>\n' +
+    '        <th class="text-right" style="width:200px">Actions</th>\n' +
+    '    </tr>\n' +
+    '    </thead>\n' +
+    '    <tbody>\n' +
+    '    <tr ng-repeat="item in TagSvc.list | orderBy:\'position\'"\n' +
+    '        ng-class="(TagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind="item.id" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.text" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td class="break-word" ng-bind="item.description" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td class="text-right">\n' +
+    '            <button ng-click="TagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
+    '            </button>\n' +
+    '            <button ng-click="TagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '            </button>\n' +
+    '        </td>\n' +
+    '    </tr>\n' +
+    '    </tbody>\n' +
+    '</table>');
+	a.put('views/manager/tag/list-header.html', '<span ng-bind="ManagerSvc.title"></span>\n' +
+    '<button ng-click="TagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
+    '        type="button" id="tagCreate">\n' +
+    '    <i class="fa fa-plus"></i> Create\n' +
+    '</button>');
+	a.put('views/manager/tag/inputs.html', '<div class="form-group">\n' +
+    '    <label for="TagText">Text</label>\n' +
+    '    <input type="text" class="form-control" id="TagText"\n' +
+    '           ng-model="TagSvc.item.text"/>\n' +
     '</div>\n' +
     '<div class="form-group">\n' +
-    '    <label for="ItemDescription">Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
-    '                          ng-model="ProjectSvc.item.description" required></textarea>\n' +
+    '    <label for="TagDescription">Description</label>\n' +
+    '    <textarea class="form-control" id="TagDescription"\n' +
+    '              ng-model="TagSvc.item.description"></textarea>\n' +
     '</div>');
-	a.put('views/project/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemTitle">Title</label>\n' +
-    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="ProjectSvc.item.title"\n' +
-    '           ng-change="ProjectSvc.slugName(ProjectSvc.item.title)" required>\n' +
-    '    <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!projectForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==1">\n' +
-    '    <label for="ItemText">Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==2">\n' +
-    '    <label for="ItemHtml">Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==3">\n' +
-    '    <label for="ItemUrl">Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==4">\n' +
-    '    <label for="ItemMarkdown">Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
-    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
-    '    <div class="input-group has-feedback">\n' +
-    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
-    '               ng-model="image.src">\n' +
-    '                        <span class="input-group-btn">\n' +
-    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
-    '                                    type="button" id="{{\'projectSelect\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-check"></i> Select\n' +
-    '                            </button>\n' +
-    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
-    '                                    type="button" id="{{\'projectDelete\'+$index+\'Image\'}}">\n' +
-    '                                <i class="fa fa-trash"></i> Delete image\n' +
-    '                            </button>\n' +
-    '                        </span>\n' +
+	a.put('views/manager/tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
+    '            <form name="tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagCreateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!tagForm.$valid" id="tagCreateConfirm">\n' +
+    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/post/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
@@ -79215,99 +79291,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        </span>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/manager/tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
-    '            <form name="tagForm">\n' +
-    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '                <div class="modal-body">\n' +
-    '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagUpdateCancel">\n' +
-    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
-    '                    </button>\n' +
-    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!tagForm.$valid" id="tagUpdateConfirm">\n' +
-    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
-    '                    </button>\n' +
-    '                </div>\n' +
-    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                    <i class="fa fa-times"></i>\n' +
-    '                </button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/manager/tag/list.html', '<table class="table table-hover">\n' +
-    '    <thead>\n' +
-    '    <tr>\n' +
-    '        <th>#</th>\n' +
-    '        <th>Text</th>\n' +
-    '        <th>Description</th>\n' +
-    '        <th class="text-right">Actions</th>\n' +
-    '    </tr>\n' +
-    '    </thead>\n' +
-    '    <tbody>\n' +
-    '    <tr ng-repeat="item in TagSvc.list | orderBy:\'position\'"\n' +
-    '        ng-class="(TagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
-    '        <td ng-bind="item.id" ng-click="TagSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind="item.text" ng-click="TagSvc.selectItem(item)"></td>\n' +
-    '        <td class="break-word" ng-bind="item.description" ng-click="TagSvc.selectItem(item)"></td>\n' +
-    '        <td class="text-right">\n' +
-    '            <button ng-click="TagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
-    '                    id="{{\'tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
-    '            </button>\n' +
-    '            <button ng-click="TagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
-    '                    id="{{\'tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
-    '            </button>\n' +
-    '        </td>\n' +
-    '    </tr>\n' +
-    '    </tbody>\n' +
-    '</table>');
-	a.put('views/manager/tag/list-header.html', '<span ng-bind-html="AppConst.manager.tag.title | unsafe"></span>\n' +
-    '<button ng-click="TagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
-    '        type="button" id="tagCreate">\n' +
-    '    <i class="fa fa-plus"></i> Create\n' +
-    '</button>');
-	a.put('views/manager/tag/inputs.html', '<div class="form-group">\n' +
-    '    <label for="TagText">Text</label>\n' +
-    '    <input type="text" class="form-control" id="TagText"\n' +
-    '           ng-model="TagSvc.item.text"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="TagDescription">Description</label>\n' +
-    '    <textarea class="form-control" id="TagDescription"\n' +
-    '              ng-model="TagSvc.item.description"></textarea>\n' +
-    '</div>');
-	a.put('views/manager/tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
-    '            <form name="tagForm">\n' +
-    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '                <div class="modal-body">\n' +
-    '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagCreateCancel">\n' +
-    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
-    '                    </button>\n' +
-    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!tagForm.$valid" id="tagCreateConfirm">\n' +
-    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
-    '                    </button>\n' +
-    '                </div>\n' +
-    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                    <i class="fa fa-times"></i>\n' +
-    '                </button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
 	a.put('views/manager/public_link/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content" ng-controller="PublicLinkCtrl">\n' +
@@ -79343,7 +79326,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <th>In header</th>\n' +
     '        <th>In contact</th>\n' +
     '        <th>In footer</th>\n' +
-    '        <th class="text-right">Actions</th>\n' +
+    '        <th class="text-right" style="width:200px">Actions</th>\n' +
     '    </tr>\n' +
     '    </thead>\n' +
     '    <tbody>\n' +
@@ -79368,7 +79351,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </tr>\n' +
     '    </tbody>\n' +
     '</table>');
-	a.put('views/manager/public_link/list-header.html', '<span ng-bind-html="AppConst.manager.public_link.title | unsafe"></span>\n' +
+	a.put('views/manager/public_link/list-header.html', '<span ng-bind="ManagerSvc.title"></span>\n' +
     '<button ng-click="PublicLinkSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
     '        type="button" id="public_linkCreate">\n' +
     '    <i class="fa fa-plus"></i> Create\n' +
@@ -79475,17 +79458,15 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <thead>\n' +
     '    <tr>\n' +
     '        <th>#</th>\n' +
-    '        <th>Comment</th>\n' +
     '        <th>Name</th>\n' +
     '        <th>Value</th>\n' +
-    '        <th class="text-right">Actions</th>\n' +
+    '        <th class="text-right" style="width:200px">Actions</th>\n' +
     '    </tr>\n' +
     '    </thead>\n' +
     '    <tbody>\n' +
     '    <tr ng-repeat="item in PropertiesSvc.list | orderBy:\'position\'"\n' +
     '        ng-class="(PropertiesSvc.item.id==item.id)?\'bold\':\'\'">\n' +
     '        <td ng-bind="item.id" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind="item.comment" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
     '        <td ng-bind="item.name" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
     '        <td class="break-word" ng-bind="item.value" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
@@ -79499,7 +79480,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </tr>\n' +
     '    </tbody>\n' +
     '</table>');
-	a.put('views/manager/properties/list-header.html', '<span ng-bind-html="AppConst.manager.properties.title | unsafe"></span>\n' +
+	a.put('views/manager/properties/list-header.html', '<span ng-bind="ManagerSvc.title"></span>\n' +
     '<button ng-click="PropertiesSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
     '        type="button" id="propertiesCreate">\n' +
     '    <i class="fa fa-plus"></i> Create\n' +
@@ -79544,6 +79525,78 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemName">Name</label>\n' +
+    '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
+    '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!projectForm.ItemName.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemType">Type</label>\n' +
+    '    <select class="form-control" id="ItemType" ng-model="ProjectSvc.item.type">\n' +
+    '        <option ng-repeat="type in AppConst.project.types"\n' +
+    '                ng-value="type.id"\n' +
+    '                ng-bind-html="type.title | unsafe"\n' +
+    '                ng-selected="ProjectSvc.item.type==type.id"></option>\n' +
+    '    </select>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback">\n' +
+    '    <label for="ItemTags">Tags</label>\n' +
+    '    <tags-input id="ItemTags" ng-model="ProjectSvc.item.tags" placeholder="Add tag" min-length="1">\n' +
+    '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
+    '    </tags-input>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="ItemDescription">Description</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
+    '                          ng-model="ProjectSvc.item.description" required></textarea>\n' +
+    '</div>');
+	a.put('views/project/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="ItemTitle">Title</label>\n' +
+    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="ProjectSvc.item.title"\n' +
+    '           ng-change="ProjectSvc.slugName(ProjectSvc.item.title)" required>\n' +
+    '    <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '          ng-class="!projectForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==1">\n' +
+    '    <label for="ItemText">Text</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemText"\n' +
+    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==2">\n' +
+    '    <label for="ItemHtml">Html</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
+    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==3">\n' +
+    '    <label for="ItemUrl">Url</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
+    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==4">\n' +
+    '    <label for="ItemMarkdown">Markdown</label>\n' +
+    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
+    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
+    '</div>\n' +
+    '<div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
+    '    <label for="{{\'ItemImage\'+($index+1)}}" ng-bind-html="\'Image \'+($index+1) | unsafe"></label>\n' +
+    '    <div class="input-group has-feedback">\n' +
+    '        <input type="text" class="form-control" id="{{\'ItemImage\'+($index+1)}}"\n' +
+    '               ng-model="image.src">\n' +
+    '                        <span class="input-group-btn">\n' +
+    '                            <button ng-click="FileSvc.showList(image)" class="btn btn-cta-default"\n' +
+    '                                    type="button" id="{{\'projectSelect\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-check"></i> Select\n' +
+    '                            </button>\n' +
+    '                            <button ng-click="ProjectSvc.doDeleteImage($index)" class="btn btn-cta-red"\n' +
+    '                                    type="button" id="{{\'projectDelete\'+$index+\'Image\'}}">\n' +
+    '                                <i class="fa fa-trash"></i> Delete image\n' +
+    '                            </button>\n' +
+    '                        </span>\n' +
+    '    </div>\n' +
+    '</div>');
 	a.put('views/manager/meta_tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content" ng-controller="MetaTagCtrl">\n' +
@@ -79576,7 +79629,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <th>#</th>\n' +
     '        <th>Name</th>\n' +
     '        <th>Content</th>\n' +
-    '        <th class="text-right">Actions</th>\n' +
+    '        <th class="text-right" style="width:200px">Actions</th>\n' +
     '    </tr>\n' +
     '    </thead>\n' +
     '    <tbody>\n' +
@@ -79596,7 +79649,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </tr>\n' +
     '    </tbody>\n' +
     '</table>');
-	a.put('views/manager/meta_tag/list-header.html', '<span ng-bind-html="AppConst.manager.meta_tag.title | unsafe"></span>\n' +
+	a.put('views/manager/meta_tag/list-header.html', '<span ng-bind="ManagerSvc.title"></span>\n' +
     '<button ng-click="MetaTagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
     '        type="button" id="meta_tagCreate">\n' +
     '    <i class="fa fa-plus"></i> Create\n' +
@@ -79650,8 +79703,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Tag: <span ng-bind-html="TagSvc.tagText | unsafe"></span>\n' +
+    '                    <h1 class="heading" ng-bind-html="TagSvc.description | unsafe">\n' +
     '                    </h1>\n' +
     '                    <div class="content" ng-if="TagSvc.allListSumSize==0">\n' +
     '                        No results found...\n' +
@@ -79660,7 +79712,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            </section><!--//section-->\n' +
     '\n' +
     '            <div ng-repeat="allItem in TagSvc.allList" ng-if="TagSvc.allListSumSize>0">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.list.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -79669,7 +79721,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        </div><!--//content-->\n' +
     '                    </div><!--//section-inner-->\n' +
     '                </section><!--//section-->\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.list.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -79718,8 +79770,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Search result for text "<span ng-bind-html="SearchSvc.searchText | unsafe"></span>"\n' +
+    '                    <h1 class="heading" ng-bind-html="SearchSvc.description | unsafe">\n' +
     '                    </h1>\n' +
     '                    <div class="content" ng-if="SearchSvc.allListSumSize==0">\n' +
     '                        No results found...\n' +
@@ -79728,7 +79779,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            </section><!--//section-->\n' +
     '\n' +
     '            <div ng-repeat="allItem in SearchSvc.allList" ng-if="SearchSvc.allListSumSize>0">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.length>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\'" ng-if="allItem.list.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -79737,7 +79788,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                        </div><!--//content-->\n' +
     '                    </div><!--//section-inner-->\n' +
     '                </section><!--//section-->\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.length>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\'" ng-if="allItem.list.length>0">\n' +
     '                    <div class="section-inner">\n' +
     '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
     '                        </h2>\n' +
@@ -79781,289 +79832,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div><!--//item-->\n' +
     '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
     '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/project/update.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
-    '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
-    '    <form name="projectForm">\n' +
-    '        <div class="row">\n' +
-    '            <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '                <section class="latest section">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h1 class="heading">\n' +
-    '                            <span>Edit project</span>\n' +
-    '                            <a ng-href="{{\'/project/\'+ProjectSvc.item.name}}"\n' +
-    '                               class="btn btn-cta-default pull-right btn-xs"\n' +
-    '                               id="projectUpdate"><i class="fa fa-pencil-square-o"></i> View</a>\n' +
-    '                        </h1>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
-    '                            <div>\n' +
-    '                                <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-cta-secondary"\n' +
-    '                                        ng-disabled="!projectForm.$valid" id="projectSave">\n' +
-    '                                    <i class="fa fa-floppy-o"></i> Save\n' +
-    '                                </button>\n' +
-    '                                <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-cta-red"\n' +
-    '                                        id="projectDelete">\n' +
-    '                                    <i class="fa fa-trash"></i> Delete project\n' +
-    '                                </button>\n' +
-    '                                <button ng-click="ProjectSvc.doAddImage()" class="btn btn-cta-default pull-right"\n' +
-    '                                        id="projectAddImage">\n' +
-    '                                    <i class="fa fa-plus"></i> Add image\n' +
-    '                                </button>\n' +
-    '                            </div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '\n' +
-    '            </div><!--//primary-->\n' +
-    '            <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '\n' +
-    '                <aside class="list tags aside section">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading">Additionally</h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </aside><!--//section-->\n' +
-    '\n' +
-    '                <aside class="info aside section">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading sr-only">Search</h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/search.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </aside><!--//aside-->\n' +
-    '\n' +
-    '            </div><!--//secondary-->\n' +
-    '        </div><!--//row-->\n' +
-    '    </form>\n' +
-    '</div><!--//masonry-->');
-	a.put('views/project/list.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h1 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
-    '                    </h1>\n' +
-    '                    <div class="content">\n' +
-    '                        <div class="item row"\n' +
-    '                             ng-repeat="item in ProjectSvc.list | limitTo:ProjectSvc.limit:ProjectSvc.begin">\n' +
-    '                            <div ng-include="\'views/project/list-item.html\'"></div>\n' +
-    '                        </div><!--//item-->\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/project/list-item.html', '<a class="col-md-4 col-sm-4 col-xs-12" ng-href="{{\'/project/\'+item.name}}" ng-if="item.images.length>0">\n' +
-    '    <img class="img-responsive project-image" ng-src="{{AppConfig.static_url+item.images[0].srcStatic}}"\n' +
-    '         ng-if="item.images.length>0"\n' +
-    '         alt="{{item.title}}"/>\n' +
-    '</a>\n' +
-    '<div class="desc col-xs-12" ng-class="item.images.length>0?\'col-md-8 col-sm-8\':\'col-md-12 col-sm-12\'">\n' +
-    '    <div class="pull-right">\n' +
-    '        <a ng-href="{{\'/project/update/\'+item.name}}"\n' +
-    '           class="btn btn-cta-default btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
-    '           id="{{\'project\'+$index+\'Update\'}}">\n' +
-    '            <i class="fa fa-pencil-square-o"></i>\n' +
-    '            <span class="hidden-xs">Edit</span>\n' +
-    '        </a>\n' +
-    '        <a ng-click="ProjectSvc.doDelete(item)" class="btn btn-cta-red btn-xs"\n' +
-    '           id="projectDelete" ng-if="AccountSvc.isAdmin()">\n' +
-    '            <i class="fa fa-trash"></i>\n' +
-    '            <span class="hidden-xs">Delete</span>\n' +
-    '        </a>\n' +
-    '    </div>\n' +
-    '    <h3 class="title">\n' +
-    '        <a ng-href="{{\'/project/\'+item.name}}" ng-bind-html="item.title | unsafe"></a>\n' +
-    '    </h3>\n' +
-    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
-    '    <p ng-if="item.tags.length>0">\n' +
-    '        <span ng-repeat="tag in item.tags">\n' +
-    '            <i class="fa fa-tag"></i>\n' +
-    '            <a class="list-link" ng-href="{{\'/tag/\'+tag.text}}"\n' +
-    '               ng-bind-html="tag.text | unsafe"></a>\n' +
-    '        </span>\n' +
-    '    </p>\n' +
-    '    <p>\n' +
-    '        <a class="more-link" ng-href="{{\'/project/\'+item.name}}" id="{{\'project\'+$index+\'Detail\'}}"><i\n' +
-    '                class="fa fa-link"></i> Detail...</a>\n' +
-    '    </p>\n' +
-    '</div><!--//desc-->\n' +
-    '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
-    '    <hr class="divider" ng-if="!$last"/>\n' +
-    '</div><!--//desc-->');
-	a.put('views/project/list-header.html', '<span ng-bind-html="AppConst.project.strings.title | unsafe"></span>\n' +
-    '<a ng-href="/project/create"\n' +
-    '   class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectCreate"><i class="fa fa-plus"></i>  Create</a>');
-	a.put('views/project/item.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
-    '                        <a ng-href="{{\'/project/update/\'+ProjectSvc.item.name}}"\n' +
-    '                           class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectUpdate"><i class="fa fa-pencil-square-o"></i> Edit</a>\n' +
-    '                    </h1>\n' +
-    '                    <div class="content">\n' +
-    '                        <div class="item row">\n' +
-    '                            <div ng-include="\'views/project/item-content.html\'"></div>\n' +
-    '                        </div><!--//item-->\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list description aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Description</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <span ng-bind-html="ProjectSvc.item.description | unsafe"></span>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/project/item-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/project/item-tags.html', '<ul class="list-unstyled">\n' +
-    '    <li ng-repeat="tag in ProjectSvc.item.tags"><i class="fa fa-tag"></i> <a ng-href="{{\'/tag/\'+tag.text}}"\n' +
-    '                                                                             ng-bind-html="tag.text | unsafe"></a></li>\n' +
-    '</ul>');
-	a.put('views/project/item-content.html', '<div ng-if="ProjectSvc.item.images.length>0">\n' +
-    '    <div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
-    '        <div ng-if="ProjectSvc.item.images.length==1">\n' +
-    '            <img ng-src="{{AppConfig.static_url+ProjectSvc.item.images[0].srcStatic}}"\n' +
-    '                 class="img-responsive"/>\n' +
-    '        </div>\n' +
-    '        <div ng-if="ProjectSvc.item.images.length>1">\n' +
-    '            <div data-nq-carousel="">\n' +
-    '                <div data-carousel-item="" ng-repeat="image in ProjectSvc.item.images">\n' +
-    '                    <!--h3 class="carousel-title" nf-if="image.title!=\'\'"\n' +
-    '                        ng-bind-html="image.title | unsafe"></h3-->\n' +
-    '                    <img ng-src="{{AppConfig.static_url+image.srcStatic}}">\n' +
-    '                    <div class="carousel-caption" nf-if="image.description!=\'\'">\n' +
-    '                        <h4 ng-bind-html="image.description | unsafe"></h4>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '        </div>\n' +
-    '        <hr class="divider"/>\n' +
-    '    </div>\n' +
-    '</div>\n' +
-    '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
-    '    <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item.text">\n' +
-    '        <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
-    '    </div>\n' +
-    '    <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item.html">\n' +
-    '        <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
-    '    </div>\n' +
-    '    <div ng-if="ProjectSvc.item.type==3 && ProjectSvc.item.url">\n' +
-    '        <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
-    '    </div>\n' +
-    '    <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
-    '        <markdown extensions="github, table, twitter" strip="true" allow-html="true"\n' +
-    '                  ng-model="ProjectSvc.item.markdown">\n' +
-    '        </markdown>\n' +
-    '    </div>\n' +
-    '</div><!--//desc-->');
-	a.put('views/project/create.html', '<div class="container sections-wrapper" ng-init="ProjectSvc.initEmptyItem()">\n' +
-    '    <form name="projectForm">\n' +
-    '        <div class="row">\n' +
-    '            <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '                <section class="latest section">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h1 class="heading">\n' +
-    '                            <span>Create project</span>\n' +
-    '                        </h1>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
-    '                            <div>\n' +
-    '                                <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-cta-secondary"\n' +
-    '                                        ng-disabled="!projectForm.$valid" id="projectCreate">\n' +
-    '                                    <i class="fa fa-check"></i> Create\n' +
-    '                                </button>\n' +
-    '                                <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-cta-red"\n' +
-    '                                        id="projectDelete">\n' +
-    '                                    <i class="fa fa-trash"></i> Delete project\n' +
-    '                                </button>\n' +
-    '                                <button ng-click="ProjectSvc.doAddImage()" class="btn btn-cta-default pull-right"\n' +
-    '                                        id="projectAddImage">\n' +
-    '                                    <i class="fa fa-plus"></i> Add image\n' +
-    '                                </button>\n' +
-    '                            </div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '\n' +
-    '            </div><!--//primary-->\n' +
-    '            <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '\n' +
-    '                <aside class="list tags aside section">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading">Additionally</h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </aside><!--//section-->\n' +
-    '\n' +
-    '                <aside class="info aside section">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading sr-only">Search</h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/search.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </aside><!--//aside-->\n' +
-    '\n' +
-    '            </div><!--//secondary-->\n' +
-    '        </div><!--//row-->\n' +
-    '    </form>\n' +
-    '</div><!--//masonry-->');
 	a.put('views/post/update.html', '<div class="container sections-wrapper">\n' +
     '    <form name="postForm">\n' +
     '        <div class="row">\n' +
@@ -80161,7 +79929,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
 	a.put('views/post/list-item.html', '<a class="col-md-4 col-sm-4 col-xs-12" ng-href="{{\'/post/\'+item.name}}" ng-if="item.images.length>0">\n' +
-    '    <img class="img-responsive post-image" ng-src="{{AppConfig.static_url+item.images[0].srcStatic}}"\n' +
+    '    <img class="img-responsive post-image" ng-src="{{item.images[0].src_url}}"\n' +
     '         ng-if="item.images.length>0"\n' +
     '         alt="{{item.title}}"/>\n' +
     '</a>\n' +
@@ -80187,7 +79955,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <span ng-repeat="tag in item.tags">\n' +
     '            <i class="fa fa-tag"></i>\n' +
     '            <a class="list-link" ng-href="{{\'/tag/\'+tag.text}}"\n' +
-    '               ng-bind-html="tag.text | unsafe"></a>\n' +
+    '               ng-bind="tag.text"></a>\n' +
     '        </span>\n' +
     '    </p>\n' +
     '    <p>\n' +
@@ -80198,7 +79966,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
     '    <hr class="divider" ng-if="!$last"/>\n' +
     '</div><!--//desc-->');
-	a.put('views/post/list-header.html', '<span ng-bind-html="AppConst.post.strings.title | unsafe"></span>\n' +
+	a.put('views/post/list-header.html', '<span ng-bind-html="PostSvc.title | unsafe"></span>\n' +
     '<a ng-href="/post/create"\n' +
     '   class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="postCreate"><i class="fa fa-plus"></i>  Create</a>');
 	a.put('views/post/item.html', '<div class="container sections-wrapper">\n' +
@@ -80230,7 +79998,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </div><!--//section-inner-->\n' +
     '            </aside><!--//section-->\n' +
     '\n' +
-    '            <aside class="list tags aside section">\n' +
+    '            <aside class="list tags aside section" ng-if="PostSvc.item.tags.length>0">\n' +
     '                <div class="section-inner">\n' +
     '                    <h2 class="heading">Tags</h2>\n' +
     '                    <div class="content">\n' +
@@ -80253,12 +80021,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div><!--//masonry-->');
 	a.put('views/post/item-tags.html', '<ul class="list-unstyled">\n' +
     '    <li ng-repeat="tag in PostSvc.item.tags"><i class="fa fa-tag"></i> <a ng-href="{{\'/tag/\'+tag.text}}"\n' +
-    '                                                                             ng-bind-html="tag.text | unsafe"></a></li>\n' +
+    '                                                                             ng-bind="tag.text"></a></li>\n' +
     '</ul>');
 	a.put('views/post/item-content.html', '<div ng-if="PostSvc.item.images.length>0">\n' +
     '    <div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
     '        <div ng-if="PostSvc.item.images.length==1">\n' +
-    '            <img ng-src="{{AppConfig.static_url+PostSvc.item.images[0].srcStatic}}"\n' +
+    '            <img ng-src="{{PostSvc.item.images[0].src_url}}"\n' +
     '                 class="img-responsive"/>\n' +
     '        </div>\n' +
     '        <div ng-if="PostSvc.item.images.length>1">\n' +
@@ -80266,7 +80034,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div data-carousel-item="" ng-repeat="image in PostSvc.item.images">\n' +
     '                    <!--h3 class="carousel-title" nf-if="image.title!=\'\'"\n' +
     '                        ng-bind-html="image.title | unsafe"></h3-->\n' +
-    '                    <img ng-src="{{AppConfig.static_url+image.srcStatic}}">\n' +
+    '                    <img ng-src="{{image.src_url}}">\n' +
     '                    <div class="carousel-caption" nf-if="image.description!=\'\'">\n' +
     '                        <h4 ng-bind-html="image.description | unsafe"></h4>\n' +
     '                    </div>\n' +
@@ -80423,6 +80191,370 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/project/update.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
+    '    <form name="projectForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '                <section class="latest section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h1 class="heading">\n' +
+    '                            <span>Edit project</span>\n' +
+    '                            <a ng-href="{{\'/project/\'+ProjectSvc.item.name}}"\n' +
+    '                               class="btn btn-cta-default pull-right btn-xs"\n' +
+    '                               id="projectUpdate"><i class="fa fa-pencil-square-o"></i> View</a>\n' +
+    '                        </h1>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
+    '                            <div>\n' +
+    '                                <button ng-click="ProjectSvc.doUpdate(ProjectSvc.item)" class="btn btn-cta-secondary"\n' +
+    '                                        ng-disabled="!projectForm.$valid" id="projectSave">\n' +
+    '                                    <i class="fa fa-floppy-o"></i> Save\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-cta-red"\n' +
+    '                                        id="projectDelete">\n' +
+    '                                    <i class="fa fa-trash"></i> Delete project\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="ProjectSvc.doAddImage()" class="btn btn-cta-default pull-right"\n' +
+    '                                        id="projectAddImage">\n' +
+    '                                    <i class="fa fa-plus"></i> Add image\n' +
+    '                                </button>\n' +
+    '                            </div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '\n' +
+    '            </div><!--//primary-->\n' +
+    '            <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '\n' +
+    '                <aside class="list tags aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading">Additionally</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//section-->\n' +
+    '\n' +
+    '                <aside class="info aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading sr-only">Search</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/search.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//aside-->\n' +
+    '\n' +
+    '            </div><!--//secondary-->\n' +
+    '        </div><!--//row-->\n' +
+    '    </form>\n' +
+    '</div><!--//masonry-->');
+	a.put('views/project/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div class="item row"\n' +
+    '                             ng-repeat="item in ProjectSvc.list | limitTo:ProjectSvc.limit:ProjectSvc.begin">\n' +
+    '                            <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '                        </div><!--//item-->\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/project/list-item.html', '<a class="col-md-4 col-sm-4 col-xs-12" ng-href="{{\'/project/\'+item.name}}" ng-if="item.images.length>0">\n' +
+    '    <img class="img-responsive project-image" ng-src="{{item.images[0].src_url}}"\n' +
+    '         ng-if="item.images.length>0"\n' +
+    '         alt="{{item.title}}"/>\n' +
+    '</a>\n' +
+    '<div class="desc col-xs-12" ng-class="item.images.length>0?\'col-md-8 col-sm-8\':\'col-md-12 col-sm-12\'">\n' +
+    '    <div class="pull-right">\n' +
+    '        <a ng-href="{{\'/project/update/\'+item.name}}"\n' +
+    '           class="btn btn-cta-default btn-xs" ng-if="AccountSvc.isAdmin()"\n' +
+    '           id="{{\'project\'+$index+\'Update\'}}">\n' +
+    '            <i class="fa fa-pencil-square-o"></i>\n' +
+    '            <span class="hidden-xs">Edit</span>\n' +
+    '        </a>\n' +
+    '        <a ng-click="ProjectSvc.doDelete(item)" class="btn btn-cta-red btn-xs"\n' +
+    '           id="projectDelete" ng-if="AccountSvc.isAdmin()">\n' +
+    '            <i class="fa fa-trash"></i>\n' +
+    '            <span class="hidden-xs">Delete</span>\n' +
+    '        </a>\n' +
+    '    </div>\n' +
+    '    <h3 class="title">\n' +
+    '        <a ng-href="{{\'/project/\'+item.name}}" ng-bind-html="item.title | unsafe"></a>\n' +
+    '    </h3>\n' +
+    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '    <p ng-if="item.tags.length>0">\n' +
+    '        <span ng-repeat="tag in item.tags">\n' +
+    '            <i class="fa fa-tag"></i>\n' +
+    '            <a class="list-link" ng-href="{{\'/tag/\'+tag.text}}"\n' +
+    '               ng-bind="tag.text"></a>\n' +
+    '        </span>\n' +
+    '    </p>\n' +
+    '    <p>\n' +
+    '        <a class="more-link" ng-href="{{\'/project/\'+item.name}}" id="{{\'project\'+$index+\'Detail\'}}"><i\n' +
+    '                class="fa fa-link"></i> Detail...</a>\n' +
+    '    </p>\n' +
+    '</div><!--//desc-->\n' +
+    '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
+    '    <hr class="divider" ng-if="!$last"/>\n' +
+    '</div><!--//desc-->');
+	a.put('views/project/list-header.html', '<span ng-bind-html="ProjectSvc.title | unsafe"></span>\n' +
+    '<a ng-href="/project/create"\n' +
+    '   class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectCreate"><i class="fa fa-plus"></i>  Create</a>');
+	a.put('views/project/item.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading">\n' +
+    '                        <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
+    '                        <a ng-href="{{\'/project/update/\'+ProjectSvc.item.name}}"\n' +
+    '                           class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectUpdate"><i class="fa fa-pencil-square-o"></i> Edit</a>\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div class="item row">\n' +
+    '                            <div ng-include="\'views/project/item-content.html\'"></div>\n' +
+    '                        </div><!--//item-->\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="list description aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Description</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <span ng-bind-html="ProjectSvc.item.description | unsafe"></span>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section" ng-if="ProjectSvc.item.tags.length>0">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/project/item-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/project/item-tags.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-repeat="tag in ProjectSvc.item.tags"><i class="fa fa-tag"></i> <a ng-href="{{\'/tag/\'+tag.text}}"\n' +
+    '                                                                             ng-bind="tag.text"></a></li>\n' +
+    '</ul>');
+	a.put('views/project/item-content.html', '<div ng-if="ProjectSvc.item.images.length>0">\n' +
+    '    <div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
+    '        <div ng-if="ProjectSvc.item.images.length==1">\n' +
+    '            <img ng-src="{{ProjectSvc.item.images[0].src_url}}"\n' +
+    '                 class="img-responsive"/>\n' +
+    '        </div>\n' +
+    '        <div ng-if="ProjectSvc.item.images.length>1">\n' +
+    '            <div data-nq-carousel="">\n' +
+    '                <div data-carousel-item="" ng-repeat="image in ProjectSvc.item.images">\n' +
+    '                    <!--h3 class="carousel-title" nf-if="image.title!=\'\'"\n' +
+    '                        ng-bind-html="image.title | unsafe"></h3-->\n' +
+    '                    <img ng-src="{{image.src_url}}">\n' +
+    '                    <div class="carousel-caption" nf-if="image.description!=\'\'">\n' +
+    '                        <h4 ng-bind-html="image.description | unsafe"></h4>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '        </div>\n' +
+    '        <hr class="divider"/>\n' +
+    '    </div>\n' +
+    '</div>\n' +
+    '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
+    '    <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item.text">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item.html">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==3 && ProjectSvc.item.url">\n' +
+    '        <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
+    '    </div>\n' +
+    '    <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
+    '        <markdown extensions="github, table, twitter" strip="true" allow-html="true"\n' +
+    '                  ng-model="ProjectSvc.item.markdown">\n' +
+    '        </markdown>\n' +
+    '    </div>\n' +
+    '</div><!--//desc-->');
+	a.put('views/project/create.html', '<div class="container sections-wrapper" ng-init="ProjectSvc.initEmptyItem()">\n' +
+    '    <form name="projectForm">\n' +
+    '        <div class="row">\n' +
+    '            <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '                <section class="latest section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h1 class="heading">\n' +
+    '                            <span>Create project</span>\n' +
+    '                        </h1>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/project/inputs/central.html\'"></div>\n' +
+    '                            <div>\n' +
+    '                                <button ng-click="ProjectSvc.doCreate(ProjectSvc.item)" class="btn btn-cta-secondary"\n' +
+    '                                        ng-disabled="!projectForm.$valid" id="projectCreate">\n' +
+    '                                    <i class="fa fa-check"></i> Create\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="ProjectSvc.doDelete(ProjectSvc.item)" class="btn btn-cta-red"\n' +
+    '                                        id="projectDelete">\n' +
+    '                                    <i class="fa fa-trash"></i> Delete project\n' +
+    '                                </button>\n' +
+    '                                <button ng-click="ProjectSvc.doAddImage()" class="btn btn-cta-default pull-right"\n' +
+    '                                        id="projectAddImage">\n' +
+    '                                    <i class="fa fa-plus"></i> Add image\n' +
+    '                                </button>\n' +
+    '                            </div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '\n' +
+    '            </div><!--//primary-->\n' +
+    '            <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '\n' +
+    '                <aside class="list tags aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading">Additionally</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/project/inputs/right.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//section-->\n' +
+    '\n' +
+    '                <aside class="info aside section">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading sr-only">Search</h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/search.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </aside><!--//aside-->\n' +
+    '\n' +
+    '            </div><!--//secondary-->\n' +
+    '        </div><!--//row-->\n' +
+    '    </form>\n' +
+    '</div><!--//masonry-->');
+	a.put('views/contact/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading">\n' +
+    '                        Contact us\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <form name="contactForm">\n' +
+    '                            <div class="form-group has-feedback" show-errors>\n' +
+    '                                <label for="username">You name</label>\n' +
+    '                                <input type="text" class="form-control" name="username" id="username"\n' +
+    '                                       ng-model="ContactSvc.item.username" required>\n' +
+    '                                <span ng-show="contactForm.$submitted || contactForm.username.$touched"\n' +
+    '                                      class="form-control-feedback"\n' +
+    '                                      ng-class="!contactForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                      aria-hidden="true"></span>\n' +
+    '                            </div>\n' +
+    '                            <div class="form-group has-feedback" show-errors>\n' +
+    '                                <label for="email">Email</label>\n' +
+    '                                <input type="email" class="form-control" name="email" id="email"\n' +
+    '                                       ng-model="ContactSvc.item.email" required>\n' +
+    '                                <span ng-show="contactForm.$submitted || contactForm.email.$touched" class="form-control-feedback"\n' +
+    '                                      ng-class="!contactForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                      aria-hidden="true"></span>\n' +
+    '                            </div>\n' +
+    '                            <div class="form-group has-feedback" show-errors>\n' +
+    '                                <label for="message">Message</label>\n' +
+    '                                <textarea class="form-control" name="message" id="message"\n' +
+    '                                       ng-model="ContactSvc.item.message" required></textarea>\n' +
+    '                                <span ng-show="contactForm.$submitted || contactForm.message.$touched"\n' +
+    '                                      class="form-control-feedback"\n' +
+    '                                      ng-class="!contactForm.message.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                      aria-hidden="true"></span>\n' +
+    '                            </div>\n' +
+    '                            <button ng-click="ContactSvc.doSend(ContactSvc.item)" class="btn btn-cta-secondary"\n' +
+    '                                    ng-disabled="!contactForm.$valid" id="contactSend">\n' +
+    '                                <i class="fa fa-envelope-o"></i> Send message\n' +
+    '                            </button>\n' +
+    '                        </form>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <aside class="list manager-contact aside section" ng-if="PublicLinkSvc.list.length>0">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Other</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/contact/links.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '            <aside class="info aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading sr-only">Search</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/search.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//aside-->\n' +
+    '\n' +
+    '            <aside class="list tags aside section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h2 class="heading">Tags</h2>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </aside><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/contact/links.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_contact"><i ng-class="item.icon"></i> <a\n' +
+    '            ng-href="{{item.src}}" target="_blank" ng-bind="item.title"></a></li>\n' +
+    '</ul>');
 	a.put('views/manager/tag.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
     '    <div class="row">\n' +
@@ -80608,11 +80740,30 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
 	a.put('views/manager/menu.html', '<ul class="list-unstyled">\n' +
-    '    <li ng-if="$routeParams.subNavId!=\'meta_tag\'"><i class="fa fa-link"></i> <a ng-href="/manager/meta_tag">Meta tags</a></li>\n' +
-    '    <li ng-if="$routeParams.subNavId!=\'tag\'"><i class="fa fa-link"></i> <a ng-href="/manager/tag">Tags</a></li>\n' +
-    '    <li ng-if="$routeParams.subNavId!=\'public_link\'"><i class="fa fa-link"></i> <a ng-href="/manager/public_link">Public links</a></li>\n' +
-    '    <li ng-if="$routeParams.subNavId!=\'properties\'"><i class="fa fa-link"></i> <a ng-href="/manager/properties">Properties</a></li>\n' +
-    '    <li ng-if="$routeParams.subNavId!=\'users\'"><i class="fa fa-link"></i> <a ng-href="/manager/users">Users</a></li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'meta_tag\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/manager/meta_tag"\n' +
+    '           ng-bind="AppConst.manager.meta_tag.title"></a>\n' +
+    '    </li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'tag\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/manager/tag"\n' +
+    '           ng-bind="AppConst.manager.tag.title"></a>\n' +
+    '    </li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'public_link\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/manager/public_link"\n' +
+    '           ng-bind="AppConst.manager.public_link.title"></a></li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'properties\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/manager/properties"\n' +
+    '           ng-bind="AppConst.manager.properties.title"></a>\n' +
+    '    </li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'users\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/manager/users"\n' +
+    '           ng-bind="AppConst.manager.users.title"></a>\n' +
+    '    </li>\n' +
     '</ul>');
 	a.put('views/home/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
@@ -80662,7 +80813,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/home/list-tags.html', '<ul class="list-unstyled">\n' +
     '    <li ng-repeat="tag in TagSvc.list | limitTo:TagSvc.limitOnHome">\n' +
     '        <i class="fa fa-tag"></i> <a ng-href="{{\'/tag/\'+tag.text}}" ng-class="tag.text==TagSvc.tagText?\'active\':\'\'"\n' +
-    '                                     ng-bind-html="tag.text | unsafe"></a></li>\n' +
+    '                                     ng-bind="tag.text"></a></li>\n' +
     '</ul>\n' +
     '<a class="btn btn-default btn-block" ng-click="TagSvc.limitOnHome=10000" ng-if="TagSvc.limitOnHome<10000">Show all <i\n' +
     '        class="fa fa-chevron-down"></i></a>\n' +
@@ -80822,94 +80973,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
-	a.put('views/contact/list.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Contact us\n' +
-    '                    </h1>\n' +
-    '                    <div class="content">\n' +
-    '                        <form name="contactForm">\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="username">You name</label>\n' +
-    '                                <input type="text" class="form-control" name="username" id="username"\n' +
-    '                                       ng-model="ContactSvc.item.username" required>\n' +
-    '                                <span ng-show="contactForm.$submitted || contactForm.username.$touched"\n' +
-    '                                      class="form-control-feedback"\n' +
-    '                                      ng-class="!contactForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                      aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="email">Email</label>\n' +
-    '                                <input type="email" class="form-control" name="email" id="email"\n' +
-    '                                       ng-model="ContactSvc.item.email" required>\n' +
-    '                                <span ng-show="contactForm.$submitted || contactForm.email.$touched" class="form-control-feedback"\n' +
-    '                                      ng-class="!contactForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                      aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="message">Message</label>\n' +
-    '                                <textarea class="form-control" name="message" id="message"\n' +
-    '                                       ng-model="ContactSvc.item.message" required></textarea>\n' +
-    '                                <span ng-show="contactForm.$submitted || contactForm.message.$touched"\n' +
-    '                                      class="form-control-feedback"\n' +
-    '                                      ng-class="!contactForm.message.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                      aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <button ng-click="ContactSvc.doSend(ContactSvc.item)" class="btn btn-cta-secondary"\n' +
-    '                                    ng-disabled="!contactForm.$valid" id="contactSend">\n' +
-    '                                <i class="fa fa-envelope-o"></i> Send message\n' +
-    '                            </button>\n' +
-    '                        </form>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list manager-contact aside section" ng-if="PublicLinkSvc.list.length>0">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Other</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/contact/links.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/contact/links.html', '<ul class="list-unstyled">\n' +
-    '    <li ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_contact"><i ng-class="item.icon"></i> <a\n' +
-    '            ng-href="{{item.src}}" target="_blank" ng-bind="item.title"></a></li>\n' +
-    '</ul>');
 	a.put('views/account/resetpassword.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Reset password\n' +
+    '                    <h1 class="heading" ng-bind="AccountSvc.title">\n' +
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <p>Please enter code from email and new password for you account</p>\n' +
@@ -80950,7 +81019,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="section-inner">\n' +
     '                    <h2 class="heading">Additionally</h2>\n' +
     '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/additionally.html\'"></div>\n' +
+    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
     '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </aside><!--//section-->\n' +
@@ -80981,8 +81050,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Registration form\n' +
+    '                    <h1 class="heading" ng-bind="AccountSvc.title">\n' +
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <form name="accountForm">\n' +
@@ -81018,7 +81086,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="section-inner">\n' +
     '                    <h2 class="heading">Additionally</h2>\n' +
     '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/additionally.html\'"></div>\n' +
+    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
     '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </aside><!--//section-->\n' +
@@ -81049,8 +81117,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Recovery access\n' +
+    '                    <h1 class="heading" ng-bind="AccountSvc.title">\n' +
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <p>Please enter you email address used on registration</p>\n' +
@@ -81078,7 +81145,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="section-inner">\n' +
     '                    <h2 class="heading">Additionally</h2>\n' +
     '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/additionally.html\'"></div>\n' +
+    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
     '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </aside><!--//section-->\n' +
@@ -81109,8 +81176,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Profile\n' +
+    '                    <h1 class="heading" ng-bind="AccountSvc.title">\n' +
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <form name="accountForm">\n' +
@@ -81195,13 +81261,25 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
+	a.put('views/account/menu.html', '<ul class="list-unstyled">\n' +
+    '    <li ng-if="$routeParams.navId!=\'login\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/login" ng-bind="AppConst.account.login.title"></a>\n' +
+    '    </li>\n' +
+    '    <li ng-if="$routeParams.navId!=\'reg\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/reg" ng-bind="AppConst.account.reg.title"></a>\n' +
+    '    </li>\n' +
+    '    <li ng-if="$routeParams.navId!=\'recovery\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/recovery" ng-bind="AppConst.account.recovery.title"></a></li>\n' +
+    '</ul>');
 	a.put('views/account/login.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
-    '                    <h1 class="heading">\n' +
-    '                        Login on site\n' +
+    '                    <h1 class="heading" ng-bind="AccountSvc.title">\n' +
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <p>Please enter you email address and password for login on site</p>\n' +
@@ -81240,7 +81318,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="section-inner">\n' +
     '                    <h2 class="heading">Additionally</h2>\n' +
     '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/additionally.html\'"></div>\n' +
+    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
     '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </aside><!--//section-->\n' +
@@ -81266,11 +81344,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
-	a.put('views/account/additionally.html', '<ul class="list-unstyled">\n' +
-    '    <li ng-if="$routeParams.navId!=\'login\'"><i class="fa fa-link"></i> <a ng-href="/login">Login</a></li>\n' +
-    '    <li ng-if="$routeParams.navId!=\'reg\'"><i class="fa fa-link"></i> <a ng-href="/reg">Registration</a></li>\n' +
-    '    <li ng-if="$routeParams.navId!=\'recovery\'"><i class="fa fa-link"></i> <a ng-href="/recovery">Recovery password</a></li>\n' +
-    '</ul>');
 	a.put('views/search.html', '<div class="form-search search-only" ng-controller="NavbarCtrl" ng-if="!NavbarSvc.items.search.hidden">\n' +
     '    <div class="input-group">\n' +
     '        <input type="text" class="form-control search-query"\n' +
@@ -81358,13 +81431,13 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '<header class="header" ng-controller="NavbarCtrl">\n' +
     '    <div class="container">\n' +
     '        <img class="profile-image cursor-pointer img-responsive img-circle pull-left"\n' +
-    '             ng-src="{{PropertiesSvc.listOfNames.SITE_LOGO.value}}"\n' +
-    '             alt="{{PropertiesSvc.listOfNames.SITE_TITLE.value}}" ng-if="PropertiesSvc.listOfNames.SITE_LOGO.value"\n' +
+    '             ng-src="{{AppSvc.properties.SITE_LOGO}}"\n' +
+    '             alt="{{AppSvc.properties.SITE_TITLE.value}}" ng-if="AppSvc.properties.SITE_LOGO"\n' +
     '             ng-click="NavbarSvc.goHome()"/>\n' +
     '        <div class="profile-content pull-left">\n' +
-    '            <h1 class="name cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_TITLE.value | unsafe"\n' +
+    '            <h1 class="name cursor-pointer" ng-bind-html="AppSvc.properties.SITE_TITLE | unsafe"\n' +
     '                ng-click="NavbarSvc.goHome()"></h1>\n' +
-    '            <h2 class="desc cursor-pointer" ng-bind-html="PropertiesSvc.listOfNames.SITE_DESCRIPTION.value | unsafe"\n' +
+    '            <h2 class="desc cursor-pointer" ng-bind-html="AppSvc.properties.SITE_DESCRIPTION | unsafe"\n' +
     '                ng-click="NavbarSvc.goHome()"></h2>\n' +
     '            <ul class="social list-inline" ng-if="PublicLinkSvc.list.length>0">\n' +
     '                <li ng-class="$last ? \'last-item\' : \'\'"\n' +
@@ -81373,27 +81446,31 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </li>\n' +
     '            </ul>\n' +
     '        </div><!--//profile-->\n' +
-    '        <div ng-repeat="item in NavbarSvc.items.right | orderBy:\'$index\':true" ng-if="!item.hidden">\n' +
+    '        <div ng-repeat="item in NavbarSvc.items.right | orderBy:\'$index\':true" ng-if="!item.hiddenHandler()">\n' +
     '            <a class="btn btn-cta-primary pull-right"\n' +
     '               ng-click="item.click()"\n' +
-    '               ng-bind-html="item.title | unsafe" ng-if="!item.url" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe"\n' +
+    '               ng-if="item.click" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
     '            <a class="btn btn-cta-primary pull-right"\n' +
-    '               ng-click="item.click()"\n' +
-    '               ng-href="{{item.url}}" ng-bind-html="item.title | unsafe" ng-if="item.url" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '               ng-href="/{{item.name}}"\n' +
+    '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe"\n' +
+    '               ng-if="!item.click" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
     '\n' +
     '        </div>\n' +
     '\n' +
-    '        <div ng-repeat="item in NavbarSvc.items.left | orderBy:\'$index\':true" ng-if="!item.hidden">\n' +
+    '        <div ng-repeat="item in NavbarSvc.items.left | orderBy:\'$index\':true" ng-if="!item.hiddenHandler()">\n' +
     '            <a class="btn btn-cta-primary pull-right"\n' +
     '               ng-click="item.click()"\n' +
-    '               ng-bind-html="item.title | unsafe" ng-if="!item.url" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe"\n' +
+    '               ng-if="item.click" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
     '            <a class="btn btn-cta-primary pull-right"\n' +
-    '               ng-click="item.click()"\n' +
-    '               ng-href="{{item.url}}" ng-bind-html="item.title | unsafe" ng-if="item.url" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.active==true ? \'active\' : \'\'"></a>\n' +
+    '               ng-href="/{{item.name}}"\n' +
+    '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe"\n' +
+    '               ng-if="!item.click" id="{{item.name+\'Nav\'}}"\n' +
+    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
     '\n' +
     '        </div>\n' +
     '    </div><!--//container-->\n' +
@@ -81411,7 +81488,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                </li>\n' +
     '            </ul>\n' +
     '        </small>\n' +
-    '        <small class="copyright"><i class="fa fa-copyright"></i> {{PropertiesSvc.listOfNames.SITE_TITLE.value}}\n' +
+    '        <small class="copyright"><i class="fa fa-copyright"></i> {{AppSvc.properties.SITE_TITLE}}\n' +
     '        </small>\n' +
     '    </div><!--//container-->\n' +
     '</footer><!--//footer-->\n' +
@@ -81525,8 +81602,8 @@ app.factory('AccountRes', function (AppConst, AppRes) {
         });
     }
 
-    service.actionResetpassword=function(code, password){
-        return AppRes.post('/api/v1/account/resetpassword', {
+    service.actionResetPassword=function(code, password){
+        return AppRes.post('/api/v1/account/reset_password', {
             code: code,
             password: password
         });
@@ -81722,26 +81799,87 @@ app.factory('PublicLinkRes', function ($q, AppConst, AppRes) {
 
     return service;
   });
-app.factory('AppSvc', function ($rootScope, $q, PropertiesSvc) {
+app.factory('AppSvc', function ($rootScope, $q) {
     var service={};
 
     service.item={
         title:'',
-        description:''
+        description:'',
+        image:'',
+        type:'',
+        url:''
+    };
+
+    service.properties={
+    };
+
+    service.fillProperties=function(list){
+        service.properties={};
+        for (var i=0;i<list.length;i++){
+            service.properties[list[i].name]=list[i].value;
+        }
+    }
+
+    service.updateProperty=function(name, value){
+        service.properties[name]=value;
+    }
+
+    service.setTitle=function(items){
+        if (items==undefined)
+            service.item.title=service.properties.SITE_TITLE;
+        else{
+            items.push(service.properties.SITE_TITLE);
+            service.item.title=items.join(' - ');
+        }
+        service.setDescription();
+        service.setImage();
+        service.setType();
+        service.setUrl();
+
+        return service.item.title;
+    };
+
+    service.setDescription=function(text){
+        if (text==undefined)
+            service.item.description=service.properties.SITE_DESCRIPTION;
+        else
+            service.item.description=text;
+        return service.item.description;
+    };
+
+    service.setImage=function(url){
+        if (url==undefined)
+            service.item.image=service.properties.SITE_LOGO;
+        else
+            service.item.image=url;
+        return service.item.image;
+    };
+
+    service.setType=function(text){
+        if (text==undefined)
+            service.item.type='website         ';
+        else
+            service.item.type=text;
+        return service.item.type;
+    };
+
+    service.setUrl=function(url){
+        if (url==undefined)
+            service.item.url=AppConfig.host_name;
+        else
+            service.item.url=[AppConfig.host_name,url].join('/');
+        return service.item.url;
     };
 
     service.init=function(){
-        $q.all([
-            PropertiesSvc.load()
-        ]).then(function(responseList) {
-            service.item.title=PropertiesSvc.listOfNames.SITE_TITLE.value;
-            service.item.description=PropertiesSvc.listOfNames.SITE_DESCRIPTION.value;
-        });
+        service.properties=AppConfig.properties;
+        service.setTitle();
+        service.setDescription();
     }
 
     return service;
   });
-app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, MessageSvc, $rootScope, $routeParams, NavbarSvc) {
+app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, MessageSvc, $rootScope, NavbarSvc, AppSvc, $routeParams, $route) {
     var service={};
 
     $rootScope.$on('account.update',function(event, data){
@@ -81752,14 +81890,12 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
     $rootScope.$on('account.create',function(event, data){
         MessageSvc.info('account/create/success');
         AppConfig.user=service.item;
-        NavbarSvc.init();
         NavbarSvc.goBack();
     });
 
     $rootScope.$on('account.login',function(event, data){
         MessageSvc.info('account/login/success');
         AppConfig.user=service.item;
-        NavbarSvc.init();
         NavbarSvc.goHome();
     });
 
@@ -81770,45 +81906,53 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
     $rootScope.$on('account.logout',function(event, data){
         MessageSvc.info('account/logout/success');
         AppConfig.user=service.item;
-        NavbarSvc.init();
         NavbarSvc.goHome();
     });
 
     $rootScope.$on('account.delete',function(event, data){
         MessageSvc.info('account/delete/success');
         AppConfig.user=service.item;
-        NavbarSvc.init();
         NavbarSvc.goHome();
     });
 
     $rootScope.$on('account.recovery',function(event, data){
-        service.goResetpassword();
+        service.goResetPassword();
         MessageSvc.info('account/recovery/checkemail', {values:[data.email]});
     });
 
     service.item={};
 
-    service.goResetpassword=function(){
-        $location.path('/resetpassword');
+    service.goResetPassword=function(){
+        $location.path('/reset_password');
     }
     service.init=function(reload){
-        NavbarSvc.init($routeParams.navId);
-        if (($routeParams.navId=='login' || $routeParams.navId=='reg' || $routeParams.navId=='resetpassword' || $routeParams.navId=='recovery') && service.isLogged()){
-            NavbarSvc.goHome();
-            return;
-        }
-        if ($routeParams.navId=='profile' && !service.isLogged()){
-            NavbarSvc.goHome();
-            return;
-        }
-        if ($routeParams.navId=='resetpassword'){
-            if ($routeParams.code!==undefined)
-                service.resetpasswordCode=$routeParams.code;
-            else
-                service.resetpasswordCode='';
-            return;
-        }
+        angular.extend($routeParams, $route.current.$$route.params);
 
+        service.title=AppConst.account[$routeParams.navId].title;
+        service.description=AppConst.account[$routeParams.navId].description;
+
+        AppSvc.setTitle([service.title]);
+        AppSvc.setDescription(service.description);
+        AppSvc.setUrl($routeParams.navId);
+
+        if ($routeParams.navId=='login' || $routeParams.navId=='reg' || $routeParams.navId=='reset_password' || $routeParams.navId=='recovery'){
+            if (service.isLogged()){
+                NavbarSvc.goHome();
+            }else{
+                if ($routeParams.navId=='reset_password'){
+                    if ($routeParams.code!==undefined)
+                        service.reset_passwordCode=$routeParams.code;
+                    else
+                        service.reset_passwordCode='';
+                }
+            }
+            return;
+        }
+        if ($routeParams.navId=='profile'){
+            if (!service.isLogged()){
+                NavbarSvc.goHome();
+            }
+        }
         $q.all([
             service.load()
         ]).then(function(responseList) {
@@ -81854,13 +81998,13 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
         );
     }
 
-	service.doResetpassword=function(code, password){
+	service.doResetPassword=function(code, password){
 	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionResetpassword(code, password).then(
+		 AccountRes.actionResetPassword(code, password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
-                    $rootScope.$broadcast('account.resetpassword', {code:code});
+                    $rootScope.$broadcast('account.reset_password', {code:code});
                 	$rootScope.$broadcast('account.login', service.item);
                 }
             },
@@ -81954,7 +82098,7 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
 
     return service;
   });
-app.factory('ContactSvc', function ($q, $location, AppConst, ContactRes, MessageSvc, $rootScope, $routeParams, NavbarSvc, TagSvc) {
+app.factory('ContactSvc', function ($q, $location, AppConst, ContactRes, MessageSvc, $rootScope, NavbarSvc, AppSvc) {
     var service={};
 
     $rootScope.$on('contact.send',function(event, item){
@@ -81964,16 +82108,13 @@ app.factory('ContactSvc', function ($q, $location, AppConst, ContactRes, Message
 
     service.item={};
 
-    service.title=AppConst.post.strings.title;
+    service.title=AppConst.contact.strings.title;
+    service.description=AppConst.contact.strings.description;
 
     service.init=function(reload){
-        NavbarSvc.init('contact');
-
-        $q.all([
-            TagSvc.load()
-        ]).then(function(responseList) {
-
-        });
+        AppSvc.setTitle([service.title]);
+        AppSvc.setDescription(service.description);
+        AppSvc.setUrl('contact');
     }
     service.doSend=function(item){
 	    $rootScope.$broadcast('show-errors-check-validity');
@@ -82030,7 +82171,7 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
                     if (item.src!==service.item.src){
                         delete item.id;
                         item.src=service.item.src;
-                        item.srcStatic=service.item.srcStatic;
+                        item.src_url=service.item.src_url;
                     }
                 },
                 afterCancel: function(){
@@ -82199,23 +82340,17 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
 
     return service;
   });
-app.factory('HomeSvc', function ($q, NavbarSvc, PropertiesSvc, AppSvc, TagSvc, PostSvc, ProjectSvc, PropertiesSvc) {
+app.factory('ManagerSvc', function (AppConst, $routeParams, $route, AppSvc) {
     var service={};
-
     service.init=function(reload){
-        NavbarSvc.init('home');
+        angular.extend($routeParams, $route.current.$$route.params);
 
-        $q.all([
-            PropertiesSvc.load(),
-            TagSvc.load(),
-            ProjectSvc.load(),
-            PostSvc.load()
-        ]).then(function(responseList) {
-            service.title=PropertiesSvc.listOfNames.SITE_TITLE.value;
-            AppSvc.item.title=PropertiesSvc.listOfNames.SITE_TITLE.value;
-            AppSvc.item.description=PropertiesSvc.listOfNames.SITE_DESCRIPTION.value;
-        });
+        service.title=AppConst.manager[$routeParams.subNavId].title;
+        service.description=AppConst.manager[$routeParams.subNavId].description;
 
+        AppSvc.setTitle([service.title, AppConst.manager.strings.title]);
+        AppSvc.setDescription(service.description);
+        AppSvc.setUrl('manager/'+$routeParams.subNavId);
     }
     return service;
   });
@@ -82393,101 +82528,6 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $mo
 
     return service;
   });
-app.factory('NavbarSvc', function ($routeParams, $rootScope, $route, $location, $window, AppConst) {
-    var service={};
-
-    $rootScope.$on('$routeChangeStart',function(event, current, previous){
-        service.init();
-        $rootScope.$broadcast('navbar.change', event, current, previous);
-    });
-
-    function modifiItem(item){
-        var navItem={};
-
-        if (item.parent!=undefined && AppConst[item.parent]!=undefined && AppConst[item.parent][item.name]!=undefined)
-            navItem=AppConst[item.parent][item.name];
-
-        if (AppConst[item.name]!=undefined)
-            navItem=AppConst[item.name];
-
-        if (navItem.title!=undefined){
-            item.title=navItem.title;
-        }
-
-        if (navItem.strings!=undefined && navItem.strings.title!=undefined){
-            item.title=navItem.strings.title;
-        }
-
-        if (navItem.url!=undefined){
-            item.url=navItem.url;
-        }
-
-        if (navItem.urls!=undefined && navItem.urls.url!=undefined)
-            item.url=navItem.urls.url;
-
-        if (item.url===undefined)
-            item.url='/'+item.name;
-
-        if (item.click!=undefined){
-            item.url=false;
-        }
-
-        item.active=(item.name==$routeParams.navId);
-        if (item.hiddenHandler!=undefined)
-            item.hidden=item.hiddenHandler();
-        else
-            if (item.hidden===undefined)
-                item.hidden=false;
-    }
-
-    service.goBack=function(){
-        if ($window.history.length>2)
-            $window.history.back();
-        else
-            service.goHome();
-    }
-    service.goHome=function(){
-        $location.path(AppConst.home.url);
-    }
-
-    service.init=function(navId, subNavId){
-        if (navId!=undefined)
-            $routeParams.navId=navId;
-        else
-        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.navId!=undefined)
-            $routeParams.navId=$route.current.$$route.navId
-        else
-        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.navId!=undefined)
-            $routeParams.navId=$route.current.params.navId;
-
-        if (subNavId!=undefined)
-            $routeParams.subNavId=subNavId;
-        else
-        if ($route.current !== undefined && $route.current.$$route!==undefined && $route.current.$$route.subNavId!=undefined)
-            $routeParams.subNavId=$route.current.$$route.subNavId
-        else
-        if ($route.current !== undefined && $route.current.params!==undefined && $route.current.params.subNavId!=undefined)
-            $routeParams.subNavId=$route.current.params.subNavId;
-
-        service.items=AppConst.navbar;
-        for (var i=0;i<service.items.left.length;i++){
-            modifiItem(service.items.left[i]);
-        }
-        for (var i=0;i<service.items.right.length;i++){
-            modifiItem(service.items.right[i]);
-        }
-        $rootScope.$broadcast('navbar.change', false, {
-            current:{
-                params:{
-                    navId:$routeParams.navId,
-                    subNavId:$routeParams.subNavId
-                }
-            }
-        }, false);
-    }
-
-    return service;
-  });
 app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $location, AppConst, PostRes, TagSvc, NavbarSvc, MessageSvc, AppSvc, PropertiesSvc) {
     var service={};
 
@@ -82517,22 +82557,21 @@ app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $locati
     service.title=AppConst.post.strings.title;
 
     service.init=function(reload){
-        NavbarSvc.init('post');
-
+        service.postName=$routeParams.postName;
         $q.all([
             TagSvc.load(),
             service.load()
         ]).then(function(responseList) {
-            if ($routeParams.postName!=undefined){
-                AppSvc.item.title=[service.item.title,AppConst.post.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
-                if (AppSvc.item.description){
-                    AppSvc.item.description=service.item.description;
-                }
+            if (service.postName!=undefined){
+                AppSvc.setTitle([service.item.title,service.title]);
+                AppSvc.setDescription(service.item.description);
+                AppSvc.setUrl('post/'+service.postName);
+                if (service.item.images.length>0)
+                    AppSvc.setImage(service.item.images[0].src_url);
             }else{
-                AppSvc.item.title=[AppConst.post.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
-                if (AppConst.post.strings.description){
-                    AppSvc.item.description=AppConst.post.strings.description;
-                }
+                AppSvc.setTitle([service.title]);
+                AppSvc.setDescription(AppConst.post.strings.description);
+                AppSvc.setUrl('post');
             }
         });
     }
@@ -82651,9 +82690,9 @@ app.factory('PostSvc', function ($routeParams, $rootScope, $q, $timeout, $locati
     }
     service.load=function(reload){
         var deferred = $q.defer();
-        if ($routeParams.postName!=undefined){
-            if (service.item.name!==$routeParams.postName)
-                PostRes.getItem($routeParams.postName).then(
+        if (service.postName!=undefined){
+            if (service.item.name!==service.postName)
+                PostRes.getItem(service.postName).then(
                     function (response) {
                         service.item=angular.copy(response.data.data[0]);
                         deferred.resolve(service.item);
@@ -82715,22 +82754,21 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
     service.title=AppConst.project.strings.title;
 
     service.init=function(reload){
-        NavbarSvc.init('project');
-
+        service.projectName=$routeParams.projectName;
         $q.all([
             TagSvc.load(),
             service.load()
         ]).then(function(responseList) {
-            if ($routeParams.projectName!=undefined){
-                AppSvc.item.title=[service.item.title,AppConst.project.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
-                if (AppSvc.item.description){
-                    AppSvc.item.description=service.item.description;
-                }
+            if (service.projectName!=undefined){
+                AppSvc.setTitle([service.item.title,service.title]);
+                AppSvc.setDescription(service.item.description);
+                AppSvc.setUrl('project/'+service.projectName);
+                if (service.item.images.length>0)
+                    AppSvc.setImage(service.item.images[0].src_url);
             }else{
-                AppSvc.item.title=[AppConst.project.strings.title,PropertiesSvc.listOfNames.SITE_TITLE.value].join(' - ');
-                if (AppConst.project.strings.description){
-                    AppSvc.item.description=AppConst.project.strings.description;
-                }
+                AppSvc.setTitle([service.title]);
+                AppSvc.setDescription(AppConst.project.strings.description);
+                AppSvc.setUrl('project');
             }
         });
     }
@@ -82849,9 +82887,9 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
     }
     service.load=function(reload){
         var deferred = $q.defer();
-        if ($routeParams.projectName!=undefined){
-            if (service.item.name!==$routeParams.projectName)
-                ProjectRes.getItem($routeParams.projectName).then(
+        if (service.projectName!=undefined){
+            if (service.item.name!==service.projectName)
+                ProjectRes.getItem(service.projectName).then(
                     function (response) {
                         service.item=angular.copy(response.data.data[0]);
                         deferred.resolve(service.item);
@@ -82884,62 +82922,7 @@ app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $timeout, $loc
     }
     return service;
   });
-app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes) {
-    var service={};
-
-    service.allList=[];
-
-    service.countItemsOnRow=3;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
-
-    service.title=AppConst.search.strings.title;
-    service.searchText='';
-
-    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
-        if (current.params!=undefined && current.params.navId!='search'){
-            service.searchText='';
-        }
-    });
-
-    service.doSearch=function(searchText){
-        $location.path('/search/'+searchText);
-    }
-
-    service.init=function(reload){
-        NavbarSvc.init('search');
-
-        service.searchText=$routeParams.searchText;
-
-        if ($routeParams.searchText!=undefined){
-            service.allList=[];
-            service.allListSumSize=0;
-            $q.all([
-                TagSvc.load(),
-                ProjectRes.getSearch($routeParams.searchText),
-                PostRes.getSearch($routeParams.searchText)
-            ]).then(function(responseList) {
-                for (var i=1;i<responseList.length;i++){
-                    if (responseList[i].data.data && responseList[i].data.data.length>0)
-                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
-                    if (i==1)
-                        service.allList.push({
-                            name: 'project',
-                            list: responseList[i].data.data
-                        });
-                    if (i==2)
-                        service.allList.push({
-                            name: 'post',
-                            list: responseList[i].data.data
-                        });
-                }
-            });
-        }
-    }
-    return service;
-  });
-app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
+app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, $modalBox, $modal, NavbarSvc, MessageSvc, AppSvc) {
     var service={};
 
     service.item={};
@@ -82947,14 +82930,12 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     service.allList=[];
 
     service.countItemsOnRow=3;
-    service.limitOnHome=3;
+    service.limitOnHome=5;
     service.limit=10;
     service.begin=0;
 
-    service.title=AppConst.tag.strings.title;
-
-    $rootScope.$on('navbar.change',function(event, eventRoute, current, previous){
-        if (current.params!=undefined && current.params.navId!='tag'){
+    $rootScope.$on('$routeChangeStart',function(event, current, previous){
+        if (current.params!=undefined && $routeParams.navId!='tag'){
             service.tagText='';
         }
     });
@@ -83084,8 +83065,14 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     service.init=function(reload){
         service.tagText=$routeParams.tagText;
 
+        service.title=vsprintf(AppConst.tag.strings.title,[service.tagText]);
+        service.description=vsprintf(AppConst.tag.strings.description,[service.tagText]);
+
+        AppSvc.setTitle([service.title]);
+        AppSvc.setDescription(service.description);
+        AppSvc.setUrl('tag/'+service.tagText);
+
         if ($routeParams.tagText!=undefined){
-            NavbarSvc.init('tag');
             service.allList=[];
             service.allListSumSize=0;
             $q.all([
@@ -83109,7 +83096,6 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
                 }
             });
         }else{
-            NavbarSvc.init($routeParams.navId);
             $q.all([
                 service.load()
             ]).then(function(responseList) {
@@ -83148,7 +83134,105 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     }
     return service;
   });
-app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
+app.factory('HomeSvc', function ($q, NavbarSvc, PropertiesSvc, AppSvc, TagSvc, PostSvc, ProjectSvc) {
+    var service={};
+
+    service.init=function(reload){
+        $q.all([
+            PropertiesSvc.load(),
+            TagSvc.load(),
+            ProjectSvc.load(),
+            PostSvc.load()
+        ]).then(function(responseList) {
+            service.title=AppSvc.setTitle();
+            AppSvc.setUrl();
+        });
+
+    }
+    return service;
+  });
+app.factory('NavbarSvc', function ($routeParams, $route, $rootScope, $route, $location, $window, AppConst) {
+    var service={};
+
+    service.goBack=function(){
+        if ($window.history.length>0)
+            $window.history.back();
+        else
+            service.goHome();
+    }
+    service.goHome=function(){
+        $location.path(AppConst.home.url);
+    }
+
+    service.getItemByName=function(){
+    }
+
+    service.init=function(){
+        service.items=AppConst.navbar;
+    }
+
+    return service;
+  });
+app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes, AppSvc) {
+    var service={};
+
+    service.allList=[];
+
+    service.countItemsOnRow=3;
+    service.limitOnHome=3;
+    service.limit=10;
+    service.begin=0;
+
+    service.searchText='';
+
+    $rootScope.$on('$routeChangeStart',function(event, current, previous){
+        if ($routeParams.navId!='search'){
+            service.searchText='';
+        }
+    });
+
+    service.doSearch=function(searchText){
+        $location.path('/search/'+searchText);
+    }
+
+    service.init=function(reload){
+        service.searchText=$routeParams.searchText;
+
+        service.title=vsprintf(AppConst.search.strings.title,[service.searchText]);
+        service.description=vsprintf(AppConst.search.strings.description,[service.searchText]);
+
+        AppSvc.setTitle([service.title]);
+        AppSvc.setDescription(service.description);
+        AppSvc.setUrl('search/'+service.searchText);
+
+        if ($routeParams.searchText!=undefined){
+            service.allList=[];
+            service.allListSumSize=0;
+            $q.all([
+                TagSvc.load(),
+                ProjectRes.getSearch($routeParams.searchText),
+                PostRes.getSearch($routeParams.searchText)
+            ]).then(function(responseList) {
+                for (var i=1;i<responseList.length;i++){
+                    if (responseList[i].data.data && responseList[i].data.data.length>0)
+                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
+                    if (i==1)
+                        service.allList.push({
+                            name: 'project',
+                            list: responseList[i].data.data
+                        });
+                    if (i==2)
+                        service.allList.push({
+                            name: 'post',
+                            list: responseList[i].data.data
+                        });
+                }
+            });
+        }
+    }
+    return service;
+  });
+app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
     var service={};
 
     service.item={};
@@ -83297,7 +83381,7 @@ app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modal
     }
 
     service.init=function(reload){
-        NavbarSvc.init($routeParams.navId);
+        ManagerSvc.init();
 
         $q.all([
             service.load()
@@ -83307,12 +83391,11 @@ app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modal
     }
     return service;
   });
-app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
+app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
     var service={};
 
     service.item={};
     service.list=[];
-    service.listOfNames=false;
 
     service.initEmptyItem=function(){
         service.item = {};
@@ -83371,16 +83454,10 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
         $modalBox(boxOptions);
     }
 
-    service.fillListOfNames=function(){
-        service.listOfNames={};
-        for (var i=0;i<service.list.length;i++){
-            service.listOfNames[service.list[i].name]=service.list[i];
-        }
-    }
     service.updateItemOnList=function(item){
         for (var i=0;i<service.list.length;i++){
             if (item.id===service.list[i].id){
-                service.listOfNames[service.list[i].name]=service.list[i];
+                AppSvc.updateProperty(service.list[i].name,service.list[i].value);
                 angular.extend(service.list[i],angular.copy(item));
             }
         }
@@ -83393,6 +83470,7 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
                     service.list.push(service.item);
+                    service.updateItemOnList(service.item);
                     $rootScope.$broadcast('properties.create', service.item);
                 }
             },
@@ -83449,12 +83527,14 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
             service.loaded=true;
             PropertiesRes.getList().then(function (response) {
                 service.list=angular.copy(response.data.data);
-                service.fillListOfNames();
+                AppSvc.fillProperties(service.list);
+
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('properties.load', service.list);
             }, function (response) {
                 service.list=[];
-                service.fillListOfNames();
+                AppSvc.fillProperties(service.list);
+
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
@@ -83465,7 +83545,7 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
     }
 
     service.init=function(reload){
-        NavbarSvc.init($routeParams.navId);
+        ManagerSvc.init();
 
         $q.all([
             service.load()
@@ -83475,7 +83555,7 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
     }
     return service;
   });
-app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, $modalBox, $modal, NavbarSvc, MessageSvc, $routeParams, $route) {
+app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
     var service={};
 
     service.item={};
@@ -83628,7 +83708,7 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
     }
 
     service.init=function(reload){
-        NavbarSvc.init($routeParams.navId);
+        ManagerSvc.init();
 
         $q.all([
             service.load()
@@ -83638,32 +83718,31 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
     }
     return service;
   });
-app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc, PropertiesSvc) {
+app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc) {
     $scope.AppConfig=AppConfig;
 
     $scope.UtilsSvc=UtilsSvc;
     $scope.AppConst=AppConst;
 	$scope.AppSvc=AppSvc;
 	$scope.MessageSvc=MessageSvc;
-	$scope.PropertiesSvc=PropertiesSvc;
 
-	AppSvc.init();
+    AppSvc.init();
 });
-app.controller('AccountCtrl', function ($scope, $routeParams, AccountSvc, TagSvc, ProjectSvc) {
+app.controller('AccountCtrl', function ($scope, AccountSvc, TagSvc, ProjectSvc, NavbarSvc, $routeParams) {
     $scope.AccountSvc=AccountSvc;
     $scope.TagSvc=TagSvc;
     $scope.ProjectSvc=ProjectSvc;
+    $scope.NavbarSvc=NavbarSvc;
     $scope.$routeParams=$routeParams;
 
 	TagSvc.load();
 	ProjectSvc.load();
 	AccountSvc.init();
 });
-app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc, ProjectSvc, PublicLinkSvc) {
+app.controller('ContactCtrl', function ($scope, ContactSvc, TagSvc, ProjectSvc, PublicLinkSvc) {
     $scope.ContactSvc=ContactSvc;
     $scope.TagSvc=TagSvc;
     $scope.PublicLinkSvc=PublicLinkSvc;
-    $scope.$routeParams=$routeParams;
 
     PublicLinkSvc.load();
 	TagSvc.load();
@@ -83671,23 +83750,6 @@ app.controller('ContactCtrl', function ($scope, $routeParams, ContactSvc, TagSvc
 });
 app.controller('FileCtrl', function ($scope, FileSvc) {
 	$scope.FileSvc=FileSvc;
-});
-app.controller('HomeCtrl', function ($scope, HomeSvc, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
-    $scope.AccountSvc=AccountSvc;
-	$scope.ProjectSvc=ProjectSvc;
-	$scope.PostSvc=PostSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.FileSvc=FileSvc;
-
-    HomeSvc.init();
-});
-app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc, PublicLinkSvc) {
-	$scope.NavbarSvc=NavbarSvc;
-	$scope.SearchSvc=SearchSvc;
-	$scope.PublicLinkSvc=PublicLinkSvc;
-
-    PublicLinkSvc.load();
-    NavbarSvc.init();
 });
 app.controller('PostCtrl', function ($scope, $timeout, PostSvc, AccountSvc, TagSvc, FileSvc) {
     $scope.AccountSvc=AccountSvc;
@@ -83705,15 +83767,6 @@ app.controller('ProjectCtrl', function ($scope, $timeout, ProjectSvc, AccountSvc
 
 	ProjectSvc.init();
 });
-app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
-    $scope.AccountSvc=AccountSvc;
-	$scope.SearchSvc=SearchSvc;
-	$scope.TagSvc=TagSvc;
-	$scope.ProjectSvc=ProjectSvc;
-	$scope.PostSvc=PostSvc;
-
-	SearchSvc.init();
-});
 app.controller('TagCtrl', function ($scope, $routeParams, TagSvc, AccountSvc, ProjectSvc, PostSvc) {
     $scope.AccountSvc=AccountSvc;
 	$scope.TagSvc=TagSvc;
@@ -83723,28 +83776,58 @@ app.controller('TagCtrl', function ($scope, $routeParams, TagSvc, AccountSvc, Pr
 
 	TagSvc.init();
 });
-app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc, TagSvc) {
+app.controller('HomeCtrl', function ($scope, HomeSvc, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.FileSvc=FileSvc;
+
+    HomeSvc.init();
+});
+app.controller('NavbarCtrl', function ($scope, NavbarSvc, SearchSvc, PublicLinkSvc, $routeParams) {
+	$scope.NavbarSvc=NavbarSvc;
+	$scope.SearchSvc=SearchSvc;
+	$scope.PublicLinkSvc=PublicLinkSvc;
+	$scope.$routeParams=$routeParams;
+
+    NavbarSvc.init();
+    PublicLinkSvc.load();
+});
+app.controller('SearchCtrl', function ($scope, SearchSvc, AccountSvc, TagSvc, ProjectSvc, PostSvc) {
+    $scope.AccountSvc=AccountSvc;
+	$scope.SearchSvc=SearchSvc;
+	$scope.TagSvc=TagSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+
+	SearchSvc.init();
+});
+app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc, TagSvc, ManagerSvc) {
 	$scope.MetaTagSvc=MetaTagSvc;
 	$scope.AccountSvc=AccountSvc;
 	$scope.TagSvc=TagSvc;
+	$scope.ManagerSvc=ManagerSvc;
 	$scope.$routeParams=$routeParams;
 
     TagSvc.load();
 	MetaTagSvc.init();
 });
-app.controller('PropertiesCtrl', function ($scope, PropertiesSvc, $routeParams, AccountSvc, TagSvc) {
+app.controller('PropertiesCtrl', function ($scope, PropertiesSvc, $routeParams, AccountSvc, TagSvc, ManagerSvc) {
 	$scope.PropertiesSvc=PropertiesSvc;
 	$scope.AccountSvc=AccountSvc;
 	$scope.TagSvc=TagSvc;
+	$scope.ManagerSvc=ManagerSvc;
 	$scope.$routeParams=$routeParams;
 
     TagSvc.load();
 	PropertiesSvc.init();
 });
-app.controller('PublicLinkCtrl', function ($scope, PublicLinkSvc, $routeParams, AccountSvc, TagSvc) {
+app.controller('PublicLinkCtrl', function ($scope, PublicLinkSvc, $routeParams, AccountSvc, TagSvc, ManagerSvc) {
 	$scope.PublicLinkSvc=PublicLinkSvc;
 	$scope.AccountSvc=AccountSvc;
 	$scope.TagSvc=TagSvc;
+	$scope.ManagerSvc=ManagerSvc;
 	$scope.$routeParams=$routeParams;
 
     TagSvc.load();

@@ -8,9 +8,9 @@ def get_fields():
     return ['email', 'username', 'message']
 
 def send(request):
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields(), '')
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields(), '')
 
     json_data['email'] = json_data['email'].lower()
 
@@ -20,8 +20,8 @@ def send(request):
     config['username'] = json_data['username']
     config['message'] = json_data['message']
 
-    helpers.sendmail(subject='Message from contact form',
-                     html_content=render_to_string('contact/templates/message.email.htm', config),
-                     text_content=render_to_string('contact/templates/message.email.txt', config))
+    helpers.send_mail(subject='Message from contact form',
+                      html_content=render_to_string('contact/templates/message.email.htm', config),
+                      text_content=render_to_string('contact/templates/message.email.txt', config))
 
     return {'code': 'ok', 'data': [json_data['email']]}, 200, json_data['email']

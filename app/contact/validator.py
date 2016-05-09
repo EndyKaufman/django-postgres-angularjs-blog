@@ -7,12 +7,12 @@ import resource
 def send(request):
     """Send message"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
     json_data['email'] = json_data['email'].lower()
 
     if json_data['email'] == '':

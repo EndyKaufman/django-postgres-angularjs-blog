@@ -19,11 +19,11 @@ def get_item_by_text(request, text):
 def create(request):
     """Create record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     from app.tag.models import Tag
 
@@ -33,15 +33,15 @@ def create(request):
         item.created_user = user
         item.save()
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, 200, item
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
 def update(request, tag_id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     from app.tag.models import Tag
 
@@ -54,7 +54,7 @@ def update(request, tag_id):
     item.description = json_data['description']
     item.save()
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, 200, item
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
 def delete(request, tag_id):
@@ -80,7 +80,7 @@ def get_item(request, tag_id):
     except Tag.DoesNotExist:
         return {'code': 'tag/not_found', 'values': [tag_id]}, 404, False
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject([item])}, 200, item
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
 def get_list(request):
@@ -88,7 +88,7 @@ def get_list(request):
 
     items = Tag.objects.all().order_by('created').all()
 
-    return {'code': 'ok', 'data': helpers.itemsToJsonObject(items)}, 200, items
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
 def get_search(request, search_text):
@@ -102,4 +102,4 @@ def get_search(request, search_text):
             Q(description__icontains=search_text)
         ).order_by('created').all()
 
-        return {'code': 'ok', 'data': helpers.itemsToJsonObject(items)}, 200, items
+        return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items

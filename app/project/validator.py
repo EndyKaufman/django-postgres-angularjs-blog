@@ -4,12 +4,12 @@ import resource
 
 
 def create(request):
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
 
     if json_data['name'] is None:
         return {'code': 'project/no_name'}, 404
@@ -18,7 +18,7 @@ def create(request):
     if json_data['description'] is None:
         return {'code': 'project/no_description'}, 404
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404, False
@@ -36,12 +36,12 @@ def create(request):
 def update(request, project_id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
 
     if json_data['name'] is None:
         return {'code': 'project/no_name'}, 404
@@ -50,7 +50,7 @@ def update(request, project_id):
     if json_data['description'] is None:
         return {'code': 'project/no_description'}, 404
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404, False
@@ -68,12 +68,12 @@ def update(request, project_id):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404, False

@@ -6,12 +6,12 @@ import resource
 def create(request):
     """Create record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404, False
@@ -29,12 +29,12 @@ def create(request):
 def update(request, tag_id):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404, False
@@ -52,12 +52,12 @@ def update(request, tag_id):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if not user or not request.user.is_superuser:
         return {'code': 'no_access'}, 404, False

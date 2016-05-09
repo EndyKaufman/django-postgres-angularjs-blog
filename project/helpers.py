@@ -18,7 +18,7 @@ def is_method(obj, name):
     return hasattr(obj, name) and inspect.ismethod(getattr(obj, name))
 
 
-def getUser(request):
+def get_user(request):
     if not request.user.is_authenticated():
         return False
 
@@ -32,7 +32,7 @@ def getUser(request):
     return user
 
 
-def getValueByKey(obj, key):
+def get_value_by_key(obj, key):
     try:
         value = obj[key]
     except:
@@ -41,7 +41,7 @@ def getValueByKey(obj, key):
     return value
 
 
-def setNullValuesIfNotExist(data, keys, null_value=None):
+def set_null_values_If_not_exist(data, keys, null_value=None):
     for key in keys:
         try:
             value = data[key]
@@ -51,7 +51,7 @@ def setNullValuesIfNotExist(data, keys, null_value=None):
     return data
 
 
-def getJson(request):
+def get_json(request):
     json_data = False
 
     if request.method == 'POST':
@@ -60,16 +60,16 @@ def getJson(request):
     return json_data
 
 
-def mkdirRecursive(path, removeIfExists=False):
-    if removeIfExists and os.path.isdir(path):
+def mkdir_recursive(path, remove_if_exists=False):
+    if remove_if_exists and os.path.isdir(path):
         shutil.rmtree(path)
     if not os.path.isdir(path):
         os.makedirs(path)
 
 
-def copydirRecursive(src, dest, ignore=None, removeIfExists=False):
+def copy_dir_recursive(src, dest, ignore=None, remove_if_exists=False):
     if os.path.isdir(src):
-        mkdirRecursive(dest, removeIfExists)
+        mkdir_recursive(dest, remove_if_exists)
         files = os.listdir(src)
         if ignore is not None:
             ignored = ignore(src, files)
@@ -77,14 +77,14 @@ def copydirRecursive(src, dest, ignore=None, removeIfExists=False):
             ignored = set()
         for f in files:
             if f not in ignored:
-                copydirRecursive(os.path.join(src, f),
-                                 os.path.join(dest, f),
-                                 ignore, removeIfExists)
+                copy_dir_recursive(os.path.join(src, f),
+                                   os.path.join(dest, f),
+                                   ignore, remove_if_exists)
     else:
         shutil.copyfile(src, dest)
 
 
-def removeFile(path):
+def remove_file(path):
     if os.path.isfile(path):
         os.remove(path)
     else:
@@ -93,21 +93,21 @@ def removeFile(path):
             os.remove(path)
 
 
-def saveFile(dest_path, f, filename=False):
+def save_file(dest_path, f, filename=False):
     original_name, file_extension = os.path.splitext(f.name)
 
     filename_postfix_inc = 1
     def_filename = False
     while True:
-        if filename != False:
+        if filename is not False:
             new_filename = u'%s' % filename
         else:
             new_filename = u'%s' % original_name
 
-        if def_filename == False:
-            def_filename = new_filename;
+        if def_filename is False:
+            def_filename = new_filename
 
-        if dest_path == False:
+        if dest_path is False:
             try:
                 url = slugify(new_filename) + file_extension
             except:
@@ -121,13 +121,13 @@ def saveFile(dest_path, f, filename=False):
             break
 
         if os.path.isfile(path):
-            filename_postfix_inc = filename_postfix_inc + 1
+            filename_postfix_inc += 1
             filename = '%s-%s' % (def_filename, str(filename_postfix_inc))
 
     if dest_path == False:
-        mkdirRecursive(settings.MEDIA_ROOT)
+        mkdir_recursive(settings.MEDIA_ROOT)
     else:
-        mkdirRecursive(settings.MEDIA_ROOT + '/' + dest_path)
+        mkdir_recursive(settings.MEDIA_ROOT + '/' + dest_path)
 
     destination = open(path, 'wb+')
     for chunk in f.chunks():
@@ -142,36 +142,36 @@ def md5(str):
     return m.hexdigest()
 
 
-def makeCode(size=6, chars=string.ascii_uppercase + string.digits):
+def make_code(size=6, chars=string.ascii_uppercase + string.digits):
     random.seed()
     return ''.join(random.choice(chars) for _ in range(size)).lower()
 
 
-def sendmail(subject, text_content, html_content=None, to_email=None, message_id=None):
+def send_mail(subject, text_content, html_content=None, to_email=None, message_id=None):
     from_email = '%s <%s>' % (settings.SITE_NAME, settings.SERVER_EMAIL)
 
-    if to_email == None:
+    if to_email is None:
         to_email = [settings.SERVER_EMAIL]
 
     msg = EmailMultiAlternatives(subject, '', from_email, to_email)
-    if html_content != None:
+    if html_content is not None:
         msg.attach_alternative(html_content, "text/html")
         msg.content_subtype = "html"  # Main content is now text/html
 
     try:
         msg.send()
     except:
-        tempDir = '%s/%s' % (os.path.dirname(settings.BASE_DIR), 'temp')
-        tempFile = "%s/%s.html" % (tempDir, to_email[0].encode('ascii', 'ignore'))
+        temp_dir = '%s/%s' % (os.path.dirname(settings.BASE_DIR), 'temp')
+        temp_file = "%s/%s.html" % (temp_dir, to_email[0].encode('ascii', 'ignore'))
 
-        mkdirRecursive(tempDir)
-        with open(tempFile, "w") as text_file:
+        mkdir_recursive(temp_dir)
+        with open(temp_file, "w") as text_file:
             text_file.write("<!-- From: %s, To: %s, Subject: %s !-->%s" % (
                 from_email, to_email[0].encode('ascii', 'ignore'), subject, html_content))
     return True
 
 
-def itemsToJsonObject(items):
+def objects_to_json(request, items):
     json_items = serializers.serialize('json', items)
     data = json.loads(json_items)
 
@@ -180,23 +180,30 @@ def itemsToJsonObject(items):
     for row in data:
         result = row['fields']
         result['id'] = row['pk']
-        staticFields = ['src']
+        static_fields = ['src']
 
-        for staticField in staticFields:
+        for static_field in static_fields:
             try:
-                fieldValue = result[staticField]
+                field_value = result[static_field]
             except:
-                fieldValue = None
-            if fieldValue is not None and fieldValue != '' and 'http:' not in fieldValue.lower():
-                try:
-                    result['%sStatic' % staticField] = '%s%s' % (settings.MEDIA_URL, fieldValue)
-                except:
-                    result['%sStatic' % staticField] = ''
+                field_value = None
+            if field_value is not None and field_value != '':
+                if '//' in field_value.lower():
+                    try:
+                        result['%s_url' % static_field] = field_value
+                    except:
+                        result['%s_url' % static_field] = ''
+                else:
+                    try:
+                        result['%s_url' % static_field] = 'http://%s%s%s' % (
+                        request.get_host(), settings.MEDIA_URL, field_value)
+                    except:
+                        result['%s_url' % static_field] = ''
 
         for key in result:
             if hasattr(items[index], key) and hasattr(getattr(items[index], key), 'all'):
-                result[key] = itemsToJsonObject(getattr(items[index], key).all())
+                result[key] = objects_to_json(request, getattr(items[index], key).all())
         results.append(result)
-        index = index + 1
+        index += 1
 
     return results

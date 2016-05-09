@@ -27,9 +27,9 @@ def get_code(request, text):
 
 
 def create(request):
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -57,13 +57,13 @@ def create(request):
 def update(request):
     """Update record"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
 
     if json_data['email'] is not None:
         user.email = json_data['email']
@@ -89,7 +89,7 @@ def update(request):
 def delete(request):
     """Update record"""
 
-    user = helpers.getUser(request)
+    user = helpers.get_user(request)
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.delete()
 
@@ -101,9 +101,9 @@ def delete(request):
 def login(request):
     """Login action"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -134,9 +134,9 @@ def logout(request):
 def recovery(request):
     """Recovery action"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data, get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -144,7 +144,7 @@ def recovery(request):
 
     user = get_item_by_email(request, json_data['email'])
 
-    code = Code.objects.create(text=helpers.makeCode(), created_user=user, type=1)
+    code = Code.objects.create(text=helpers.make_code(), created_user=user, type=1)
 
     from app import home
 
@@ -153,10 +153,10 @@ def recovery(request):
     config['SHORT_SITE_NAME'] = settings.SHORT_SITE_NAME
     config['user_first_name'] = user.first_name
 
-    helpers.sendmail(subject='Reset password',
-                     html_content=render_to_string('account/templates/resetpassword.email.htm', config),
-                     text_content=render_to_string('account/templates/resetpassword.email.txt', config),
-                     to_email=[json_data['email']])
+    helpers.send_mail(subject='Reset password',
+                      html_content=render_to_string('account/templates/reset_password.email.htm', config),
+                      text_content=render_to_string('account/templates/reset_password.email.txt', config),
+                      to_email=[json_data['email']])
 
     return {'code': 'ok', 'data': [json_data['email']]}, 200, user
 
@@ -164,9 +164,9 @@ def recovery(request):
 def reset_password(request):
     """Reset password action"""
 
-    json_data = helpers.getJson(request)
+    json_data = helpers.get_json(request)
 
-    json_data = helpers.setNullValuesIfNotExist(json_data,get_fields())
+    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
 
     json_data['code'] = json_data['code'].lower()
 

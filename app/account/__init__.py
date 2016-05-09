@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^reg', actions.reg),
     url(r'^delete', actions.delete),
     url(r'^recovery', actions.recovery),
-    url(r'^resetpassword', actions.reset_password)
+    url(r'^reset_password', actions.reset_password)
 ]
