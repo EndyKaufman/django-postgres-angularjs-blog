@@ -1,137 +1,117 @@
 # -*- coding: utf-8 -*-
-
-from app.home import helpers
 from jsonview.decorators import json_view
-from project import helpers
-import helpers as meta_tag_helpers
+from project import settings
+import resource
+import validator
 
 
-# list
 @json_view
-def getList(request):
+def get_list(request):
     """List data"""
 
-    data = meta_tag_helpers.getList()
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_list(request)
+        except:
+            return {'code': 'meta_tag/get_list/fail'}, 404
+    else:
+        data, code, items = resource.get_list(request)
 
-    return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
+    return data, code
 
 
-# item
 @json_view
-def getItem(request, id):
+def get_search(request, search_text):
+    """Search data"""
+
+    if settings.ENV == 'production':
+        try:
+            data, code, items = resource.get_search(request, search_text)
+        except:
+            return {'code': 'meta_tag/get_search/fail'}, 404
+    else:
+        data, code, items = resource.get_search(request, search_text)
+
+    return data, code
+
+
+@json_view
+def get_item_by_name(request, meta_tag_name):
     """Item data"""
 
-    data = meta_tag_helpers.getItem(id)
-
-    if not data:
-        return {'code': 'meta_tag/not_found', 'values': [id]}, 404
+    if settings.ENV == 'production':
+        try:
+            data, code, item = resource.get_item_by_name(request, meta_tag_name)
+        except:
+            return {'code': 'meta_tag/get_item/fail'}, 404
     else:
-        return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
+        data, code, item = resource.get_item_by_name(request, meta_tag_name)
+    return data, code
 
 
-# update
 @json_view
-def actionUpdate(request, id):
+def get_item(request, meta_tag_id):
+    """Item data"""
+
+    if settings.ENV == 'production':
+        try:
+            data, code, item = resource.get_item(request, meta_tag_id)
+        except:
+            return {'code': 'meta_tag/get_item/fail'}, 404
+    else:
+        data, code, item = resource.get_item(request, meta_tag_id)
+    return data, code
+
+
+@json_view
+def update(request, meta_tag_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data, code, valid = validator.update(request, meta_tag_id)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.update(request, meta_tag_id)
+            except:
+                return {'code': 'meta_tag/update/fail'}, 404
+        else:
+            data, code, item = resource.update(request, meta_tag_id)
 
-    user = helpers.get_user(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    json_data = helpers.set_null_values_If_not_exist(json_data, ['name', 'content', 'attributes', 'position'])
-
-    if json_data['position'] == '':
-        json_data['position'] = None;
-
-    data = meta_tag_helpers.getItemByName(json_data['name'])
-
-    if (data is not False) and (int(data[0].id) != int(id)):
-        return {'code': 'meta_tag/exists', 'values': [json_data['name']]}, 404
-
-    data = meta_tag_helpers.getItem(id)
-
-    if not data:
-        return {'code': 'meta_tag/not_found', 'values': [id]}, 404
-    else:
-        try:
-            data[0].name = json_data['name']
-            data[0].content = json_data['content']
-            data[0].attributes = json_data['attributes']
-            data[0].position = json_data['position']
-            data[0].save()
-        except:
-            return {'code': 'meta_tag/update/fail'}, 404
-        return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
+    return data, code
 
 
-# create
 @json_view
-def actionCreate(request):
+def create(request):
     """Create record"""
 
-    json_data = helpers.get_json(request)
+    data, code, valid = validator.create(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.create(request)
+            except:
+                return {'code': 'meta_tag/create/fail'}, 404
+        else:
+            data, code, item = resource.create(request)
 
-    user = helpers.get_user(request)
-
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    json_data = helpers.set_null_values_If_not_exist(json_data, ['name', 'content', 'attributes', 'position'])
-
-    if json_data['position'] == '':
-        json_data['position'] = None;
-
-    json_data['created_user'] = user
-
-    data = meta_tag_helpers.getItemByName(json_data['name'])
-
-    if data is not False:
-        return {'code': 'meta_tag/exists', 'values': [json_data['name']]}, 404
-
-    data = meta_tag_helpers.create(json_data)
-
-    if not data:
-        return {'code': 'meta_tag/create/fail'}, 404
-
-    return {'code': 'ok', 'data': helpers.objects_to_json(request, data)}
+    return data, code
 
 
-# delete
 @json_view
-def actionDelete(request, id):
+def delete(request, meta_tag_id):
     """Delete record"""
-    json_data = helpers.get_json(request)
 
-    if json_data is False:
-        return {'code': 'no_data'}, 404
+    data, code, valid = validator.delete(request)
 
-    user = helpers.get_user(request)
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code = resource.delete(request, meta_tag_id)
+            except:
+                return {'code': 'meta_tag/delete/fail'}, 404
+        else:
+            data, code = resource.delete(request, meta_tag_id)
 
-    if not user or not request.user.is_superuser:
-        return {'code': 'no_access'}, 404
-    if user is None:
-        return {'code': 'account/not_active'}, 404
-
-    data = meta_tag_helpers.getItem(id)
-
-    if not data:
-        return {'code': 'meta_tag/not_found', 'values': [id]}, 404
-    else:
-        try:
-            data[0].delete()
-        except:
-            return {'code': 'meta_tag/delete/fail'}, 404
-        return {'code': 'ok'}
+    return data, code

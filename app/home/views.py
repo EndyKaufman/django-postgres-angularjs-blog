@@ -4,8 +4,8 @@ from django.shortcuts import render
 from django.conf import settings
 from django.views.decorators.csrf import ensure_csrf_cookie
 import json
-from app.manager.meta_tag import helpers as meta_tag_helpers
-from app.manager.properties import helpers as properties_helpers
+from app.manager.meta_tag import resource as meta_tag_resource
+from app.manager.properties import resource as properties_resource
 
 
 # Create your views here.
@@ -15,14 +15,16 @@ def index(request):
     from helpers import getConfig
 
     config = getConfig(request)
-    config['properties'] = properties_helpers.getListOfNames(
-        ['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME', 'SITE_LOGO'])
+    config['properties'] = properties_resource.get_list_of_names(request,
+                                                                 ['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME',
+                                                                  'SITE_LOGO'])
 
-    meta_tag_list = meta_tag_helpers.getList()
+    meta_tag_list = meta_tag_resource.get_list(request)
 
-    properties_list = properties_helpers.getListOfNames(
-        ['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME', 'SITE_LOGO', 'HOME_HEADER_BOTTOM_HTML',
-         'HOME_BODY_TOP_HTML', 'HOME_BODY_BOTTOM_HTML'])
+    properties_list = properties_resource.get_list_of_names(request,
+                                                            ['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME', 'SITE_LOGO',
+                                                             'HOME_HEADER_BOTTOM_HTML',
+                                                             'HOME_BODY_TOP_HTML', 'HOME_BODY_BOTTOM_HTML'])
 
     try:
         HTTP_USER_AGENT = request.META['HTTP_USER_AGENT']
