@@ -45,7 +45,7 @@ vagrant ssh
 cd ../../vagrant
 cp _env .env
 cd front
-gulp scripts:server
+gulp scripts:build && gulp scripts:server
 ```
 
 ## 4. Open browser and navigate to http://127.0.0.1:5000
