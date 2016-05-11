@@ -127,7 +127,7 @@ def create(request):
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     from app.project.models import Project
 
@@ -146,7 +146,7 @@ def update(request, project_id):
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     from app.project.models import Project
 

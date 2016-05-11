@@ -12,7 +12,7 @@ def create(request):
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     from app.manager.models import Properties
 
@@ -30,7 +30,7 @@ def update(request, properties_id):
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     from app.manager.models import Properties
 
@@ -87,7 +87,7 @@ def get_item_by_name(request, properties_name):
 
 def get_list_of_names(request, names):
     data, code, items = get_list(request)
-    list_of_names = helpers.set_null_values_If_not_exist({}, names, '')
+    list_of_names = helpers.set_null_values_if_not_exist({}, names, '')
     if len(names) > 0:
         for item in items:
             for name in names:

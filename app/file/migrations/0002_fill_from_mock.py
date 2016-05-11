@@ -8,6 +8,7 @@ import json
 
 
 def fill_from_mock(apps, schema_editor):
+    helpers.mkdir_recursive(settings.MEDIA_ROOT)
     helpers.copy_dir_recursive('mock/file/media', settings.MEDIA_ROOT, remove_if_exists=True)
     try:
         with open('mock/file/list.json') as f:

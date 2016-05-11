@@ -13,7 +13,7 @@ def create(request):
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     if request.FILES and request.FILES.get('file'):
         if user.is_superuser:
@@ -41,7 +41,7 @@ def update(request, file_id):
 
     json_data = helpers.get_json(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     from app.file.models import File
 

@@ -10,7 +10,7 @@ def get_fields():
 def send(request):
     json_data = helpers.get_json(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields(), '')
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields(), '')
 
     json_data['email'] = json_data['email'].lower()
 

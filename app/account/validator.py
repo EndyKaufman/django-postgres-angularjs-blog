@@ -11,7 +11,7 @@ def create(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
 
     if json_data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
@@ -42,7 +42,7 @@ def update(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
 
     if json_data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
@@ -86,7 +86,7 @@ def login(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
 
     if json_data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
@@ -133,7 +133,7 @@ def recovery(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
 
     if json_data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
@@ -164,7 +164,7 @@ def reset_password(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
 
     if json_data['code'] is None:
         return {'code': 'account/no_code'}, 404, False

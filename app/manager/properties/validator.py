@@ -9,7 +9,7 @@ def create(request):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
 
     if json_data['name'] is None:
         return {'code': 'properties/no_name'}, 404
@@ -37,7 +37,7 @@ def update(request, properties_id):
     if json_data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, resource.get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
 
     if json_data['name'] is None:
         return {'code': 'properties/no_name'}, 404

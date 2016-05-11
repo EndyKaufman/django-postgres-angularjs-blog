@@ -41,7 +41,7 @@ def get_value_by_key(obj, key):
     return value
 
 
-def set_null_values_If_not_exist(data, keys, null_value=None):
+def set_null_values_if_not_exist(data, keys, null_value=None):
     for key in keys:
         try:
             value = data[key]

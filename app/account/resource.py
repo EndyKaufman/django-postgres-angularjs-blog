@@ -29,7 +29,7 @@ def get_code(request, text):
 def create(request):
     json_data = helpers.get_json(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -59,7 +59,7 @@ def update(request):
 
     json_data = helpers.get_json(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -103,7 +103,7 @@ def login(request):
 
     json_data = helpers.get_json(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -136,7 +136,7 @@ def recovery(request):
 
     json_data = helpers.get_json(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     json_data['email'] = json_data['email'].lower()
 
@@ -166,7 +166,7 @@ def reset_password(request):
 
     json_data = helpers.get_json(request)
 
-    json_data = helpers.set_null_values_If_not_exist(json_data, get_fields())
+    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
 
     json_data['code'] = json_data['code'].lower()
 
