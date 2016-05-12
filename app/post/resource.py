@@ -3,40 +3,40 @@ from project import helpers
 from django.db.models import Q
 
 
-def update_from_json_data(request, item, json_data, user):
+def update_from_json_data(request, item, data, user):
     from app.image.models import Image
     from app.tag.models import Tag
 
     try:
-        item.title = json_data['title']
+        item.title = data['title']
     except KeyError:
         item.title = None
     try:
-        item.name = json_data['name']
+        item.name = data['name']
     except KeyError:
         item.name = None
     try:
-        item.description = json_data['description']
+        item.description = data['description']
     except KeyError:
         item.description = None
     try:
-        item.url = json_data['url']
+        item.url = data['url']
     except KeyError:
         item.url = None
     try:
-        item.text = json_data['text']
+        item.text = data['text']
     except KeyError:
         item.text = None
     try:
-        item.html = json_data['html']
+        item.html = data['html']
     except KeyError:
         item.html = None
     try:
-        item.markdown = json_data['markdown']
+        item.markdown = data['markdown']
     except KeyError:
         item.markdown = None
     try:
-        item.type = json_data['type']
+        item.type = data['type']
     except KeyError:
         item.type = None
 
@@ -48,7 +48,7 @@ def update_from_json_data(request, item, json_data, user):
     # tags
     tag_field_ids = []
     tag_field_texts = []
-    for tag in json_data['tags']:
+    for tag in data['tags']:
         try:
             tag_id = tag['id']
         except KeyError:
@@ -81,7 +81,7 @@ def update_from_json_data(request, item, json_data, user):
     # images
     image_field_ids = []
     image_field_srcs = []
-    for image in json_data['images']:
+    for image in data['images']:
         try:
             image_id = int(image['id'])
         except:
@@ -123,18 +123,18 @@ def get_fields():
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.post.models import Post
 
-    item, created = Post.objects.get_or_create(name=json_data['name'], type=1, created_user=user)
+    item, created = Post.objects.get_or_create(name=data['name'], type=1, created_user=user)
     reload_source = []
     if created:
-        reload_source = update_from_json_data(request, item, json_data, user)
+        reload_source = update_from_json_data(request, item, data, user)
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item]), 'reload_source': reload_source}, 200, item
 
@@ -142,11 +142,11 @@ def create(request):
 def update(request, post_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.post.models import Post
 
@@ -155,7 +155,7 @@ def update(request, post_id):
     except Post.DoesNotExist:
         return {'code': 'post/not_found', 'values': [post_id]}, 404, False
 
-    reload_source = update_from_json_data(request, item, json_data, user)
+    reload_source = update_from_json_data(request, item, data, user)
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item]), 'reload_source': reload_source}, 200, item
 

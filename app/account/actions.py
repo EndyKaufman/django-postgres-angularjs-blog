@@ -4,7 +4,8 @@ from jsonview.decorators import json_view
 from django.conf import settings
 import resource
 import validator
-
+from decorators import access
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 @json_view
 def update(request):

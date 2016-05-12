@@ -27,22 +27,22 @@ def get_code(request, text):
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
     from app.account.models import User
 
-    user = User.objects.create_user(email=json_data['email'], password=json_data['password'],
-                                    username=json_data['email'])
+    user = User.objects.create_user(email=data['email'], password=data['password'],
+                                    username=data['email'])
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.is_staff = True
     user.is_superuser = False
     user.is_active = True
     user.save()
-    user = auth.authenticate(username=user.username, password=json_data['password'])
+    user = auth.authenticate(username=user.username, password=data['password'])
 
     if user.is_active:
         user.backend = 'django.contrib.auth.backends.ModelBackend'
@@ -57,28 +57,28 @@ def create(request):
 def update(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
     user = helpers.get_user(request)
 
-    if json_data['email'] is not None:
-        user.email = json_data['email']
+    if data['email'] is not None:
+        user.email = data['email']
 
-    if json_data['password'] is not None:
-        user.set_password(json_data['password'])
+    if data['password'] is not None:
+        user.set_password(data['password'])
 
-    if json_data['username'] is not None:
-        user.username = json_data['username']
+    if data['username'] is not None:
+        user.username = data['username']
 
-    if json_data['firstname'] is not None:
-        user.first_name = json_data['firstname']
+    if data['firstname'] is not None:
+        user.first_name = data['firstname']
 
-    if json_data['lastname'] is not None:
-        user.last_name = json_data['lastname']
+    if data['lastname'] is not None:
+        user.last_name = data['lastname']
 
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.save()
@@ -101,15 +101,15 @@ def delete(request):
 def login(request):
     """Login action"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
-    user = get_item_by_email(request, json_data['email'])
+    user = get_item_by_email(request, data['email'])
 
-    user = auth.authenticate(username=user.username, password=json_data['password'])
+    user = auth.authenticate(username=user.username, password=data['password'])
 
     if user is None:
         return {'code': 'account/nodata'}, 404, False
@@ -134,15 +134,15 @@ def logout(request):
 def recovery(request):
     """Recovery action"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
     from app.account.models import Code
 
-    user = get_item_by_email(request, json_data['email'])
+    user = get_item_by_email(request, data['email'])
 
     code = Code.objects.create(text=helpers.make_code(), created_user=user, type=1)
 
@@ -156,21 +156,21 @@ def recovery(request):
     helpers.send_mail(subject='Reset password',
                       html_content=render_to_string('account/templates/reset_password.email.htm', config),
                       text_content=render_to_string('account/templates/reset_password.email.txt', config),
-                      to_email=[json_data['email']])
+                      to_email=[data['email']])
 
-    return {'code': 'ok', 'data': [json_data['email']]}, 200, user
+    return {'code': 'ok', 'data': [data['email']]}, 200, user
 
 
 def reset_password(request):
     """Reset password action"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    json_data['code'] = json_data['code'].lower()
+    data['code'] = data['code'].lower()
 
-    code = get_code(request, json_data['code'])
+    code = get_code(request, data['code'])
 
     from app.account.models import User
 
@@ -181,20 +181,20 @@ def reset_password(request):
             user = False
 
     if user.is_active and code:
-        if json_data['email'] is not None:
-            user.email = json_data['email']
+        if data['email'] is not None:
+            user.email = data['email']
 
-        if json_data['password'] is not None:
-            user.set_password(json_data['password'])
+        if data['password'] is not None:
+            user.set_password(data['password'])
 
-        if json_data['username'] is not None:
-            user.username = json_data['username']
+        if data['username'] is not None:
+            user.username = data['username']
 
-        if json_data['firstname'] is not None:
-            user.first_name = json_data['firstname']
+        if data['firstname'] is not None:
+            user.first_name = data['firstname']
 
-        if json_data['lastname'] is not None:
-            user.last_name = json_data['lastname']
+        if data['lastname'] is not None:
+            user.last_name = data['lastname']
 
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()

@@ -4,14 +4,14 @@ import resource
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['name'] is None:
+    if data['name'] is None:
         return {'code': 'meta_tag/no_name'}, 404
 
     user = helpers.get_user(request)
@@ -21,10 +21,10 @@ def create(request):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    data, code, item = resource.get_item_by_name(request, json_data['name'])
+    data, code, item = resource.get_item_by_name(request, data['name'])
 
     if item is not False:
-        return {'code': 'meta_tag/exists', 'values': [json_data['name']]}, 404, False
+        return {'code': 'meta_tag/exists', 'values': [data['name']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -32,14 +32,14 @@ def create(request):
 def update(request, meta_tag_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['name'] is None:
+    if data['name'] is None:
         return {'code': 'meta_tag/no_name'}, 404
 
     user = helpers.get_user(request)
@@ -49,10 +49,10 @@ def update(request, meta_tag_id):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    data, code, item = resource.get_item_by_name(request, json_data['name'])
+    data, code, item = resource.get_item_by_name(request, data['name'])
 
     if (item is not False) and (int(item.id) != int(meta_tag_id)):
-        return {'code': 'meta_tag/exists', 'values': [json_data['text']]}, 404, False
+        return {'code': 'meta_tag/exists', 'values': [data['text']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -60,9 +60,9 @@ def update(request, meta_tag_id):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)

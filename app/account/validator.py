@@ -6,30 +6,30 @@ from django.core.exceptions import ValidationError
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['password'] is None:
+    if data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
 
-    if json_data['email'] is None:
+    if data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
     try:
-        validate_email(json_data['email'])
+        validate_email(data['email'])
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
-    user = resource.get_item_by_email(request, json_data['email'])
+    user = resource.get_item_by_email(request, data['email'])
 
     if user:
-        return {'code': 'account/exists', 'values': [json_data['email']]}, 404, False
+        return {'code': 'account/exists', 'values': [data['email']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -37,20 +37,20 @@ def create(request):
 def update(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['email'] is None:
+    if data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
     try:
-        validate_email(json_data['email'])
+        validate_email(data['email'])
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
@@ -65,9 +65,9 @@ def update(request):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)
@@ -81,30 +81,30 @@ def delete(request):
 
 
 def login(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['password'] is None:
+    if data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
 
-    if json_data['email'] is None:
+    if data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
     try:
-        validate_email(json_data['email'])
+        validate_email(data['email'])
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
-    user = resource.get_item_by_email(request, json_data['email'])
+    user = resource.get_item_by_email(request, data['email'])
 
     if not user:
-        return {'code': 'account/user_not_found', 'values': [json_data['email']]}, 404, False
+        return {'code': 'account/user_not_found', 'values': [data['email']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -128,27 +128,27 @@ def recovery(request):
     if request.user.is_authenticated():
         return {'code': 'no_access'}, 404, False
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['email'] is None:
+    if data['email'] is None:
         return {'code': 'account/not_email'}, 404, False
 
-    json_data['email'] = json_data['email'].lower()
+    data['email'] = data['email'].lower()
 
     try:
-        validate_email(json_data['email'])
+        validate_email(data['email'])
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 
-    user = resource.get_item_by_email(request, json_data['email'])
+    user = resource.get_item_by_email(request, data['email'])
 
     if not user:
-        return {'code': 'account/user_not_found', 'values': [json_data['email']]}, 404, False
+        return {'code': 'account/user_not_found', 'values': [data['email']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -159,25 +159,25 @@ def reset_password(request):
     if request.user.is_authenticated():
         return {'code': 'no_access'}, 404, False
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['code'] is None:
+    if data['code'] is None:
         return {'code': 'account/no_code'}, 404, False
 
-    json_data['code'] = json_data['code'].lower()
+    data['code'] = data['code'].lower()
 
-    if json_data['password'] is None:
+    if data['password'] is None:
         return {'code': 'account/no_password'}, 404, False
 
-    code = resource.get_code(request, json_data['code'])
+    code = resource.get_code(request, data['code'])
 
     if not code:
-        return {'code': 'account/code_not_found', 'values': [json_data['code']]}, 404, False
+        return {'code': 'account/code_not_found', 'values': [data['code']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 

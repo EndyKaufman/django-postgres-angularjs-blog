@@ -19,17 +19,17 @@ def get_item_by_text(request, text):
 def create(request):
     """Create record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.tag.models import Tag
 
-    item, created = Tag.objects.get_or_create(text=json_data['text'])
+    item, created = Tag.objects.get_or_create(text=data['text'])
     if created:
-        item.description = json_data['description']
+        item.description = data['description']
         item.created_user = user
         item.save()
 
@@ -39,9 +39,9 @@ def create(request):
 def update(request, tag_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.tag.models import Tag
 
@@ -50,8 +50,8 @@ def update(request, tag_id):
     except Tag.DoesNotExist:
         return {'code': 'tag/not_found', 'values': [tag_id]}, 404, False
 
-    item.text = json_data['text']
-    item.description = json_data['description']
+    item.text = data['text']
+    item.description = data['description']
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

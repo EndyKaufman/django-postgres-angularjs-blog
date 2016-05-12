@@ -8,16 +8,16 @@ def get_fields():
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.manager.models import Properties
 
-    item, created = Properties.objects.get_or_create(name=json_data['name'], value=json_data['value'],
-                                                     comment=json_data['comment'],
+    item, created = Properties.objects.get_or_create(name=data['name'], value=data['value'],
+                                                     comment=data['comment'],
                                                      created_user=user, only_update=0)
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
@@ -26,11 +26,11 @@ def create(request):
 def update(request, properties_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.manager.models import Properties
 
@@ -39,9 +39,9 @@ def update(request, properties_id):
     except Properties.DoesNotExist:
         return {'code': 'properties/not_found', 'values': [properties_id]}, 404, False
 
-    item.name = json_data['name']
-    item.value = json_data['value']
-    item.comment = json_data['comment']
+    item.name = data['name']
+    item.value = data['value']
+    item.comment = data['comment']
     item.created_user = user
     item.save()
 

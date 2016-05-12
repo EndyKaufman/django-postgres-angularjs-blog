@@ -9,11 +9,11 @@ def get_fields():
 def create(request):
     """Create record"""
 
-    json_data = request.POST
+    data = request.POST
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     if request.FILES and request.FILES.get('file'):
         if user.is_superuser:
@@ -29,7 +29,7 @@ def create(request):
 
     item, created = File.objects.get_or_create(src=url)
     if created:
-        item.comment = json_data['comment']
+        item.comment = data['comment']
         item.created_user = user
         item.save()
 
@@ -39,9 +39,9 @@ def create(request):
 def update(request, file_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.file.models import File
 
@@ -50,7 +50,7 @@ def update(request, file_id):
     except File.DoesNotExist:
         return {'code': 'file/not_found', 'values': [file_id]}, 404, False
 
-    item.comment = json_data['comment']
+    item.comment = data['comment']
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

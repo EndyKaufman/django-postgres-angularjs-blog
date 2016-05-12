@@ -4,14 +4,14 @@ import resource
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['src'] is None:
+    if data['src'] is None:
         return {'code': 'public_link/no_src'}, 404
 
     user = helpers.get_user(request)
@@ -21,10 +21,10 @@ def create(request):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    data, code, item = resource.get_item_by_src(request, json_data['src'])
+    data, code, item = resource.get_item_by_src(request, data['src'])
 
     if item is not False:
-        return {'code': 'public_link/exists', 'values': [json_data['src']]}, 404, False
+        return {'code': 'public_link/exists', 'values': [data['src']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -32,14 +32,14 @@ def create(request):
 def update(request, public_link_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if json_data['src'] is None:
+    if data['src'] is None:
         return {'code': 'public_link/no_src'}, 404
 
     user = helpers.get_user(request)
@@ -49,10 +49,10 @@ def update(request, public_link_id):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    data, code, item = resource.get_item_by_src(request, json_data['src'])
+    data, code, item = resource.get_item_by_src(request, data['src'])
 
     if (item is not False) and (int(item.id) != int(public_link_id)):
-        return {'code': 'public_link/exists', 'values': [json_data['text']]}, 404, False
+        return {'code': 'public_link/exists', 'values': [data['text']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -60,9 +60,9 @@ def update(request, public_link_id):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)

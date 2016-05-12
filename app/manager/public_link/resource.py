@@ -8,19 +8,19 @@ def get_fields():
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.manager.models import PublicLink
 
-    item, created = PublicLink.objects.get_or_create(src=json_data['src'], title=json_data['title'],
-                                                     icon=json_data['icon'], in_header=json_data['in_header'],
-                                                     in_footer=json_data['in_footer'],
-                                                     position=json_data['position'],
-                                                     in_contact=json_data['in_contact'],
+    item, created = PublicLink.objects.get_or_create(src=data['src'], title=data['title'],
+                                                     icon=data['icon'], in_header=data['in_header'],
+                                                     in_footer=data['in_footer'],
+                                                     position=data['position'],
+                                                     in_contact=data['in_contact'],
                                                      created_user=user)
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
@@ -29,11 +29,11 @@ def create(request):
 def update(request, public_link_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.manager.models import PublicLink
 
@@ -42,13 +42,13 @@ def update(request, public_link_id):
     except PublicLink.DoesNotExist:
         return {'code': 'public_link/not_found', 'values': [public_link_id]}, 404, False
 
-    item.src = json_data['src']
-    item.title = json_data['title']
-    item.icon = json_data['icon']
-    item.in_header = json_data['in_header']
-    item.in_footer = json_data['in_footer']
-    item.position = json_data['position']
-    item.in_contact = json_data['in_contact']
+    item.src = data['src']
+    item.title = data['title']
+    item.icon = data['icon']
+    item.in_header = data['in_header']
+    item.in_footer = data['in_footer']
+    item.position = data['position']
+    item.in_contact = data['in_contact']
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

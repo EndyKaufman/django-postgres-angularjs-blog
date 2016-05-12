@@ -8,17 +8,17 @@ def get_fields():
 
 
 def create(request):
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.manager.models import MetaTag
 
-    item, created = MetaTag.objects.get_or_create(name=json_data['name'], content=json_data['content'],
-                                                  attributes=json_data['attributes'],
-                                                  position=json_data['position'], created_user=user)
+    item, created = MetaTag.objects.get_or_create(name=data['name'], content=data['content'],
+                                                  attributes=data['attributes'],
+                                                  position=data['position'], created_user=user)
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
@@ -26,11 +26,11 @@ def create(request):
 def update(request, meta_tag_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
     user = helpers.get_user(request)
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, get_fields())
+    data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     from app.manager.models import MetaTag
 
@@ -39,10 +39,10 @@ def update(request, meta_tag_id):
     except MetaTag.DoesNotExist:
         return {'code': 'meta_tag/not_found', 'values': [meta_tag_id]}, 404, False
 
-    item.name = json_data['name']
-    item.content = json_data['content']
-    item.attributes = json_data['attributes'],
-    item.position = json_data['position']
+    item.name = data['name']
+    item.content = data['content']
+    item.attributes = data['attributes'],
+    item.position = data['position']
     item.created_user = user
     item.save()
     

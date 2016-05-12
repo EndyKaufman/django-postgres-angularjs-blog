@@ -52,15 +52,6 @@ def set_null_values_if_not_exist(data, keys, null_value=None):
     return data
 
 
-def get_json(request):
-    json_data = False
-
-    if request.method == 'POST':
-        json_data = json.loads(request.body)
-
-    return json_data
-
-
 def get_thumbnail(src):
     import re
 

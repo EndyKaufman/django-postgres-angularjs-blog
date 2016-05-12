@@ -2,7 +2,7 @@
 
 from django.shortcuts import render
 from django.conf import settings
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, requires_csrf_token
 import json
 from app.manager.meta_tag import resource as meta_tag_resource
 from app.manager.properties import resource as properties_resource

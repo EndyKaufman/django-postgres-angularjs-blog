@@ -5,9 +5,9 @@ from project import helpers
 def create(request):
     """Create record"""
 
-    json_data = request.POST
+    data = request.POST
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)
@@ -23,9 +23,9 @@ def create(request):
 def update(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)
@@ -41,9 +41,9 @@ def update(request):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)

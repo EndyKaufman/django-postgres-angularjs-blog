@@ -7,24 +7,24 @@ import resource
 def send(request):
     """Send message"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
-    json_data = helpers.set_null_values_if_not_exist(json_data, resource.get_fields())
-    json_data['email'] = json_data['email'].lower()
+    data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
+    data['email'] = data['email'].lower()
 
-    if json_data['email'] == '':
+    if data['email'] == '':
         return {'code': 'contact/not_email'}, 404, False
-    if json_data['username'] == '':
+    if data['username'] == '':
         return {'code': 'contact/nousername'}, 404, False
-    if json_data['message'] == '':
+    if data['message'] == '':
         return {'code': 'contact/nomessage'}, 404, False
 
     # Validate values of fields
     try:
-        validate_email(json_data['email'])
+        validate_email(data['email'])
     except ValidationError:
         return {'code': 'account/wrong_email'}, 404, False
 

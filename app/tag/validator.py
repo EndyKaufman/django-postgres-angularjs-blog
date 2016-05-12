@@ -6,9 +6,9 @@ import resource
 def create(request):
     """Create record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)
@@ -18,10 +18,10 @@ def create(request):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    item = resource.get_item_by_text(request, json_data['text'])
+    item = resource.get_item_by_text(request, data['text'])
 
     if item is not False:
-        return {'code': 'tag/exists', 'values': [json_data['text']]}, 404, False
+        return {'code': 'tag/exists', 'values': [data['text']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -29,9 +29,9 @@ def create(request):
 def update(request, tag_id):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)
@@ -41,10 +41,10 @@ def update(request, tag_id):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    item = resource.get_item_by_text(request, json_data['text'])
+    item = resource.get_item_by_text(request, data['text'])
 
     if (item is not False) and (int(item.id) != int(tag_id)):
-        return {'code': 'tag/exists', 'values': [json_data['text']]}, 404, False
+        return {'code': 'tag/exists', 'values': [data['text']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -52,9 +52,9 @@ def update(request, tag_id):
 def delete(request):
     """Update record"""
 
-    json_data = helpers.get_json(request)
+    data = request.DATA
 
-    if json_data is False:
+    if data is False:
         return {'code': 'no_data'}, 404, False
 
     user = helpers.get_user(request)
