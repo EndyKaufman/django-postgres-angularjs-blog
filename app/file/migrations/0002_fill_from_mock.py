@@ -21,7 +21,10 @@ def fill_from_mock(apps, schema_editor):
     File = apps.get_model("file", "File")
 
     for record in records:
-        file, created = File.objects.get_or_create(pk=record['id'], src=record['src'], comment=record['comment'])
+        file, created = File.objects.get_or_create(pk=record['id'], src=record['src'])
+        file.comment = record['comment']
+        file.save()
+        helpers.get_thumbnail(record['src'])
 
 
 class Migration(migrations.Migration):

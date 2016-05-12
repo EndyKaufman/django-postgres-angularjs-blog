@@ -10,6 +10,7 @@ import string
 import random
 import hashlib
 import os.path
+import os
 import shutil
 from transliterate import slugify
 
@@ -60,6 +61,26 @@ def get_json(request):
     return json_data
 
 
+def get_thumbnail(src):
+    import re
+
+    size = 250
+
+    r_image = re.compile(r".*\.(jpg|png|gif)$")
+    if not r_image.match(src):
+        return False
+
+    from easy_thumbnails.files import get_thumbnailer
+    try:
+        thumbnailer = get_thumbnailer(src)
+        thumbnail_options = {'upscale': True}
+        thumbnail_options['size'] = (size, 0)
+        thumb = thumbnailer.get_thumbnail(thumbnail_options)
+        return thumb
+    except:
+        return False
+
+
 def mkdir_recursive(path, remove_if_exists=False):
     if remove_if_exists and os.path.isdir(path):
         shutil.rmtree(path)
@@ -86,9 +107,15 @@ def copy_dir_recursive(src, dest, ignore=None, remove_if_exists=False):
 
 def remove_file(path):
     if os.path.isfile(path):
+        thumbnail = get_thumbnail(path)
+        if thumbnail:
+            os.remove(thumbnail.url)
         os.remove(path)
     else:
         path = settings.MEDIA_ROOT + '/' + path
+        thumbnail = get_thumbnail(path)
+        if thumbnail:
+            os.remove(thumbnail.url)
         if os.path.isfile(path):
             os.remove(path)
 
@@ -196,7 +223,11 @@ def objects_to_json(request, items):
                 else:
                     try:
                         result['%s_url' % static_field] = 'http://%s%s%s' % (
-                        request.get_host(), settings.MEDIA_URL, field_value)
+                            request.get_host(), settings.MEDIA_URL, field_value)
+                        thumbnail = get_thumbnail(field_value)
+                        if thumbnail:
+                            result['%s_thumbnail_url' % static_field] = 'http://%s%s%s' % (
+                                request.get_host(), settings.MEDIA_URL, thumbnail)
                     except:
                         result['%s_url' % static_field] = ''
 

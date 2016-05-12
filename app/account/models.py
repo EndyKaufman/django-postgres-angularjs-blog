@@ -3,12 +3,11 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db import models
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+
 
 # User model
 class User(AbstractUser):
-    def getUserData(self):
+    def get_ser_data(self):
 
         roles = []
 
@@ -28,6 +27,7 @@ class User(AbstractUser):
             "lastname": self.last_name,
             "roles": roles
         }
+
 
 # Code model
 class Code(models.Model):

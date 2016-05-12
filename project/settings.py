@@ -91,6 +91,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'storages',
     'jsonview',
+    'easy_thumbnails',
     'django_seo_js',
     'app.account',
     'app.file',
@@ -223,3 +224,5 @@ SEO_JS_USER_AGENTS = [
     'Facebot',
     "Twitterbot"
 ]
+
+THUMBNAIL_SUBDIR = 'thumbnail'

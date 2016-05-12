@@ -48,7 +48,7 @@ def create(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': [user.getUserData()]}, 200, user
+        return {'code': 'ok', 'data': [user.get_ser_data()]}, 200, user
     else:
         auth.logout(request)
         return {'code': 'account/not_active'}, 404, user
@@ -83,7 +83,7 @@ def update(request):
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.save()
 
-    return {'code': 'ok', 'data': [user.getUserData()]}, 200, user
+    return {'code': 'ok', 'data': [user.get_ser_data()]}, 200, user
 
 
 def delete(request):
@@ -118,7 +118,7 @@ def login(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': [user.getUserData()]}, 200, user
+        return {'code': 'ok', 'data': [user.get_ser_data()]}, 200, user
     else:
         auth.logout(request)
         return {'code': 'account/not_active'}, 404, False
