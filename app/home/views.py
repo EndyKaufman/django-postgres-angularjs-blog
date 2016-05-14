@@ -48,7 +48,7 @@ def index(request):
 
 def robots_txt(request):
     """Robots.txt page"""
-    properties_list = properties_helpers.getListOfNames(
+    properties_list = properties_resource.get_list_of_names(
         ['ROBOT_TXT'])
     return render(request, 'home/templates/%s/robots.txt' % settings.THEME, {'properties_list': properties_list})
 
