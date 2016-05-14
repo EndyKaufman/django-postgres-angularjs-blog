@@ -19,15 +19,15 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 import sys
-import app.file
+import app.file.urls
 import app.account.urls
 import app.account.oauth_urls
-import app.tag
-import app.project
-import app.contact
-import app.post
-import app.manager
-import app.user_app
+import app.tag.urls
+import app.project.urls
+import app.contact.urls
+import app.post.urls
+import app.manager.urls
+import app.user_app.urls
 import app.home.views
 import app.home
 
@@ -42,14 +42,14 @@ urlpatterns = urlpatterns + [
 app_list = ['file', 'account', 'tag', 'project', 'post', 'contact', 'manager', 'user_app']
 
 urlpatterns = urlpatterns + [
-    url(r'^api/v1/file/', include(app.file)),
+    url(r'^api/v1/file/', include(app.file.urls)),
     url(r'^api/v1/account/', include(app.account.urls)),
-    url(r'^api/v1/tag/', include(app.tag)),
-    url(r'^api/v1/project/', include(app.project)),
-    url(r'^api/v1/post/', include(app.post)),
-    url(r'^api/v1/contact/', include(app.contact)),
-    url(r'^api/v1/manager/', include(app.manager)),
-    url(r'^api/v1/user_app/', include(app.user_app))]
+    url(r'^api/v1/tag/', include(app.tag.urls)),
+    url(r'^api/v1/project/', include(app.project.urls)),
+    url(r'^api/v1/post/', include(app.post.urls)),
+    url(r'^api/v1/contact/', include(app.contact.urls)),
+    url(r'^api/v1/manager/', include(app.manager.urls)),
+    url(r'^api/v1/user_app/', include(app.user_app.urls))]
 
 urlpatterns = urlpatterns + [
     url(r'^oauth2/', include('app.account.oauth_urls', namespace='oauth2_provider')),
