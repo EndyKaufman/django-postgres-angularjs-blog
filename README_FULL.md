@@ -63,7 +63,7 @@ sudo bower install --save --allow-root
 source venv/bin/activate
 export $(cat .env)
 python manage.py collectstatic --noinput
-gunicorn project.wsgi -b 0.0.0.0:5000
+gunicorn project.wsgi -b 0.0.0.0:5000 --workers 3
 ```
 
 open on browser url http://127.0.0.1:5000 in local pc
@@ -179,7 +179,7 @@ vagrant ssh
 cd ../../vagrant
 source venv/bin/activate
 export $(cat .env)
-gunicorn project.wsgi -b 0.0.0.0:5000
+gunicorn project.wsgi -b 0.0.0.0:5000 --workers 3
 ```
 
 ## run tests on vagrant
@@ -298,3 +298,9 @@ heroku run python manage.py migrate --app django-postgres-angularjs-blog
 heroku run python manage.py createsuperuser --app django-postgres-angularjs-blog
 ```
 
+## sample work with oauth2 server
+```
+curl -X POST -d "grant_type=password&username=user&password=user@email.com" -u"mFyx5LYIpFgeH6e8NkZgNGBkpHRVCiVEBqQJ3yk6:tDzxylGEuiOTf7ht6dVjr3MZhR9gZqSFWSVIvKxBzGcUizpZhuwE9AN30VMWojrwvrI5HILMPVKxpdLzOJEhVanVzFoKfo7XfoP0A1SCbiTXOX718KWrdvTk1sr9PcFg" http://127.0.0.1:5000/oauth2/token/
+curl -X POST -d "grant_type=password&username=user&password=user@email.com&client_id=mFyx5LYIpFgeH6e8NkZgNGBkpHRVCiVEBqQJ3yk6&client_secret=tDzxylGEuiOTf7ht6dVjr3MZhR9gZqSFWSVIvKxBzGcUizpZhuwE9AN30VMWojrwvrI5HILMPVKxpdLzOJEhVanVzFoKfo7XfoP0A1SCbiTXOX718KWrdvTk1sr9PcFg" http://127.0.0.1:5000/oauth2/token/
+curl 'http://localhost:5000/api/v1/account/update' -H "Authorization: Bearer fLzfISwHUzmpU0I1JyZ6ocfM8ht7G1" --data-binary '{"firstname":"FirstAdminName", "email":"user@email.com"}'
+```

@@ -5,7 +5,7 @@ from django.conf import settings
 import resource
 import validator
 from decorators import access
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib.auth.decorators import login_required
 
 @json_view
 def update(request):

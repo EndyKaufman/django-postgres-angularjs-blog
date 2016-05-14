@@ -78727,6 +78727,11 @@ app.constant('AccountConst',{
         name: 'profile',
         description: 'Profile of user'
     },
+    user_app:{
+        title: 'User app',
+        name: 'user_app',
+        description: 'User app of user'
+    },
     recovery:{
         title: 'Recovery access',
         name: 'recovery',
@@ -78914,6 +78919,20 @@ HomeConst, AccountConst, TagConst, ProjectConst, PostConst, SearchConst, Contact
   });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
+      .when('/profile', {
+        templateUrl: 'views/account/profile.html',
+        controller: 'ProfileCtrl',
+        params:{
+            navId: 'profile'
+        }
+      })
+      .when('/user_app', {
+        templateUrl: 'views/account/user_app.html',
+        controller: 'UserAppCtrl',
+        params:{
+            navId: 'user_app'
+        }
+      })
       .when('/reg', {
         templateUrl: 'views/account/reg.html',
         controller: 'AccountCtrl',
@@ -78947,13 +78966,6 @@ app.config(function ($routeProvider, $locationProvider) {
         controller: 'AccountCtrl',
         params:{
             navId: 'login'
-        }
-      })
-      .when('/profile', {
-        templateUrl: 'views/account/profile.html',
-        controller: 'AccountCtrl',
-        params:{
-            navId: 'profile'
         }
       });
 });
@@ -79698,6 +79710,219 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/account/user_app/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="UserAppCtrl">\n' +
+    '            <form name="user_appForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/account/user_app/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="user_appUpdateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!user_appForm.$valid" id="user_appUpdateConfirm">\n' +
+    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/account/user_app/list.html', '<table class="table table-hover">\n' +
+    '    <thead>\n' +
+    '    <tr>\n' +
+    '        <th>#</th>\n' +
+    '        <th>Name</th>\n' +
+    '        <th>Client ID</th>\n' +
+    '        <th class="text-right" style="width:200px">Actions</th>\n' +
+    '    </tr>\n' +
+    '    </thead>\n' +
+    '    <tbody>\n' +
+    '    <tr ng-repeat="item in UserAppSvc.list | orderBy:\'position\'"\n' +
+    '        ng-class="(UserAppSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind="item.id" ng-click="UserAppSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.name" ng-click="UserAppSvc.selectItem(item)"></td>\n' +
+    '        <td class="break-word" ng-bind="item.client_id" ng-click="UserAppSvc.selectItem(item)"></td>\n' +
+    '        <td class="text-right">\n' +
+    '            <button ng-click="UserAppSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'user_app\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
+    '            </button>\n' +
+    '            <button ng-click="UserAppSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'user_app\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '            </button>\n' +
+    '        </td>\n' +
+    '    </tr>\n' +
+    '    </tbody>\n' +
+    '</table>');
+	a.put('views/account/user_app/list-header.html', '<span ng-bind="AccountSvc.title"></span>\n' +
+    '<button ng-click="UserAppSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
+    '        type="button" id="user_appCreate">\n' +
+    '    <i class="fa fa-plus"></i> Create\n' +
+    '</button>');
+	a.put('views/account/user_app/inputs.html', '<div class="form-group">\n' +
+    '    <label for="UserAppName">Name</label>\n' +
+    '    <input class="form-control" type="text" id="UserAppName" ng-model="UserAppSvc.item.name"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="UserAppClientId">Client ID</label>\n' +
+    '    <input type="text" class="form-control" id="UserAppClientId"\n' +
+    '           ng-model="UserAppSvc.item.client_id" disabled/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="UserAppClientSecret">Client secret</label>\n' +
+    '    <input type="text" class="form-control" id="UserAppClientSecret"\n' +
+    '           ng-model="UserAppSvc.item.client_secret" disabled/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="UserAppClientRedirectUris">Redirect uris</label>\n' +
+    '    <input type="text" class="form-control" id="UserAppClientRedirectUris"\n' +
+    '           ng-model="UserAppSvc.item.redirect_uris" placeholder="Allowed URIs list, space separated"/>\n' +
+    '</div>');
+	a.put('views/account/user_app/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="UserAppCtrl">\n' +
+    '            <form name="user_appForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/account/user_app/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="user_appCreateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!user_appForm.$valid" id="user_appCreateConfirm">\n' +
+    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/account/resetpassword/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="code">Code:</label>\n' +
+    '    <input type="text" class="form-control" name="code" id="code"\n' +
+    '           placeholder="code from email"\n' +
+    '           ng-model="AccountSvc.item.code" required>\n' +
+    '                                <span ng-show="accountForm.$submitted || accountForm.code.$touched"\n' +
+    '                                      class="form-control-feedback"\n' +
+    '                                      ng-class="!accountForm.code.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                      aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="password">New password:</label>\n' +
+    '    <input type="password" class="form-control" name="password" id="password"\n' +
+    '           placeholder="new password"\n' +
+    '           ng-model="AccountSvc.item.password" required>\n' +
+    '                                <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
+    '                                      class="form-control-feedback"\n' +
+    '                                      ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                      aria-hidden="true"></span>\n' +
+    '</div>');
+	a.put('views/account/reg/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="email">Email</label>\n' +
+    '    <input type="email" class="form-control" name="email" id="email"\n' +
+    '           ng-model="AccountSvc.item.email" required>\n' +
+    '                                        <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
+    '                                              class="form-control-feedback"\n' +
+    '                                              ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                              aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="password">Password</label>\n' +
+    '    <input type="password" class="form-control" name="password" id="password"\n' +
+    '           ng-model="AccountSvc.item.password" required>\n' +
+    '                                        <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
+    '                                              class="form-control-feedback"\n' +
+    '                                              ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                              aria-hidden="true"></span>\n' +
+    '</div>');
+	a.put('views/account/recovery/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="email">Email:</label>\n' +
+    '    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
+    '           ng-model="AccountSvc.item.email" required>\n' +
+    '                            <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
+    '                                  class="form-control-feedback"\n' +
+    '                                  ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                  aria-hidden="true"></span>\n' +
+    '</div>');
+	a.put('views/account/profile/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="firstname">First name</label>\n' +
+    '    <input type="text" class="form-control" name="firstname" id="firstname"\n' +
+    '           ng-model="ProfileSvc.item.firstname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.firstname.$touched"\n' +
+    '                          class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="lastname">Last name</label>\n' +
+    '    <input type="text" class="form-control" name="lastname" id="lastname"\n' +
+    '           ng-model="ProfileSvc.item.lastname">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.lastname.$touched"\n' +
+    '                          class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="username">Username</label>\n' +
+    '    <input type="text" class="form-control" name="username" id="username"\n' +
+    '           ng-model="ProfileSvc.item.username" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.username.$touched"\n' +
+    '                          class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="email">Email</label>\n' +
+    '    <input type="email" class="form-control" name="email" id="email"\n' +
+    '           ng-model="ProfileSvc.item.email" required>\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="password">Password</label>\n' +
+    '    <input type="password" class="form-control" name="password" id="password"\n' +
+    '           ng-model="ProfileSvc.item.password"\n' +
+    '           placeholder="if empty, the password will not be changed">\n' +
+    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
+    '                          class="form-control-feedback"\n' +
+    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                          aria-hidden="true"></span>\n' +
+    '</div>');
+	a.put('views/account/login/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="email">Email:</label>\n' +
+    '    <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
+    '           ng-model="AccountSvc.item.email" required>\n' +
+    '                                <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
+    '                                      class="form-control-feedback"\n' +
+    '                                      ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                      aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="password">Password:</label>\n' +
+    '    <input type="password" class="form-control" name="password" id="password"\n' +
+    '           placeholder="password"\n' +
+    '           ng-model="AccountSvc.item.password" required>\n' +
+    '                                <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
+    '                                      class="form-control-feedback"\n' +
+    '                                      ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                      aria-hidden="true"></span>\n' +
+    '</div>');
 	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -79734,24 +79959,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/home/sidebar.html\'"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -79801,24 +80009,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/home/sidebar.html\'"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -79890,6 +80081,23 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//row-->\n' +
     '    </form>\n' +
     '</div><!--//masonry-->');
+	a.put('views/project/sidebar.html', '<aside class="info aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading sr-only">Search</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/search.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//aside-->\n' +
+    '\n' +
+    '<aside class="list tags aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading">Tags</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//section-->');
 	a.put('views/project/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -79908,24 +80116,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/project/sidebar.html\'"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -80172,6 +80363,23 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//row-->\n' +
     '    </form>\n' +
     '</div><!--//masonry-->');
+	a.put('views/post/sidebar.html', '<aside class="info aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading sr-only">Search</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/search.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//aside-->\n' +
+    '\n' +
+    '<aside class="list tags aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading">Tags</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//section-->');
 	a.put('views/post/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -80190,24 +80398,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/post/sidebar.html\'"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -80490,36 +80681,20 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list manager-menu aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Menu</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/manager/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/manager/sidebar.html\'" ng-controller="ManagerSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
+	a.put('views/manager/sidebar.html', '<aside class="list additionally aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading">Additionally</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/manager/menu.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//section-->\n' +
+    '\n' +
+    '<div ng-include="\'views/home/sidebar.html\'"></div>');
 	a.put('views/manager/public_link.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
     '    <div class="row">\n' +
@@ -80536,33 +80711,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list manager-menu aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Menu</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/manager/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/manager/sidebar.html\'" ng-controller="ManagerSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -80582,33 +80731,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list manager-menu aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Menu</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/manager/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/manager/sidebar.html\'" ng-controller="ManagerSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -80628,33 +80751,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list manager-menu aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Menu</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/manager/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/manager/sidebar.html\'" ng-controller="ManagerSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -80684,6 +80781,23 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '           ng-bind="AppConst.manager.users.title"></a>\n' +
     '    </li>\n' +
     '</ul>');
+	a.put('views/home/sidebar.html', '<aside class="info aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading sr-only">Search</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/search.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//aside-->\n' +
+    '\n' +
+    '<aside class="list tags aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading">Tags</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//section-->');
 	a.put('views/home/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -80708,24 +80822,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            </section><!--//section-->\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/home/sidebar.html\'" ng-controller="SidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -80747,13 +80844,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div><!--//item-->\n' +
     '<a class="btn btn-cta-secondary" ng-href="/post">All posts <i\n' +
     '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/home/content.html', '<div class="container">\n' +
-    '    <div class="page-header">\n' +
-    '        <h1>Page header</h1>\n' +
-    '    </div>\n' +
-    '    <p class="lead">Description of page <code>source code</code> and others text.</p>\n' +
-    '    <p>Text for link <a href="http://google.com">i am link</a> others text.</p>\n' +
-    '</div>');
 	a.put('views/file/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
     '        <div class="modal-content" ng-controller="FileCtrl">\n' +
@@ -80892,6 +80982,17 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/contact/sidebar.html', '<aside class="list manager-contact aside section" ng-if="PublicLinkSvc.list.length>0">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading">Other</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/contact/links.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//section-->\n' +
+    '\n' +
+    '<div ng-include="\'views/home/sidebar.html\'"></div>\n' +
+    '');
 	a.put('views/contact/list.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -80939,33 +81040,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list manager-contact aside section" ng-if="PublicLinkSvc.list.length>0">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Other</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/contact/links.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/contact/sidebar.html\'"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -80973,7 +81048,38 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <li ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_contact"><i ng-class="item.icon"></i> <a\n' +
     '            ng-href="{{item.src}}" target="_blank" ng-bind="item.title"></a></li>\n' +
     '</ul>');
-	a.put('views/account/resetpassword.html', '<div class="container sections-wrapper">\n' +
+	a.put('views/account/user_app.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isLogged()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="AccountSvc.isLogged()">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-include="\'views/account/user_app/list-header.html\'">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/account/user_app/list.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <div ng-include="\'views/account/sidebar.html\'" ng-controller="AccountSidebarCtrl"></div>\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-');
+	a.put('views/account/sidebar.html', '<aside class="list additionally aside section">\n' +
+    '    <div class="section-inner">\n' +
+    '        <h2 class="heading">Additionally</h2>\n' +
+    '        <div class="content">\n' +
+    '            <div ng-include="\'views/account/menu.html\'"></div>\n' +
+    '        </div><!--//content-->\n' +
+    '    </div><!--//section-inner-->\n' +
+    '</aside><!--//section-->\n' +
+    '\n' +
+    '<div ng-include="\'views/home/sidebar.html\'"></div>');
+	a.put('views/account/resetpassword.html', '<div ng-include="\'views/not-access.html\'" ng-if="AccountSvc.isLogged()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="!AccountSvc.isLogged()">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
@@ -80982,28 +81088,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <p>Please enter code from email and new password for you account</p>\n' +
-    '                        <form ng-submit="AccountSvc.doResetpassword(code, password)" name="accountForm"\n' +
-    '                              ng-init="code=$routeParams.code">\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="code">Code:</label>\n' +
-    '                                <input type="text" class="form-control" name="code" id="code"\n' +
-    '                                       placeholder="code from email"\n' +
-    '                                       ng-model="code" required>\n' +
-    '                                <span ng-show="accountForm.$submitted || accountForm.code.$touched"\n' +
-    '                                      class="form-control-feedback"\n' +
-    '                                      ng-class="!accountForm.code.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                      aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="password">New password:</label>\n' +
-    '                                <input type="password" class="form-control" name="password" id="password"\n' +
-    '                                       placeholder="new password"\n' +
-    '                                       ng-model="password" required>\n' +
-    '                                <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
-    '                                      class="form-control-feedback"\n' +
-    '                                      ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                      aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
+    '                        <form ng-submit="AccountSvc.doResetpassword()" name="accountForm">\n' +
+    '                            <div ng-include="\'views/account/resetpassword/inputs.html\'"></div>\n' +
     '                            <button type="submit" class="btn btn btn-cta-secondary" ng-disabled="!accountForm.$valid"\n' +
     '                                    id="accountResetpassword">Save password and login\n' +
     '                                on site\n' +
@@ -81015,37 +81101,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list additionally aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Additionally</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/account/sidebar.html\'" ng-controller="AccountSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
-	a.put('views/account/reg.html', '<div class="container sections-wrapper">\n' +
+	a.put('views/account/reg.html', '<div ng-include="\'views/not-access.html\'" ng-if="AccountSvc.isLogged()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="!AccountSvc.isLogged()">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
@@ -81054,25 +81115,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <form name="accountForm">\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="email">Email</label>\n' +
-    '                                <input type="email" class="form-control" name="email" id="email"\n' +
-    '                                       ng-model="AccountSvc.item.email" required>\n' +
-    '                                        <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
-    '                                              class="form-control-feedback"\n' +
-    '                                              ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                              aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="password">Password</label>\n' +
-    '                                <input type="password" class="form-control" name="password" id="password"\n' +
-    '                                       ng-model="AccountSvc.item.password" required>\n' +
-    '                                        <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
-    '                                              class="form-control-feedback"\n' +
-    '                                              ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                              aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <button ng-click="AccountSvc.doReg(AccountSvc.item)" class="btn btn-cta-secondary"\n' +
+    '                            <div ng-include="\'views/account/reg/inputs.html\'"></div>\n' +
+    '                            <button ng-click="AccountSvc.doReg()" class="btn btn-cta-secondary"\n' +
     '                                    ng-disabled="!accountForm.$valid" id="accountReg">Create\n' +
     '                            </button>\n' +
     '                        </form>\n' +
@@ -81082,37 +81126,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list additionally aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Additionally</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/account/sidebar.html\'" ng-controller="AccountSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
-	a.put('views/account/recovery.html', '<div class="container sections-wrapper">\n' +
+	a.put('views/account/recovery.html', '<div ng-include="\'views/not-access.html\'" ng-if="AccountSvc.isLogged()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="!AccountSvc.isLogged()">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
@@ -81121,16 +81140,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <p>Please enter you email address used on registration</p>\n' +
-    '                        <form ng-submit="AccountSvc.doRecovery(email)" name="accountForm">\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="email">Email:</label>\n' +
-    '                                <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
-    '                                       ng-model="email" required>\n' +
-    '                            <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
-    '                                  class="form-control-feedback"\n' +
-    '                                  ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                  aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
+    '                        <form ng-submit="AccountSvc.doRecovery()" name="accountForm">\n' +
+    '                            <div ng-include="\'views/account/recovery/inputs.html\'"></div>\n' +
     '                            <button type="submit" class="btn btn btn-cta-secondary" ng-disabled="!accountForm.$valid"\n' +
     '                                    id="accountRecovery"><i class="fa fa-envelope-o"></i> Sent link to reset password\n' +
     '                            </button>\n' +
@@ -81141,37 +81152,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list additionally aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Additionally</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/account/sidebar.html\'" ng-controller="AccountSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
-	a.put('views/account/profile.html', '<div class="container sections-wrapper">\n' +
+	a.put('views/account/profile.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isLogged()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="AccountSvc.isLogged()">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
@@ -81180,56 +81166,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <form name="accountForm">\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="firstname">First name</label>\n' +
-    '                                <input type="text" class="form-control" name="firstname" id="firstname"\n' +
-    '                                       ng-model="AccountSvc.item.firstname">\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.firstname.$touched"\n' +
-    '                          class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.firstname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="lastname">Last name</label>\n' +
-    '                                <input type="text" class="form-control" name="lastname" id="lastname"\n' +
-    '                                       ng-model="AccountSvc.item.lastname">\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.lastname.$touched"\n' +
-    '                          class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.lastname.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="username">Username</label>\n' +
-    '                                <input type="text" class="form-control" name="username" id="username"\n' +
-    '                                       ng-model="AccountSvc.item.username" required>\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.username.$touched"\n' +
-    '                          class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.username.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="email">Email</label>\n' +
-    '                                <input type="email" class="form-control" name="email" id="email"\n' +
-    '                                       ng-model="AccountSvc.item.email" required>\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.email.$touched" class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="password">Password</label>\n' +
-    '                                <input type="password" class="form-control" name="password" id="password"\n' +
-    '                                       ng-model="AccountSvc.item.password"\n' +
-    '                                       placeholder="if empty, the password will not be changed">\n' +
-    '                    <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
-    '                          class="form-control-feedback"\n' +
-    '                          ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                          aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <button ng-click="AccountSvc.doUpdate(AccountSvc.item)" class="btn btn-cta-secondary"\n' +
+    '                            <div ng-include="\'views/account/profile/inputs.html\'"></div>\n' +
+    '                            <button ng-click="ProfileSvc.doUpdate(ProfileSvc.item)" class="btn btn-cta-secondary"\n' +
     '                                    ng-disabled="!accountForm.$valid" id="accountSave">\n' +
     '                                <i class="fa fa-floppy-o"></i> Save\n' +
     '                            </button>\n' +
-    '                            <button ng-click="AccountSvc.doDelete()" class="btn btn-cta-red" id="accountDelete"><i\n' +
+    '                            <button ng-click="ProfileSvc.doDelete()" class="btn btn-cta-red" id="accountDelete"><i\n' +
     '                                    class="fa fa-trash"></i> Delete\n' +
     '                                account\n' +
     '                            </button>\n' +
@@ -81240,41 +81182,33 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/account/sidebar.html\'" ng-controller="AccountSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
 	a.put('views/account/menu.html', '<ul class="list-unstyled">\n' +
-    '    <li ng-if="$routeParams.navId!=\'login\'">\n' +
+    '    <li ng-if="$routeParams.navId!=\'profile\' && AccountSvc.isLogged()">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/profile" ng-bind="AppConst.account.profile.title"></a>\n' +
+    '    </li>\n' +
+    '    <li ng-if="$routeParams.navId!=\'user_app\' && AccountSvc.isLogged()">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/user_app" ng-bind="AppConst.account.user_app.title"></a>\n' +
+    '    </li>\n' +
+    '    <li ng-if="$routeParams.navId!=\'login\' && !AccountSvc.isLogged()">\n' +
     '        <i class="fa fa-link"></i>\n' +
     '        <a ng-href="/login" ng-bind="AppConst.account.login.title"></a>\n' +
     '    </li>\n' +
-    '    <li ng-if="$routeParams.navId!=\'reg\'">\n' +
+    '    <li ng-if="$routeParams.navId!=\'reg\' && !AccountSvc.isLogged()">\n' +
     '        <i class="fa fa-link"></i>\n' +
     '        <a ng-href="/reg" ng-bind="AppConst.account.reg.title"></a>\n' +
     '    </li>\n' +
-    '    <li ng-if="$routeParams.navId!=\'recovery\'">\n' +
+    '    <li ng-if="$routeParams.navId!=\'recovery\' && !AccountSvc.isLogged()">\n' +
     '        <i class="fa fa-link"></i>\n' +
     '        <a ng-href="/recovery" ng-bind="AppConst.account.recovery.title"></a></li>\n' +
     '</ul>');
-	a.put('views/account/login.html', '<div class="container sections-wrapper">\n' +
+	a.put('views/account/login.html', '<div ng-include="\'views/not-access.html\'" ng-if="AccountSvc.isLogged()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="!AccountSvc.isLogged()">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
     '            <section class="latest section">\n' +
@@ -81283,26 +81217,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </h1>\n' +
     '                    <div class="content">\n' +
     '                        <p>Please enter you email address and password for login on site</p>\n' +
-    '                        <form ng-submit="AccountSvc.doLogin(email, password)" name="accountForm">\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="email">Email:</label>\n' +
-    '                                <input type="email" class="form-control" name="email" id="email" placeholder="email"\n' +
-    '                                       ng-model="email" required>\n' +
-    '                                <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
-    '                                      class="form-control-feedback"\n' +
-    '                                      ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                      aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
-    '                            <div class="form-group has-feedback" show-errors>\n' +
-    '                                <label for="password">Password:</label>\n' +
-    '                                <input type="password" class="form-control" name="password" id="password"\n' +
-    '                                       placeholder="password"\n' +
-    '                                       ng-model="password" required>\n' +
-    '                                <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
-    '                                      class="form-control-feedback"\n' +
-    '                                      ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                      aria-hidden="true"></span>\n' +
-    '                            </div>\n' +
+    '                        <form ng-submit="AccountSvc.doLogin()" name="accountForm">\n' +
+    '                            <div ng-include="\'views/account/login/inputs.html\'"></div>\n' +
     '                            <button type="submit" class="btn btn-cta-secondary" ng-disabled="!accountForm.$valid"\n' +
     '                                    id="accountLogin">\n' +
     '                                Login\n' +
@@ -81314,33 +81230,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="list additionally aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Additionally</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/account/menu.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/account/sidebar.html\'" ng-controller="AccountSidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -81371,24 +81261,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/home/sidebar.html\'" ng-controller="SidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -81406,24 +81279,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '\n' +
     '        </div><!--//primary-->\n' +
     '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <aside class="info aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading sr-only">Search</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/search.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//aside-->\n' +
-    '\n' +
-    '            <aside class="list tags aside section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h2 class="heading">Tags</h2>\n' +
-    '                    <div class="content">\n' +
-    '                        <div ng-include="\'views/home/list-tags.html\'"></div>\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </aside><!--//section-->\n' +
-    '\n' +
+    '            <div ng-include="\'views/home/sidebar.html\'" ng-controller="SidebarCtrl"></div>\n' +
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
@@ -81609,14 +81465,6 @@ app.factory('AccountRes', function (AppConst, AppRes) {
         });
     };
 
-    service.actionDelete=function(){
-        return AppRes.post('/api/v1/account/delete');
-    }
-
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/account/update', item);
-    }
-
     return service;
   });
 app.factory('ContactRes', function (AppConst, AppRes) {
@@ -81735,6 +81583,39 @@ app.factory('TagRes', function (AppRes, AppConst) {
     }
     service.actionDelete=function(item){
         return AppRes.post('/api/v1/tag/delete/'+item.id, item);
+    }
+
+    return service;
+  });
+app.factory('ProfileRes', function ($q, AppConst, AppRes) {
+    var service={};
+
+    service.actionDelete=function(){
+        return AppRes.post('/api/v1/account/delete');
+    }
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/account/update', item);
+    }
+
+    return service;
+  });
+app.factory('UserAppRes', function ($q, AppConst, AppRes) {
+    var service={};
+
+    service.getList=function(){
+        return AppRes.get('/api/v1/user_app/list');
+    };
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/user_app/update/'+item.id, item);
+    }
+
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/user_app/create',item)
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/user_app/delete/'+item.id, item);
     }
 
     return service;
@@ -81935,24 +81816,13 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
         AppSvc.setDescription(service.description);
         AppSvc.setUrl($routeParams.navId);
 
-        if ($routeParams.navId=='login' || $routeParams.navId=='reg' || $routeParams.navId=='reset_password' || $routeParams.navId=='recovery'){
-            if (service.isLogged()){
-                NavbarSvc.goHome();
-            }else{
-                if ($routeParams.navId=='reset_password'){
-                    if ($routeParams.code!==undefined)
-                        service.reset_passwordCode=$routeParams.code;
-                    else
-                        service.reset_passwordCode='';
-                }
-            }
-            return;
+        if ($routeParams.navId=='reset_password'){
+            if ($routeParams.code!==undefined)
+                service.item.code=$routeParams.code;
+            else
+                service.item.code='';
         }
-        if ($routeParams.navId=='profile'){
-            if (!service.isLogged()){
-                NavbarSvc.goHome();
-            }
-        }
+
         $q.all([
             service.load()
         ]).then(function(responseList) {
@@ -81967,9 +81837,9 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
         return deferred.promise;
     }
 
-	service.doReg=function(item){
+	service.doReg=function(){
 	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionReg(item).then(
+		 AccountRes.actionReg(service.item).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
@@ -81983,9 +81853,9 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
         );
     }
 
-	service.doRecovery=function(email){
+	service.doRecovery=function(){
 	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionRecovery(email).then(
+		 AccountRes.actionRecovery(service.item.email).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     $rootScope.$broadcast('account.recovery', {email:email});
@@ -81998,9 +81868,9 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
         );
     }
 
-	service.doResetPassword=function(code, password){
+	service.doResetPassword=function(){
 	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionResetPassword(code, password).then(
+		 AccountRes.actionResetPassword(service.item.code, service.item.password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
@@ -82015,24 +81885,8 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
         );
     }
 
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    $rootScope.$broadcast('account.update', service.item);
-                }
-            },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-            }
-        );
-    }
-
-	service.doLogin=function(email, password){
-	    AccountRes.actionLogin(email,password).then(
+	service.doLogin=function(){
+	    AccountRes.actionLogin(service.item.email,service.item.password).then(
             function (response) {
                 if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                     service.item=angular.copy(response.data.data[0]);
@@ -82053,23 +81907,6 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
                     if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
                         service.item={}
                         $rootScope.$broadcast('account.logout', service.item);
-                    }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-        });
-    }
-	service.doDelete=function(){
-         MessageSvc.confirm('account/delete/confirm', {},
-         function(){
-             AccountRes.actionDelete().then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        service.item={}
-                        $rootScope.$broadcast('account.delete', service.item);
                     }
                 },
                 function (response) {
@@ -83233,6 +83070,240 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
     }
     return service;
   });
+app.factory('ProfileSvc', function (AppConst, ProfileRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, AccountSvc) {
+    var service={};
+
+    service.item={};
+
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		 ProfileRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    AccountSvc.item=angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.update', AccountSvc.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+
+	service.doDelete=function(){
+         MessageSvc.confirm('account/delete/confirm', {},
+         function(){
+             ProfileRes.actionDelete().then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        AccountSvc.item={}
+                        $rootScope.$broadcast('account.delete', AccountSvc.item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+        });
+    }
+
+    service.init=function(reload){
+        AccountSvc.init();
+
+        service.item=AccountSvc.item
+    }
+
+    return service;
+  });
+app.factory('AccountSidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
+    var service={};
+
+    service.init=function(reload){
+        $q.all([
+            TagSvc.load(),
+            ProjectSvc.load(),
+            PostSvc.load()
+        ]).then(function(responseList) {
+        });
+
+    }
+    return service;
+  });
+app.factory('UserAppSvc', function (AppConst, UserAppRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, AccountSvc) {
+    var service={};
+
+    service.item={};
+    service.list=[];
+
+    service.initEmptyItem=function(){
+        service.item = {};
+        service.item.name = '';
+        service.item.content = '';
+        service.item.attributes='';
+        service.item.position=0;
+    }
+
+    service.showCreate=function(){
+        service.mode='create';
+        service.initEmptyItem();
+        var boxOptions = {
+            title: 'Add new user_app',
+            confirmTemplate: 'views/account/user_app/create.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Create',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doCreate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'user_appCreate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.selectItem=function(item){
+        service.item=angular.copy(item);
+    }
+
+    service.showUpdate=function(item){
+        service.mode='update';
+        service.item=angular.copy(item);
+        var boxOptions = {
+            title: 'Edit properties',
+            confirmTemplate: 'views/account/user_app/update.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Save',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doUpdate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'user_appUpdate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		UserAppRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('user_app.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		UserAppRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('user_app.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('user_app/remove/confirm', {values:[item.src]},
+         function(){
+             UserAppRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.item={};
+                        $rootScope.$broadcast('user_app.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+    
+    service.load=function(reload){
+        var deferred = $q.defer();
+        if (service.loaded!==true || reload===true){
+            service.loaded=true;
+            UserAppRes.getList().then(function (response) {
+                service.list=angular.copy(response.data.data);
+                deferred.resolve(service.list);
+                $rootScope.$broadcast('user_app.load', service.list);
+            }, function (response) {
+                service.list=[];
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+                deferred.resolve(service.list);
+            });
+        }else
+            deferred.resolve(service.list);
+        return deferred.promise;
+    }
+
+    service.init=function(reload){
+        AccountSvc.init();
+
+        $q.all([
+            service.load()
+        ]).then(function(responseList) {
+
+        });
+    }
+    return service;
+  });
+app.factory('SidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
+    var service={};
+
+    service.init=function(reload){
+        $q.all([
+            TagSvc.load(),
+            ProjectSvc.load(),
+            PostSvc.load()
+        ]).then(function(responseList) {
+        });
+
+    }
+    return service;
+  });
 app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
     var service={};
 
@@ -83719,6 +83790,20 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
     }
     return service;
   });
+app.factory('ManagerSidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
+    var service={};
+
+    service.init=function(reload){
+        $q.all([
+            TagSvc.load(),
+            ProjectSvc.load(),
+            PostSvc.load()
+        ]).then(function(responseList) {
+        });
+
+    }
+    return service;
+  });
 app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc) {
     $scope.AppConfig=AppConfig;
 
@@ -83729,24 +83814,18 @@ app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountS
 
     AppSvc.init();
 });
-app.controller('AccountCtrl', function ($scope, AccountSvc, TagSvc, ProjectSvc, NavbarSvc, $routeParams) {
+app.controller('AccountCtrl', function ($scope, AccountSvc, NavbarSvc, $routeParams) {
     $scope.AccountSvc=AccountSvc;
-    $scope.TagSvc=TagSvc;
-    $scope.ProjectSvc=ProjectSvc;
     $scope.NavbarSvc=NavbarSvc;
     $scope.$routeParams=$routeParams;
 
-	TagSvc.load();
-	ProjectSvc.load();
 	AccountSvc.init();
 });
-app.controller('ContactCtrl', function ($scope, ContactSvc, TagSvc, ProjectSvc, PublicLinkSvc) {
+app.controller('ContactCtrl', function ($scope, ContactSvc, ProjectSvc, PublicLinkSvc) {
     $scope.ContactSvc=ContactSvc;
-    $scope.TagSvc=TagSvc;
     $scope.PublicLinkSvc=PublicLinkSvc;
 
     PublicLinkSvc.load();
-	TagSvc.load();
 	ContactSvc.init();
 });
 app.controller('FileCtrl', function ($scope, FileSvc) {
@@ -83804,35 +83883,67 @@ app.controller('TagCtrl', function ($scope, $routeParams, TagSvc, AccountSvc, Pr
 
 	TagSvc.init();
 });
-app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc, TagSvc, ManagerSvc) {
+app.controller('ProfileCtrl', function ($scope, ProfileSvc, $routeParams, AccountSvc) {
+	$scope.ProfileSvc=ProfileSvc;
+	$scope.AccountSvc=AccountSvc;
+	$scope.$routeParams=$routeParams;
+
+	ProfileSvc.init();
+});
+app.controller('AccountSidebarCtrl', function ($scope, AccountSidebarSvc, ProjectSvc, PostSvc, TagSvc) {
+    $scope.AccountSidebarSvc=AccountSidebarSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+
+    AccountSidebarSvc.init();
+});
+app.controller('UserAppCtrl', function ($scope, UserAppSvc, $routeParams, AccountSvc) {
+	$scope.UserAppSvc=UserAppSvc;
+	$scope.AccountSvc=AccountSvc;
+	$scope.$routeParams=$routeParams;
+
+	UserAppSvc.init();
+});
+app.controller('SidebarCtrl', function ($scope, SidebarSvc, ProjectSvc, PostSvc, TagSvc) {
+    $scope.SidebarSvc=SidebarSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+
+    SidebarSvc.init();
+});
+app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc, ManagerSvc) {
 	$scope.MetaTagSvc=MetaTagSvc;
 	$scope.AccountSvc=AccountSvc;
-	$scope.TagSvc=TagSvc;
 	$scope.ManagerSvc=ManagerSvc;
 	$scope.$routeParams=$routeParams;
 
-    TagSvc.load();
 	MetaTagSvc.init();
 });
-app.controller('PropertiesCtrl', function ($scope, PropertiesSvc, $routeParams, AccountSvc, TagSvc, ManagerSvc) {
+app.controller('PropertiesCtrl', function ($scope, PropertiesSvc, $routeParams, AccountSvc, ManagerSvc) {
 	$scope.PropertiesSvc=PropertiesSvc;
 	$scope.AccountSvc=AccountSvc;
-	$scope.TagSvc=TagSvc;
 	$scope.ManagerSvc=ManagerSvc;
 	$scope.$routeParams=$routeParams;
 
-    TagSvc.load();
 	PropertiesSvc.init();
 });
-app.controller('PublicLinkCtrl', function ($scope, PublicLinkSvc, $routeParams, AccountSvc, TagSvc, ManagerSvc) {
+app.controller('PublicLinkCtrl', function ($scope, PublicLinkSvc, $routeParams, AccountSvc, ManagerSvc) {
 	$scope.PublicLinkSvc=PublicLinkSvc;
 	$scope.AccountSvc=AccountSvc;
-	$scope.TagSvc=TagSvc;
 	$scope.ManagerSvc=ManagerSvc;
 	$scope.$routeParams=$routeParams;
 
-    TagSvc.load();
 	PublicLinkSvc.init();
+});
+app.controller('ManagerSidebarCtrl', function ($scope, ManagerSidebarSvc, ProjectSvc, PostSvc, TagSvc) {
+    $scope.ManagerSidebarSvc=ManagerSidebarSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+
+    ManagerSidebarSvc.init();
 });
 jQuery(document).ready(function($) {
 

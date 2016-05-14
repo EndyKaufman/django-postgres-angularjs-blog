@@ -7,38 +7,14 @@ def update_from_json_data(request, item, data, user):
     from app.image.models import Image
     from app.tag.models import Tag
 
-    try:
-        item.title = data['title']
-    except KeyError:
-        item.title = None
-    try:
-        item.name = data['name']
-    except KeyError:
-        item.name = None
-    try:
-        item.description = data['description']
-    except KeyError:
-        item.description = None
-    try:
-        item.url = data['url']
-    except KeyError:
-        item.url = None
-    try:
-        item.text = data['text']
-    except KeyError:
-        item.text = None
-    try:
-        item.html = data['html']
-    except KeyError:
-        item.html = None
-    try:
-        item.markdown = data['markdown']
-    except KeyError:
-        item.markdown = None
-    try:
-        item.type = data['type']
-    except KeyError:
-        item.type = None
+    item.title = data['title']
+    item.name = data['name']
+    item.description = data['description']
+    item.url = data['url']
+    item.text = data['text']
+    item.html = data['html']
+    item.markdown = data['markdown']
+    item.type = data['type']
 
     if item.type is None:
         item.type = 1
@@ -119,7 +95,7 @@ def update_from_json_data(request, item, data, user):
 
 
 def get_fields():
-    return ['name', 'title', 'description']
+    return ['name', 'title', 'description', 'url', 'text', 'html', 'markdown', 'type']
 
 
 def create(request):
