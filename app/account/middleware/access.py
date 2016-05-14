@@ -1,6 +1,5 @@
 from django.contrib import auth
 from django.middleware.csrf import CsrfViewMiddleware
-from oauth2_provider.oauth2_backends import get_oauthlib_core
 from oauth2_provider.backends import OAuth2Backend
 
 
