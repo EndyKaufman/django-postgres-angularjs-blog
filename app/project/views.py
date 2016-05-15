@@ -10,8 +10,8 @@ import resource
 def get_list(request):
     """List data"""
     strings = {
-        'site_title': [u'My project'],
-        'site_description': u'Project descriptions',
+        'site_title': ['My project'],
+        'site_description': 'Project descriptions',
         'site_url': 'project'
     }
     return render_index(request, strings)
@@ -31,7 +31,7 @@ def get_item_by_name(request, project_name):
     if item:
         item_data = data['data'][0]
         strings = {
-            'site_title': [item_data['title'], u'My project'],
+            'site_title': [item_data['title'], 'My project'],
             'site_description': item_data['description'],
             'site_url': 'project/%s' % item_data['name']
         }

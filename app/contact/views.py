@@ -7,7 +7,7 @@ from app.home.helpers import render_index
 def contact(request):
     """Index page"""
     return render_index(request, {
-        'site_title': [u'Contact us'],
-        'site_description': [u'Contact us'],
+        'site_title': ['Contact us'],
+        'site_description': 'Contact us',
         'site_url': '/contact'
     })

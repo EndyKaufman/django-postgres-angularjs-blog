@@ -7,8 +7,8 @@ from app.home.helpers import render_index
 def login(request):
     """Index page"""
     return render_index(request, {
-        'site_title': [u'Login on site'],
-        'site_description': [u'Authorization on site'],
+        'site_title': ['Login on site'],
+        'site_description': 'Authorization on site',
         'site_url': '/account/login'
     })
 
@@ -17,8 +17,8 @@ def login(request):
 def profile(request):
     """Index page"""
     return render_index(request, {
-        'site_title': [u'Profile'],
-        'site_description': [u'Profile of user'],
+        'site_title': ['Profile'],
+        'site_description': 'Profile of user',
         'site_url': '/account/profile'
     })
 
@@ -27,8 +27,8 @@ def profile(request):
 def reg(request):
     """Index page"""
     return render_index(request, {
-        'site_title': [u'Registration form'],
-        'site_description': [u'Registration on site'],
+        'site_title': ['Registration form'],
+        'site_description': 'Registration on site',
         'site_url': '/account/reg'
     })
 
@@ -37,8 +37,8 @@ def reg(request):
 def recovery(request):
     """Index page"""
     return render_index(request, {
-        'site_title': [u'Recovery access'],
-        'site_description': [u'Recovery access to site'],
+        'site_title': ['Recovery access'],
+        'site_description': 'Recovery access to site',
         'site_url': '/account/recovery'
     })
 
@@ -47,7 +47,17 @@ def recovery(request):
 def reset(request):
     """Index page"""
     return render_index(request, {
-        'site_title': [u'Reset password'],
-        'site_description': [u'Reset password for account'],
+        'site_title': ['Reset password'],
+        'site_description': 'Reset password for account',
         'site_url': '/account/reset'
+    })
+
+
+@ensure_csrf_cookie
+def user_app(request):
+    """Index page"""
+    return render_index(request, {
+        'site_title': ['User app'],
+        'site_description': 'User app of user',
+        'site_url': '/account/user_app'
     })

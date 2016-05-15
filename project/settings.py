@@ -102,7 +102,8 @@ INSTALLED_APPS = (
     'app.project',
     'app.post',
     'app.contact',
-    'app.manager'
+    'app.manager',
+    'app.user_app'
 )
 
 MIDDLEWARE_CLASSES = (
