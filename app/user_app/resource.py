@@ -126,6 +126,9 @@ def get_item_by_name(request, user_app_name):
 def get_list(request):
     from oauth2_provider.models import get_application_model
 
-    items = get_application_model().objects.all()
+    try:
+        items = get_application_model().objects.all()
+    except:
+        items = []
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
