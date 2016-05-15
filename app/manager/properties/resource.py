@@ -102,7 +102,7 @@ def get_list_of_names(request, names):
 def get_list(request):
     from app.manager.models import Properties
 
-    items = Properties.objects.all().order_by('-created').all()
+    items = Properties.objects.all().order_by('created').all()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 

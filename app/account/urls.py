@@ -1,12 +1,10 @@
 from django.conf.urls import url
-import actions
+import views
 
 urlpatterns = [
-    url(r'^login', actions.login),
-    url(r'^logout', actions.logout),
-    url(r'^update', actions.update),
-    url(r'^reg', actions.reg),
-    url(r'^delete', actions.delete),
-    url(r'^recovery', actions.recovery),
-    url(r'^reset_password', actions.reset_password)
+    url(r'^login', views.login),
+    url(r'^profile', views.profile),
+    url(r'^reg', views.reg),
+    url(r'^recovery', views.recovery),
+    url(r'^reset', views.reset)
 ]

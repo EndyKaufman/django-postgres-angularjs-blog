@@ -153,7 +153,7 @@ def recovery(request):
     return {'code': 'ok'}, 200, True
 
 
-def reset_password(request):
+def reset(request):
     """Reset password action"""
 
     if request.user.is_authenticated():

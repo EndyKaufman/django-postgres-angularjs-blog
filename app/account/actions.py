@@ -118,18 +118,18 @@ def recovery(request):
 
 # Reset password
 @json_view
-def reset_password(request):
+def reset(request):
     """Reset password action"""
 
-    data, code, valid = validator.reset_password(request)
+    data, code, valid = validator.reset(request)
 
     if valid:
         if settings.ENV == 'production':
             try:
-                data, code, user = resource.reset_password(request)
+                data, code, user = resource.reset(request)
             except:
-                return {'code': 'account/reset_password/fail'}, 404
+                return {'code': 'account/reset/fail'}, 404
         else:
-            data, code, user = resource.reset_password(request)
+            data, code, user = resource.reset(request)
 
     return data, code

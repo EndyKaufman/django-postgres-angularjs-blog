@@ -89,7 +89,7 @@ def get_item_by_name(request, meta_tag_name):
 def get_list(request):
     from app.manager.models import MetaTag
 
-    items = MetaTag.objects.all().order_by('-created').all()
+    items = MetaTag.objects.all().order_by('position').all()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 

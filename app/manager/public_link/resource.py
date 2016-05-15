@@ -94,7 +94,7 @@ def get_item_by_src(request, public_link_src):
 def get_list(request):
     from app.manager.models import PublicLink
 
-    items = PublicLink.objects.all().order_by('-created').all()
+    items = PublicLink.objects.all().order_by('position').all()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 

@@ -154,14 +154,14 @@ def recovery(request):
     config['user_first_name'] = user.first_name
 
     helpers.send_mail(subject='Reset password',
-                      html_content=render_to_string('account/templates/reset_password.email.htm', config),
-                      text_content=render_to_string('account/templates/reset_password.email.txt', config),
+                      html_content=render_to_string('account/templates/reset.email.htm', config),
+                      text_content=render_to_string('account/templates/reset.email.txt', config),
                       to_email=[data['email']])
 
     return {'code': 'ok', 'data': [data['email']]}, 200, user
 
 
-def reset_password(request):
+def reset(request):
     """Reset password action"""
 
     data = request.DATA
