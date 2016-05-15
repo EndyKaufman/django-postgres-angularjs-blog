@@ -53,11 +53,11 @@ urlpatterns = urlpatterns + [
     url(r'^api/v1/user_app/', include(app.user_app.api_v1_urls))]
 
 urlpatterns = urlpatterns + [
-    url(r'^oauth2/', include(app.account.oauth2_urls, namespace='oauth2_provider')),
-    url(r'^account/', include(app.account.urls)),
-    url(r'^contact/', include(app.contact.urls)),
-    url(r'^post/', include(app.post.urls)),
-    url(r'^project/', include(app.project.urls)),
+    url(r'^oauth2', include(app.account.oauth2_urls, namespace='oauth2_provider')),
+    url(r'^account', include(app.account.urls)),
+    url(r'^contact', include(app.contact.urls)),
+    url(r'^post', include(app.post.urls)),
+    url(r'^project', include(app.project.urls)),
     url(r'^tag/.*$', app.home.views.index, name='index'),
     url(r'^search/.*$', app.home.views.index, name='index'),
     url(r'^manager/.*$', app.home.views.index, name='index'),
