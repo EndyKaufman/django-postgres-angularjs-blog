@@ -21,6 +21,27 @@ def create(request):
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
+def create_by_url(url, content):
+    from app.manager.models import HtmlCache
+    item, created = HtmlCache.objects.get_or_create(url=url, content=content)
+    return item
+
+
+def update_by_url(url, content):
+    """Update record"""
+
+    item = get_item_by_url(url)
+    if item:
+        item.content = content
+        if item.content == '':
+            item.content = None
+
+        item.save()
+    else:
+        create_by_url(url, content)
+    return item
+
+
 def update(request, html_cache_id):
     """Update record"""
 
@@ -37,11 +58,14 @@ def update(request, html_cache_id):
     except HtmlCache.DoesNotExist:
         return {'code': 'html_cache/not_found', 'values': [html_cache_id]}, 404, False
 
-    item.url = data['url']
-    item.content = data['content']
+    if data['url'] is not None:
+        item.url = data['url']
+    if data['content'] is not None:
+        item.content = data['content']
+
     item.created_user = user
     item.save()
-    
+
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
@@ -69,6 +93,15 @@ def get_item(request, html_cache_id):
         return {'code': 'html_cache/not_found', 'values': [html_cache_id]}, 404, False
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
+
+
+def get_item_by_url(html_cache_url):
+    from app.manager.models import HtmlCache
+
+    try:
+        return HtmlCache.objects.get(url=html_cache_url)
+    except HtmlCache.DoesNotExist:
+        return False
 
 
 def get_item_by_url(request, html_cache_url):

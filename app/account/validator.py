@@ -6,7 +6,11 @@ from django.core.exceptions import ValidationError
 
 
 def create(request):
+
     data = request.DATA
+
+    if getattr(request, 'ignore_csrf_checks', False):
+        return {'code': 'no_access'}, 404, False
 
     if data is False:
         return {'code': 'no_data'}, 404, False
@@ -39,6 +43,9 @@ def update(request):
 
     data = request.DATA
 
+    if getattr(request, 'ignore_csrf_checks', False):
+        return {'code': 'no_access'}, 404, False
+
     if data is False:
         return {'code': 'no_data'}, 404, False
 
@@ -66,6 +73,9 @@ def delete(request):
     """Update record"""
 
     data = request.DATA
+
+    if getattr(request, 'ignore_csrf_checks', False):
+        return {'code': 'no_access'}, 404, False
 
     if data is False:
         return {'code': 'no_data'}, 404, False
@@ -180,4 +190,3 @@ def reset(request):
         return {'code': 'account/code_not_found', 'values': [data['code']]}, 404, False
 
     return {'code': 'ok'}, 200, True
-

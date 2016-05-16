@@ -64,12 +64,17 @@ def update(request, user_app_id):
 
     # item.client_id = data['client_id']
     item.user = user
-    item.redirect_uris = data['redirect_uris']
-    item.client_type = data['client_type']
-    item.authorization_grant_type = data['authorization_grant_type']
+    if data['redirect_uris'] is not None:
+        item.redirect_uris = data['redirect_uris']
+    if data['client_type'] is not None:
+        item.client_type = data['client_type']
+    if data['authorization_grant_type'] is not None:
+        item.authorization_grant_type = data['authorization_grant_type']
     # item.client_secret = data['client_secret']
-    item.name = data['name']
-    item.skip_authorization = data['skip_authorization']
+    if data['name'] is not None:
+        item.name = data['name']
+    if data['skip_authorization'] is not None:
+        item.skip_authorization = data['skip_authorization']
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

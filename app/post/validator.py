@@ -12,11 +12,11 @@ def create(request):
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['name'] is None:
-        return {'code': 'post/no_name'}, 404
+        return {'code': 'post/no_name'}, 404, False
     if data['title'] is None:
-        return {'code': 'post/no_title'}, 404
+        return {'code': 'post/no_title'}, 404, False
     if data['description'] is None:
-        return {'code': 'post/no_description'}, 404
+        return {'code': 'post/no_description'}, 404, False
 
     user = helpers.get_user(request)
 
@@ -44,11 +44,11 @@ def update(request, post_id):
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['name'] is None:
-        return {'code': 'post/no_name'}, 404
+        return {'code': 'post/no_name'}, 404, False
     if data['title'] is None:
-        return {'code': 'post/no_title'}, 404
+        return {'code': 'post/no_title'}, 404, False
     if data['description'] is None:
-        return {'code': 'post/no_description'}, 404
+        return {'code': 'post/no_description'}, 404, False
 
     user = helpers.get_user(request)
 

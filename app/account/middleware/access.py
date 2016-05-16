@@ -24,6 +24,8 @@ class AccessViewMiddleware(CsrfViewMiddleware):
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
                 auth.login(request, user)
                 setattr(request, '_dont_enforce_csrf_checks', True)
+                setattr(request, 'ignore_csrf_checks', True)
+
 
         retval = super(AccessViewMiddleware, self).process_view(request, callback, callback_args, callback_kwargs)
 

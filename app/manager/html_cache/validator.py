@@ -11,8 +11,8 @@ def create(request):
 
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if data['name'] is None:
-        return {'code': 'html_cache/no_name'}, 404
+    if data['url'] is None:
+        return {'code': 'html_cache/no_url'}, 404, False
 
     user = helpers.get_user(request)
 
@@ -39,8 +39,8 @@ def update(request, html_cache_id):
 
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
-    if data['name'] is None:
-        return {'code': 'html_cache/no_name'}, 404
+    if data['url'] is None:
+        return {'code': 'html_cache/no_url'}, 404, False
 
     user = helpers.get_user(request)
 

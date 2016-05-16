@@ -39,9 +39,13 @@ def update(request, properties_id):
     except Properties.DoesNotExist:
         return {'code': 'properties/not_found', 'values': [properties_id]}, 404, False
 
-    item.name = data['name']
-    item.value = data['value']
-    item.comment = data['comment']
+    if data['name'] is not None:
+        item.name = data['name']
+    if data['value'] is not None:
+        item.value = data['value']
+    if data['comment'] is not None:
+        item.comment = data['comment']
+
     item.created_user = user
     item.save()
 

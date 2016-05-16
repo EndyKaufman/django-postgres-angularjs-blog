@@ -29,7 +29,8 @@ def create(request):
 
     item, created = Tag.objects.get_or_create(text=data['text'])
     if created:
-        item.description = data['description']
+        if data['description'] is not None:
+            item.description = data['description']
         item.created_user = user
         item.save()
 
@@ -50,8 +51,11 @@ def update(request, tag_id):
     except Tag.DoesNotExist:
         return {'code': 'tag/not_found', 'values': [tag_id]}, 404, False
 
-    item.text = data['text']
-    item.description = data['description']
+    if data['text'] is not None:
+        item.text = data['text']
+    if data['description'] is not None:
+        item.description = data['description']
+        
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

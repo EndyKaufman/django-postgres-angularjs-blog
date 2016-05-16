@@ -12,7 +12,7 @@ def create(request):
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['name'] is None:
-        return {'code': 'meta_tag/no_name'}, 404
+        return {'code': 'meta_tag/no_name'}, 404, False
 
     user = helpers.get_user(request)
 

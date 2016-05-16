@@ -4,7 +4,11 @@ import resource
 
 
 def create(request):
+
     data = request.DATA
+
+    if getattr(request, 'ignore_csrf_checks', False):
+        return {'code': 'no_access'}, 404, False
 
     if data is False:
         return {'code': 'no_data'}, 404, False
@@ -12,7 +16,7 @@ def create(request):
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['name'] is None:
-        return {'code': 'user_app/no_name'}, 404
+        return {'code': 'user_app/no_name'}, 404, False
 
     user = helpers.get_user(request)
 
@@ -34,13 +38,16 @@ def update(request, user_app_id):
 
     data = request.DATA
 
+    if getattr(request, 'ignore_csrf_checks', False):
+        return {'code': 'no_access'}, 404, False
+
     if data is False:
         return {'code': 'no_data'}, 404, False
 
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['name'] is None:
-        return {'code': 'user_app/no_name'}, 404
+        return {'code': 'user_app/no_name'}, 404, False
 
     user = helpers.get_user(request)
 
@@ -61,6 +68,9 @@ def delete(request):
     """Update record"""
 
     data = request.DATA
+
+    if getattr(request, 'ignore_csrf_checks', False):
+        return {'code': 'no_access'}, 404, False
 
     if data is False:
         return {'code': 'no_data'}, 404, False

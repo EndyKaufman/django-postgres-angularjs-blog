@@ -39,10 +39,15 @@ def update(request, meta_tag_id):
     except MetaTag.DoesNotExist:
         return {'code': 'meta_tag/not_found', 'values': [meta_tag_id]}, 404, False
 
-    item.name = data['name']
-    item.content = data['content']
-    item.attributes = data['attributes'],
-    item.position = data['position']
+    if data['name'] is not None:
+        item.name = data['name']
+    if data['content'] is not None:
+        item.content = data['content']
+    if data['attributes'] is not None:
+        item.attributes = data['attributes'],
+    if data['position'] is not None:
+        item.position = data['position']
+
     item.created_user = user
     item.save()
     

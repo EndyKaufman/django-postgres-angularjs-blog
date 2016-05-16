@@ -29,7 +29,8 @@ def create(request):
 
     item, created = File.objects.get_or_create(src=url)
     if created:
-        item.comment = data['comment']
+        if data['comment'] is not None:
+            item.comment = data['comment']
         item.created_user = user
         item.save()
 
@@ -50,7 +51,8 @@ def update(request, file_id):
     except File.DoesNotExist:
         return {'code': 'file/not_found', 'values': [file_id]}, 404, False
 
-    item.comment = data['comment']
+    if data['comment'] is not None:
+        item.comment = data['comment']
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

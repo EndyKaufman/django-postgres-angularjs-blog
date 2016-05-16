@@ -12,11 +12,11 @@ def create(request):
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['name'] is None:
-        return {'code': 'project/no_name'}, 404
+        return {'code': 'project/no_name'}, 404, False
     if data['title'] is None:
-        return {'code': 'project/no_title'}, 404
+        return {'code': 'project/no_title'}, 404, False
     if data['description'] is None:
-        return {'code': 'project/no_description'}, 404
+        return {'code': 'project/no_description'}, 404, False
 
     user = helpers.get_user(request)
 
@@ -42,13 +42,6 @@ def update(request, project_id):
         return {'code': 'no_data'}, 404, False
 
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
-
-    if data['name'] is None:
-        return {'code': 'project/no_name'}, 404
-    if data['title'] is None:
-        return {'code': 'project/no_title'}, 404
-    if data['description'] is None:
-        return {'code': 'project/no_description'}, 404
 
     user = helpers.get_user(request)
 

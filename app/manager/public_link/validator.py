@@ -12,7 +12,7 @@ def create(request):
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['src'] is None:
-        return {'code': 'public_link/no_src'}, 404
+        return {'code': 'public_link/no_src'}, 404, False
 
     user = helpers.get_user(request)
 
@@ -40,7 +40,7 @@ def update(request, public_link_id):
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
 
     if data['src'] is None:
-        return {'code': 'public_link/no_src'}, 404
+        return {'code': 'public_link/no_src'}, 404, False
 
     user = helpers.get_user(request)
 

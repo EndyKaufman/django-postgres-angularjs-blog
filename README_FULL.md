@@ -301,5 +301,5 @@ heroku run python manage.py createsuperuser --app django-postgres-angularjs-blog
 ## sample work with oauth2 server
 ```
 curl -X POST -d "grant_type=password&username=user&password=user@email.com&client_id=mFyx5LYIpFgeH6e8NkZgNGBkpHRVCiVEBqQJ3yk6&client_secret=tDzxylGEuiOTf7ht6dVjr3MZhR9gZqSFWSVIvKxBzGcUizpZhuwE9AN30VMWojrwvrI5HILMPVKxpdLzOJEhVanVzFoKfo7XfoP0A1SCbiTXOX718KWrdvTk1sr9PcFg" http://127.0.0.1:5000/oauth2/token/
-curl 'http://localhost:5000/api/v1/account/update' -H "Authorization: Bearer fLzfISwHUzmpU0I1JyZ6ocfM8ht7G1" --data-binary '{"firstname":"Change from api", "email":"user@email.com"}'
+curl 'http://localhost:5000/api/v1/project/update/project1' -H "Authorization: Bearer fLzfISwHUzmpU0I1JyZ6ocfM8ht7G1" --data-binary '{"title":"Changed from api"}'
 ```
