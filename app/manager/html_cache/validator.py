@@ -21,10 +21,10 @@ def create(request):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    data, code, item = resource.get_item_by_name(request, data['name'])
+    data, code, item = resource.get_item_by_url(request, data['url'])
 
     if item is not False:
-        return {'code': 'html_cache/exists', 'values': [data['name']]}, 404, False
+        return {'code': 'html_cache/exists', 'values': [data['url']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
@@ -49,10 +49,10 @@ def update(request, html_cache_id):
     if user is None:
         return {'code': 'account/not_active'}, 404, False
 
-    data, code, item = resource.get_item_by_name(request, data['name'])
+    data, code, item = resource.get_item_by_url(request, data['url'])
 
     if (item is not False) and (int(item.id) != int(html_cache_id)):
-        return {'code': 'html_cache/exists', 'values': [data['text']]}, 404, False
+        return {'code': 'html_cache/exists', 'values': [data['url']]}, 404, False
 
     return {'code': 'ok'}, 200, True
 
