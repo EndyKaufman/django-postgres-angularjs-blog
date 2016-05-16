@@ -29,16 +29,14 @@ def create_by_url(url, content):
 
 def update_by_url(url, content):
     """Update record"""
-
-    item = get_item_by_url(url)
+    item = get_item_by_url_base(url)
     if item:
         item.content = content
         if item.content == '':
             item.content = None
-
         item.save()
     else:
-        create_by_url(url, content)
+        item = create_by_url(url, content)
     return item
 
 
@@ -95,7 +93,7 @@ def get_item(request, html_cache_id):
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
-def get_item_by_url(html_cache_url):
+def get_item_by_url_base(html_cache_url):
     from app.manager.models import HtmlCache
 
     try:

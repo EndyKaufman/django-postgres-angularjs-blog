@@ -4,7 +4,7 @@ from app.home.helpers import render_index
 
 
 @ensure_csrf_cookie
-def contact(request):
+def index(request):
     """Index page"""
     return render_index(request, {
         'site_title': ['Contact us'],

@@ -210,6 +210,7 @@ else:
 SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', False)
 
 if SEO_JS_PRERENDER_TOKEN == '' or not SEO_JS_PRERENDER_TOKEN:
+    #SEO_JS_BACKEND = "django_seo_js.backends.PrerenderHosted"
     SEO_JS_BACKEND = "app.manager.html_cache.prerender.CustomPrerenderHosted"
 else:
     SEO_JS_BACKEND = "django_seo_js.backends.PrerenderIO"
