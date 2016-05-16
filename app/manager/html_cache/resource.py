@@ -116,7 +116,7 @@ def get_item_by_url(request, html_cache_url):
 def get_list(request):
     from app.manager.models import HtmlCache
 
-    items = HtmlCache.objects.all().order_by('position').all()
+    items = HtmlCache.objects.all().order_by('-created').all()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
