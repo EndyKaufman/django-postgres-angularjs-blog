@@ -78796,6 +78796,10 @@ app.constant('ManagerConst', {
         title: 'Users',
         description: 'Site users'
     },
+    html_cache:{
+        title: 'Html cache',
+        description: 'Html cache'
+    },
     message:{
     }
 });
@@ -79032,6 +79036,14 @@ app.config(function ($routeProvider, $locationProvider) {
         params:{
             navId: 'manager',
             subNavId: 'tag'
+        }
+      })
+      .when('/manager/html_cache', {
+        templateUrl: 'views/manager/html_cache.html',
+        controller: 'HtmlCacheCtrl',
+        params:{
+            navId: 'manager',
+            subNavId: 'html_cache'
         }
       });
 });
@@ -79703,6 +79715,98 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                    </button>\n' +
     '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
     '                            ng-disabled="!meta_tagForm.$valid" id="meta_tagCreateConfirm">\n' +
+    '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/html_cache/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="HtmlCacheCtrl">\n' +
+    '            <form name="html_cacheForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/html_cache/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="html_cacheUpdateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!html_cacheForm.$valid" id="html_cacheUpdateConfirm">\n' +
+    '                        <i class="fa fa-floppy-o"></i> {{confirmText}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/html_cache/list.html', '<table class="table table-hover">\n' +
+    '    <thead>\n' +
+    '    <tr>\n' +
+    '        <th>#</th>\n' +
+    '        <th>Name</th>\n' +
+    '        <th>Empty</th>\n' +
+    '        <th class="text-right" style="width:200px">Actions</th>\n' +
+    '    </tr>\n' +
+    '    </thead>\n' +
+    '    <tbody>\n' +
+    '    <tr ng-repeat="item in HtmlCacheSvc.list | orderBy:\'position\'"\n' +
+    '        ng-class="(HtmlCacheSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind="item.id" ng-click="HtmlCacheSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.url" ng-click="HtmlCacheSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.content==\'\'?\'Yes\':\'No\'" ng-click="HtmlCacheSvc.selectItem(item)"></td>\n' +
+    '        <td class="text-right">\n' +
+    '            <button ng-click="HtmlCacheSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'html_cache\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> Edit\n' +
+    '            </button>\n' +
+    '            <button ng-click="HtmlCacheSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'html_cache\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> Delete\n' +
+    '            </button>\n' +
+    '        </td>\n' +
+    '    </tr>\n' +
+    '    </tbody>\n' +
+    '</table>');
+	a.put('views/manager/html_cache/list-header.html', '<span ng-bind="ManagerSvc.title"></span>\n' +
+    '<button ng-click="HtmlCacheSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
+    '        type="button" id="html_cacheCreate">\n' +
+    '    <i class="fa fa-plus"></i> Create\n' +
+    '</button>');
+	a.put('views/manager/html_cache/inputs.html', '<div class="form-group">\n' +
+    '    <label for="HtmlCacheUrl">Name</label>\n' +
+    '    <input class="form-control" type="text" id="HtmlCacheUrl" ng-model="HtmlCacheSvc.item.url"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="HtmlCacheContent">Content</label>\n' +
+    '    <textarea class="form-control" id="HtmlCacheContent"\n' +
+    '              ng-model="HtmlCacheSvc.item.value"></textarea>\n' +
+    '</div>');
+	a.put('views/manager/html_cache/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="HtmlCacheCtrl">\n' +
+    '            <form name="html_cacheForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/html_cache/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="html_cacheCreateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!html_cacheForm.$valid" id="html_cacheCreateConfirm">\n' +
     '                        <i class="fa fa-check"></i> {{confirmText}}\n' +
     '                    </button>\n' +
     '                </div>\n' +
@@ -80783,7 +80887,32 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <a ng-href="/manager/users"\n' +
     '           ng-bind="AppConst.manager.users.title"></a>\n' +
     '    </li>\n' +
+    '    <li ng-if="$routeParams.subNavId!=\'html_cache\'">\n' +
+    '        <i class="fa fa-link"></i>\n' +
+    '        <a ng-href="/manager/html_cache"\n' +
+    '           ng-bind="AppConst.manager.html_cache.title"></a>\n' +
+    '    </li>\n' +
     '</ul>');
+	a.put('views/manager/html_cache.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
+    '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-include="\'views/manager/html_cache/list-header.html\'">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content">\n' +
+    '                        <div ng-include="\'views/manager/html_cache/list.html\'"></div>\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <div ng-include="\'views/manager/sidebar.html\'" ng-controller="ManagerSidebarCtrl"></div>\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
 	a.put('views/home/sidebar.html', '<aside class="info aside section">\n' +
     '    <div class="section-inner">\n' +
     '        <h2 class="heading sr-only">Search</h2>\n' +
@@ -81291,7 +81420,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <div class="container">\n' +
     '        <img class="profile-image cursor-pointer img-responsive img-circle pull-left"\n' +
     '             ng-src="{{AppSvc.properties.SITE_LOGO}}"\n' +
-    '             alt="{{AppSvc.properties.SITE_TITLE.value}}" ng-if="AppSvc.properties.SITE_LOGO"\n' +
+    '             alt="{{AppSvc.properties.SITE_TITLE}}" ng-if="AppSvc.properties.SITE_LOGO"\n' +
     '             ng-click="NavbarSvc.goHome()"/>\n' +
     '        <div class="profile-content pull-left">\n' +
     '            <h1 class="name cursor-pointer" ng-bind-html="AppSvc.properties.SITE_TITLE | unsafe"\n' +
@@ -81619,6 +81748,26 @@ app.factory('UserAppRes', function ($q, AppConst, AppRes) {
     }
     service.actionDelete=function(item){
         return AppRes.post('/api/v1/user_app/delete/'+item.id, item);
+    }
+
+    return service;
+  });
+app.factory('HtmlCacheRes', function ($q, AppConst, AppRes) {
+    var service={};
+
+    service.getList=function(){
+        return AppRes.get('/api/v1/manager/html_cache/list');
+    };
+
+    service.actionUpdate=function(item){
+        return AppRes.post('/api/v1/manager/html_cache/update/'+item.id, item);
+    }
+
+    service.actionCreate=function(item){
+        return AppRes.post('/api/v1/manager/html_cache/create',item)
+    }
+    service.actionDelete=function(item){
+        return AppRes.post('/api/v1/manager/html_cache/delete/'+item.id, item);
     }
 
     return service;
@@ -83133,6 +83282,20 @@ app.factory('ProfileSvc', function (AppConst, ProfileRes, $rootScope, $q, $modal
 
     return service;
   });
+app.factory('AccountSidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
+    var service={};
+
+    service.init=function(reload){
+        $q.all([
+            TagSvc.load(),
+            ProjectSvc.load(),
+            PostSvc.load()
+        ]).then(function(responseList) {
+        });
+
+    }
+    return service;
+  });
 app.factory('UserAppSvc', function (AppConst, UserAppRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, AccountSvc) {
     var service={};
 
@@ -83306,17 +83469,160 @@ app.factory('SidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
     }
     return service;
   });
-app.factory('AccountSidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
+app.factory('HtmlCacheSvc', function (AppConst, HtmlCacheRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
     var service={};
 
-    service.init=function(reload){
-        $q.all([
-            TagSvc.load(),
-            ProjectSvc.load(),
-            PostSvc.load()
-        ]).then(function(responseList) {
-        });
+    service.item={};
+    service.list=[];
 
+    service.initEmptyItem=function(){
+        service.item = {};
+        service.item.url = '';
+        service.item.content = '';
+    }
+
+    service.showCreate=function(){
+        service.mode='create';
+        service.initEmptyItem();
+        var boxOptions = {
+            title: 'Add new html_cache',
+            confirmTemplate: 'views/manager/html_cache/create.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Create',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doCreate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'html_cacheCreate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.selectItem=function(item){
+        service.item=angular.copy(item);
+    }
+
+    service.showUpdate=function(item){
+        service.mode='update';
+        service.item=angular.copy(item);
+        var boxOptions = {
+            title: 'Edit properties',
+            confirmTemplate: 'views/manager/html_cache/update.modal.html',
+            size: 'lg',
+            boxType: 'confirm',
+            theme: 'alert',
+            effect: false,
+            confirmText: 'Save',
+            cancelText: 'Cancel',
+            afterConfirm: function(){
+                service.doUpdate(service.item);
+            },
+            afterCancel: function(){
+
+            },
+            prefixEvent: 'html_cacheUpdate'
+        }
+        $modalBox(boxOptions);
+    }
+
+    service.updateItemOnList=function(item){
+        for (var i=0;i<service.list.length;i++){
+            if (item.id===service.list[i].id){
+                angular.extend(service.list[i],angular.copy(item));
+            }
+        }
+    }
+
+	service.doCreate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		HtmlCacheRes.actionCreate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.list.push(service.item);
+                    $rootScope.$broadcast('html_cache.create', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doUpdate=function(item){
+	    $rootScope.$broadcast('show-errors-check-validity');
+		HtmlCacheRes.actionUpdate(item).then(
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                    service.item=angular.copy(response.data.data[0]);
+                    service.updateItemOnList(service.item);
+
+                    $rootScope.$broadcast('html_cache.update', service.item);
+                }
+            },
+            function (response) {
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+            }
+        );
+    }
+	service.doDelete=function(item){
+         MessageSvc.confirm('html_cache/remove/confirm', {values:[item.src]},
+         function(){
+             HtmlCacheRes.actionDelete(item).then(
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+                        for (var i=0;i<service.list.length;i++){
+                            if (service.list[i].id==item.id){
+                                service.list.splice(i, 1);
+                                break;
+                            }
+                        }
+                        service.item={};
+                        $rootScope.$broadcast('html_cache.delete', item);
+                    }
+                },
+                function (response) {
+                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                }
+            );
+         });
+    }
+    
+    service.load=function(reload){
+        var deferred = $q.defer();
+        if (service.loaded!==true || reload===true){
+            service.loaded=true;
+            HtmlCacheRes.getList().then(function (response) {
+                service.list=angular.copy(response.data.data);
+                deferred.resolve(service.list);
+                $rootScope.$broadcast('html_cache.load', service.list);
+            }, function (response) {
+                service.list=[];
+                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    MessageSvc.error(response.data.code, response.data);
+                deferred.resolve(service.list);
+            });
+        }else
+            deferred.resolve(service.list);
+        return deferred.promise;
+    }
+
+    service.init=function(reload){
+        ManagerSvc.init();
+
+        $q.all([
+            service.load()
+        ]).then(function(responseList) {
+
+        });
     }
     return service;
   });
@@ -83907,6 +84213,14 @@ app.controller('ProfileCtrl', function ($scope, ProfileSvc, $routeParams, Accoun
 
 	ProfileSvc.init();
 });
+app.controller('AccountSidebarCtrl', function ($scope, AccountSidebarSvc, ProjectSvc, PostSvc, TagSvc) {
+    $scope.AccountSidebarSvc=AccountSidebarSvc;
+	$scope.ProjectSvc=ProjectSvc;
+	$scope.PostSvc=PostSvc;
+	$scope.TagSvc=TagSvc;
+
+    AccountSidebarSvc.init();
+});
 app.controller('UserAppCtrl', function ($scope, UserAppSvc, $routeParams, AccountSvc) {
 	$scope.UserAppSvc=UserAppSvc;
 	$scope.AccountSvc=AccountSvc;
@@ -83922,13 +84236,13 @@ app.controller('SidebarCtrl', function ($scope, SidebarSvc, ProjectSvc, PostSvc,
 
     SidebarSvc.init();
 });
-app.controller('AccountSidebarCtrl', function ($scope, AccountSidebarSvc, ProjectSvc, PostSvc, TagSvc) {
-    $scope.AccountSidebarSvc=AccountSidebarSvc;
-	$scope.ProjectSvc=ProjectSvc;
-	$scope.PostSvc=PostSvc;
-	$scope.TagSvc=TagSvc;
+app.controller('HtmlCacheCtrl', function ($scope, HtmlCacheSvc, $routeParams, AccountSvc, ManagerSvc) {
+	$scope.HtmlCacheSvc=HtmlCacheSvc;
+	$scope.AccountSvc=AccountSvc;
+	$scope.ManagerSvc=ManagerSvc;
+	$scope.$routeParams=$routeParams;
 
-    AccountSidebarSvc.init();
+	HtmlCacheSvc.init();
 });
 app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc, ManagerSvc) {
 	$scope.MetaTagSvc=MetaTagSvc;
