@@ -46,6 +46,11 @@ class CustomPrerenderIO(PrerenderIO):
         r = self.session.post(self.RECACHE_URL, headers=headers, data=data)
         return r.status_code < 500
 
+    def _request_kwargs(self, kwargs):
+        if settings.PRERENDER_TIMEOUT is not False:
+            kwargs['timeout'] = settings.PRERENDER_TIMEOUT
+        return kwargs
+
     def get_response_for_url(self, url):
         """
         Accepts a fully-qualified url.
