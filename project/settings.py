@@ -50,23 +50,118 @@ else:
     DEBUG = True
     TEMPLATE_DEBUG_MODE = True
 
+ADMINS = (
+    ('Support', SUPPORT_EMAIL),
+)
+
 # LOGGING
 if ENV == 'production':
-    ADMINS = (
-        ('Support', SUPPORT_EMAIL),
-    )
-    LOGGING = {
+    LOGGING = LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+            'simple': {
+                'format': '%(levelname)s %(message)s'
+            },
+        },
         'handlers': {
             'mail_admins': {
                 'level': 'ERROR',
                 'class': 'django.utils.log.AdminEmailHandler'
-            }
+            },
+            'console': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple'
+            },
+            'null': {
+                'level': 'DEBUG',
+                'class': 'logging.NullHandler',
+            },
         },
         'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'propagate': True,
+            },
             'django.request': {
                 'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'django_seo_js.middleware.escaped_fragment': {
+                'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'django_seo_js.middleware.hashbang': {
+                'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'django_seo_js.middleware.useragent': {
+                'handlers': ['mail_admins'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+        }
+    }
+else:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            },
+            'simple': {
+                'format': '%(levelname)s %(message)s'
+            },
+        },
+        'handlers': {
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'django.utils.log.AdminEmailHandler'
+            },
+            'console': {
+                'level': 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple'
+            },
+            'mail_admins': {
+                'level': 'ERROR',
+                'class': 'logging.NullHandler'
+            },
+            'null': {
+                'level': 'DEBUG',
+                'class': 'logging.NullHandler',
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console'],
+                'propagate': True,
+            },
+            'django.request': {
+                'handlers': ['console'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'django_seo_js.middleware.escaped_fragment': {
+                'handlers': ['console'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'django_seo_js.middleware.hashbang': {
+                'handlers': ['console'],
+                'level': 'ERROR',
+                'propagate': True,
+            },
+            'django_seo_js.middleware.useragent': {
+                'handlers': ['console'],
                 'level': 'ERROR',
                 'propagate': True,
             },
