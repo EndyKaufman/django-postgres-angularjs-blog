@@ -209,7 +209,7 @@ else:
 # Backend to use
 SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', False)
 
-SEO_JS_PRERENDER_CUSTOM = os.environ.get('SEO_JS_PRERENDER_CUSTOM', 0) == 1
+SEO_JS_PRERENDER_CUSTOM = os.environ.get('SEO_JS_PRERENDER_CUSTOM', 0) == '1'
 
 if SEO_JS_PRERENDER_TOKEN == '' or not SEO_JS_PRERENDER_TOKEN or SEO_JS_PRERENDER_CUSTOM:
     SEO_JS_BACKEND = "app.manager.html_cache.prerender.CustomPrerenderIO"
