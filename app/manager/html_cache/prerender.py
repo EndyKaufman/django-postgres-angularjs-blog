@@ -47,7 +47,7 @@ class CustomPrerenderIO(PrerenderIO):
         return r.status_code < 500
 
     def _request_kwargs(self, kwargs):
-        if settings.PRERENDER_TIMEOUT is not False:
+        if getattr(settings, 'PRERENDER_TIMEOUT', False) is not False:
             kwargs['timeout'] = settings.PRERENDER_TIMEOUT
         return kwargs
 
