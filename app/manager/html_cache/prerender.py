@@ -12,6 +12,7 @@ class CustomPrerenderIO(PrerenderIO):
 
     def __init__(self, *args, **kwargs):
         super(SEOBackendBase, self).__init__(*args, **kwargs)
+        self.token = self._get_token()
 
         if not settings.PRERENDER_URL:
             raise ValueError("Missing SEO_JS_PRERENDER_URL in settings.")
@@ -62,8 +63,9 @@ class CustomPrerenderIO(PrerenderIO):
         render_url = self.BASE_URL + new_url
 
         headers = {
-            'X-Prerender-Token': self.token,
+            'X-Prerender-Token': self.token
         }
+
         get_options = {
             'headers': headers,
             'allow_redirects': False
