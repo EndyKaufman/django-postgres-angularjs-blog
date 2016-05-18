@@ -90,7 +90,7 @@ def get_item_by_name(request, properties_name):
 
 
 def get_list_of_names(names):
-    items = get_list()
+    items = get_list_as_objects()
     list_of_names = helpers.set_null_values_if_not_exist({}, names, '')
     if len(names) > 0:
         for item in items:
@@ -111,7 +111,7 @@ def get_list(request):
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
-def get_list():
+def get_list_as_objects():
     from app.manager.models import Properties
 
     try:

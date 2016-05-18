@@ -99,7 +99,7 @@ def get_list(request):
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
-def get_list():
+def get_list_as_objects():
     from app.manager.models import MetaTag
 
     try:

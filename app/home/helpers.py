@@ -61,7 +61,7 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
         temp_list.append(strings['site_url'])
         strings['site_url'] = '/'.join(temp_list)
 
-    meta_tag_list = meta_tag_resource.get_list()
+    meta_tag_list = meta_tag_resource.get_list_as_objects()
 
     properties_list = properties_resource.get_list_of_names(['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME', 'SITE_LOGO',
                                                              'HOME_HEADER_BOTTOM_HTML',

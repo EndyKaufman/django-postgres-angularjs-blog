@@ -19,7 +19,7 @@ https://django-postgres-angularjs-blog.herokuapp.com
 8. ~~Add themes support~~
 10. ~~Change standard bootstrap theme to beautiful and clear free template~~
 11. **Add others modules**
-12. SEO optimizations for Google & Yandex
+12. ~~SEO optimizations for Google & Yandex~~
 13. Add social publisher (Facebook, Twitter, Vkontakte)
 14. Add multi languages support
 
