@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>{{ strings.site_title}}</title>
     <meta name="description" content="{{ strings.site_description}}"/>
-    <meta property="og:title" content="{{ strings.site_title}}" />
+    <meta property="og:title" content="{{ strings.short_site_title}}" />
     <meta property="og:description" content="{{ strings.site_description}}" />
     <meta property="og:image" content="{{ strings.site_image}}" />
     <meta property="og:type" content="{{ strings.site_type}}" />
@@ -23,6 +23,7 @@
     {% for meta_tag_item in meta_tag_list %}{% if meta_tag_item.content != '' %}
     <meta name="{{ meta_tag_item.name }}" content="{{ meta_tag_item.content }}" {{ meta_tag_item.attributes |safe}}/>
     {% endif %}{% endfor %}
+    <link rel="image_src" href="{{ strings.site_image}}" />
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
     </script>

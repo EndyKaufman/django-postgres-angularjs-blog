@@ -50,7 +50,7 @@ def update(request, meta_tag_id):
 
     item.created_user = user
     item.save()
-    
+
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
@@ -89,6 +89,16 @@ def get_item_by_name(request, meta_tag_name):
         return {'code': 'meta_tag/not_found', 'values': [meta_tag_name]}, 404, False
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
+
+
+def get_list():
+    from app.manager.models import MetaTag
+
+    try:
+        items = MetaTag.objects.all().order_by('position').all()
+    except MetaTag.DoesNotExist:
+        items = []
+    return items
 
 
 def get_list(request):

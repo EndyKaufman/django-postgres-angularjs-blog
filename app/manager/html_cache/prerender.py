@@ -1,7 +1,7 @@
 from django_seo_js import settings
 from django_seo_js.backends.base import SEOBackendBase
 from django_seo_js.backends.prerender import PrerenderIO
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 import requests
 import resource
 
@@ -82,9 +82,12 @@ class CustomPrerenderIO(PrerenderIO):
             try:
                 r = self.session.get(render_url, **self._request_kwargs(get_options))
                 assert r.status_code < 500
-                new_response = self.build_django_response_from_requests_response(r)
-                resource.update_by_url(new_url, new_response.content)
-                return new_response
+                if r.status_code < 400:
+                    new_response = self.build_django_response_from_requests_response(r)
+                    resource.update_by_url(new_url, new_response.content)
+                    return new_response
+                else:
+                    return Http404()
             except requests.exceptions.Timeout:
                 return self.build_request_timeout_response()
         else:

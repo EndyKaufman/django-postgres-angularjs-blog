@@ -28,17 +28,18 @@ def get_config(request):
 
 def render_index(request, strings, template='home/templates/%s/index.htm'):
     config = get_config(request)
-    config['properties'] = properties_resource.get_list_of_names(request,
-                                                                 ['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME',
+    config['properties'] = properties_resource.get_list_of_names(['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME',
                                                                   'SITE_LOGO'])
 
     strings = helpers.set_null_values_if_not_exist(strings, ['site_title', 'site_description', 'site_name',
                                                              'site_image', 'site_type', 'site_url'])
     if strings['site_title'] is None:
         strings['site_title'] = config['properties']['SITE_TITLE']
+        strings['short_site_title'] = config['properties']['SITE_TITLE']
     else:
         strings['site_title'].append(config['properties']['SITE_TITLE'])
         strings['site_title'] = ' - '.join(strings['site_title'])
+        strings['short_site_title'] = strings['site_title'][0]
 
     if strings['site_description'] is None:
         strings['site_description'] = config['properties']['SITE_DESCRIPTION']
@@ -60,10 +61,9 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
         temp_list.append(strings['site_url'])
         strings['site_url'] = '/'.join(temp_list)
 
-    meta_tag_list = meta_tag_resource.get_list(request)
+    meta_tag_list = meta_tag_resource.get_list()
 
-    properties_list = properties_resource.get_list_of_names(request,
-                                                            ['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME', 'SITE_LOGO',
+    properties_list = properties_resource.get_list_of_names(['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME', 'SITE_LOGO',
                                                              'HOME_HEADER_BOTTOM_HTML',
                                                              'HOME_BODY_TOP_HTML', 'HOME_BODY_BOTTOM_HTML'])
 
@@ -93,7 +93,7 @@ def render_404(request, strings):
 
 
 def render_robots_txt(request):
-    properties_list = properties_resource.get_list_of_names(request, ['ROBOT_TXT'])
+    properties_list = properties_resource.get_list_of_names(['ROBOT_TXT'])
     return render(request, 'home/templates/%s/robots.txt' % settings.THEME, {'properties_list': properties_list})
 
 
