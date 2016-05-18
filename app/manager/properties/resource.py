@@ -90,7 +90,7 @@ def get_item_by_name(request, properties_name):
 
 
 def get_list_of_names(names):
-    data, code, items = get_list()
+    items = get_list()
     list_of_names = helpers.set_null_values_if_not_exist({}, names, '')
     if len(names) > 0:
         for item in items:
@@ -103,6 +103,14 @@ def get_list_of_names(names):
     return list_of_names
 
 
+def get_list(request):
+    from app.manager.models import Properties
+
+    items = Properties.objects.all().order_by('created').all()
+
+    return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
+
+
 def get_list():
     from app.manager.models import Properties
 
@@ -111,14 +119,6 @@ def get_list():
     except Properties.DoesNotExist:
         items = []
     return items
-
-
-def get_list(request):
-    from app.manager.models import Properties
-
-    items = Properties.objects.all().order_by('created').all()
-
-    return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
 def get_search(request, search_text):
