@@ -10,17 +10,17 @@
   <priority>1.00</priority>
 </url>
 <url>
-  <loc>{{ config.host_name }}/contact</loc>
+  <loc>{{ config.host_name }}/account/contact</loc>
   <changefreq>hourly</changefreq>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>{{ config.host_name }}/login</loc>
+  <loc>{{ config.host_name }}/account/login</loc>
   <changefreq>hourly</changefreq>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>{{ config.host_name }}/reg</loc>
+  <loc>{{ config.host_name }}/account/reg</loc>
   <changefreq>hourly</changefreq>
   <priority>0.80</priority>
 </url>
