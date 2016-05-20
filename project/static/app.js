@@ -1,12 +1,12 @@
-initJQueryPlugins = function(){
+initJQueryPlugins = function() {
 
 };
 
-$(document).ready(function(){
-  $('[data-toggle="offcanvas"]').click(function () {
-    $('.row-offcanvas').toggleClass('active')
-  });
-  initJQueryPlugins();
+$(document).ready(function() {
+    $('[data-toggle="offcanvas"]').click(function() {
+        $('.row-offcanvas').toggleClass('active');
+    });
+    initJQueryPlugins();
 });
 /**
  * speakingurl
@@ -78674,6 +78674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ ])
 });
 ;
+angular.module("gettext",[]),angular.module("gettext").constant("gettext",function(a){return a}),angular.module("gettext").factory("gettextCatalog",["gettextPlurals","gettextFallbackLanguage","$http","$cacheFactory","$interpolate","$rootScope",function(a,b,c,d,e,f){function g(){f.$broadcast("gettextLanguageChanged")}var h,i="$$noContext",j='<span id="test" title="test" class="tested">test</span>',k=angular.element("<span>"+j+"</span>").html()!==j,l=function(a){return h.debug&&h.currentLanguage!==h.baseLanguage?h.debugPrefix+a:a},m=function(a){return h.showTranslatedMarkers?h.translatedMarkerPrefix+a+h.translatedMarkerSuffix:a};return h={debug:!1,debugPrefix:"[MISSING]: ",showTranslatedMarkers:!1,translatedMarkerPrefix:"[",translatedMarkerSuffix:"]",strings:{},baseLanguage:"en",currentLanguage:"en",cache:d("strings"),setCurrentLanguage:function(a){this.currentLanguage=a,g()},getCurrentLanguage:function(){return this.currentLanguage},setStrings:function(a,b){this.strings[a]||(this.strings[a]={});for(var c in b){var d=b[c];if(k&&(c=angular.element("<span>"+c+"</span>").html()),angular.isString(d)||angular.isArray(d)){var e={};e[i]=d,d=e}for(var f in d){var h=d[f];d[f]=angular.isArray(h)?h:[h]}this.strings[a][c]=d}g()},getStringFormFor:function(b,c,d,e){if(!b)return null;var f=this.strings[b]||{},g=f[c]||{},h=g[e||i]||[];return h[a(b,d)]},getString:function(a,c,d){var f=b(this.currentLanguage);return a=this.getStringFormFor(this.currentLanguage,a,1,d)||this.getStringFormFor(f,a,1,d)||l(a),a=c?e(a)(c):a,m(a)},getPlural:function(a,c,d,f,g){var h=b(this.currentLanguage);return c=this.getStringFormFor(this.currentLanguage,c,a,g)||this.getStringFormFor(h,c,a,g)||l(1===a?c:d),f&&(f.$count=a,c=e(c)(f)),m(c)},loadRemote:function(a){return c({method:"GET",url:a,cache:h.cache}).then(function(a){var b=a.data;for(var c in b)h.setStrings(c,b[c]);return a})}}}]),angular.module("gettext").directive("translate",["gettextCatalog","$parse","$animate","$compile","$window",function(a,b,c,d,e){function f(a,b,c){if(!a)throw new Error("You should add a "+b+" attribute whenever you add a "+c+" attribute.")}var g=function(){return String.prototype.trim?function(a){return"string"==typeof a?a.trim():a}:function(a){return"string"==typeof a?a.replace(/^\s*/,"").replace(/\s*$/,""):a}}(),h=parseInt((/msie (\d+)/.exec(angular.lowercase(e.navigator.userAgent))||[])[1],10);return{restrict:"AE",terminal:!0,compile:function(e,i){f(!i.translatePlural||i.translateN,"translate-n","translate-plural"),f(!i.translateN||i.translatePlural,"translate-plural","translate-n");var j=g(e.html()),k=i.translatePlural,l=i.translateContext;return 8>=h&&"<!--IE fix-->"===j.slice(-13)&&(j=j.slice(0,-13)),{post:function(e,f,h){function i(){var b;k?(e=n||(n=e.$new()),e.$count=m(e),b=a.getPlural(e.$count,j,k,null,l)):b=a.getString(j,null,l);var h=f.contents();if(0!==h.length){if(b===g(h.html()))return void(o&&d(h)(e));var i=angular.element("<span>"+b+"</span>");d(i.contents())(e);var p=i.contents();c.enter(p,f),c.leave(h)}}var m=b(h.translateN),n=null,o=!0;h.translateN&&e.$watch(h.translateN,i),e.$on("gettextLanguageChanged",i),i(),o=!1}}}}}]),angular.module("gettext").factory("gettextFallbackLanguage",function(){var a={},b=/([^_]+)_[^_]+$/;return function(c){if(a[c])return a[c];var d=b.exec(c);return d?(a[c]=d[1],d[1]):null}}),angular.module("gettext").filter("translate",["gettextCatalog",function(a){function b(b,c){return a.getString(b,null,c)}return b.$stateful=!0,b}]),angular.module("gettext").factory("gettextPlurals",function(){return function(a,b){switch(a){case"ay":case"bo":case"cgg":case"dz":case"fa":case"id":case"ja":case"jbo":case"ka":case"kk":case"km":case"ko":case"ky":case"lo":case"ms":case"my":case"sah":case"su":case"th":case"tt":case"ug":case"vi":case"wo":case"zh":return 0;case"is":return b%10!=1||b%100==11?1:0;case"jv":return 0!=b?1:0;case"mk":return 1==b||b%10==1?0:1;case"ach":case"ak":case"am":case"arn":case"br":case"fil":case"fr":case"gun":case"ln":case"mfe":case"mg":case"mi":case"oc":case"pt_BR":case"tg":case"ti":case"tr":case"uz":case"wa":case"zh":return b>1?1:0;case"lv":return b%10==1&&b%100!=11?0:0!=b?1:2;case"lt":return b%10==1&&b%100!=11?0:b%10>=2&&(10>b%100||b%100>=20)?1:2;case"be":case"bs":case"hr":case"ru":case"sr":case"uk":return b%10==1&&b%100!=11?0:b%10>=2&&4>=b%10&&(10>b%100||b%100>=20)?1:2;case"mnk":return 0==b?0:1==b?1:2;case"ro":return 1==b?0:0==b||b%100>0&&20>b%100?1:2;case"pl":return 1==b?0:b%10>=2&&4>=b%10&&(10>b%100||b%100>=20)?1:2;case"cs":case"sk":return 1==b?0:b>=2&&4>=b?1:2;case"sl":return b%100==1?1:b%100==2?2:b%100==3||b%100==4?3:0;case"mt":return 1==b?0:0==b||b%100>1&&11>b%100?1:b%100>10&&20>b%100?2:3;case"gd":return 1==b||11==b?0:2==b||12==b?1:b>2&&20>b?2:3;case"cy":return 1==b?0:2==b?1:8!=b&&11!=b?2:3;case"kw":return 1==b?0:2==b?1:3==b?2:3;case"ga":return 1==b?0:2==b?1:7>b?2:11>b?3:4;case"ar":return 0==b?0:1==b?1:2==b?2:b%100>=3&&10>=b%100?3:b%100>=11?4:5;default:return 1!=b?1:0}}});
 agGrid.initialiseAgGridWithAngular1(angular);
 
 var app = angular.module('app', [
@@ -78690,20 +78691,22 @@ var app = angular.module('app', [
     'ui.bootstrap.showErrors',
     'angular-markdown',
     'ui.uploader',
-    'agGrid']);
-app.config(function ($selectProvider, showErrorsConfigProvider, $carouselProvider, $modalProvider) {
+    'agGrid',
+    'gettext']
+);
+app.config(function($selectProvider, showErrorsConfigProvider, $carouselProvider, $modalProvider) {
     showErrorsConfigProvider.showSuccess(true);
 
     var mydefaults = {
-        outerWidth:'100%',
+        outerWidth: '100%',
         //innerHeight:'350px',
-        interval:15000,
-    }
+        interval: 15000,
+    };
     angular.extend($carouselProvider.defaults, mydefaults);
 
-    var mydefaults = {
+    defaults = {
         backdrop: false
-    }
+    };
     angular.extend($modalProvider.defaults, mydefaults);
 });
 app.constant('AccountConst',{
@@ -78754,7 +78757,7 @@ app.constant('AccountConst',{
         'account/login/success':'You authorizing!',
         'account/logout/success':'Bye-Bye!',
         'account/logout/confirm':'Do you really want to leave?',
-        'account/user_not_found':'User with email <strong>%s</strong> not found!',
+        'account/user_with_email_not_found':'User with email <strong>%s</strong> not found!',
         'account/recovery/checkemail':'Check email <strong>%s</strong> for code to reset password',
         'account/delete/confirm':'Do you really want to delete account?'
     }
@@ -78861,53 +78864,44 @@ app.constant('TagConst', {
     }
 });
 app.factory('AppConst', function($rootScope,
-HomeConst, AccountConst, TagConst, ProjectConst, PostConst, SearchConst, ContactConst, ManagerConst, NavbarConst){
-    var navbar={
-        left:[
-            {
-                name: 'project'
-            },
-            {
-                name: 'post',
-            },
-            {
-                name: 'contact',
+    HomeConst, AccountConst, TagConst, ProjectConst, PostConst, SearchConst, ContactConst, ManagerConst, NavbarConst) {
+    var navbar = {
+        left: [{
+            name: 'project'
+        }, {
+            name: 'post',
+        }, {
+            name: 'contact',
+        }],
+        right: [{
+            name: 'login',
+            parent: 'account',
+            hiddenHandler: function() {
+                return (AppConfig.user.id !== undefined);
             }
-        ],
-        right:[
-            {
-                name:'login',
-                parent:'account',
-                hiddenHandler: function(){
-                    return (AppConfig.user.id!=undefined)
-                }
-            },
-            {
-                name: 'manager',
-                hiddenHandler: function(){
-                    return AppConfig.user.id==undefined || (AppConfig.user.id!=undefined && AppConfig.user.roles.indexOf('admin')==-1)
-                }
-            },
-            {
-                name: 'profile',
-                parent:'account',
-                hiddenHandler: function(){
-                    return (AppConfig.user.id==undefined)
-                }
-            },
-            {
-                name:'logout',
-                parent:'account',
-                click:function(){
-                    $rootScope.$broadcast('account.doLogout', true);
-                },
-                hiddenHandler: function(){
-                    return (AppConfig.user.id==undefined)
-                }
+        }, {
+            name: 'manager',
+            hiddenHandler: function() {
+                return AppConfig.user.id === undefined || (AppConfig.user.id !== undefined && AppConfig.user.roles.indexOf('admin') == -1);
             }
-        ]
+        }, {
+            name: 'profile',
+            parent: 'account',
+            hiddenHandler: function() {
+                return (AppConfig.user.id === undefined);
+            }
+        }, {
+            name: 'logout',
+            parent: 'account',
+            click: function() {
+                $rootScope.$broadcast('account.doLogout', true);
+            },
+            hiddenHandler: function() {
+                return (AppConfig.user.id === undefined);
+            }
+        }]
     };
-    var service={
+    var service = {
         home: HomeConst,
         navbar: angular.extend({}, NavbarConst, navbar),
         manager: ManagerConst,
@@ -78920,73 +78914,79 @@ HomeConst, AccountConst, TagConst, ProjectConst, PostConst, SearchConst, Contact
     };
 
     return service;
-  });
-app.config(function ($routeProvider, $locationProvider) {
-    $routeProvider
-      .when('/account', {
-        templateUrl: 'views/account/profile.html',
-        controller: 'ProfileCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'profile'
+});
+app.config(function($routeProvider, $locationProvider) {
+    var routes = {
+        '/account': {
+            templateUrl: 'views/account/profile.html',
+            controller: 'ProfileCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'profile'
+            }
+        },
+        '/account/profile': {
+            templateUrl: 'views/account/profile.html',
+            controller: 'ProfileCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'profile'
+            }
+        },
+        '/account/user_app': {
+            templateUrl: 'views/account/user_app.html',
+            controller: 'UserAppCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'user_app'
+            }
+        },
+        '/account/reg': {
+            templateUrl: 'views/account/reg.html',
+            controller: 'AccountCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'reg'
+            }
+        },
+        '/account/recovery': {
+            templateUrl: 'views/account/recovery.html',
+            controller: 'AccountCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'recovery'
+            }
+        },
+        '/account/reset/:code': {
+            templateUrl: 'views/account/reset.html',
+            controller: 'AccountCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'reset'
+            }
+        },
+        '/account/reset': {
+            templateUrl: 'views/account/reset.html',
+            controller: 'AccountCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'reset'
+            },
+        },
+        '/account/login': {
+            templateUrl: 'views/account/login.html',
+            controller: 'AccountCtrl',
+            params: {
+                navId: 'account',
+                subNavId: 'login'
+            }
         }
-      })
-      .when('/account/profile', {
-        templateUrl: 'views/account/profile.html',
-        controller: 'ProfileCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'profile'
-        }
-      })
-      .when('/account/user_app', {
-        templateUrl: 'views/account/user_app.html',
-        controller: 'UserAppCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'user_app'
-        }
-      })
-      .when('/account/reg', {
-        templateUrl: 'views/account/reg.html',
-        controller: 'AccountCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'reg'
-        }
-      })
-      .when('/account/recovery', {
-        templateUrl: 'views/account/recovery.html',
-        controller: 'AccountCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'recovery'
-        }
-      })
-      .when('/account/reset/:code', {
-        templateUrl: 'views/account/reset.html',
-        controller: 'AccountCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'reset'
-        }
-      })
-      .when('/account/reset', {
-        templateUrl: 'views/account/reset.html',
-        controller: 'AccountCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'reset'
-        }
-      })
-      .when('/account/login', {
-        templateUrl: 'views/account/login.html',
-        controller: 'AccountCtrl',
-        params:{
-            navId: 'account',
-            subNavId: 'login'
-        }
-      });
+    };
+    for (var url in routes) {
+        $routeProvider
+            .when(url, routes[url])
+            .when('/:lang' + url, routes[url]);
+    }
 });
 app.config(function ($routeProvider, $locationProvider) {
     $routeProvider
@@ -80271,7 +80271,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div><!--//desc-->');
 	a.put('views/project/list-header.html', '<span ng-bind-html="ProjectSvc.title | unsafe"></span>\n' +
     '<a ng-href="/project/create"\n' +
-    '   class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectCreate"><i class="fa fa-plus"></i>  Create</a>');
+    '   class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectCreate"><i class="fa fa-plus"></i>  <translate>Create</translate></a>');
 	a.put('views/project/item.html', '<div class="container sections-wrapper">\n' +
     '    <div class="row">\n' +
     '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
@@ -81487,63 +81487,63 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '');
 	a.put('views/empty.html', '');
 	 }]);
-app.filter('unsafe', function($sce) { return $sce.trustAsHtml; })
-.directive('ngEnter', function () {
-    return function (scope, element, attrs) {
-        element.bind("keydown keypress", function (event) {
-            if(event.which === 13) {
-                scope.$apply(function (){
-                    scope.$eval(attrs.ngEnter);
-                });
-                element[0].blur();
-                event.preventDefault();
-            }
+app.filter('unsafe', function($sce) {
+        return $sce.trustAsHtml;
+    })
+    .directive('ngEnter', function() {
+        return function(scope, element, attrs) {
+            element.bind("keydown keypress", function(event) {
+                if (event.which === 13) {
+                    scope.$apply(function() {
+                        scope.$eval(attrs.ngEnter);
+                    });
+                    element[0].blur();
+                    event.preventDefault();
+                }
+            });
+        };
+    })
+    .factory('UtilsSvc', function($http, $q, $timeout) {
+        var service = {};
+
+        service.capitalise = function(string) {
+            if (string.length > 0)
+                return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+            else
+                return '';
+        };
+        //Numbers 1, 3 и 5.
+        //Sample: decOfNum(5, ['секунда', 'секунды', 'секунд'])
+        service.declOfNum = function(number, titles) {
+            cases = [2, 0, 1, 1, 1, 2];
+            return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+        };
+        return service;
+    });
+app.factory('AppRes', function($q, $http, $cookies, uiUploader) {
+    var service = {};
+
+
+    service.get = function(url) {
+        return $http({
+            method: 'GET',
+            url: url
         });
     };
-})
-.factory('UtilsSvc', function ($http, $q, $timeout) {
-    var service={};
 
-    service.capitalise = function (string) {
-      if (string.length>0)
-        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-      else
-        return '';
-    }
-    //Numbers 1, 3 и 5.
-    //Sample: decOfNum(5, ['секунда', 'секунды', 'секунд'])
-    service.declOfNum = function(number, titles)
-    {
-        cases = [2, 0, 1, 1, 1, 2];
-        return titles[ (number%100>4 && number%100<20)? 2 : cases[(number%10<5)?number%10:5] ];
-    }
-    return service;
-});
-
-app.factory('AppRes', function ($q, $http, $cookies, uiUploader) {
-    var service={};
-
-
-    service.get=function(url){
-        return $http({
-                  method: 'GET',
-                  url: url
-               });
+    service.post = function(url, data) {
+        if (data === undefined)
+            data = {};
+        data = angular.copy(data);
+        return $http.post(url, data);
     };
 
-    service.post=function(url, data){
-        if (data==undefined)
-            data={};
-        var data=angular.copy(data);
-        return $http.post(url, data);
-    }
-
-    service.addFiles=function(files){
+    service.addFiles = function(files) {
         uiUploader.addFiles(files);
         return uiUploader.getFiles();
-    }
+    };
 
-    service.upload=function(url, data){
+    service.upload = function(url, data) {
         var deferred = $q.defer();
         console.log('uploading...');
         uiUploader.startUpload({
@@ -81552,49 +81552,50 @@ app.factory('AppRes', function ($q, $http, $cookies, uiUploader) {
             concurrency: 2,
             headers: {
                 'Accept': 'application/json',
-                'X-CSRFToken':$cookies.get('csrftoken')
+                'X-CSRFToken': $cookies.get('csrftoken')
             },
             onProgress: function(file) {
                 console.log(file.name + '=' + file.humanSize);
             },
             onCompleted: function(file, response) {
-                deferred.resolve({data:JSON.parse(response)});
+                deferred.resolve({
+                    data: JSON.parse(response)
+                });
                 console.log(file + 'response' + response);
             }
         });
         return deferred.promise;
-    }
+    };
 
-    service.init=function(reload){
-    }
-    service.init();    
+    service.init = function(reload) {};
+    service.init();
     return service;
-  });
-app.factory('AccountRes', function (AppConst, AppRes) {
-    var service={};
+});
+app.factory('AccountRes', function(AppConst, AppRes) {
+    var service = {};
 
-    service.actionLogin=function(email, password){
+    service.actionLogin = function(email, password) {
         return AppRes.post('/api/v1/account/login', {
             email: email,
             password: password
         });
     };
 
-    service.actionLogout=function(){
+    service.actionLogout = function() {
         return AppRes.post('/api/v1/account/logout');
     };
 
-    service.actionReg=function(item){
+    service.actionReg = function(item) {
         return AppRes.post('/api/v1/account/reg', item);
-    }
+    };
 
-    service.actionRecovery=function(email){
+    service.actionRecovery = function(email) {
         return AppRes.post('/api/v1/account/recovery', {
             email: email
         });
-    }
+    };
 
-    service.actionReset=function(code, password){
+    service.actionReset = function(code, password) {
         return AppRes.post('/api/v1/account/reset', {
             code: code,
             password: password
@@ -81602,7 +81603,7 @@ app.factory('AccountRes', function (AppConst, AppRes) {
     };
 
     return service;
-  });
+});
 app.factory('ContactRes', function (AppConst, AppRes) {
     var service={};
 
@@ -81616,274 +81617,272 @@ app.factory('ContactRes', function (AppConst, AppRes) {
 
     return service;
   });
-app.factory('FileRes', function ($q, AppConst, uiUploader, AppRes) {
-    var service={};
+app.factory('FileRes', function($q, AppConst, uiUploader, AppRes) {
+    var service = {};
 
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/file/list');
     };
-    service.getSearch=function(searchText){
-        if (searchText==undefined)
-            searchText='all';
-        return AppRes.get('/api/v1/file/search/'+searchText);
+    service.getSearch = function(searchText) {
+        if (searchText === undefined)
+            searchText = 'all';
+        return AppRes.get('/api/v1/file/search/' + searchText);
     };
 
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/file/update/'+item.id, item);
-    }
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/file/update/' + item.id, item);
+    };
 
-    service.actionCreate=function(item){
-        return AppRes.upload('/api/v1/file/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/file/delete/'+item.id, item);
-    }
+    service.actionCreate = function(item) {
+        return AppRes.upload('/api/v1/file/create', item);
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/file/delete/' + item.id, item);
+    };
 
-    service.addFiles=function(files){
+    service.addFiles = function(files) {
         service.files = AppRes.addFiles(files);
-    }
+    };
 
     return service;
-  });
-app.factory('PostRes', function (AppConst, AppRes) {
-    var service={};
+});
+app.factory('PostRes', function(AppConst, AppRes) {
+    var service = {};
 
-    service.getItem=function(name){
-        return AppRes.get('/api/v1/post/item/'+name);
+    service.getItem = function(name) {
+        return AppRes.get('/api/v1/post/item/' + name);
     };
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/post/list');
     };
-    service.getSearch=function(searchText){
-        if (searchText==undefined)
-            searchText='all';
-        return AppRes.get('/api/v1/post/search/'+searchText);
+    service.getSearch = function(searchText) {
+        if (searchText === undefined)
+            searchText = 'all';
+        return AppRes.get('/api/v1/post/search/' + searchText);
     };
-    service.getListByTag=function(tagText){
-        return AppRes.get('/api/v1/post/listbytag/'+tagText);
+    service.getListByTag = function(tagText) {
+        return AppRes.get('/api/v1/post/listbytag/' + tagText);
     };
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/post/update/'+item.id, item);
-    }
-    service.actionCreate=function(item){
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/post/update/' + item.id, item);
+    };
+    service.actionCreate = function(item) {
         return AppRes.post('/api/v1/post/create', item);
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/post/delete/'+item.id, item);
-    }
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/post/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('ProjectRes', function (AppConst, AppRes) {
-    var service={};
+});
+app.factory('ProjectRes', function(AppConst, AppRes) {
+    var service = {};
 
-    service.getItem=function(name){
-        return AppRes.get('/api/v1/project/item/'+name);
+    service.getItem = function(name) {
+        return AppRes.get('/api/v1/project/item/' + name);
     };
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/project/list');
     };
-    service.getSearch=function(searchText){
-        if (searchText==undefined)
-            searchText='all';
-        return AppRes.get('/api/v1/project/search/'+searchText);
+    service.getSearch = function(searchText) {
+        if (searchText === undefined)
+            searchText = 'all';
+        return AppRes.get('/api/v1/project/search/' + searchText);
     };
-    service.getListByTag=function(tagText){
-        return AppRes.get('/api/v1/project/listbytag/'+tagText);
+    service.getListByTag = function(tagText) {
+        return AppRes.get('/api/v1/project/listbytag/' + tagText);
     };
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/project/update/'+item.id, item);
-    }
-    service.actionCreate=function(item){
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/project/update/' + item.id, item);
+    };
+    service.actionCreate = function(item) {
         return AppRes.post('/api/v1/project/create', item);
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/project/delete/'+item.id, item);
-    }
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/project/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('TagRes', function (AppRes, AppConst) {
-    var service={};
+});
+app.factory('TagRes', function(AppRes, AppConst) {
+    var service = {};
 
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/tag/list');
     };
 
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/tag/update/'+item.id, item);
-    }
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/tag/update/' + item.id, item);
+    };
 
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/tag/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/tag/delete/'+item.id, item);
-    }
+    service.actionCreate = function(item) {
+        return AppRes.post('/api/v1/tag/create', item);
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/tag/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('ProfileRes', function ($q, AppConst, AppRes) {
-    var service={};
+});
+app.factory('ProfileRes', function($q, AppConst, AppRes) {
+    var service = {};
 
-    service.actionDelete=function(){
+    service.actionDelete = function() {
         return AppRes.post('/api/v1/account/delete');
-    }
+    };
 
-    service.actionUpdate=function(item){
+    service.actionUpdate = function(item) {
         return AppRes.post('/api/v1/account/update', item);
-    }
+    };
 
     return service;
-  });
-app.factory('UserAppRes', function ($q, AppConst, AppRes) {
-    var service={};
+});
+app.factory('UserAppRes', function($q, AppConst, AppRes) {
+    var service = {};
 
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/user_app/list');
     };
 
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/user_app/update/'+item.id, item);
-    }
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/user_app/update/' + item.id, item);
+    };
 
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/user_app/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/user_app/delete/'+item.id, item);
-    }
+    service.actionCreate = function(item) {
+        return AppRes.post('/api/v1/user_app/create', item);
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/user_app/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('HtmlCacheRes', function ($q, AppConst, AppRes) {
-    var service={};
+});
+app.factory('HtmlCacheRes', function($q, AppConst, AppRes) {
+    var service = {};
 
-    service.getSiteMap=function(){
+    service.getSiteMap = function() {
         return AppRes.get('/sitemap.xml');
     };
 
-    service.getPage=function(url){
+    service.getPage = function(url) {
         var config = {
-            headers:  {
-            }
-        }
-        return AppRes.get(url+'?_escaped_fragment_=', config);
+            headers: {}
+        };
+        return AppRes.get(url + '?_escaped_fragment_=', config);
     };
 
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/manager/html_cache/list');
     };
 
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/manager/html_cache/update/'+item.id, item);
-    }
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/manager/html_cache/update/' + item.id, item);
+    };
 
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/manager/html_cache/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/manager/html_cache/delete/'+item.id, item);
-    }
+    service.actionCreate = function(item) {
+        return AppRes.post('/api/v1/manager/html_cache/create', item);
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/manager/html_cache/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('MetaTagRes', function ($q, AppConst, AppRes) {
-    var service={};
+});
+app.factory('MetaTagRes', function($q, AppConst, AppRes) {
+    var service = {};
 
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/manager/meta_tag/list');
     };
 
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/manager/meta_tag/update/'+item.id, item);
-    }
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/manager/meta_tag/update/' + item.id, item);
+    };
 
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/manager/meta_tag/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/manager/meta_tag/delete/'+item.id, item);
-    }
+    service.actionCreate = function(item) {
+        return AppRes.post('/api/v1/manager/meta_tag/create', item);
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/manager/meta_tag/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('PropertiesRes', function ($q, AppConst, AppRes) {
-    var service={};
+});
+app.factory('PropertiesRes', function($q, AppConst, AppRes) {
+    var service = {};
 
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/manager/properties/list');
     };
 
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/manager/properties/update/'+item.id, item);
-    }
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/manager/properties/update/' + item.id, item);
+    };
 
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/manager/properties/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/manager/properties/delete/'+item.id, item);
-    }
+    service.actionCreate = function(item) {
+        return AppRes.post('/api/v1/manager/properties/create', item);
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/manager/properties/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('PublicLinkRes', function ($q, AppConst, AppRes) {
-    var service={};
+});
+app.factory('PublicLinkRes', function($q, AppConst, AppRes) {
+    var service = {};
 
-    service.getList=function(){
+    service.getList = function() {
         return AppRes.get('/api/v1/manager/public_link/list');
     };
 
-    service.actionUpdate=function(item){
-        return AppRes.post('/api/v1/manager/public_link/update/'+item.id, item);
-    }
+    service.actionUpdate = function(item) {
+        return AppRes.post('/api/v1/manager/public_link/update/' + item.id, item);
+    };
 
-    service.actionCreate=function(item){
-        return AppRes.post('/api/v1/manager/public_link/create',item)
-    }
-    service.actionDelete=function(item){
-        return AppRes.post('/api/v1/manager/public_link/delete/'+item.id, item);
-    }
+    service.actionCreate = function(item) {
+        return AppRes.post('/api/v1/manager/public_link/create', item);
+    };
+    service.actionDelete = function(item) {
+        return AppRes.post('/api/v1/manager/public_link/delete/' + item.id, item);
+    };
 
     return service;
-  });
-app.factory('AppSvc', function ($rootScope, $q) {
-    var service={};
+});
+app.factory('AppSvc', function($rootScope, $q) {
+    var service = {};
 
-    service.item={
-        title:'',
-        description:'',
-        image:'',
-        type:'',
-        url:''
+    service.item = {
+        title: '',
+        description: '',
+        image: '',
+        type: '',
+        url: ''
     };
 
-    service.properties={
-    };
+    service.properties = {};
 
-    service.fillProperties=function(list){
-        service.properties={};
-        for (var i=0;i<list.length;i++){
-            service.properties[list[i].name]=list[i].value;
+    service.fillProperties = function(list) {
+        service.properties = {};
+        for (var i = 0; i < list.length; i++) {
+            service.properties[list[i].name] = list[i].value;
         }
-    }
+    };
 
-    service.updateProperty=function(name, value){
-        service.properties[name]=value;
-    }
+    service.updateProperty = function(name, value) {
+        service.properties[name] = value;
+    };
 
-    service.setTitle=function(items){
-        if (items==undefined){
-            service.item.title=service.properties.SITE_TITLE;
-            service.item.short_title=service.properties.SITE_TITLE;
-        }else{
+    service.setTitle = function(items) {
+        if (items === undefined) {
+            service.item.title = service.properties.SITE_TITLE;
+            service.item.short_title = service.properties.SITE_TITLE;
+        } else {
             items.push(service.properties.SITE_TITLE);
-            service.item.title=items.join(' - ');
-            service.item.short_title=items[0];
+            service.item.title = items.join(' - ');
+            service.item.short_title = items[0];
         }
         $('title').html(service.item.title);
-        $('meta[property="og:title"]').attr('content',service.item.short_title);
+        $('meta[property="og:title"]').attr('content', service.item.short_title);
         service.setDescription();
         service.setImage();
         service.setType();
@@ -81892,113 +81891,115 @@ app.factory('AppSvc', function ($rootScope, $q) {
         return service.item.title;
     };
 
-    service.setDescription=function(text){
-        if (text==undefined)
-            service.item.description=service.properties.SITE_DESCRIPTION;
+    service.setDescription = function(text) {
+        if (text === undefined)
+            service.item.description = service.properties.SITE_DESCRIPTION;
         else
-            service.item.description=text;
-        $('meta[property="description"]').attr('content',service.item.description);
-        $('meta[property="og:description"]').attr('content',service.item.description);
+            service.item.description = text;
+        $('meta[property="description"]').attr('content', service.item.description);
+        $('meta[property="og:description"]').attr('content', service.item.description);
         return service.item.description;
     };
 
-    service.setImage=function(url){
-        if (url==undefined)
-            service.item.image=service.properties.SITE_LOGO;
+    service.setImage = function(url) {
+        if (url === undefined)
+            service.item.image = service.properties.SITE_LOGO;
         else
-            service.item.image=url;
-        $('link[rel="image_src"]').attr('href',service.item.image);
-        $('meta[property="og:image"]').attr('content',service.item.image);
+            service.item.image = url;
+        $('link[rel="image_src"]').attr('href', service.item.image);
+        $('meta[property="og:image"]').attr('content', service.item.image);
         return service.item.image;
     };
 
-    service.setType=function(text){
-        if (text==undefined)
-            service.item.type='website';
+    service.setType = function(text) {
+        if (text === undefined)
+            service.item.type = 'website';
         else
-            service.item.type=text;
-        $('meta[property="og:type"]').attr('content',service.item.type);
+            service.item.type = text;
+        $('meta[property="og:type"]').attr('content', service.item.type);
         return service.item.type;
     };
 
-    service.setUrl=function(url){
-        if (url==undefined)
-            service.item.url=AppConfig.host_name;
+    service.setUrl = function(url) {
+        if (url === undefined)
+            service.item.url = AppConfig.host_name;
         else
-            service.item.url=[AppConfig.host_name,url].join('/');
-        $('meta[property="og:url"]').attr('content',service.item.url);
+            service.item.url = [AppConfig.host_name, url].join('/');
+        $('meta[property="og:url"]').attr('content', service.item.url);
         return service.item.url;
     };
 
-    service.init=function(){
-        service.properties=AppConfig.properties;
+    service.init = function() {
+        service.properties = AppConfig.properties;
         service.setTitle();
         service.setDescription();
-    }
+    };
 
     return service;
-  });
-app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, MessageSvc, $rootScope, NavbarSvc, AppSvc, $routeParams, $route) {
-    var service={};
+});
+app.factory('AccountSvc', function($q, $location, AppConst, AccountRes, MessageSvc, $rootScope, NavbarSvc, AppSvc, $routeParams, $route) {
+    var service = {};
 
-    $rootScope.$on('account.update',function(event, data){
+    $rootScope.$on('account.update', function(event, data) {
         MessageSvc.info('account/update/success');
-        AppConfig.user=service.item;
+        AppConfig.user = service.item;
     });
 
-    $rootScope.$on('account.create',function(event, data){
+    $rootScope.$on('account.create', function(event, data) {
         MessageSvc.info('account/create/success');
-        AppConfig.user=service.item;
+        AppConfig.user = service.item;
         NavbarSvc.goHome();
     });
 
-    $rootScope.$on('account.login',function(event, data){
+    $rootScope.$on('account.login', function(event, data) {
         MessageSvc.info('account/login/success');
-        AppConfig.user=service.item;
+        AppConfig.user = service.item;
         NavbarSvc.goHome();
     });
 
-    $rootScope.$on('account.doLogout',function(event, data){
+    $rootScope.$on('account.doLogout', function(event, data) {
         service.doLogout();
     });
 
-    $rootScope.$on('account.logout',function(event, data){
+    $rootScope.$on('account.logout', function(event, data) {
         MessageSvc.info('account/logout/success');
-        AppConfig.user=service.item;
+        AppConfig.user = service.item;
         NavbarSvc.goHome();
     });
 
-    $rootScope.$on('account.delete',function(event, data){
+    $rootScope.$on('account.delete', function(event, data) {
         MessageSvc.info('account/delete/success');
-        AppConfig.user=service.item;
+        AppConfig.user = service.item;
         NavbarSvc.goHome();
     });
 
-    $rootScope.$on('account.recovery',function(event, data){
+    $rootScope.$on('account.recovery', function(event, data) {
         service.goReset();
-        MessageSvc.info('account/recovery/checkemail', {values:[data.email]});
+        MessageSvc.info('account/recovery/checkemail', {
+            values: [data.email]
+        });
     });
 
-    service.item={};
+    service.item = {};
 
-    service.goReset=function(){
+    service.goReset = function() {
         $location.path('/account/reset');
-    }
-    service.init=function(reload){
+    };
+    service.init = function(reload) {
         angular.extend($routeParams, $route.current.$$route.params);
 
-        service.title=AppConst.account[$routeParams.subNavId].title;
-        service.description=AppConst.account[$routeParams.subNavId].description;
+        service.title = AppConst.account[$routeParams.subNavId].title;
+        service.description = AppConst.account[$routeParams.subNavId].description;
 
         AppSvc.setTitle([service.title]);
         AppSvc.setDescription(service.description);
-        AppSvc.setUrl('account/'+$routeParams.subNavId);
+        AppSvc.setUrl('account/' + $routeParams.subNavId);
 
-        if ($routeParams.subNavId=='reset'){
-            if ($routeParams.code!==undefined)
-                service.item.code=$routeParams.code;
+        if ($routeParams.subNavId == 'reset') {
+            if ($routeParams.code !== undefined)
+                service.item.code = $routeParams.code;
             else
-                service.item.code='';
+                service.item.code = '';
         }
 
         $q.all([
@@ -82006,156 +82007,162 @@ app.factory('AccountSvc', function ($q, $location, AppConst, AccountRes, Message
         ]).then(function(responseList) {
 
         });
-    }
+    };
 
-    service.load=function(){
+    service.load = function() {
         var deferred = $q.defer();
-        service.item=AppConfig.user;
+        service.item = AppConfig.user;
         deferred.resolve(service.item);
         return deferred.promise;
-    }
+    };
 
-	service.doReg=function(){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionReg(service.item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doReg = function() {
+        $rootScope.$broadcast('show-errors-check-validity');
+        AccountRes.actionReg(service.item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     $rootScope.$broadcast('account.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
+    };
 
-	service.doRecovery=function(){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionRecovery(service.item.email).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    $rootScope.$broadcast('account.recovery', {email:email});
+    service.doRecovery = function() {
+        $rootScope.$broadcast('show-errors-check-validity');
+        AccountRes.actionRecovery(service.item.email).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    $rootScope.$broadcast('account.recovery', {
+                        email: email
+                    });
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
+    };
 
-	service.doReset=function(){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 AccountRes.actionReset(service.item.code, service.item.password).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                    $rootScope.$broadcast('account.reset', {code:code});
-                	$rootScope.$broadcast('account.login', service.item);
+    service.doReset = function() {
+        $rootScope.$broadcast('show-errors-check-validity');
+        AccountRes.actionReset(service.item.code, service.item.password).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.reset', {
+                        code: code
+                    });
+                    $rootScope.$broadcast('account.login', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
+    };
 
-	service.doLogin=function(){
-	    AccountRes.actionLogin(service.item.email,service.item.password).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
-                	$rootScope.$broadcast('account.login', service.item);
+    service.doLogin = function() {
+        AccountRes.actionLogin(service.item.email, service.item.password).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
+                    $rootScope.$broadcast('account.login', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-	}
-	service.doLogout=function(){
-         MessageSvc.confirm('account/logout/confirm', {},
-         function(){
-             AccountRes.actionLogout().then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        service.item={}
-                        $rootScope.$broadcast('account.logout', service.item);
+    };
+    service.doLogout = function() {
+        MessageSvc.confirm('account/logout/confirm', {},
+            function() {
+                AccountRes.actionLogout().then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            service.item = {};
+                            $rootScope.$broadcast('account.logout', service.item);
+                        }
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-        });
-    }
+                );
+            });
+    };
 
-    service.isLogged=function(){
-        return AppConfig.user.id!=undefined;
-    }
+    service.isLogged = function() {
+        return AppConfig.user.id !== undefined;
+    };
 
-    service.isAdmin=function(){
-        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('admin')!=-1
-    }
+    service.isAdmin = function() {
+        return AppConfig.user !== undefined && AppConfig.user.roles !== undefined && AppConfig.user.roles.indexOf('admin') != -1;
+    };
 
-    service.isAuthor=function(){
-        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('author')!=-1
-    }
+    service.isAuthor = function() {
+        return AppConfig.user !== undefined && AppConfig.user.roles !== undefined && AppConfig.user.roles.indexOf('author') != -1;
+    };
 
-    service.isUser=function(){
-        return AppConfig.user!=undefined && AppConfig.user.roles!=undefined && AppConfig.user.roles.indexOf('user')!=-1
-    }
+    service.isUser = function() {
+        return AppConfig.user !== undefined && AppConfig.user.roles !== undefined && AppConfig.user.roles.indexOf('user') != -1;
+    };
 
     return service;
-  });
-app.factory('ContactSvc', function ($q, $location, AppConst, ContactRes, MessageSvc, $rootScope, NavbarSvc, AppSvc) {
-    var service={};
+});
+app.factory('ContactSvc', function($q, $location, AppConst, ContactRes, MessageSvc, $rootScope, NavbarSvc, AppSvc) {
+    var service = {};
 
-    $rootScope.$on('contact.send',function(event, item){
-        MessageSvc.info('contact/send/success', {values:item});
-	    $rootScope.$broadcast('hide-errors-check-validity');
+    $rootScope.$on('contact.send', function(event, item) {
+        MessageSvc.info('contact/send/success', {
+            values: item
+        });
+        $rootScope.$broadcast('hide-errors-check-validity');
     });
 
-    service.item={};
+    service.item = {};
 
-    service.title=AppConst.contact.strings.title;
-    service.description=AppConst.contact.strings.description;
+    service.title = AppConst.contact.strings.title;
+    service.description = AppConst.contact.strings.description;
 
-    service.init=function(reload){
+    service.init = function(reload) {
         AppSvc.setTitle([service.title]);
         AppSvc.setDescription(service.description);
         AppSvc.setUrl('contact');
-    }
-    service.doSend=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
+    };
+    service.doSend = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
         ContactRes.actionSend(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
                     service.initEmptyItem();
                     $rootScope.$broadcast('contact.send', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
-        )
-    }
-    service.initEmptyItem=function(){
+        );
+    };
+    service.initEmptyItem = function() {
         service.item = {};
-    }
+    };
 
     return service;
-  });
-app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $modal, MessageSvc) {
-    var service={};
+});
+app.factory('FileSvc', function(AppConst, FileRes, $rootScope, $q, $modalBox, $modal, MessageSvc) {
+    var service = {};
 
-    $rootScope.$on('fileCreate.show',function(event, item){
+    $rootScope.$on('fileCreate.show', function(event, item) {
         var element = document.getElementById('FileUpload');
         element.addEventListener('change', function(e) {
             var files = e.target.files;
@@ -82163,15 +82170,15 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
         });
     });
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.showList=function(item){
+    service.showList = function(item) {
         service.initEmptyItem();
-        service.load().then(function(){
-            for (var i=0;i<service.list.length;i++){
-                if (item.src==service.list[i].src)
-                    service.item=service.list[i];
+        service.load().then(function() {
+            for (var i = 0; i < service.list.length; i++) {
+                if (item.src == service.list[i].src)
+                    service.item = service.list[i];
             }
             var boxOptions = {
                 title: 'Select file',
@@ -82182,30 +82189,30 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
                 effect: false,
                 confirmText: 'Select',
                 cancelText: 'Cancel',
-                afterConfirm: function(){
-                    if (item.src!==service.item.src){
+                afterConfirm: function() {
+                    if (item.src !== service.item.src) {
                         delete item.id;
-                        item.src=service.item.src;
-                        item.src_url=service.item.src_url;
+                        item.src = service.item.src;
+                        item.src_url = service.item.src_url;
                     }
                 },
-                afterCancel: function(){
+                afterCancel: function() {
 
                 },
                 prefixEvent: 'fileList'
-            }
+            };
             $modalBox(boxOptions);
         });
-    }
+    };
 
-    service.initEmptyItem=function(){
+    service.initEmptyItem = function() {
         service.item = {};
         service.item.comment = '';
-        service.item.src='';
-    }
+        service.item.src = '';
+    };
 
-    service.showCreate=function(){
-        service.mode='create';
+    service.showCreate = function() {
+        service.mode = 'create';
         service.initEmptyItem();
         var boxOptions = {
             title: 'Add new file',
@@ -82216,24 +82223,24 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
             effect: false,
             confirmText: 'Create',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doCreate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'fileCreate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
+    service.selectItem = function(item) {
+        service.item = angular.copy(item);
+    };
 
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
+    service.showUpdate = function(item) {
+        service.mode = 'update';
+        service.item = angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/file/update.modal.html',
@@ -82243,191 +82250,193 @@ app.factory('FileSvc', function (AppConst, FileRes, $rootScope, $q, $modalBox, $
             effect: false,
             confirmText: 'Save',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doUpdate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'fileUpdate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		FileRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doCreate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        FileRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('file.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		FileRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    };
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        FileRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('file.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('file/remove/confirm', {values:[item.src]},
-         function(){
-             FileRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('file/remove/confirm', {
+                values: [item.src]
+            },
+            function() {
+                FileRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.item = {};
+                            $rootScope.$broadcast('file.delete', item);
                         }
-                        service.item={};
-                        $rootScope.$broadcast('file.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(reload){
+                );
+            });
+    };
+
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            FileRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            FileRes.getList().then(function(response) {
+                service.list = angular.copy(response.data.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('file.load', service.list);
-            }, function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            }, function(response) {
+                service.list = [];
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
             });
-        }else
+        } else
             deferred.resolve(service.list);
         return deferred.promise;
-    }
+    };
 
-    service.doSearch=function(text){
+    service.doSearch = function(text) {
         var deferred = $q.defer();
-        FileRes.getSearch(text).then(function (response) {
-            service.list=angular.copy(response.data.data);
+        FileRes.getSearch(text).then(function(response) {
+            service.list = angular.copy(response.data.data);
             deferred.resolve(service.list);
             $rootScope.$broadcast('file.load', service.list);
-        }, function (response) {
-            service.list=[];
-            if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+        }, function(response) {
+            service.list = [];
+            if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                 MessageSvc.error(response.data.code, response.data);
             deferred.resolve(service.list);
         });
         return deferred.promise;
-    }
+    };
 
     return service;
-  });
-app.factory('HomeSvc', function ($q, NavbarSvc, PropertiesSvc, AppSvc, TagSvc, PostSvc, ProjectSvc) {
-    var service={};
+});
+app.factory('HomeSvc', function($q, NavbarSvc, PropertiesSvc, AppSvc, TagSvc, PostSvc, ProjectSvc) {
+    var service = {};
 
-    service.init=function(reload){
+    service.init = function(reload) {
         $q.all([
             PropertiesSvc.load(),
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
         ]).then(function(responseList) {
-            service.title=AppSvc.setTitle();
+            service.title = AppSvc.setTitle();
             AppSvc.setUrl();
         });
 
-    }
+    };
     return service;
-  });
-app.factory('ManagerSvc', function (AppConst, $routeParams, $route, AppSvc) {
-    var service={};
-    service.init=function(reload){
+});
+app.factory('ManagerSvc', function(AppConst, $routeParams, $route, AppSvc) {
+    var service = {};
+    service.init = function(reload) {
         angular.extend($routeParams, $route.current.$$route.params);
 
-        service.title=AppConst.manager[$routeParams.subNavId].title;
-        service.description=AppConst.manager[$routeParams.subNavId].description;
+        service.title = AppConst.manager[$routeParams.subNavId].title;
+        service.description = AppConst.manager[$routeParams.subNavId].description;
 
         AppSvc.setTitle([service.title, AppConst.manager.strings.title]);
         AppSvc.setDescription(service.description);
-        AppSvc.setUrl('manager/'+$routeParams.subNavId);
-    }
+        AppSvc.setUrl('manager/' + $routeParams.subNavId);
+    };
     return service;
-  });
-app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $modal) {
-    var service={};
+});
+app.factory('MessageSvc', function(AppConst, $rootScope, $modalBox, $alert, $modal) {
+    var service = {};
 
-    service.list={};
-    service.infoEnable=true;
-    service.confirmEnable=true;
+    service.list = {};
+    service.infoEnable = true;
+    service.confirmEnable = true;
 
-    var extVSprintF=function(message, data){
-        var new_data=[]
-        var new_message=message;
+    var extVSprintF = function(message, data) {
+        var new_data = [];
+        var new_message = message;
+        var key = null;
 
-        if (Array.isArray(data)){
-            for (var key in data){
+        if (Array.isArray(data)) {
+            for (key in data) {
                 if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
                     new_data.push(data[key]);
             }
-        }
-        else
-        if (typeof data === 'object'){
-            for (var key in data){
+        } else
+        if (typeof data === 'object') {
+            for (key in data) {
                 if (typeof data[key] !== 'object' && !Array.isArray(data[key]))
-                    new_message=new_message.replace(new RegExp('%'+key, 'ig'),data[key]);
+                    new_message = new_message.replace(new RegExp('%' + key, 'ig'), data[key]);
             }
-        }
-        else
-        if (data!=undefined)
+        } else
+        if (data !== undefined)
             new_data.push(data);
         return vsprintf(new_message, new_data);
-    }
+    };
 
-    service.error=function(message, data, callbackOk){
-        if (data===undefined)
-            data={values:[]};
+    service.error = function(message, data, callbackOk) {
+        if (data === undefined)
+            data = {
+                values: []
+            };
 
-        if (data.title===undefined)
-            data.title='Error';
+        if (data.title === undefined)
+            data.title = 'Error';
 
-        if (callbackOk===undefined)
-            callbackOk=function(){
-            }
-        if (service.list[message]!==undefined)
-            message=service.list[message];
+        if (callbackOk === undefined)
+            callbackOk = function() {};
+        if (service.list[message] !== undefined)
+            message = service.list[message];
 
         var boxOptions = {
             title: data.title,
@@ -82439,24 +82448,25 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $mo
             effect: false,
             afterOk: callbackOk,
             html: true
-        }
+        };
 
         $modalBox(boxOptions);
         $rootScope.$broadcast('message.error', message, data, callbackOk);
-    }
+    };
 
-    service.alert=function(message, data, callbackOk){
-        if (data===undefined)
-            data={values:[]};
+    service.alert = function(message, data, callbackOk) {
+        if (data === undefined)
+            data = {
+                values: []
+            };
 
-        if (data.title===undefined)
-            data.title='Info';
+        if (data.title === undefined)
+            data.title = 'Info';
 
-        if (callbackOk===undefined)
-            callbackOk=function(){
-            }
-        if (service.list[message]!==undefined)
-            message=service.list[message];
+        if (callbackOk === undefined)
+            callbackOk = function() {};
+        if (service.list[message] !== undefined)
+            message = service.list[message];
 
         var boxOptions = {
             title: data.title,
@@ -82468,28 +82478,28 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $mo
             effect: false,
             afterOk: callbackOk,
             html: true
-        }
+        };
         $modalBox(boxOptions);
         $rootScope.$broadcast('message.alert', message, data, callbackOk);
-    }
+    };
 
-    service.confirm=function(message, data, callbackOk, callbackCancel){
-        if (data===undefined)
-            data={values:[]};
+    service.confirm = function(message, data, callbackOk, callbackCancel) {
+        if (data === undefined)
+            data = {
+                values: []
+            };
 
-        if (data.title===undefined)
-            data.title='Message';
+        if (data.title === undefined)
+            data.title = 'Message';
 
-        if (callbackOk===undefined)
-            callbackOk=function(){
-            }
-        if (callbackCancel===undefined)
-            callbackCancel=function(){
-            }
-        if (service.list[message]!==undefined)
-            message=service.list[message];
+        if (callbackOk === undefined)
+            callbackOk = function() {};
+        if (callbackCancel === undefined)
+            callbackCancel = function() {};
+        if (service.list[message] !== undefined)
+            message = service.list[message];
 
-        if (service.confirmEnable===false){
+        if (service.confirmEnable === false) {
             callbackOk();
             return;
         }
@@ -82508,228 +82518,235 @@ app.factory('MessageSvc', function (AppConst, $rootScope, $modalBox, $alert, $mo
             afterConfirm: callbackOk,
             afterCancel: callbackCancel,
             html: true
-        }
+        };
 
         $modalBox(boxOptions);
         $rootScope.$broadcast('message.confirm', message, data, callbackOk);
-    }
+    };
 
 
-    service.info=function(message, data, type){
+    service.info = function(message, data, type) {
 
-        if (service.infoEnable===false)
+        if (service.infoEnable === false)
             return;
 
         service.alert(message, data);
-/*
-        if (data===undefined)
-            data={values:[]};
+        /*
+                if (data= ===undefined)
+                    data={values:[]};
 
-        if (data.title===undefined)
-            data.title='';
-        if (data.alertType===undefined)
-            data.alertType='info';
-        if (data.placement===undefined)
-            data.placement='bottom-right';
+                if (data.title= ===undefined)
+                    data.title='';
+                if (data.alertType= ===undefined)
+                    data.alertType='info';
+                if (data.placement= ===undefined)
+                    data.placement='bottom-right';
 
-        if (service.list[message]!==undefined)
-            message=service.list[message];
+                if (service.list[message]! ===undefined)
+                    message=service.list[message];
 
-        $alert({
-            content: extVSprintF(message, data.values),
-            title: data.title,
-            alertType: data.alertType,
-            placement: data.placement
-        });
-*/
-    }
+                $alert({
+                    content: extVSprintF(message, data.values),
+                    title: data.title,
+                    alertType: data.alertType,
+                    placement: data.placement
+                });
+        */
+    };
 
-    service.load=function(reload){
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            service.list={};
-            for (var key in AppConst){
-                if (AppConst[key]['message']!==undefined){
-                    angular.extend(service.list, AppConst[key]['message']);
+    service.load = function(reload) {
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            service.list = {};
+            for (var key in AppConst) {
+                if (AppConst[key].message !== undefined) {
+                    angular.extend(service.list, AppConst[key].message);
                 }
             }
         }
-    }
+    };
 
     service.load();
 
     return service;
-  });
-app.factory('NavbarSvc', function ($routeParams, $route, $rootScope, $route, $location, $window, AppConst) {
-    var service={};
+});
+app.factory('NavbarSvc', function($routeParams, $route, $rootScope, $location, $window, AppConst) {
+    var service = {};
 
-    service.goBack=function(){
-        if ($window.history.length>0)
+    service.goBack = function() {
+        if ($window.history.length > 0)
             $window.history.back();
         else
             service.goHome();
-    }
-    service.goHome=function(){
+    };
+    service.goHome = function() {
         $location.path(AppConst.home.url);
-    }
+    };
 
-    service.getItemByName=function(){
-    }
+    service.getItemByName = function() {};
 
-    service.init=function(){
-        service.items=AppConst.navbar;
-    }
+    service.init = function() {
+        service.items = AppConst.navbar;
+    };
 
     return service;
-  });
-app.factory('PostSvc', function ($routeParams, $rootScope, $q, $location, AppConst, PostRes, TagSvc, MessageSvc, AppSvc) {
-    var service={};
+});
+app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppConst, PostRes, TagSvc, MessageSvc, AppSvc) {
+    var service = {};
 
-    $rootScope.$on('post.delete',function(event, item){
-        MessageSvc.info('post/delete/success', {values:item});
+    $rootScope.$on('post.delete', function(event, item) {
+        MessageSvc.info('post/delete/success', {
+            values: item
+        });
         service.goList();
     });
 
-    $rootScope.$on('post.create',function(event, item){
-        MessageSvc.info('post/create/success', {values:item});
+    $rootScope.$on('post.create', function(event, item) {
+        MessageSvc.info('post/create/success', {
+            values: item
+        });
         service.goItem(item.name);
     });
 
-    $rootScope.$on('post.update',function(event, item){
-        MessageSvc.info('post/update/success', {values:item});
+    $rootScope.$on('post.update', function(event, item) {
+        MessageSvc.info('post/update/success', {
+            values: item
+        });
         service.goItem(item.name);
     });
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.countItemsOnRow=2;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
+    service.countItemsOnRow = 2;
+    service.limitOnHome = 3;
+    service.limit = 10;
+    service.begin = 0;
 
-    service.title=AppConst.post.strings.title;
+    service.title = AppConst.post.strings.title;
 
-    service.init=function(reload){
-        service.postName=$routeParams.postName;
+    service.init = function(reload) {
+        service.postName = $routeParams.postName;
         $q.all([
             TagSvc.load(),
             service.load()
         ]).then(function(responseList) {
-            if (service.postName!=undefined){
-                AppSvc.setTitle([service.item.title,service.title]);
+            if (service.postName !== undefined) {
+                AppSvc.setTitle([service.item.title, service.title]);
                 AppSvc.setDescription(service.item.description);
-                AppSvc.setUrl('post/'+service.postName);
-                if (service.item.images.length>0)
+                AppSvc.setUrl('post/' + service.postName);
+                if (service.item.images.length > 0)
                     AppSvc.setImage(service.item.images[0].src_url);
-            }else{
+            } else {
                 AppSvc.setTitle([service.title]);
                 AppSvc.setDescription(AppConst.post.strings.description);
                 AppSvc.setUrl('post');
             }
         });
-    }
+    };
 
-    service.goList=function(){
+    service.goList = function() {
         $location.path('/post');
-    }
+    };
 
-    service.goItem=function(postName){
-        $location.path('/post/'+postName);
-    }
+    service.goItem = function(postName) {
+        $location.path('/post/' + postName);
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 PostRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
+    service.doCreate = function(item) {
+        service.slugName(item.name);
+        $rootScope.$broadcast('show-errors-check-validity');
+        PostRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    if (response.data.reload_source.tag === true)
                         TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('post.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 PostRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
+    };
+    service.doUpdate = function(item) {
+        service.slugName(item.name);
+        $rootScope.$broadcast('show-errors-check-validity');
+        PostRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    if (response.data.reload_source.tag === true)
                         TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('post.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('post/remove/confirm', {values:[item.title]},
-         function(){
-             PostRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('post/remove/confirm', {
+                values: [item.title]
+            },
+            function() {
+                PostRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.initEmptyItem();
+                            $rootScope.$broadcast('post.delete', item);
                         }
-                        service.initEmptyItem();
-                        $rootScope.$broadcast('post.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
+                );
+            });
+    };
 
-    service.doDeleteImage=function(index){
+    service.doDeleteImage = function(index) {
         service.item.images.splice(index, 1);
-    }
-    service.doAddImage=function(text){
-        if (text===undefined)
-            text='';
-        if (service.item.images===undefined)
-            service.item.images=[];
+    };
+    service.doAddImage = function(text) {
+        if (text === undefined)
+            text = '';
+        if (service.item.images === undefined)
+            service.item.images = [];
         service.item.images.push({
             id: chance.guid(),
             title: text
         });
-    }
-    service.slugName=function(value){
-        if (service.item.id===undefined)
-            service.item.name=getSlug(value, {
-                lang:'ru',
+    };
+    service.slugName = function(value) {
+        if (service.item.id === undefined)
+            service.item.name = getSlug(value, {
+                lang: 'ru',
                 uric: true
             });
-    }
-    service.initEmptyItem=function(){
+    };
+    service.initEmptyItem = function() {
         service.item = {};
         /*service.title = '';
         service.name = '';
@@ -82741,193 +82758,201 @@ app.factory('PostSvc', function ($routeParams, $rootScope, $q, $location, AppCon
         service.item.type = 1;
         service.item.tags = [];
         service.item.images = [];
-    }
-    service.load=function(reload){
+    };
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.postName!=undefined){
-            if (service.item.name!==service.postName)
+        if (service.postName !== undefined) {
+            if (service.item.name !== service.postName)
                 PostRes.getItem(service.postName).then(
-                    function (response) {
-                        service.item=angular.copy(response.data.data[0]);
+                    function(response) {
+                        service.item = angular.copy(response.data.data[0]);
                         deferred.resolve(service.item);
                         $rootScope.$broadcast('post.item.load', service.item);
                     },
-                    function (response) {
-                        service.item={};
-                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    function(response) {
+                        service.item = {};
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                             MessageSvc.error(response.data.code, response.data);
                         deferred.resolve(service.item);
                     }
                 );
-        }else{
-            if (service.loaded!==true || reload===true){
-                service.loaded=true;
-                PostRes.getList().then(function (response) {
-                    service.list=angular.copy(response.data.data);
+        } else {
+            if (service.loaded !== true || reload === true) {
+                service.loaded = true;
+                PostRes.getList().then(function(response) {
+                    service.list = angular.copy(response.data.data);
                     deferred.resolve(service.list);
                     $rootScope.$broadcast('post.load', service.list);
-                }, function (response) {
-                    service.list=[];
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                }, function(response) {
+                    service.list = [];
+                    if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                         MessageSvc.error(response.data.code, response.data);
                     deferred.resolve(service.list);
                 });
-            }else
+            } else
                 deferred.resolve(service.list);
         }
         return deferred.promise;
-    }
+    };
     return service;
-  });
-app.factory('ProjectSvc', function ($routeParams, $rootScope, $q, $location, AppConst,
-ProjectRes, TagSvc, MessageSvc, AppSvc) {
-    var service={};
+});
+app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppConst,
+    ProjectRes, TagSvc, MessageSvc, AppSvc, gettext) {
+    var service = {};
 
-    $rootScope.$on('project.delete',function(event, item){
-        MessageSvc.info('project/delete/success', {values:item});
+    $rootScope.$on('project.delete', function(event, item) {
+        MessageSvc.info('project/delete/success', {
+            values: item
+        });
         service.goList();
     });
 
-    $rootScope.$on('project.create',function(event, item){
-        MessageSvc.info('project/create/success', {values:item});
+    $rootScope.$on('project.create', function(event, item) {
+        MessageSvc.info('project/create/success', {
+            values: item
+        });
         service.goItem(item.name);
     });
 
-    $rootScope.$on('project.update',function(event, item){
-        MessageSvc.info('project/update/success', {values:item});
+    $rootScope.$on('project.update', function(event, item) {
+        MessageSvc.info('project/update/success', {
+            values: item
+        });
         service.goItem(item.name);
     });
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.countItemsOnRow=2;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
+    service.countItemsOnRow = 2;
+    service.limitOnHome = 3;
+    service.limit = 10;
+    service.begin = 0;
 
-    service.title=AppConst.project.strings.title;
+    service.title = gettext(AppConst.project.strings.title);
 
-    service.init=function(reload){
-        service.projectName=$routeParams.projectName;
+    service.init = function(reload) {
+        service.projectName = $routeParams.projectName;
         $q.all([
             TagSvc.load(),
             service.load()
         ]).then(function(responseList) {
-            if (service.projectName!=undefined){
-                AppSvc.setTitle([service.item.title,service.title]);
+            if (service.projectName !== undefined) {
+                AppSvc.setTitle([service.item.title, service.title]);
                 AppSvc.setDescription(service.item.description);
-                AppSvc.setUrl('project/'+service.projectName);
-                if (service.item.images.length>0)
+                AppSvc.setUrl('project/' + service.projectName);
+                if (service.item.images.length > 0)
                     AppSvc.setImage(service.item.images[0].src_url);
-            }else{
+            } else {
                 AppSvc.setTitle([service.title]);
                 AppSvc.setDescription(AppConst.project.strings.description);
                 AppSvc.setUrl('project');
             }
         });
-    }
+    };
 
-    service.goList=function(){
+    service.goList = function() {
         $location.path('/project');
-    }
+    };
 
-    service.goItem=function(projectName){
-        $location.path('/project/'+projectName);
-    }
+    service.goItem = function(projectName) {
+        $location.path('/project/' + projectName);
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 ProjectRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
+    service.doCreate = function(item) {
+        service.slugName(item.name);
+        $rootScope.$broadcast('show-errors-check-validity');
+        ProjectRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    if (response.data.reload_source.tag === true)
                         TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('project.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    service.slugName(item.name);
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 ProjectRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    if (response.data.reload_source.tag==true)
+    };
+    service.doUpdate = function(item) {
+        service.slugName(item.name);
+        $rootScope.$broadcast('show-errors-check-validity');
+        ProjectRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    if (response.data.reload_source.tag === true)
                         TagSvc.load(true);
-                    service.item=angular.copy(response.data.data[0]);
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('project.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('project/remove/confirm', {values:[item.title]},
-         function(){
-             ProjectRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('project/remove/confirm', {
+                values: [item.title]
+            },
+            function() {
+                ProjectRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.initEmptyItem();
+                            $rootScope.$broadcast('project.delete', item);
                         }
-                        service.initEmptyItem();
-                        $rootScope.$broadcast('project.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
+                );
+            });
+    };
 
-    service.doDeleteImage=function(index){
+    service.doDeleteImage = function(index) {
         service.item.images.splice(index, 1);
-    }
-    service.doAddImage=function(text){
-        if (text===undefined)
-            text='';
-        if (service.item.images===undefined)
-            service.item.images=[];
+    };
+    service.doAddImage = function(text) {
+        if (text === undefined)
+            text = '';
+        if (service.item.images === undefined)
+            service.item.images = [];
         service.item.images.push({
             id: chance.guid(),
             title: text
         });
-    }
-    service.slugName=function(value){
-        if (service.item.id===undefined)
-            service.item.name=getSlug(value, {
-                lang:'ru',
+    };
+    service.slugName = function(value) {
+        if (service.item.id === undefined)
+            service.item.name = getSlug(value, {
+                lang: 'ru',
                 uric: true
             });
-    }
-    service.initEmptyItem=function(){
+    };
+    service.initEmptyItem = function() {
         service.item = {};
         /*service.title = '';
         service.name = '';
@@ -82939,93 +82964,93 @@ ProjectRes, TagSvc, MessageSvc, AppSvc) {
         service.item.type = 1;
         service.item.tags = [];
         service.item.images = [];
-    }
-    service.load=function(reload){
+    };
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.projectName!=undefined){
-            if (service.item.name!==service.projectName)
+        if (service.projectName !== undefined) {
+            if (service.item.name !== service.projectName)
                 ProjectRes.getItem(service.projectName).then(
-                    function (response) {
-                        service.item=angular.copy(response.data.data[0]);
+                    function(response) {
+                        service.item = angular.copy(response.data.data[0]);
                         deferred.resolve(service.item);
                         $rootScope.$broadcast('project.item.load', service.item);
                     },
-                    function (response) {
-                        service.item={};
-                        if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                    function(response) {
+                        service.item = {};
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                             MessageSvc.error(response.data.code, response.data);
                         deferred.resolve(service.item);
                     }
                 );
-        }else{
-            if (service.loaded!==true || reload===true){
-                service.loaded=true;
-                ProjectRes.getList().then(function (response) {
-                    service.list=angular.copy(response.data.data);
+        } else {
+            if (service.loaded !== true || reload === true) {
+                service.loaded = true;
+                ProjectRes.getList().then(function(response) {
+                    service.list = angular.copy(response.data.data);
                     deferred.resolve(service.list);
                     $rootScope.$broadcast('project.load', service.list);
-                }, function (response) {
-                    service.list=[];
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                }, function(response) {
+                    service.list = [];
+                    if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                         MessageSvc.error(response.data.code, response.data);
                     deferred.resolve(service.list);
                 });
-            }else
+            } else
                 deferred.resolve(service.list);
         }
         return deferred.promise;
-    }
+    };
     return service;
-  });
-app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes, AppSvc) {
-    var service={};
+});
+app.factory('SearchSvc', function($rootScope, $routeParams, $q, $location, AppConst, NavbarSvc, TagSvc, ProjectRes, PostRes, AppSvc) {
+    var service = {};
 
-    service.allList=[];
+    service.allList = [];
 
-    service.countItemsOnRow=3;
-    service.limitOnHome=3;
-    service.limit=10;
-    service.begin=0;
+    service.countItemsOnRow = 3;
+    service.limitOnHome = 3;
+    service.limit = 10;
+    service.begin = 0;
 
-    service.searchText='';
+    service.searchText = '';
 
-    $rootScope.$on('$routeChangeStart',function(event, current, previous){
-        if ($routeParams.navId!='search'){
-            service.searchText='';
+    $rootScope.$on('$routeChangeStart', function(event, current, previous) {
+        if ($routeParams.navId != 'search') {
+            service.searchText = '';
         }
     });
 
-    service.doSearch=function(searchText){
-        $location.path('/search/'+searchText);
-    }
+    service.doSearch = function(searchText) {
+        $location.path('/search/' + searchText);
+    };
 
-    service.init=function(reload){
-        service.searchText=$routeParams.searchText;
+    service.init = function(reload) {
+        service.searchText = $routeParams.searchText;
 
-        service.title=vsprintf(AppConst.search.strings.title,[service.searchText]);
-        service.description=vsprintf(AppConst.search.strings.description,[service.searchText]);
+        service.title = vsprintf(AppConst.search.strings.title, [service.searchText]);
+        service.description = vsprintf(AppConst.search.strings.description, [service.searchText]);
 
         AppSvc.setTitle([service.title]);
         AppSvc.setDescription(service.description);
-        AppSvc.setUrl('search/'+service.searchText);
+        AppSvc.setUrl('search/' + service.searchText);
 
-        if ($routeParams.searchText!=undefined){
-            service.allList=[];
-            service.allListSumSize=0;
+        if ($routeParams.searchText !== undefined) {
+            service.allList = [];
+            service.allListSumSize = 0;
             $q.all([
                 TagSvc.load(),
                 ProjectRes.getSearch($routeParams.searchText),
                 PostRes.getSearch($routeParams.searchText)
             ]).then(function(responseList) {
-                for (var i=1;i<responseList.length;i++){
-                    if (responseList[i].data.data && responseList[i].data.data.length>0)
-                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
-                    if (i==1)
+                for (var i = 1; i < responseList.length; i++) {
+                    if (responseList[i].data.data && responseList[i].data.data.length > 0)
+                        service.allListSumSize = service.allListSumSize + responseList[i].data.data.length;
+                    if (i == 1)
                         service.allList.push({
                             name: 'project',
                             list: responseList[i].data.data
                         });
-                    if (i==2)
+                    if (i == 2)
                         service.allList.push({
                             name: 'post',
                             list: responseList[i].data.data
@@ -83033,36 +83058,36 @@ app.factory('SearchSvc', function ($rootScope, $routeParams, $q, $location, AppC
                 }
             });
         }
-    }
+    };
     return service;
-  });
-app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, $modalBox, $modal, NavbarSvc, MessageSvc, AppSvc, ManagerSvc) {
-    var service={};
+});
+app.factory('TagSvc', function($routeParams, $q, $rootScope, AppConst, TagRes, ProjectRes, PostRes, $modalBox, $modal, NavbarSvc, MessageSvc, AppSvc, ManagerSvc) {
+    var service = {};
 
-    service.item={};
-    service.list=[];
-    service.allList=[];
+    service.item = {};
+    service.list = [];
+    service.allList = [];
 
-    service.countItemsOnRow=3;
-    service.limitOnHome=5;
-    service.limit=10;
-    service.begin=0;
+    service.countItemsOnRow = 3;
+    service.limitOnHome = 5;
+    service.limit = 10;
+    service.begin = 0;
 
-    $rootScope.$on('$routeChangeStart',function(event, current, previous){
-        if (current.params!=undefined && $routeParams.navId!='tag'){
-            service.tagText='';
+    $rootScope.$on('$routeChangeStart', function(event, current, previous) {
+        if (current.params !== undefined && $routeParams.navId != 'tag') {
+            service.tagText = '';
         }
     });
 
 
-    service.initEmptyItem=function(){
+    service.initEmptyItem = function() {
         service.item = {};
         service.item.text = '';
-        service.item.description='';
-    }
+        service.item.description = '';
+    };
 
-    service.showCreate=function(){
-        service.mode='create';
+    service.showCreate = function() {
+        service.mode = 'create';
         service.initEmptyItem();
         var boxOptions = {
             title: 'Add new tag',
@@ -83073,24 +83098,24 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
             effect: false,
             confirmText: 'Create',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doCreate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'tagCreate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
+    service.selectItem = function(item) {
+        service.item = angular.copy(item);
+    };
 
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
+    service.showUpdate = function(item) {
+        service.mode = 'update';
+        service.item = angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/manager/tag/update.modal.html',
@@ -83100,237 +83125,236 @@ app.factory('TagSvc', function ($routeParams, $q, $rootScope, AppConst, TagRes, 
             effect: false,
             confirmText: 'Save',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doUpdate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'tagUpdate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		TagRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doCreate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        TagRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('tag.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		TagRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    };
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        TagRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('tag.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('tag/remove/confirm', {values:[item.src]},
-         function(){
-             TagRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('tag/remove/confirm', {
+                values: [item.src]
+            },
+            function() {
+                TagRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.item = {};
+                            $rootScope.$broadcast('tag.delete', item);
                         }
-                        service.item={};
-                        $rootScope.$broadcast('tag.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.init=function(reload){
-        if ($routeParams.tagText!=undefined){
-            service.tagText=$routeParams.tagText;
+                );
+            });
+    };
 
-            service.title=vsprintf(AppConst.tag.strings.title,[service.tagText]);
-            service.description=vsprintf(AppConst.tag.strings.description,[service.tagText]);
+    service.init = function(reload) {
+        if ($routeParams.tagText !== undefined) {
+            service.tagText = $routeParams.tagText;
 
-            if ($routeParams.tagText!='')
+            service.title = vsprintf(AppConst.tag.strings.title, [service.tagText]);
+            service.description = vsprintf(AppConst.tag.strings.description, [service.tagText]);
+
+            if ($routeParams.tagText !== '')
                 AppSvc.setTitle([$routeParams.tagText, service.title]);
             else
                 AppSvc.setTitle([service.title]);
 
             AppSvc.setDescription(service.description);
-            AppSvc.setUrl('tag/'+service.tagText);
+            AppSvc.setUrl('tag/' + service.tagText);
 
-            service.allList=[];
-            service.allListSumSize=0;
+            service.allList = [];
+            service.allListSumSize = 0;
             $q.all([
                 service.load(),
                 ProjectRes.getListByTag($routeParams.tagText),
                 PostRes.getListByTag($routeParams.tagText)
             ]).then(function(responseList) {
-                for (var i=1;i<responseList.length;i++){
-                    if (responseList[i].data.data && responseList[i].data.data.length>0)
-                        service.allListSumSize=service.allListSumSize+responseList[i].data.data.length;
-                    if (i==1)
+                for (var i = 1; i < responseList.length; i++) {
+                    if (responseList[i].data.data && responseList[i].data.data.length > 0)
+                        service.allListSumSize = service.allListSumSize + responseList[i].data.data.length;
+                    if (i == 1)
                         service.allList.push({
                             name: 'project',
                             list: responseList[i].data.data
                         });
-                    if (i==2)
+                    if (i == 2)
                         service.allList.push({
                             name: 'post',
                             list: responseList[i].data.data
                         });
                 }
             });
-        }else{
+        } else {
             ManagerSvc.init();
 
             $q.all([
                 service.load()
             ]).then(function(responseList) {
-    
+
             });
         }
-    }
+    };
 
-    service.searchTag=function(query){
-        var list=[];
-        for (var i=0;i<service.list.length;i++){
-            if (service.list[i].text.indexOf(query)!=-1)
+    service.searchTag = function(query) {
+        var list = [];
+        for (var i = 0; i < service.list.length; i++) {
+            if (service.list[i].text.indexOf(query) != -1)
                 list.push(service.list[i]);
         }
         return list;
-    }
+    };
 
-    service.load=function(reload){
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            TagRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
-                deferred.resolve(service.list);
-                $rootScope.$broadcast('tag.load', service.list);
-            },
-            function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                    MessageSvc.error(response.data.code, response.data);
-                deferred.resolve(service.list);
-            })
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            TagRes.getList().then(function(response) {
+                    service.list = angular.copy(response.data.data);
+                    deferred.resolve(service.list);
+                    $rootScope.$broadcast('tag.load', service.list);
+                },
+                function(response) {
+                    service.list = [];
+                    if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                        MessageSvc.error(response.data.code, response.data);
+                    deferred.resolve(service.list);
+                });
         } else
             deferred.resolve(service.list);
         return deferred.promise;
-    }
+    };
     return service;
-  });
-app.factory('ProfileSvc', function (AppConst, ProfileRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, AccountSvc) {
-    var service={};
+});
+app.factory('ProfileSvc', function(AppConst, ProfileRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, AccountSvc) {
+    var service = {};
 
-    service.item={};
+    service.item = {};
 
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		 ProfileRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    AccountSvc.item=angular.copy(response.data.data[0]);
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        ProfileRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    AccountSvc.item = angular.copy(response.data.data[0]);
                     $rootScope.$broadcast('account.update', AccountSvc.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
+    };
 
-	service.doDelete=function(){
-         MessageSvc.confirm('account/delete/confirm', {},
-         function(){
-             ProfileRes.actionDelete().then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        AccountSvc.item={}
-                        $rootScope.$broadcast('account.delete', AccountSvc.item);
+    service.doDelete = function() {
+        MessageSvc.confirm('account/delete/confirm', {},
+            function() {
+                ProfileRes.actionDelete().then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            AccountSvc.item = {};
+                            $rootScope.$broadcast('account.delete', AccountSvc.item);
+                        }
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-        });
-    }
+                );
+            });
+    };
 
-    service.init=function(reload){
+    service.init = function(reload) {
         AccountSvc.init();
-
-        service.item=AccountSvc.item
-    }
+        service.item = AccountSvc.item;
+    };
 
     return service;
-  });
-app.factory('AccountSidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
-    var service={};
+});
+app.factory('AccountSidebarSvc', function($q, TagSvc, PostSvc, ProjectSvc) {
+    var service = {};
 
-    service.init=function(reload){
+    service.init = function(reload) {
         $q.all([
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
-        ]).then(function(responseList) {
-        });
-
-    }
+        ]).then(function(responseList) {});
+    };
     return service;
-  });
-app.factory('UserAppSvc', function (AppConst, UserAppRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, AccountSvc) {
-    var service={};
+});
+app.factory('UserAppSvc', function(AppConst, UserAppRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, AccountSvc) {
+    var service = {};
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.initEmptyItem=function(){
+    service.initEmptyItem = function() {
         service.item = {};
         service.item.name = '';
         service.item.content = '';
-        service.item.attributes='';
-        service.item.position=0;
-    }
+        service.item.attributes = '';
+        service.item.position = 0;
+    };
 
-    service.showCreate=function(){
-        service.mode='create';
+    service.showCreate = function() {
+        service.mode = 'create';
         service.initEmptyItem();
         var boxOptions = {
             title: 'Add new user_app',
@@ -83341,24 +83365,24 @@ app.factory('UserAppSvc', function (AppConst, UserAppRes, $rootScope, $q, $modal
             effect: false,
             confirmText: 'Create',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doCreate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'user_appCreate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
+    service.selectItem = function(item) {
+        service.item = angular.copy(item);
+    };
 
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
+    service.showUpdate = function(item) {
+        service.mode = 'update';
+        service.item = angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/account/user_app/update.modal.html',
@@ -83368,102 +83392,104 @@ app.factory('UserAppSvc', function (AppConst, UserAppRes, $rootScope, $q, $modal
             effect: false,
             confirmText: 'Save',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doUpdate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'user_appUpdate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		UserAppRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doCreate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        UserAppRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('user_app.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		UserAppRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    };
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        UserAppRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('user_app.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('user_app/remove/confirm', {values:[item.src]},
-         function(){
-             UserAppRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('user_app/remove/confirm', {
+                values: [item.src]
+            },
+            function() {
+                UserAppRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.item = {};
+                            $rootScope.$broadcast('user_app.delete', item);
                         }
-                        service.item={};
-                        $rootScope.$broadcast('user_app.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(reload){
+                );
+            });
+    };
+
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            UserAppRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            UserAppRes.getList().then(function(response) {
+                service.list = angular.copy(response.data.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('user_app.load', service.list);
-            }, function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            }, function(response) {
+                service.list = [];
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
             });
-        }else
+        } else
             deferred.resolve(service.list);
         return deferred.promise;
-    }
+    };
 
-    service.init=function(reload){
+    service.init = function(reload) {
         AccountSvc.init();
 
         $q.all([
@@ -83471,87 +83497,85 @@ app.factory('UserAppSvc', function (AppConst, UserAppRes, $rootScope, $q, $modal
         ]).then(function(responseList) {
 
         });
-    }
+    };
     return service;
-  });
-app.factory('SidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
-    var service={};
+});
+app.factory('SidebarSvc', function($q, TagSvc, PostSvc, ProjectSvc) {
+    var service = {};
 
-    service.init=function(reload){
+    service.init = function(reload) {
         $q.all([
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
-        ]).then(function(responseList) {
-        });
-
-    }
+        ]).then(function(responseList) {});
+    };
     return service;
-  });
-app.factory('HtmlCacheSvc', function (AppConst, HtmlCacheRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
-    var service={};
+});
+app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
+    var service = {};
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.initEmptyItem=function(){
+    service.initEmptyItem = function() {
         service.item = {};
         service.item.url = '';
         service.item.content = '';
-    }
+    };
 
 
-    service.scanSitemap={
-        disabled:false,
-        title:AppConst.manager.html_cache.strings.scanSitemap_title,
-        currentUrlIndex:0,
-        urls:[],
-        doUrl:function(callback){
-           var $this=this;
+    service.scanSitemap = {
+        disabled: false,
+        title: AppConst.manager.html_cache.strings.scanSitemap_title,
+        currentUrlIndex: 0,
+        urls: [],
+        doUrl: function(callback) {
+            var $this = this;
             console.log($this);
-            $this.title=AppConst.manager.html_cache.strings.scanSitemap_process+'('+$this.currentUrlIndex+'/'+$this.urls.length+')';
-            $this.disabled=true;
+            $this.title = AppConst.manager.html_cache.strings.scanSitemap_process + '(' + $this.currentUrlIndex + '/' + $this.urls.length + ')';
+            $this.disabled = true;
             HtmlCacheRes.getPage($this.urls[$this.currentUrlIndex]).then(function(response, status, headers, config) {
-                 $this.currentUrlIndex++;
-                 if ($this.currentUrlIndex==$this.urls.length){
+                $this.currentUrlIndex++;
+                if ($this.currentUrlIndex == $this.urls.length) {
                     callback();
-                 }else{
+                } else {
                     $this.doUrl(callback);
-                 }
-            },function(errResp) {
-                 $this.currentUrlIndex++;
-                 if ($this.currentUrlIndex==$this.urls.length){
+                }
+            }, function(errResp) {
+                $this.currentUrlIndex++;
+                if ($this.currentUrlIndex == $this.urls.length) {
                     callback();
-                 }else{
+                } else {
                     $this.doUrl(callback);
-                 }
+                }
             });
         },
-        do:function(){
-            var $this=this;
-            $this.title=AppConst.manager.html_cache.strings.scanSitemap_process;
-            $this.disabled=true;
+        do: function() {
+            var $this = this;
+            $this.title = AppConst.manager.html_cache.strings.scanSitemap_process;
+            $this.disabled = true;
 
-            HtmlCacheRes.getSiteMap().then(function (response) {
-                var locs=$(response.data).find('loc');
-                $this.urls=[];
-                var url='';
-                for (var i=0;i<locs.length;i++){
-                    url=$(locs[i]).text();
-                    if (service.getItemByUrl(url)==false)
+            HtmlCacheRes.getSiteMap().then(function(response) {
+                var locs = $(response.data).find('loc');
+                $this.urls = [];
+                var url = '';
+                for (var i = 0; i < locs.length; i++) {
+                    url = $(locs[i]).text();
+                    if (service.getItemByUrl(url) === false)
                         $this.urls.push(url);
                 }
-                $this.doUrl(function(){
-                    $this.title=AppConst.manager.html_cache.strings.scanSitemap_title;
-                    $this.disabled=false;
+                $this.doUrl(function() {
+                    $this.title = AppConst.manager.html_cache.strings.scanSitemap_title;
+                    $this.disabled = false;
                     service.load(true);
                 });
             });
         }
-    }
+    };
 
-    service.showCreate=function(){
-        service.mode='create';
+    service.showCreate = function() {
+        service.mode = 'create';
         service.initEmptyItem();
         var boxOptions = {
             title: 'Add new html_cache',
@@ -83562,34 +83586,34 @@ app.factory('HtmlCacheSvc', function (AppConst, HtmlCacheRes, $rootScope, $q, $m
             effect: false,
             confirmText: 'Create',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doCreate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'html_cacheCreate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
+    service.selectItem = function(item) {
+        service.item = angular.copy(item);
+    };
 
-    service.getItemByUrl=function(url){
-        var item=false;
-        for (var i=0;i<service.list.length;i++){
-            if (service.list[i].url=='url'){
-                item=service.list[i];
+    service.getItemByUrl = function(url) {
+        var item = false;
+        for (var i = 0; i < service.list.length; i++) {
+            if (service.list[i].url == 'url') {
+                item = service.list[i];
                 break;
             }
         }
         return item;
-    }
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
+    };
+    service.showUpdate = function(item) {
+        service.mode = 'update';
+        service.item = angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/manager/html_cache/update.modal.html',
@@ -83599,102 +83623,104 @@ app.factory('HtmlCacheSvc', function (AppConst, HtmlCacheRes, $rootScope, $q, $m
             effect: false,
             confirmText: 'Save',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doUpdate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'html_cacheUpdate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		HtmlCacheRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doCreate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        HtmlCacheRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('html_cache.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		HtmlCacheRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    };
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        HtmlCacheRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('html_cache.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('html_cache/remove/confirm', {values:[item.src]},
-         function(){
-             HtmlCacheRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('html_cache/remove/confirm', {
+                values: [item.src]
+            },
+            function() {
+                HtmlCacheRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.item = {};
+                            $rootScope.$broadcast('html_cache.delete', item);
                         }
-                        service.item={};
-                        $rootScope.$broadcast('html_cache.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(reload){
+                );
+            });
+    };
+
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            HtmlCacheRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            HtmlCacheRes.getList().then(function(response) {
+                service.list = angular.copy(response.data.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('html_cache.load', service.list);
-            }, function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            }, function(response) {
+                service.list = [];
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
             });
-        }else
+        } else
             deferred.resolve(service.list);
         return deferred.promise;
-    }
+    };
 
-    service.init=function(reload){
+    service.init = function(reload) {
         ManagerSvc.init();
 
         $q.all([
@@ -83702,26 +83728,26 @@ app.factory('HtmlCacheSvc', function (AppConst, HtmlCacheRes, $rootScope, $q, $m
         ]).then(function(responseList) {
 
         });
-    }
+    };
 
     return service;
-  });
-app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
-    var service={};
+});
+app.factory('MetaTagSvc', function(AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
+    var service = {};
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.initEmptyItem=function(){
+    service.initEmptyItem = function() {
         service.item = {};
         service.item.name = '';
         service.item.content = '';
-        service.item.attributes='';
-        service.item.position=0;
-    }
+        service.item.attributes = '';
+        service.item.position = 0;
+    };
 
-    service.showCreate=function(){
-        service.mode='create';
+    service.showCreate = function() {
+        service.mode = 'create';
         service.initEmptyItem();
         var boxOptions = {
             title: 'Add new meta_tag',
@@ -83732,24 +83758,24 @@ app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modal
             effect: false,
             confirmText: 'Create',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doCreate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'meta_tagCreate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
+    service.selectItem = function(item) {
+        service.item = angular.copy(item);
+    };
 
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
+    service.showUpdate = function(item) {
+        service.mode = 'update';
+        service.item = angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/manager/meta_tag/update.modal.html',
@@ -83759,102 +83785,104 @@ app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modal
             effect: false,
             confirmText: 'Save',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doUpdate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'meta_tagUpdate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		MetaTagRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doCreate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        MetaTagRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('meta_tag.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		MetaTagRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    };
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        MetaTagRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('meta_tag.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('meta_tag/remove/confirm', {values:[item.src]},
-         function(){
-             MetaTagRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('meta_tag/remove/confirm', {
+                values: [item.src]
+            },
+            function() {
+                MetaTagRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.item = {};
+                            $rootScope.$broadcast('meta_tag.delete', item);
                         }
-                        service.item={};
-                        $rootScope.$broadcast('meta_tag.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(reload){
+                );
+            });
+    };
+
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            MetaTagRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            MetaTagRes.getList().then(function(response) {
+                service.list = angular.copy(response.data.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('meta_tag.load', service.list);
-            }, function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            }, function(response) {
+                service.list = [];
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
             });
-        }else
+        } else
             deferred.resolve(service.list);
         return deferred.promise;
-    }
+    };
 
-    service.init=function(reload){
+    service.init = function(reload) {
         ManagerSvc.init();
 
         $q.all([
@@ -83862,24 +83890,24 @@ app.factory('MetaTagSvc', function (AppConst, MetaTagRes, $rootScope, $q, $modal
         ]).then(function(responseList) {
 
         });
-    }
+    };
     return service;
-  });
-app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
-    var service={};
+});
+app.factory('PropertiesSvc', function(AppConst, PropertiesRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
+    var service = {};
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.initEmptyItem=function(){
+    service.initEmptyItem = function() {
         service.item = {};
         service.item.name = '';
         service.item.value = '';
         service.item.comment = '';
-    }
+    };
 
-    service.showCreate=function(){
-        service.mode='create';
+    service.showCreate = function() {
+        service.mode = 'create';
         service.initEmptyItem();
         var boxOptions = {
             title: 'Add new properties',
@@ -83890,24 +83918,24 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
             effect: false,
             confirmText: 'Create',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doCreate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'propertiesCreate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
+    service.selectItem = function(item) {
+        service.item = angular.copy(item);
+    };
 
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
+    service.showUpdate = function(item) {
+        service.mode = 'update';
+        service.item = angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/manager/properties/update.modal.html',
@@ -83917,108 +83945,110 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
             effect: false,
             confirmText: 'Save',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doUpdate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'propertiesUpdate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                AppSvc.updateProperty(service.list[i].name,service.list[i].value);
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                AppSvc.updateProperty(service.list[i].name, service.list[i].value);
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		PropertiesRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doCreate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        PropertiesRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     service.updateItemOnList(service.item);
                     $rootScope.$broadcast('properties.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		PropertiesRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    };
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        PropertiesRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('properties.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('properties/remove/confirm', {values:[item.src]},
-         function(){
-             PropertiesRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('properties/remove/confirm', {
+                values: [item.src]
+            },
+            function() {
+                PropertiesRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.item = {};
+                            $rootScope.$broadcast('properties.delete', item);
                         }
-                        service.item={};
-                        $rootScope.$broadcast('properties.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(reload){
+                );
+            });
+    };
+
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            PropertiesRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            PropertiesRes.getList().then(function(response) {
+                service.list = angular.copy(response.data.data);
                 AppSvc.fillProperties(service.list);
 
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('properties.load', service.list);
-            }, function (response) {
-                service.list=[];
+            }, function(response) {
+                service.list = [];
                 AppSvc.fillProperties(service.list);
 
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
             });
-        }else
+        } else
             deferred.resolve(service.list);
         return deferred.promise;
-    }
+    };
 
-    service.init=function(reload){
+    service.init = function(reload) {
         ManagerSvc.init();
 
         $q.all([
@@ -84026,29 +84056,29 @@ app.factory('PropertiesSvc', function (AppConst, PropertiesRes, $rootScope, $q, 
         ]).then(function(responseList) {
 
         });
-    }
+    };
     return service;
-  });
-app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
-    var service={};
+});
+app.factory('PublicLinkSvc', function(AppConst, PublicLinkRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc) {
+    var service = {};
 
-    service.item={};
-    service.list=[];
+    service.item = {};
+    service.list = [];
 
-    service.initEmptyItem=function(){
+    service.initEmptyItem = function() {
         service.item = {};
         service.item.src = '';
         service.item.title = '';
-        service.item.description='';
-        service.item.icon='';
-        service.item.position=0;
-        service.item.in_header=0;
-        service.item.in_footer=0;
-        service.item.in_contact=1;
-    }
+        service.item.description = '';
+        service.item.icon = '';
+        service.item.position = 0;
+        service.item.in_header = 0;
+        service.item.in_footer = 0;
+        service.item.in_contact = 1;
+    };
 
-    service.showCreate=function(){
-        service.mode='create';
+    service.showCreate = function() {
+        service.mode = 'create';
         service.initEmptyItem();
         var boxOptions = {
             title: 'Add new public_link',
@@ -84059,24 +84089,24 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
             effect: false,
             confirmText: 'Create',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doCreate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'public_linkCreate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.selectItem=function(item){
-        service.item=angular.copy(item);
-    }
+    service.selectItem = function(item) {
+        service.item = angular.copy(item);
+    };
 
-    service.showUpdate=function(item){
-        service.mode='update';
-        service.item=angular.copy(item);
+    service.showUpdate = function(item) {
+        service.mode = 'update';
+        service.item = angular.copy(item);
         var boxOptions = {
             title: 'Edit properties',
             confirmTemplate: 'views/manager/public_link/update.modal.html',
@@ -84086,102 +84116,104 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
             effect: false,
             confirmText: 'Save',
             cancelText: 'Cancel',
-            afterConfirm: function(){
+            afterConfirm: function() {
                 service.doUpdate(service.item);
             },
-            afterCancel: function(){
+            afterCancel: function() {
 
             },
             prefixEvent: 'public_linkUpdate'
-        }
+        };
         $modalBox(boxOptions);
-    }
+    };
 
-    service.updateItemOnList=function(item){
-        for (var i=0;i<service.list.length;i++){
-            if (item.id===service.list[i].id){
-                angular.extend(service.list[i],angular.copy(item));
+    service.updateItemOnList = function(item) {
+        for (var i = 0; i < service.list.length; i++) {
+            if (item.id === service.list[i].id) {
+                angular.extend(service.list[i], angular.copy(item));
             }
         }
-    }
+    };
 
-	service.doCreate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		PublicLinkRes.actionCreate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    service.doCreate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        PublicLinkRes.actionCreate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.list.push(service.item);
                     $rootScope.$broadcast('public_link.create', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doUpdate=function(item){
-	    $rootScope.$broadcast('show-errors-check-validity');
-		PublicLinkRes.actionUpdate(item).then(
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                    service.item=angular.copy(response.data.data[0]);
+    };
+    service.doUpdate = function(item) {
+        $rootScope.$broadcast('show-errors-check-validity');
+        PublicLinkRes.actionUpdate(item).then(
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                    service.item = angular.copy(response.data.data[0]);
                     service.updateItemOnList(service.item);
 
                     $rootScope.$broadcast('public_link.update', service.item);
                 }
             },
-            function (response) {
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            function(response) {
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
             }
         );
-    }
-	service.doDelete=function(item){
-         MessageSvc.confirm('public_link/remove/confirm', {values:[item.src]},
-         function(){
-             PublicLinkRes.actionDelete(item).then(
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined && response.data.code=='ok'){
-                        for (var i=0;i<service.list.length;i++){
-                            if (service.list[i].id==item.id){
-                                service.list.splice(i, 1);
-                                break;
+    };
+    service.doDelete = function(item) {
+        MessageSvc.confirm('public_link/remove/confirm', {
+                values: [item.src]
+            },
+            function() {
+                PublicLinkRes.actionDelete(item).then(
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                            for (var i = 0; i < service.list.length; i++) {
+                                if (service.list[i].id == item.id) {
+                                    service.list.splice(i, 1);
+                                    break;
+                                }
                             }
+                            service.item = {};
+                            $rootScope.$broadcast('public_link.delete', item);
                         }
-                        service.item={};
-                        $rootScope.$broadcast('public_link.delete', item);
+                    },
+                    function(response) {
+                        if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
+                            MessageSvc.error(response.data.code, response.data);
                     }
-                },
-                function (response) {
-                    if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
-                        MessageSvc.error(response.data.code, response.data);
-                }
-            );
-         });
-    }
-    
-    service.load=function(reload){
+                );
+            });
+    };
+
+    service.load = function(reload) {
         var deferred = $q.defer();
-        if (service.loaded!==true || reload===true){
-            service.loaded=true;
-            PublicLinkRes.getList().then(function (response) {
-                service.list=angular.copy(response.data.data);
+        if (service.loaded !== true || reload === true) {
+            service.loaded = true;
+            PublicLinkRes.getList().then(function(response) {
+                service.list = angular.copy(response.data.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('public_link.load', service.list);
-            }, function (response) {
-                service.list=[];
-                if (response!=undefined && response.data!=undefined && response.data.code!=undefined)
+            }, function(response) {
+                service.list = [];
+                if (response !== undefined && response.data !== undefined && response.data.code !== undefined)
                     MessageSvc.error(response.data.code, response.data);
                 deferred.resolve(service.list);
             });
-        }else
+        } else
             deferred.resolve(service.list);
         return deferred.promise;
-    }
+    };
 
-    service.init=function(reload){
+    service.init = function(reload) {
         ManagerSvc.init();
 
         $q.all([
@@ -84189,23 +84221,22 @@ app.factory('PublicLinkSvc', function (AppConst, PublicLinkRes, $rootScope, $q, 
         ]).then(function(responseList) {
 
         });
-    }
+    };
     return service;
-  });
-app.factory('ManagerSidebarSvc', function ($q, TagSvc, PostSvc, ProjectSvc) {
-    var service={};
+});
+app.factory('ManagerSidebarSvc', function($q, TagSvc, PostSvc, ProjectSvc) {
+    var service = {};
 
-    service.init=function(reload){
+    service.init = function(reload) {
         $q.all([
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
-        ]).then(function(responseList) {
-        });
+        ]).then(function(responseList) {});
 
-    }
+    };
     return service;
-  });
+});
 app.controller('AppCtrl', function ($scope, AppSvc, AppConst, UtilsSvc, AccountSvc, MessageSvc) {
     $scope.AppConfig=AppConfig;
 
@@ -84356,6 +84387,10 @@ app.controller('ManagerSidebarCtrl', function ($scope, ManagerSidebarSvc, Projec
 
     ManagerSidebarSvc.init();
 });
+app.run(function (gettextCatalog) {
+    gettextCatalog.debug = true;
+    gettextCatalog.setCurrentLanguage('ru_RU');
+});
 jQuery(document).ready(function($) {
 
 
@@ -84381,3 +84416,13 @@ jQuery(document).ready(function($) {
     $('.level-label').tooltip();
 
 });
+angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
+/* jshint -W100 */
+    gettextCatalog.setStrings('en_US', {"Create":"Create"});
+/* jshint +W100 */
+}]);
+angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
+/* jshint -W100 */
+    gettextCatalog.setStrings('ru_RU', {"Create":"Создать"});
+/* jshint +W100 */
+}]);
