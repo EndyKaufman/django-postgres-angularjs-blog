@@ -56290,1855 +56290,1933 @@ tagsInput.run(["$templateCache", function($templateCache) {
 
 }).call(this);
 
-//
-// showdown.js -- A javascript port of Markdown.
-//
-// Copyright (c) 2007 John Fraser.
-//
-// Original Markdown Copyright (c) 2004-2005 John Gruber
-//   <http://daringfireball.net/projects/markdown/>
-//
-// Redistributable under a BSD-style open source license.
-// See license.txt for more information.
-//
-// The full source distribution is at:
-//
-//				A A L
-//				T C A
-//				T K B
-//
-//   <http://www.attacklab.net/>
-//
+;/*! showdown 28-05-2015 */
+(function(){
+/**
+ * Created by Tivie on 06-01-2015.
+ */
 
-//
-// Wherever possible, Showdown is a straight, line-by-line port
-// of the Perl version of Markdown.
-//
-// This is not a normal parser design; it's basically just a
-// series of string substitutions.  It's hard to read and
-// maintain this way,  but keeping Showdown close to the original
-// design makes it easier to port new features.
-//
-// More importantly, Showdown behaves like markdown.pl in most
-// edge cases.  So web applications can do client-side preview
-// in Javascript, and then build identical HTML on the server.
-//
-// This port needs the new RegExp functionality of ECMA 262,
-// 3rd Edition (i.e. Javascript 1.5).  Most modern web browsers
-// should do fine.  Even with the new regular expression features,
-// We do a lot of work to emulate Perl's regex functionality.
-// The tricky changes in this file mostly have the "attacklab:"
-// label.  Major or self-explanatory changes don't.
-//
-// Smart diff tools like Araxis Merge will be able to match up
-// this file with markdown.pl in a useful way.  A little tweaking
-// helps: in a copy of markdown.pl, replace "#" with "//" and
-// replace "$text" with "text".  Be sure to ignore whitespace
-// and line endings.
-//
+// Private properties
+var showdown = {},
+    parsers = {},
+    extensions = {},
+    globalOptions = {
+      omitExtraWLInCodeBlocks: false,
+      prefixHeaderId:          false
+    };
 
+/**
+ * helper namespace
+ * @type {{}}
+ */
+showdown.helper = {};
 
-//
-// Showdown usage:
-//
-//   var text = "Markdown *rocks*.";
-//
-//   var converter = new Showdown.converter();
-//   var html = converter.makeHtml(text);
-//
-//   alert(html);
-//
-// Note: move the sample code to the bottom of this
-// file before uncommenting it.
-//
+// Public properties
+showdown.extensions = {};
 
+/**
+ * Set a global option
+ * @static
+ * @param {string} key
+ * @param {*} value
+ * @returns {showdown}
+ */
+showdown.setOption = function (key, value) {
+  'use strict';
+  globalOptions[key] = value;
+  return this;
+};
 
-//
-// Showdown namespace
-//
-var Showdown = {extensions: {}};
+/**
+ * Get a global option
+ * @static
+ * @param {string} key
+ * @returns {*}
+ */
+showdown.getOption = function (key) {
+  'use strict';
+  return globalOptions[key];
+};
 
-//
-// forEach
-//
-var forEach = Showdown.forEach = function (obj, callback) {
-    if (typeof obj.forEach === 'function') {
-        obj.forEach(callback);
+/**
+ * Get the global options
+ * @static
+ * @returns {{omitExtraWLInCodeBlocks: boolean, prefixHeaderId: boolean}}
+ */
+showdown.getOptions = function () {
+  'use strict';
+  return globalOptions;
+};
+
+/**
+ * Get or set a subParser
+ *
+ * subParser(name)       - Get a registered subParser
+ * subParser(name, func) - Register a subParser
+ * @static
+ * @param {string} name
+ * @param {function} [func]
+ * @returns {*}
+ */
+showdown.subParser = function (name, func) {
+  'use strict';
+  if (showdown.helper.isString(name)) {
+    if (typeof func !== 'undefined') {
+      parsers[name] = func;
     } else {
-        var i, len = obj.length;
-        for (i = 0; i < len; i++) {
-            callback(obj[i], i, obj);
-        }
+      if (parsers.hasOwnProperty(name)) {
+        return parsers[name];
+      } else {
+        throw Error('SubParser named ' + name + ' not registered!');
+      }
     }
+  }
 };
 
-//
-// Standard extension naming
-//
-var stdExtName = function (s) {
-    return s.replace(/[_-]||\s/g, '').toLowerCase();
+showdown.extension = function (name, ext) {
+  'use strict';
+
+  if (!showdown.helper.isString(name)) {
+    throw Error('Extension \'name\' must be a string');
+  }
+
+  name = showdown.helper.stdExtName(name);
+
+  if (showdown.helper.isUndefined(ext)) {
+    return getExtension();
+  } else {
+    return setExtension();
+  }
 };
 
-//
-// converter
-//
-// Wraps all "globals" so that the only thing
-// exposed is makeHtml().
-//
-Showdown.converter = function (converter_options) {
+function getExtension(name) {
+  'use strict';
 
-//
-// Globals:
-//
+  if (!extensions.hasOwnProperty(name)) {
+    throw Error('Extension named ' + name + ' is not registered!');
+  }
+  return extensions[name];
+}
 
-// Global hashes, used by various utility routines
-    var g_urls;
-    var g_titles;
-    var g_html_blocks;
+function setExtension(name, ext) {
+  'use strict';
 
-// Used to track when we're inside an ordered or unordered list
-// (see _ProcessListItems() for details):
-    var g_list_level = 0;
+  if (typeof ext !== 'object') {
+    throw Error('A Showdown Extension must be an object, ' + typeof ext + ' given');
+  }
 
-// Global extensions
-    var g_lang_extensions = [];
-    var g_output_modifiers = [];
+  if (!showdown.helper.isString(ext.type)) {
+    throw Error('When registering a showdown extension, "type" must be a string, ' + typeof ext.type + ' given');
+  }
 
+  ext.type = ext.type.toLowerCase();
 
-//
-// Automatic Extension Loading (node only):
-//
-    if (typeof module !== 'undefined' && typeof exports !== 'undefined' && typeof require !== 'undefined') {
-        var fs = require('fs');
-
-        if (fs) {
-            // Search extensions folder
-            var extensions = fs.readdirSync((__dirname || '.') + '/extensions').filter(function (file) {
-                return ~file.indexOf('.js');
-            }).map(function (file) {
-                return file.replace(/\.js$/, '');
-            });
-            // Load extensions into Showdown namespace
-            Showdown.forEach(extensions, function (ext) {
-                var name = stdExtName(ext);
-                Showdown.extensions[name] = require('./extensions/' + ext);
-            });
-        }
-    }
-
-    this.makeHtml = function (text) {
-//
-// Main function. The order in which other subs are called here is
-// essential. Link and image substitutions need to happen before
-// _EscapeSpecialCharsWithinTagAttributes(), so that any *'s or _'s in the <a>
-// and <img> tags get encoded.
-//
-
-        // Clear the global hashes. If we don't clear these, you get conflicts
-        // from other articles when generating a page which contains more than
-        // one article (e.g. an index page that shows the N most recent
-        // articles):
-        g_urls = {};
-        g_titles = {};
-        g_html_blocks = [];
-
-        // attacklab: Replace ~ with ~T
-        // This lets us use tilde as an escape char to avoid md5 hashes
-        // The choice of character is arbitray; anything that isn't
-        // magic in Markdown will work.
-        text = text.replace(/~/g, "~T");
-
-        // attacklab: Replace $ with ~D
-        // RegExp interprets $ as a special character
-        // when it's in a replacement string
-        text = text.replace(/\$/g, "~D");
-
-        // Standardize line endings
-        text = text.replace(/\r\n/g, "\n"); // DOS to Unix
-        text = text.replace(/\r/g, "\n"); // Mac to Unix
-
-        // Make sure text begins and ends with a couple of newlines:
-        text = "\n\n" + text + "\n\n";
-
-        // Convert all tabs to spaces.
-        text = _Detab(text);
-
-        // Strip any lines consisting only of spaces and tabs.
-        // This makes subsequent regexen easier to write, because we can
-        // match consecutive blank lines with /\n+/ instead of something
-        // contorted like /[ \t]*\n+/ .
-        text = text.replace(/^[ \t]+$/mg, "");
-
-        // Run language extensions
-        Showdown.forEach(g_lang_extensions, function (x) {
-            text = _ExecuteExtension(x, text);
-        });
-
-        // Handle github codeblocks prior to running HashHTML so that
-        // HTML contained within the codeblock gets escaped propertly
-        text = _DoGithubCodeBlocks(text);
-
-        // Turn block-level HTML blocks into hash entries
-        text = _HashHTMLBlocks(text);
-
-        // Strip link definitions, store in hashes.
-        text = _StripLinkDefinitions(text);
-
-        text = _RunBlockGamut(text);
-
-        text = _UnescapeSpecialChars(text);
-
-        // attacklab: Restore dollar signs
-        text = text.replace(/~D/g, "$$");
-
-        // attacklab: Restore tildes
-        text = text.replace(/~T/g, "~");
-
-        // Run output modifiers
-        Showdown.forEach(g_output_modifiers, function (x) {
-            text = _ExecuteExtension(x, text);
-        });
-
-        return text;
-    };
-
-
-//
-// Options:
-//
-
-// Parse extensions options into separate arrays
-    if (converter_options && converter_options.extensions) {
-
-        var self = this;
-
-        // Iterate over each plugin
-        Showdown.forEach(converter_options.extensions, function (plugin) {
-
-            // Assume it's a bundled plugin if a string is given
-            if (typeof plugin === 'string') {
-                plugin = Showdown.extensions[stdExtName(plugin)];
-            }
-
-            if (typeof plugin === 'function') {
-                // Iterate over each extension within that plugin
-                Showdown.forEach(plugin(self), function (ext) {
-                    // Sort extensions by type
-                    if (ext.type) {
-                        if (ext.type === 'language' || ext.type === 'lang') {
-                            g_lang_extensions.push(ext);
-                        } else if (ext.type === 'output' || ext.type === 'html') {
-                            g_output_modifiers.push(ext);
-                        }
-                    } else {
-                        // Assume language extension
-                        g_output_modifiers.push(ext);
-                    }
-                });
-            } else {
-                throw "Extension '" + plugin + "' could not be loaded.  It was either not found or is not a valid extension.";
-            }
-        });
-    }
-
-
-    var _ExecuteExtension = function (ext, text) {
-        if (ext.regex) {
-            var re = new RegExp(ext.regex, 'g');
-            return text.replace(re, ext.replace);
-        } else if (ext.filter) {
-            return ext.filter(text);
-        }
-    };
-
-    var _StripLinkDefinitions = function (text) {
-//
-// Strips link definitions from text, stores the URLs and titles in
-// hash references.
-//
-
-        // Link defs are in the form: ^[id]: url "optional title"
-
-        /*
-         var text = text.replace(/
-         ^[ ]{0,3}\[(.+)\]:  // id = $1  attacklab: g_tab_width - 1
-         [ \t]*
-         \n?				// maybe *one* newline
-         [ \t]*
-         <?(\S+?)>?			// url = $2
-         [ \t]*
-         \n?				// maybe one newline
-         [ \t]*
-         (?:
-         (\n*)				// any lines skipped = $3 attacklab: lookbehind removed
-         ["(]
-         (.+?)				// title = $4
-         [")]
-         [ \t]*
-         )?					// title is optional
-         (?:\n+|$)
-         /gm,
-         function(){...});
-         */
-
-        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
-        text += "~0";
-
-        text = text.replace(/^[ ]{0,3}\[(.+)\]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|(?=~0))/gm,
-            function (wholeMatch, m1, m2, m3, m4) {
-                m1 = m1.toLowerCase();
-                g_urls[m1] = _EncodeAmpsAndAngles(m2);  // Link IDs are case-insensitive
-                if (m3) {
-                    // Oops, found blank lines, so it's not a title.
-                    // Put back the parenthetical statement we stole.
-                    return m3 + m4;
-                } else if (m4) {
-                    g_titles[m1] = m4.replace(/"/g, "&quot;");
-                }
-
-                // Completely remove the definition from the text
-                return "";
-            }
-        );
-
-        // attacklab: strip sentinel
-        text = text.replace(/~0/, "");
-
-        return text;
-    }
-
-    var _HashHTMLBlocks = function (text) {
-        // attacklab: Double up blank lines to reduce lookaround
-        text = text.replace(/\n/g, "\n\n");
-
-        // Hashify HTML blocks:
-        // We only want to do this for block-level HTML tags, such as headers,
-        // lists, and tables. That's because we still want to wrap <p>s around
-        // "paragraphs" that are wrapped in non-block-level tags, such as anchors,
-        // phrase emphasis, and spans. The list of tags we're looking for is
-        // hard-coded:
-        var block_tags_a = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|style|section|header|footer|nav|article|aside";
-        var block_tags_b = "p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside";
-
-        // First, look for nested blocks, e.g.:
-        //   <div>
-        //     <div>
-        //     tags for inner block must be indented.
-        //     </div>
-        //   </div>
-        //
-        // The outermost tags must start at the left margin for this to match, and
-        // the inner nested divs must be indented.
-        // We need to do this before the next, more liberal match, because the next
-        // match will start at the first `<div>` and stop at the first `</div>`.
-
-        // attacklab: This regex can be expensive when it fails.
-        /*
-         var text = text.replace(/
-         (						// save in $1
-         ^					// start of line  (with /m)
-         <($block_tags_a)	// start tag = $2
-         \b					// word break
-         // attacklab: hack around khtml/pcre bug...
-         [^\r]*?\n			// any number of lines, minimally matching
-         </\2>				// the matching end tag
-         [ \t]*				// trailing spaces/tabs
-         (?=\n+)				// followed by a newline
-         )						// attacklab: there are sentinel newlines at end of document
-         /gm,function(){...}};
-         */
-        text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm, hashElement);
-
-        //
-        // Now match more liberally, simply from `\n<tag>` to `</tag>\n`
-        //
-
-        /*
-         var text = text.replace(/
-         (						// save in $1
-         ^					// start of line  (with /m)
-         <($block_tags_b)	// start tag = $2
-         \b					// word break
-         // attacklab: hack around khtml/pcre bug...
-         [^\r]*?				// any number of lines, minimally matching
-         </\2>				// the matching end tag
-         [ \t]*				// trailing spaces/tabs
-         (?=\n+)				// followed by a newline
-         )						// attacklab: there are sentinel newlines at end of document
-         /gm,function(){...}};
-         */
-        text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside)\b[^\r]*?<\/\2>[ \t]*(?=\n+)\n)/gm, hashElement);
-
-        // Special case just for <hr />. It was easier to make a special case than
-        // to make the other regex more complicated.
-
-        /*
-         text = text.replace(/
-         (						// save in $1
-         \n\n				// Starting after a blank line
-         [ ]{0,3}
-         (<(hr)				// start tag = $2
-         \b					// word break
-         ([^<>])*?			//
-         \/?>)				// the matching end tag
-         [ \t]*
-         (?=\n{2,})			// followed by a blank line
-         )
-         /g,hashElement);
-         */
-        text = text.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g, hashElement);
-
-        // Special case for standalone HTML comments:
-
-        /*
-         text = text.replace(/
-         (						// save in $1
-         \n\n				// Starting after a blank line
-         [ ]{0,3}			// attacklab: g_tab_width - 1
-         <!
-         (--[^\r]*?--\s*)+
-         >
-         [ \t]*
-         (?=\n{2,})			// followed by a blank line
-         )
-         /g,hashElement);
-         */
-        text = text.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g, hashElement);
-
-        // PHP and ASP-style processor instructions (<?...?> and <%...%>)
-
-        /*
-         text = text.replace(/
-         (?:
-         \n\n				// Starting after a blank line
-         )
-         (						// save in $1
-         [ ]{0,3}			// attacklab: g_tab_width - 1
-         (?:
-         <([?%])			// $2
-         [^\r]*?
-         \2>
-         )
-         [ \t]*
-         (?=\n{2,})			// followed by a blank line
-         )
-         /g,hashElement);
-         */
-        text = text.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g, hashElement);
-
-        // attacklab: Undo double lines (see comment at top of this function)
-        text = text.replace(/\n\n/g, "\n");
-        return text;
-    }
-
-    var hashElement = function (wholeMatch, m1) {
-        var blockText = m1;
-
-        // Undo double lines
-        blockText = blockText.replace(/\n\n/g, "\n");
-        blockText = blockText.replace(/^\n/, "");
-
-        // strip trailing blank lines
-        blockText = blockText.replace(/\n+$/g, "");
-
-        // Replace the element text with a marker ("~KxK" where x is its key)
-        blockText = "\n\n~K" + (g_html_blocks.push(blockText) - 1) + "K\n\n";
-
-        return blockText;
-    };
-
-    var _RunBlockGamut = function (text) {
-//
-// These are all the transformations that form block-level
-// tags like paragraphs, headers, and list items.
-//
-        text = _DoHeaders(text);
-
-        // Do Horizontal Rules:
-        var key = hashBlock("<hr />");
-        text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, key);
-        text = text.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm, key);
-        text = text.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm, key);
-
-        text = _DoLists(text);
-        text = _DoCodeBlocks(text);
-        text = _DoBlockQuotes(text);
-
-        // We already ran _HashHTMLBlocks() before, in Markdown(), but that
-        // was to escape raw HTML in the original Markdown source. This time,
-        // we're escaping the markup we've just created, so that we don't wrap
-        // <p> tags around block-level tags.
-        text = _HashHTMLBlocks(text);
-        text = _FormParagraphs(text);
-
-        return text;
-    };
-
-    var _RunSpanGamut = function (text) {
-//
-// These are all the transformations that occur *within* block-level
-// tags like paragraphs, headers, and list items.
-//
-
-        text = _DoCodeSpans(text);
-        text = _EscapeSpecialCharsWithinTagAttributes(text);
-        text = _EncodeBackslashEscapes(text);
-
-        // Process anchor and image tags. Images must come first,
-        // because ![foo][f] looks like an anchor.
-        text = _DoImages(text);
-        text = _DoAnchors(text);
-
-        // Make links out of things like `<http://example.com/>`
-        // Must come after _DoAnchors(), because you can use < and >
-        // delimiters in inline links like [this](<url>).
-        text = _DoAutoLinks(text);
-        text = _EncodeAmpsAndAngles(text);
-        text = _DoItalicsAndBold(text);
-
-        // Do hard breaks:
-        text = text.replace(/  +\n/g, " <br />\n");
-
-        return text;
-    }
-
-    var _EscapeSpecialCharsWithinTagAttributes = function (text) {
-//
-// Within tags -- meaning between < and > -- encode [\ ` * _] so they
-// don't conflict with their use in Markdown for code, italics and strong.
-//
-
-        // Build a regex to find HTML tags and comments.  See Friedl's
-        // "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
-        var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
-
-        text = text.replace(regex, function (wholeMatch) {
-            var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g, "$1`");
-            tag = escapeCharacters(tag, "\\`*_");
-            return tag;
-        });
-
-        return text;
-    }
-
-    var _DoAnchors = function (text) {
-//
-// Turn Markdown link shortcuts into XHTML <a> tags.
-//
-        //
-        // First, handle reference-style links: [link text] [id]
-        //
-
-        /*
-         text = text.replace(/
-         (							// wrap whole match in $1
-         \[
-         (
-         (?:
-         \[[^\]]*\]		// allow brackets nested one level
-         |
-         [^\[]			// or anything else
-         )*
-         )
-         \]
-
-         [ ]?					// one optional space
-         (?:\n[ ]*)?				// one optional newline followed by spaces
-
-         \[
-         (.*?)					// id = $3
-         \]
-         )()()()()					// pad remaining backreferences
-         /g,_DoAnchors_callback);
-         */
-        text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeAnchorTag);
-
-        //
-        // Next, inline-style links: [link text](url "optional title")
-        //
-
-        /*
-         text = text.replace(/
-         (						// wrap whole match in $1
-         \[
-         (
-         (?:
-         \[[^\]]*\]	// allow brackets nested one level
-         |
-         [^\[\]]			// or anything else
-         )
-         )
-         \]
-         \(						// literal paren
-         [ \t]*
-         ()						// no id, so leave $3 empty
-         <?(.*?)>?				// href = $4
-         [ \t]*
-         (						// $5
-         (['"])				// quote char = $6
-         (.*?)				// Title = $7
-         \6					// matching quote
-         [ \t]*				// ignore any spaces/tabs between closing quote and )
-         )?						// title is optional
-         \)
-         )
-         /g,writeAnchorTag);
-         */
-        text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?(.*?(?:\(.*?\).*?)?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeAnchorTag);
-
-        //
-        // Last, handle reference-style shortcuts: [link text]
-        // These must come last in case you've also got [link test][1]
-        // or [link test](/foo)
-        //
-
-        /*
-         text = text.replace(/
-         (		 					// wrap whole match in $1
-         \[
-         ([^\[\]]+)				// link text = $2; can't contain '[' or ']'
-         \]
-         )()()()()()					// pad rest of backreferences
-         /g, writeAnchorTag);
-         */
-        text = text.replace(/(\[([^\[\]]+)\])()()()()()/g, writeAnchorTag);
-
-        return text;
-    }
-
-    var writeAnchorTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
-        if (m7 == undefined) m7 = "";
-        var whole_match = m1;
-        var link_text = m2;
-        var link_id = m3.toLowerCase();
-        var url = m4;
-        var title = m7;
-
-        if (url == "") {
-            if (link_id == "") {
-                // lower-case and turn embedded newlines into spaces
-                link_id = link_text.toLowerCase().replace(/ ?\n/g, " ");
-            }
-            url = "#" + link_id;
-
-            if (g_urls[link_id] != undefined) {
-                url = g_urls[link_id];
-                if (g_titles[link_id] != undefined) {
-                    title = g_titles[link_id];
-                }
-            }
-            else {
-                if (whole_match.search(/\(\s*\)$/m) > -1) {
-                    // Special case for explicit empty url
-                    url = "";
-                } else {
-                    return whole_match;
-                }
-            }
-        }
-
-        url = escapeCharacters(url, "*_");
-        var result = "<a href=\"" + url + "\"";
-
-        if (title != "") {
-            title = title.replace(/"/g, "&quot;");
-            title = escapeCharacters(title, "*_");
-            result += " title=\"" + title + "\"";
-        }
-
-        result += ">" + link_text + "</a>";
-
-        return result;
-    }
-
-    var _DoImages = function (text) {
-//
-// Turn Markdown image shortcuts into <img> tags.
-//
-
-        //
-        // First, handle reference-style labeled images: ![alt text][id]
-        //
-
-        /*
-         text = text.replace(/
-         (						// wrap whole match in $1
-         !\[
-         (.*?)				// alt text = $2
-         \]
-
-         [ ]?				// one optional space
-         (?:\n[ ]*)?			// one optional newline followed by spaces
-
-         \[
-         (.*?)				// id = $3
-         \]
-         )()()()()				// pad rest of backreferences
-         /g,writeImageTag);
-         */
-        text = text.replace(/(!\[(.*?)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeImageTag);
-
-        //
-        // Next, handle inline images:  ![alt text](url "optional title")
-        // Don't forget: encode * and _
-
-        /*
-         text = text.replace(/
-         (						// wrap whole match in $1
-         !\[
-         (.*?)				// alt text = $2
-         \]
-         \s?					// One optional whitespace character
-         \(					// literal paren
-         [ \t]*
-         ()					// no id, so leave $3 empty
-         <?(\S+?)>?			// src url = $4
-         [ \t]*
-         (					// $5
-         (['"])			// quote char = $6
-         (.*?)			// title = $7
-         \6				// matching quote
-         [ \t]*
-         )?					// title is optional
-         \)
-         )
-         /g,writeImageTag);
-         */
-        text = text.replace(/(!\[(.*?)\]\s?\([ \t]*()<?(\S+?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeImageTag);
-
-        return text;
-    }
-
-    var writeImageTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
-        var whole_match = m1;
-        var alt_text = m2;
-        var link_id = m3.toLowerCase();
-        var url = m4;
-        var title = m7;
-
-        if (!title) title = "";
-
-        if (url == "") {
-            if (link_id == "") {
-                // lower-case and turn embedded newlines into spaces
-                link_id = alt_text.toLowerCase().replace(/ ?\n/g, " ");
-            }
-            url = "#" + link_id;
-
-            if (g_urls[link_id] != undefined) {
-                url = g_urls[link_id];
-                if (g_titles[link_id] != undefined) {
-                    title = g_titles[link_id];
-                }
-            }
-            else {
-                return whole_match;
-            }
-        }
-
-        alt_text = alt_text.replace(/"/g, "&quot;");
-        url = escapeCharacters(url, "*_");
-        var result = "<img src=\"" + url + "\" alt=\"" + alt_text + "\"";
-
-        // attacklab: Markdown.pl adds empty title attributes to images.
-        // Replicate this bug.
-
-        //if (title != "") {
-        title = title.replace(/"/g, "&quot;");
-        title = escapeCharacters(title, "*_");
-        result += " title=\"" + title + "\"";
-        //}
-
-        result += " />";
-
-        return result;
-    }
-
-    var _DoHeaders = function (text) {
-
-        // Setext-style headers:
-        //	Header 1
-        //	========
-        //
-        //	Header 2
-        //	--------
-        //
-        text = text.replace(/^(.+)[ \t]*\n=+[ \t]*\n+/gm,
-            function (wholeMatch, m1) {
-                return hashBlock('<h1 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h1>");
-            });
-
-        text = text.replace(/^(.+)[ \t]*\n-+[ \t]*\n+/gm,
-            function (matchFound, m1) {
-                return hashBlock('<h2 id="' + headerId(m1) + '">' + _RunSpanGamut(m1) + "</h2>");
-            });
-
-        // atx-style headers:
-        //  # Header 1
-        //  ## Header 2
-        //  ## Header 2 with closing hashes ##
-        //  ...
-        //  ###### Header 6
-        //
-
-        /*
-         text = text.replace(/
-         ^(\#{1,6})				// $1 = string of #'s
-         [ \t]*
-         (.+?)					// $2 = Header text
-         [ \t]*
-         \#*						// optional closing #'s (not counted)
-         \n+
-         /gm, function() {...});
-         */
-
-        text = text.replace(/^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm,
-            function (wholeMatch, m1, m2) {
-                var h_level = m1.length;
-                return hashBlock("<h" + h_level + ' id="' + headerId(m2) + '">' + _RunSpanGamut(m2) + "</h" + h_level + ">");
-            });
-
-        function headerId(m) {
-            return m.replace(/[^\w]/g, '').toLowerCase();
-        }
-
-        return text;
-    }
-
-// This declaration keeps Dojo compressor from outputting garbage:
-    var _ProcessListItems;
-
-    var _DoLists = function (text) {
-//
-// Form HTML ordered (numbered) and unordered (bulleted) lists.
-//
-
-        // attacklab: add sentinel to hack around khtml/safari bug:
-        // http://bugs.webkit.org/show_bug.cgi?id=11231
-        text += "~0";
-
-        // Re-usable pattern to match any entirel ul or ol list:
-
-        /*
-         var whole_list = /
-         (									// $1 = whole list
-         (								// $2
-         [ ]{0,3}					// attacklab: g_tab_width - 1
-         ([*+-]|\d+[.])				// $3 = first list item marker
-         [ \t]+
-         )
-         [^\r]+?
-         (								// $4
-         ~0							// sentinel for workaround; should be $
-         |
-         \n{2,}
-         (?=\S)
-         (?!							// Negative lookahead for another list item marker
-         [ \t]*
-         (?:[*+-]|\d+[.])[ \t]+
-         )
-         )
-         )/g
-         */
-        var whole_list = /^(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm;
-
-        if (g_list_level) {
-            text = text.replace(whole_list, function (wholeMatch, m1, m2) {
-                var list = m1;
-                var list_type = (m2.search(/[*+-]/g) > -1) ? "ul" : "ol";
-
-                // Turn double returns into triple returns, so that we can make a
-                // paragraph for the last item in a list, if necessary:
-                list = list.replace(/\n{2,}/g, "\n\n\n");
-                ;
-                var result = _ProcessListItems(list);
-
-                // Trim any trailing whitespace, to put the closing `</$list_type>`
-                // up on the preceding line, to get it past the current stupid
-                // HTML block parser. This is a hack to work around the terrible
-                // hack that is the HTML block parser.
-                result = result.replace(/\s+$/, "");
-                result = "<" + list_type + ">" + result + "</" + list_type + ">\n";
-                return result;
-            });
-        } else {
-            whole_list = /(\n\n|^\n?)(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/g;
-            text = text.replace(whole_list, function (wholeMatch, m1, m2, m3) {
-                var runup = m1;
-                var list = m2;
-
-                var list_type = (m3.search(/[*+-]/g) > -1) ? "ul" : "ol";
-                // Turn double returns into triple returns, so that we can make a
-                // paragraph for the last item in a list, if necessary:
-                var list = list.replace(/\n{2,}/g, "\n\n\n");
-                ;
-                var result = _ProcessListItems(list);
-                result = runup + "<" + list_type + ">\n" + result + "</" + list_type + ">\n";
-                return result;
-            });
-        }
-
-        // attacklab: strip sentinel
-        text = text.replace(/~0/, "");
-
-        return text;
-    }
-
-    _ProcessListItems = function (list_str) {
-//
-//  Process the contents of a single ordered or unordered list, splitting it
-//  into individual list items.
-//
-        // The $g_list_level global keeps track of when we're inside a list.
-        // Each time we enter a list, we increment it; when we leave a list,
-        // we decrement. If it's zero, we're not in a list anymore.
-        //
-        // We do this because when we're not inside a list, we want to treat
-        // something like this:
-        //
-        //    I recommend upgrading to version
-        //    8. Oops, now this line is treated
-        //    as a sub-list.
-        //
-        // As a single paragraph, despite the fact that the second line starts
-        // with a digit-period-space sequence.
-        //
-        // Whereas when we're inside a list (or sub-list), that line will be
-        // treated as the start of a sub-list. What a kludge, huh? This is
-        // an aspect of Markdown's syntax that's hard to parse perfectly
-        // without resorting to mind-reading. Perhaps the solution is to
-        // change the syntax rules such that sub-lists must start with a
-        // starting cardinal number; e.g. "1." or "a.".
-
-        g_list_level++;
-
-        // trim trailing blank lines:
-        list_str = list_str.replace(/\n{2,}$/, "\n");
-
-        // attacklab: add sentinel to emulate \z
-        list_str += "~0";
-
-        /*
-         list_str = list_str.replace(/
-         (\n)?							// leading line = $1
-         (^[ \t]*)						// leading whitespace = $2
-         ([*+-]|\d+[.]) [ \t]+			// list marker = $3
-         ([^\r]+?						// list item text   = $4
-         (\n{1,2}))
-         (?= \n* (~0 | \2 ([*+-]|\d+[.]) [ \t]+))
-         /gm, function(){...});
-         */
-        list_str = list_str.replace(/(\n)?(^[ \t]*)([*+-]|\d+[.])[ \t]+([^\r]+?(\n{1,2}))(?=\n*(~0|\2([*+-]|\d+[.])[ \t]+))/gm,
-            function (wholeMatch, m1, m2, m3, m4) {
-                var item = m4;
-                var leading_line = m1;
-                var leading_space = m2;
-
-                if (leading_line || (item.search(/\n{2,}/) > -1)) {
-                    item = _RunBlockGamut(_Outdent(item));
-                }
-                else {
-                    // Recursion for sub-lists:
-                    item = _DoLists(_Outdent(item));
-                    item = item.replace(/\n$/, ""); // chomp(item)
-                    item = _RunSpanGamut(item);
-                }
-
-                return "<li>" + item + "</li>\n";
-            }
-        );
-
-        // attacklab: strip sentinel
-        list_str = list_str.replace(/~0/g, "");
-
-        g_list_level--;
-        return list_str;
-    }
-
-    var _DoCodeBlocks = function (text) {
-//
-//  Process Markdown `<pre><code>` blocks.
-//
-
-        /*
-         text = text.replace(text,
-         /(?:\n\n|^)
-         (								// $1 = the code block -- one or more lines, starting with a space/tab
-         (?:
-         (?:[ ]{4}|\t)			// Lines must start with a tab or a tab-width of spaces - attacklab: g_tab_width
-         .*\n+
-         )+
-         )
-         (\n*[ ]{0,3}[^ \t\n]|(?=~0))	// attacklab: g_tab_width
-         /g,function(){...});
-         */
-
-        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
-        text += "~0";
-
-        text = text.replace(/(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g,
-            function (wholeMatch, m1, m2) {
-                var codeblock = m1;
-                var nextChar = m2;
-
-                codeblock = _EncodeCode(_Outdent(codeblock));
-                codeblock = _Detab(codeblock);
-                codeblock = codeblock.replace(/^\n+/g, ""); // trim leading newlines
-                codeblock = codeblock.replace(/\n+$/g, ""); // trim trailing whitespace
-
-                codeblock = "<pre><code>" + codeblock + "\n</code></pre>";
-
-                return hashBlock(codeblock) + nextChar;
-            }
-        );
-
-        // attacklab: strip sentinel
-        text = text.replace(/~0/, "");
-
-        return text;
-    };
-
-    var _DoGithubCodeBlocks = function (text) {
-//
-//  Process Github-style code blocks
-//  Example:
-//  ```ruby
-//  def hello_world(x)
-//    puts "Hello, #{x}"
-//  end
-//  ```
-//
-
-
-        // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
-        text += "~0";
-
-        text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g,
-            function (wholeMatch, m1, m2) {
-                var language = m1;
-                var codeblock = m2;
-
-                codeblock = _EncodeCode(codeblock);
-                codeblock = _Detab(codeblock);
-                codeblock = codeblock.replace(/^\n+/g, ""); // trim leading newlines
-                codeblock = codeblock.replace(/\n+$/g, ""); // trim trailing whitespace
-
-                codeblock = "<pre><code" + (language ? " class=\"" + language + '"' : "") + ">" + codeblock + "\n</code></pre>";
-
-                return hashBlock(codeblock);
-            }
-        );
-
-        // attacklab: strip sentinel
-        text = text.replace(/~0/, "");
-
-        return text;
-    }
-
-    var hashBlock = function (text) {
-        text = text.replace(/(^\n+|\n+$)/g, "");
-        return "\n\n~K" + (g_html_blocks.push(text) - 1) + "K\n\n";
-    }
-
-    var _DoCodeSpans = function (text) {
-//
-//   *  Backtick quotes are used for <code></code> spans.
-//
-//   *  You can use multiple backticks as the delimiters if you want to
-//	 include literal backticks in the code span. So, this input:
-//
-//		 Just type ``foo `bar` baz`` at the prompt.
-//
-//	   Will translate to:
-//
-//		 <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
-//
-//	There's no arbitrary limit to the number of backticks you
-//	can use as delimters. If you need three consecutive backticks
-//	in your code, use four for delimiters, etc.
-//
-//  *  You can use spaces to get literal backticks at the edges:
-//
-//		 ... type `` `bar` `` ...
-//
-//	   Turns to:
-//
-//		 ... type <code>`bar`</code> ...
-//
-
-        /*
-         text = text.replace(/
-         (^|[^\\])					// Character before opening ` can't be a backslash
-         (`+)						// $2 = Opening run of `
-         (							// $3 = The code block
-         [^\r]*?
-         [^`]					// attacklab: work around lack of lookbehind
-         )
-         \2							// Matching closer
-         (?!`)
-         /gm, function(){...});
-         */
-
-        text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm,
-            function (wholeMatch, m1, m2, m3, m4) {
-                var c = m3;
-                c = c.replace(/^([ \t]*)/g, "");	// leading whitespace
-                c = c.replace(/[ \t]*$/g, "");	// trailing whitespace
-                c = _EncodeCode(c);
-                return m1 + "<code>" + c + "</code>";
-            });
-
-        return text;
-    }
-
-    var _EncodeCode = function (text) {
-//
-// Encode/escape certain characters inside Markdown code runs.
-// The point is that in code, these characters are literals,
-// and lose their special Markdown meanings.
-//
-        // Encode all ampersands; HTML entities are not
-        // entities within a Markdown code span.
-        text = text.replace(/&/g, "&amp;");
-
-        // Do the angle bracket song and dance:
-        text = text.replace(/</g, "&lt;");
-        text = text.replace(/>/g, "&gt;");
-
-        // Now, escape characters that are magic in Markdown:
-        text = escapeCharacters(text, "\*_{}[]\\", false);
-
-// jj the line above breaks this:
-//---
-
-//* Item
-
-//   1. Subitem
-
-//            special char: *
-//---
-
-        return text;
-    }
-
-    var _DoItalicsAndBold = function (text) {
-
-        // <strong> must go first:
-        text = text.replace(/(\*\*|__)(?=\S)([^\r]*?\S[*_]*)\1/g,
-            "<strong>$2</strong>");
-
-        text = text.replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g,
-            "<em>$2</em>");
-
-        return text;
-    }
-
-    var _DoBlockQuotes = function (text) {
-
-        /*
-         text = text.replace(/
-         (								// Wrap whole match in $1
-         (
-         ^[ \t]*>[ \t]?			// '>' at the start of a line
-         .+\n					// rest of the first line
-         (.+\n)*					// subsequent consecutive lines
-         \n*						// blanks
-         )+
-         )
-         /gm, function(){...});
-         */
-
-        text = text.replace(/((^[ \t]*>[ \t]?.+\n(.+\n)*\n*)+)/gm,
-            function (wholeMatch, m1) {
-                var bq = m1;
-
-                // attacklab: hack around Konqueror 3.5.4 bug:
-                // "----------bug".replace(/^-/g,"") == "bug"
-
-                bq = bq.replace(/^[ \t]*>[ \t]?/gm, "~0");	// trim one level of quoting
-
-                // attacklab: clean up hack
-                bq = bq.replace(/~0/g, "");
-
-                bq = bq.replace(/^[ \t]+$/gm, "");		// trim whitespace-only lines
-                bq = _RunBlockGamut(bq);				// recurse
-
-                bq = bq.replace(/(^|\n)/g, "$1  ");
-                // These leading spaces screw with <pre> content, so we need to fix that:
-                bq = bq.replace(
-                    /(\s*<pre>[^\r]+?<\/pre>)/gm,
-                    function (wholeMatch, m1) {
-                        var pre = m1;
-                        // attacklab: hack around Konqueror 3.5.4 bug:
-                        pre = pre.replace(/^  /mg, "~0");
-                        pre = pre.replace(/~0/g, "");
-                        return pre;
-                    });
-
-                return hashBlock("<blockquote>\n" + bq + "\n</blockquote>");
-            });
-        return text;
-    }
-
-    var _FormParagraphs = function (text) {
-//
-//  Params:
-//    $text - string to process with html <p> tags
-//
-
-        // Strip leading and trailing lines:
-        text = text.replace(/^\n+/g, "");
-        text = text.replace(/\n+$/g, "");
-
-        var grafs = text.split(/\n{2,}/g);
-        var grafsOut = [];
-
-        //
-        // Wrap <p> tags.
-        //
-        var end = grafs.length;
-        for (var i = 0; i < end; i++) {
-            var str = grafs[i];
-
-            // if this is an HTML marker, copy it
-            if (str.search(/~K(\d+)K/g) >= 0) {
-                grafsOut.push(str);
-            }
-            else if (str.search(/\S/) >= 0) {
-                str = _RunSpanGamut(str);
-                str = str.replace(/^([ \t]*)/g, "<p>");
-                str += "</p>"
-                grafsOut.push(str);
-            }
-
-        }
-
-        //
-        // Unhashify HTML blocks
-        //
-        end = grafsOut.length;
-        for (var i = 0; i < end; i++) {
-            // if this is a marker for an html block...
-            while (grafsOut[i].search(/~K(\d+)K/) >= 0) {
-                var blockText = g_html_blocks[RegExp.$1];
-                blockText = blockText.replace(/\$/g, "$$$$"); // Escape any dollar signs
-                grafsOut[i] = grafsOut[i].replace(/~K\d+K/, blockText);
-            }
-        }
-
-        return grafsOut.join("\n\n");
-    }
-
-    var _EncodeAmpsAndAngles = function (text) {
-// Smart processing for ampersands and angle brackets that need to be encoded.
-
-        // Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
-        //   http://bumppo.net/projects/amputator/
-        text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g, "&amp;");
-
-        // Encode naked <'s
-        text = text.replace(/<(?![a-z\/?\$!])/gi, "&lt;");
-
-        return text;
-    }
-
-    var _EncodeBackslashEscapes = function (text) {
-//
-//   Parameter:  String.
-//   Returns:	The string, with after processing the following backslash
-//			   escape sequences.
-//
-
-        // attacklab: The polite way to do this is with the new
-        // escapeCharacters() function:
-        //
-        // 	text = escapeCharacters(text,"\\",true);
-        // 	text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
-        //
-        // ...but we're sidestepping its use of the (slow) RegExp constructor
-        // as an optimization for Firefox.  This function gets called a LOT.
-
-        text = text.replace(/\\(\\)/g, escapeCharacters_callback);
-        text = text.replace(/\\([`*_{}\[\]()>#+-.!])/g, escapeCharacters_callback);
-        return text;
-    }
-
-    var _DoAutoLinks = function (text) {
-
-        text = text.replace(/<((https?|ftp|dict):[^'">\s]+)>/gi, "<a href=\"$1\">$1</a>");
-
-        // Email addresses: <address@domain.foo>
-
-        /*
-         text = text.replace(/
-         <
-         (?:mailto:)?
-         (
-         [-.\w]+
-         \@
-         [-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+
-         )
-         >
-         /gi, _DoAutoLinks_callback());
-         */
-        text = text.replace(/<(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi,
-            function (wholeMatch, m1) {
-                return _EncodeEmailAddress(_UnescapeSpecialChars(m1));
-            }
-        );
-
-        return text;
-    }
-
-    var _EncodeEmailAddress = function (addr) {
-//
-//  Input: an email address, e.g. "foo@example.com"
-//
-//  Output: the email address as a mailto link, with each character
-//	of the address encoded as either a decimal or hex entity, in
-//	the hopes of foiling most address harvesting spam bots. E.g.:
-//
-//	<a href="&#x6D;&#97;&#105;&#108;&#x74;&#111;:&#102;&#111;&#111;&#64;&#101;
-//	   x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;">&#102;&#111;&#111;
-//	   &#64;&#101;x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;</a>
-//
-//  Based on a filter by Matthew Wickline, posted to the BBEdit-Talk
-//  mailing list: <http://tinyurl.com/yu7ue>
-//
-
-        var encode = [
-            function (ch) {
-                return "&#" + ch.charCodeAt(0) + ";";
-            },
-            function (ch) {
-                return "&#x" + ch.charCodeAt(0).toString(16) + ";";
-            },
-            function (ch) {
-                return ch;
-            }
-        ];
-
-        addr = "mailto:" + addr;
-
-        addr = addr.replace(/./g, function (ch) {
-            if (ch == "@") {
-                // this *must* be encoded. I insist.
-                ch = encode[Math.floor(Math.random() * 2)](ch);
-            } else if (ch != ":") {
-                // leave ':' alone (to spot mailto: later)
-                var r = Math.random();
-                // roughly 10% raw, 45% hex, 45% dec
-                ch = (
-                    r > .9 ? encode[2](ch) :
-                        r > .45 ? encode[1](ch) :
-                            encode[0](ch)
-                );
-            }
-            return ch;
-        });
-
-        addr = "<a href=\"" + addr + "\">" + addr + "</a>";
-        addr = addr.replace(/">.+:/g, "\">"); // strip the mailto: from the visible part
-
-        return addr;
-    }
-
-    var _UnescapeSpecialChars = function (text) {
-//
-// Swap back in all the special characters we've hidden.
-//
-        text = text.replace(/~E(\d+)E/g,
-            function (wholeMatch, m1) {
-                var charCodeToReplace = parseInt(m1);
-                return String.fromCharCode(charCodeToReplace);
-            }
-        );
-        return text;
-    }
-
-    var _Outdent = function (text) {
-//
-// Remove one level of line-leading tabs or spaces
-//
-
-        // attacklab: hack around Konqueror 3.5.4 bug:
-        // "----------bug".replace(/^-/g,"") == "bug"
-
-        text = text.replace(/^(\t|[ ]{1,4})/gm, "~0"); // attacklab: g_tab_width
-
-        // attacklab: clean up hack
-        text = text.replace(/~0/g, "")
-
-        return text;
-    }
-
-    var _Detab = function (text) {
-// attacklab: Detab's completely rewritten for speed.
-// In perl we could fix it by anchoring the regexp with \G.
-// In javascript we're less fortunate.
-
-        // expand first n-1 tabs
-        text = text.replace(/\t(?=\t)/g, "    "); // attacklab: g_tab_width
-
-        // replace the nth with two sentinels
-        text = text.replace(/\t/g, "~A~B");
-
-        // use the sentinel to anchor our regex so it doesn't explode
-        text = text.replace(/~B(.+?)~A/g,
-            function (wholeMatch, m1, m2) {
-                var leadingText = m1;
-                var numSpaces = 4 - leadingText.length % 4;  // attacklab: g_tab_width
-
-                // there *must* be a better way to do this:
-                for (var i = 0; i < numSpaces; i++) leadingText += " ";
-
-                return leadingText;
-            }
-        );
-
-        // clean up sentinels
-        text = text.replace(/~A/g, "    ");  // attacklab: g_tab_width
-        text = text.replace(/~B/g, "");
-
-        return text;
-    }
-
-
-//
-//  attacklab: Utility functions
-//
-
-
-    var escapeCharacters = function (text, charsToEscape, afterBackslash) {
-        // First we have to escape the escape characters so that
-        // we can build a character class out of them
-        var regexString = "([" + charsToEscape.replace(/([\[\]\\])/g, "\\$1") + "])";
-
-        if (afterBackslash) {
-            regexString = "\\\\" + regexString;
-        }
-
-        var regex = new RegExp(regexString, "g");
-        text = text.replace(regex, escapeCharacters_callback);
-
-        return text;
-    }
-
-
-    var escapeCharacters_callback = function (wholeMatch, m1) {
-        var charCodeToEscape = m1.charCodeAt(0);
-        return "~E" + charCodeToEscape + "E";
-    }
-
-} // end of Showdown.converter
-
-
-// export
-if (typeof module !== 'undefined') module.exports = Showdown;
-
-// stolen from AMD branch of underscore
-// AMD define happens at the end for compatibility with AMD loaders
-// that don't enforce next-turn semantics on modules.
-if (typeof define === 'function' && define.amd) {
-    define('showdown', function () {
-        return Showdown;
-    });
+  extensions[name] = ext;
 }
 
 /**
- * Created by Tivie on 04-11-2014.
+ * Showdown Converter class
+ *
+ * @param {object} [converterOptions]
+ * @returns {{makeHtml: Function}}
+ */
+showdown.Converter = function (converterOptions) {
+  'use strict';
+
+  converterOptions = converterOptions || {};
+
+  var options = {},
+      langExtensions = [],
+      outputModifiers = [],
+      parserOrder = [
+        'githubCodeBlocks',
+        'hashHTMLBlocks',
+        'stripLinkDefinitions',
+        'blockGamut',
+        'unescapeSpecialChars'
+      ];
+
+  for (var gOpt in globalOptions) {
+    if (globalOptions.hasOwnProperty(gOpt)) {
+      options[gOpt] = globalOptions[gOpt];
+    }
+  }
+
+  // Merge options
+  if (typeof converterOptions === 'object') {
+    for (var opt in converterOptions) {
+      if (converterOptions.hasOwnProperty(opt)) {
+        options[opt] = converterOptions[opt];
+      }
+    }
+  }
+
+  // This is a dirty workaround to maintain backwards extension compatibility
+  // We define a self var (which is a copy of this) and inject the makeHtml function
+  // directly to it. This ensures a full converter object is available when iterating over extensions
+  // We should rewrite the extension loading mechanism and use some kind of interface or decorator pattern
+  // and inject the object reference there instead.
+  var self = this;
+  self.makeHtml = makeHtml;
+
+  // Parse options
+  if (options.extensions) {
+
+    // Iterate over each plugin
+    showdown.helper.forEach(options.extensions, function (plugin) {
+      var pluginName = plugin;
+
+      // Assume it's a bundled plugin if a string is given
+      if (typeof plugin === 'string') {
+        var tPluginName = showdown.helper.stdExtName(plugin);
+
+        if (!showdown.helper.isUndefined(showdown.extensions[tPluginName]) && showdown.extensions[tPluginName]) {
+          //Trigger some kind of deprecated alert
+          plugin = showdown.extensions[tPluginName];
+
+        } else if (!showdown.helper.isUndefined(extensions[tPluginName])) {
+          plugin = extensions[tPluginName];
+        }
+      }
+
+      if (typeof plugin === 'function') {
+        // Iterate over each extension within that plugin
+        showdown.helper.forEach(plugin(self), function (ext) {
+          // Sort extensions by type
+          if (ext.type) {
+            if (ext.type === 'language' || ext.type === 'lang') {
+              langExtensions.push(ext);
+            } else if (ext.type === 'output' || ext.type === 'html') {
+              outputModifiers.push(ext);
+            }
+          } else {
+            // Assume language extension
+            outputModifiers.push(ext);
+          }
+        });
+      } else {
+        var errMsg = 'An extension could not be loaded. It was either not found or is not a valid extension.';
+        if (typeof pluginName === 'string') {
+          errMsg = 'Extension "' + pluginName + '" could not be loaded.  It was either not found or is not a valid extension.';
+        }
+        throw errMsg;
+      }
+    });
+  }
+
+  /**
+   * Converts a markdown string into HTML
+   * @param {string} text
+   * @returns {*}
+   */
+  function makeHtml(text) {
+
+    //check if text is not falsy
+    if (!text) {
+      return text;
+    }
+
+    var globals = {
+      gHtmlBlocks:     [],
+      gUrls:           {},
+      gTitles:         {},
+      gListLevel:      0,
+      hashLinkCounts:  {},
+      langExtensions:  langExtensions,
+      outputModifiers: outputModifiers
+    };
+
+    // attacklab: Replace ~ with ~T
+    // This lets us use tilde as an escape char to avoid md5 hashes
+    // The choice of character is arbitrary; anything that isn't
+    // magic in Markdown will work.
+    text = text.replace(/~/g, '~T');
+
+    // attacklab: Replace $ with ~D
+    // RegExp interprets $ as a special character
+    // when it's in a replacement string
+    text = text.replace(/\$/g, '~D');
+
+    // Standardize line endings
+    text = text.replace(/\r\n/g, '\n'); // DOS to Unix
+    text = text.replace(/\r/g, '\n'); // Mac to Unix
+
+    // Make sure text begins and ends with a couple of newlines:
+    text = '\n\n' + text + '\n\n';
+
+    // detab
+    text = parsers.detab(text, options, globals);
+
+    // stripBlankLines
+    text = parsers.stripBlankLines(text, options, globals);
+
+    //run languageExtensions
+    text = parsers.languageExtensions(text, options, globals);
+
+    // Run all registered parsers
+    for (var i = 0; i < parserOrder.length; ++i) {
+      var name = parserOrder[i];
+      text = parsers[name](text, options, globals);
+    }
+
+    // attacklab: Restore dollar signs
+    text = text.replace(/~D/g, '$$');
+
+    // attacklab: Restore tildes
+    text = text.replace(/~T/g, '~');
+
+    // Run output modifiers
+    showdown.helper.forEach(globals.outputModifiers, function (ext) {
+      text = showdown.subParser('runExtension')(ext, text);
+    });
+    text = parsers.outputModifiers(text, options, globals);
+
+    return text;
+  }
+
+  /**
+   * Set an option of this Converter instance
+   * @param {string} key
+   * @param {*} value
+   */
+  function setOption (key, value) {
+    options[key] = value;
+  }
+
+  /**
+   * Get the option of this Converter instance
+   * @param {string} key
+   * @returns {*}
+   */
+  function getOption(key) {
+    return options[key];
+  }
+
+  /**
+   * Get the options of this Converter instance
+   * @returns {{}}
+   */
+  function getOptions() {
+    return options;
+  }
+
+  return {
+    makeHtml: makeHtml,
+    setOption: setOption,
+    getOption: getOption,
+    getOptions: getOptions
+  };
+};
+
+/**
+ * showdownjs helper functions
  */
 
-
-//Check if AngularJs and Showdown is defined and only load ng-Showdown if both are present
-if (typeof angular !== 'undefined'  && typeof Showdown !== 'undefined') {
-
-    (function (module, Showdown) {
-
-        module
-            .provider('$Showdown', provider)
-            .directive('sdModelToHtml', ['$Showdown', markdownToHtmlDirective])
-            .filter('sdStripHtml', stripHtmlFilter);
-
-        /**
-         * Angular Provider
-         * Enables configuration of showdown via angular.config and Dependency Injection into controllers, views
-         * directives, etc... This assures the directives and filters provided by the library itself stay consistent
-         * with the user configurations.
-         * If the user wants to use a different configuration in a determined context, he can use the "classic" Showdown
-         * object instead.
-         *
-         */
-        function provider() {
-
-            // Configuration parameters for Showdown
-            var config = {
-                extensions: [],
-                stripHtml: true
-            };
-
-            /**
-             * Sets a configuration option
-             *
-             * @param {string} key Config parameter key
-             * @param {string} value Config parameter value
-             */
-            this.setOption = function (key, value) {
-                config.key = value;
-
-                return this;
-            };
-
-            /**
-             * Gets the value of the configuration parameter specified by key
-             *
-             * @param {string} key The config parameter key
-             * @returns {string|null} Returns the value of the config parameter. (or null if the config parameter is not set)
-             */
-            this.getOption = function (key) {
-                if (config.hasOwnProperty(key)) {
-                    return config.key;
-                } else {
-                    return null;
-                }
-            };
-
-            /**
-             * Loads a Showdown Extension
-             *
-             * @param {string} extensionName The name of the extension to load
-             */
-            this.loadExtension = function (extensionName) {
-                config.extensions.push(extensionName);
-
-                return this;
-            };
-
-            function SDObject() {
-                var converter = new Showdown.converter(config);
-
-                /**
-                 * Converts a markdown text into HTML
-                 *
-                 * @param {string} markdown The markdown string to be converted to HTML
-                 * @returns {string} The converted HTML
-                 */
-                this.makeHtml = function (markdown) {
-                    return converter.makeHtml(markdown);
-                };
-
-                /**
-                 * Strips a text of it's HTML tags
-                 *
-                 * @param {string} text
-                 * @returns {string}
-                 */
-                this.stripHtml = function (text) {
-                    return String(text).replace(/<[^>]+>/gm, '');
-                };
-            }
-
-            // The object returned by service provider
-            this.$get = function () {
-                return new SDObject();
-            };
-        }
-
-        /**
-         * AngularJS Directive to Md to HTML transformation
-         *
-         * Usage example:
-         * <div sd-md-to-html-model="markdownText" ></div>
-         *
-         * @param $Showdown
-         * @returns {*}
-         */
-        function markdownToHtmlDirective($Showdown) {
-
-            var link = function (scope, element) {
-                scope.$watch('model', function (newValue) {
-                    var val;
-                    if (typeof newValue === 'string') {
-                        val = $Showdown.makeHtml(newValue);
-                    } else {
-                        val = typeof newValue;
-                    }
-                    element.html(val);
-                });
-            };
-
-            return {
-                restrict: 'A',
-                link: link,
-                scope: {
-                    model: '=sdModelToHtml'
-                }
-            }
-        }
-
-        /**
-         * AngularJS Filter to Strip HTML tags from text
-         *
-         * @returns {Function}
-         */
-        function stripHtmlFilter() {
-            return function (text) {
-                return String(text).replace(/<[^>]+>/gm, '');
-            };
-        }
-
-    })(angular.module('Showdown', []), Showdown);
-
-} else {
-
-    /** TODO Since this library is opt out, maybe we should not throw an error so we can concatenate this
-             script with the main lib */
-    // throw new Error("ng-showdown was not loaded because one of it's dependencies (AngularJS or Showdown) wasn't met");
+if (!showdown.hasOwnProperty('helper')) {
+  showdown.helper = {};
 }
 
-//
-//  Github Extension (WIP)
-//  ~~strike-through~~   ->  <del>strike-through</del>
-//
-
-(function(){
-    var github = function(converter) {
-        return [
-            {
-              // strike-through
-              // NOTE: showdown already replaced "~" with "~T", so we need to adjust accordingly.
-              type    : 'lang',
-              regex   : '(~T){2}([^~]+)(~T){2}',
-              replace : function(match, prefix, content, suffix) {
-                  return '<del>' + content + '</del>';
-              }
-            }
-        ];
-    };
-
-    // Client-side export
-    if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.github = github; }
-    // Server-side export
-    if (typeof module !== 'undefined') module.exports = github;
-}());
-
-//
-//  Google Prettify
-//  A showdown extension to add Google Prettify (http://code.google.com/p/google-code-prettify/)
-//  hints to showdown's HTML output.
-//
-
-(function(){
-
-    var prettify = function(converter) {
-        return [
-            { type: 'output', filter: function(source){
-
-                return source.replace(/(<pre>)?<code>/gi, function(match, pre) {
-                    if (pre) {
-                        return '<pre class="prettyprint linenums" tabIndex="0"><code data-inner="1">';
-                    } else {
-                        return '<code class="prettyprint">';
-                    }
-                });
-            }}
-        ];
-    };
-
-    // Client-side export
-    if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.prettify = prettify; }
-    // Server-side export
-    if (typeof module !== 'undefined') module.exports = prettify;
-
-}());
-
-/*global module:true*/
-/*
- * Basic table support with re-entrant parsing, where cell content
- * can also specify markdown.
- *
- * Tables
- * ======
- *
- * | Col 1   | Col 2                                              |
- * |======== |====================================================|
- * |**bold** | ![Valid XHTML] (http://w3.org/Icons/valid-xhtml10) |
- * | Plain   | Value                                              |
- *
+/**
+ * Check if var is string
+ * @static
+ * @param {string} a
+ * @returns {boolean}
  */
+showdown.helper.isString = function isString(a) {
+  'use strict';
+  return (typeof a === 'string' || a instanceof String);
+};
 
-(function(){
-  var table = function(converter) {
-    var tables = {}, style = 'text-align:left;', filter; 
-    tables.th = function(header){
-      if (header.trim() === "") { return "";}
-      var id = header.trim().replace(/ /g, '_').toLowerCase();
-      return '<th id="' + id + '" style="'+style+'">' + header + '</th>';
-    };
-    tables.td = function(cell) {
-      return '<td style="'+style+'">' + converter.makeHtml(cell) + '</td>';
-    };
-    tables.ths = function(){
-      var out = "", i = 0, hs = [].slice.apply(arguments);
-      for (i;i<hs.length;i+=1) {
-        out += tables.th(hs[i]) + '\n';
-      }
-      return out;
-    };
-    tables.tds = function(){
-      var out = "", i = 0, ds = [].slice.apply(arguments);
-      for (i;i<ds.length;i+=1) {
-        out += tables.td(ds[i]) + '\n';
-      }
-      return out;
-    };
-    tables.thead = function() {
-      var out, i = 0, hs = [].slice.apply(arguments);
-      out = "<thead>\n";
-      out += "<tr>\n";
-      out += tables.ths.apply(this, hs);
-      out += "</tr>\n";
-      out += "</thead>\n";
-      return out;
-    };
-    tables.tr = function() {
-      var out, i = 0, cs = [].slice.apply(arguments);
-      out = "<tr>\n";
-      out += tables.tds.apply(this, cs);
-      out += "</tr>\n";
-      return out;
-    };
-    filter = function(text) { 
-      var i=0, lines = text.split('\n'), line, hs, rows, out = [];
-      for (i; i<lines.length;i+=1) {
-        line = lines[i];
-        // looks like a table heading
-        if (line.trim().match(/^[|]{1}.*[|]{1}$/)) {
-          line = line.trim();
-          var tbl = [];
-          tbl.push('<table>');
-          hs = line.substring(1, line.length -1).split('|');
-          tbl.push(tables.thead.apply(this, hs));
-          line = lines[++i];
-          if (!line.trim().match(/^[|]{1}[-=| ]+[|]{1}$/)) {
-            // not a table rolling back
-            line = lines[--i];
-          }
-          else {
-            line = lines[++i];
-            tbl.push('<tbody>');
-            while (line.trim().match(/^[|]{1}.*[|]{1}$/)) {
-              line = line.trim();
-              tbl.push(tables.tr.apply(this, line.substring(1, line.length -1).split('|')));
-              line = lines[++i];
-            }
-            tbl.push('</tbody>');
-            tbl.push('</table>');
-            // we are done with this table and we move along
-            out.push(tbl.join('\n'));
-            continue;
-          }
-        }
-        out.push(line);
-      }             
-      return out.join('\n');
-    };
-    return [
-    { 
-      type: 'lang', 
-      filter: filter
+/**
+ * ForEach helper function
+ * @static
+ * @param {*} obj
+ * @param {function} callback
+ */
+showdown.helper.forEach = function forEach(obj, callback) {
+  'use strict';
+  if (typeof obj.forEach === 'function') {
+    obj.forEach(callback);
+  } else {
+    for (var i = 0; i < obj.length; i++) {
+      callback(obj[i], i, obj);
     }
-    ];
+  }
+};
+
+/**
+ * isArray helper function
+ * @static
+ * @param {*} a
+ * @returns {boolean}
+ */
+showdown.helper.isArray = function isArray(a) {
+  'use strict';
+  return a.constructor === Array;
+};
+
+/**
+ * Check if value is undefined
+ * @static
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is `undefined`, else `false`.
+ */
+showdown.helper.isUndefined = function isUndefined(value) {
+  'use strict';
+  return typeof value === 'undefined';
+};
+
+/**
+ * Standardidize extension name
+ * @static
+ * @param {string} s extension name
+ * @returns {string}
+ */
+showdown.helper.stdExtName = function (s) {
+  'use strict';
+  return s.replace(/[_-]||\s/g, '').toLowerCase();
+};
+
+function escapeCharactersCallback(wholeMatch, m1) {
+  'use strict';
+  var charCodeToEscape = m1.charCodeAt(0);
+  return '~E' + charCodeToEscape + 'E';
+}
+
+/**
+ * Callback used to escape characters when passing through String.replace
+ * @static
+ * @param {string} wholeMatch
+ * @param {string} m1
+ * @returns {string}
+ */
+showdown.helper.escapeCharactersCallback = escapeCharactersCallback;
+
+/**
+ * Escape characters in a string
+ * @static
+ * @param {string} text
+ * @param {string} charsToEscape
+ * @param {boolean} afterBackslash
+ * @returns {XML|string|void|*}
+ */
+showdown.helper.escapeCharacters = function escapeCharacters(text, charsToEscape, afterBackslash) {
+  'use strict';
+  // First we have to escape the escape characters so that
+  // we can build a character class out of them
+  var regexString = '([' + charsToEscape.replace(/([\[\]\\])/g, '\\$1') + '])';
+
+  if (afterBackslash) {
+    regexString = '\\\\' + regexString;
+  }
+
+  var regex = new RegExp(regexString, 'g');
+  text = text.replace(regex, escapeCharactersCallback);
+
+  return text;
+};
+
+/**
+ * Turn Markdown link shortcuts into XHTML <a> tags.
+ */
+showdown.subParser('anchors', function (text, config, globals) {
+  'use strict';
+
+  var writeAnchorTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
+    if (showdown.helper.isUndefined(m7)) {
+      m7 = '';
+    }
+    wholeMatch = m1;
+    var linkText = m2,
+        linkId = m3.toLowerCase(),
+        url = m4,
+        title = m7;
+
+    if (!url) {
+      if (!linkId) {
+        // lower-case and turn embedded newlines into spaces
+        linkId = linkText.toLowerCase().replace(/ ?\n/g, ' ');
+      }
+      url = '#' + linkId;
+
+      if (!showdown.helper.isUndefined(globals.gUrls[linkId])) {
+        url = globals.gUrls[linkId];
+        if (!showdown.helper.isUndefined(globals.gTitles[linkId])) {
+          title = globals.gTitles[linkId];
+        }
+      } else {
+        if (wholeMatch.search(/\(\s*\)$/m) > -1) {
+          // Special case for explicit empty url
+          url = '';
+        } else {
+          return wholeMatch;
+        }
+      }
+    }
+
+    url = showdown.helper.escapeCharacters(url, '*_', false);
+    var result = '<a href="' + url + '"';
+
+    if (title !== '' && title !== null) {
+      title = title.replace(/"/g, '&quot;');
+      title = showdown.helper.escapeCharacters(title, '*_', false);
+      result += ' title="' + title + '"';
+    }
+
+    result += '>' + linkText + '</a>';
+
+    return result;
   };
 
-  // Client-side export
-  if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.table = table; }
-  // Server-side export
-  if (typeof module !== 'undefined') {
-    module.exports = table;
-  }
-}());
+  // First, handle reference-style links: [link text] [id]
+  /*
+   text = text.replace(/
+   (							// wrap whole match in $1
+   \[
+   (
+   (?:
+   \[[^\]]*\]		// allow brackets nested one level
+   |
+   [^\[]			// or anything else
+   )*
+   )
+   \]
 
-//
-//  Twitter Extension
-//  @username   ->  <a href="http://twitter.com/username">@username</a>
-//  #hashtag    ->  <a href="http://twitter.com/search/%23hashtag">#hashtag</a>
-//
+   [ ]?					// one optional space
+   (?:\n[ ]*)?				// one optional newline followed by spaces
 
-(function(){
+   \[
+   (.*?)					// id = $3
+   \]
+   )()()()()					// pad remaining backreferences
+   /g,_DoAnchors_callback);
+   */
+  text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeAnchorTag);
 
-    var twitter = function(converter) {
-        return [
+  //
+  // Next, inline-style links: [link text](url "optional title")
+  //
 
-            // @username syntax
-            { type: 'lang', regex: '\\B(\\\\)?@([\\S]+)\\b', replace: function(match, leadingSlash, username) {
-                // Check if we matched the leading \ and return nothing changed if so
-                if (leadingSlash === '\\') {
-                    return match;
-                } else {
-                    return '<a href="http://twitter.com/' + username + '">@' + username + '</a>';
-                }
-            }},
+  /*
+   text = text.replace(/
+   (						// wrap whole match in $1
+   \[
+   (
+   (?:
+   \[[^\]]*\]	// allow brackets nested one level
+   |
+   [^\[\]]			// or anything else
+   )
+   )
+   \]
+   \(						// literal paren
+   [ \t]*
+   ()						// no id, so leave $3 empty
+   <?(.*?)>?				// href = $4
+   [ \t]*
+   (						// $5
+   (['"])				// quote char = $6
+   (.*?)				// Title = $7
+   \6					// matching quote
+   [ \t]*				// ignore any spaces/tabs between closing quote and )
+   )?						// title is optional
+   \)
+   )
+   /g,writeAnchorTag);
+   */
+  text = text.replace(/(\[((?:\[[^\]]*\]|[^\[\]])*)\]\([ \t]*()<?(.*?(?:\(.*?\).*?)?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g,
+                      writeAnchorTag);
 
-            // #hashtag syntax
-            { type: 'lang', regex: '\\B(\\\\)?#([\\S]+)\\b', replace: function(match, leadingSlash, tag) {
-                // Check if we matched the leading \ and return nothing changed if so
-                if (leadingSlash === '\\') {
-                    return match;
-                } else {
-                    return '<a href="http://twitter.com/search/%23' + tag + '">#' + tag + '</a>';
-                }
-            }},
+  //
+  // Last, handle reference-style shortcuts: [link text]
+  // These must come last in case you've also got [link test][1]
+  // or [link test](/foo)
+  //
 
-            // Escaped @'s
-            { type: 'lang', regex: '\\\\@', replace: '@' }
-        ];
-    };
+  /*
+   text = text.replace(/
+   (                // wrap whole match in $1
+   \[
+   ([^\[\]]+)       // link text = $2; can't contain '[' or ']'
+   \]
+   )()()()()()      // pad rest of backreferences
+   /g, writeAnchorTag);
+   */
+  text = text.replace(/(\[([^\[\]]+)\])()()()()()/g, writeAnchorTag);
 
-    // Client-side export
-    if (typeof window !== 'undefined' && window.Showdown && window.Showdown.extensions) { window.Showdown.extensions.twitter = twitter; }
-    // Server-side export
-    if (typeof module !== 'undefined') module.exports = twitter;
+  return text;
 
-}());
+});
 
-/*
- * angular-markdown-directive v0.3.1
- * (c) 2013-2014 Brian Ford http://briantford.com
- * License: MIT
+showdown.subParser('autoLinks', function (text) {
+  'use strict';
+
+  text = text.replace(/<((https?|ftp|dict):[^'">\s]+)>/gi, '<a href=\"$1\">$1</a>');
+
+  // Email addresses: <address@domain.foo>
+
+  /*
+   text = text.replace(/
+   <
+   (?:mailto:)?
+   (
+   [-.\w]+
+   \@
+   [-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+
+   )
+   >
+   /gi);
+   */
+  var pattern = /<(?:mailto:)?([-.\w]+\@[-a-z0-9]+(\.[-a-z0-9]+)*\.[a-z]+)>/gi;
+  text = text.replace(pattern, function (wholeMatch, m1) {
+    var unescapedStr = showdown.subParser('unescapeSpecialChars')(m1);
+    return showdown.subParser('encodeEmailAddress')(unescapedStr);
+  });
+
+  return text;
+
+});
+
+/**
+ * These are all the transformations that form block-level
+ * tags like paragraphs, headers, and list items.
  */
+showdown.subParser('blockGamut', function (text, options, globals) {
+  'use strict';
 
-'use strict';
+  text = showdown.subParser('headers')(text, options, globals);
 
-angular.module('btford.markdown', ['ngSanitize']).
-  provider('markdownConverter', function () {
-    var opts = {};
-    return {
-      config: function (newOpts) {
-        opts = newOpts;
-      },
-      $get: function () {
-        return new Showdown.converter(opts);
+  // Do Horizontal Rules:
+  var key = showdown.subParser('hashBlock')('<hr />', options, globals);
+  text = text.replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, key);
+  text = text.replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm, key);
+  text = text.replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm, key);
+
+  text = showdown.subParser('lists')(text, options, globals);
+  text = showdown.subParser('codeBlocks')(text, options, globals);
+  text = showdown.subParser('blockQuotes')(text, options, globals);
+
+  // We already ran _HashHTMLBlocks() before, in Markdown(), but that
+  // was to escape raw HTML in the original Markdown source. This time,
+  // we're escaping the markup we've just created, so that we don't wrap
+  // <p> tags around block-level tags.
+  text = showdown.subParser('hashHTMLBlocks')(text, options, globals);
+  text = showdown.subParser('paragraphs')(text, options, globals);
+
+  return text;
+
+});
+
+showdown.subParser('blockQuotes', function (text, options, globals) {
+  'use strict';
+
+  /*
+   text = text.replace(/
+   (								// Wrap whole match in $1
+   (
+   ^[ \t]*>[ \t]?			// '>' at the start of a line
+   .+\n					// rest of the first line
+   (.+\n)*					// subsequent consecutive lines
+   \n*						// blanks
+   )+
+   )
+   /gm, function(){...});
+   */
+
+  text = text.replace(/((^[ \t]*>[ \t]?.+\n(.+\n)*\n*)+)/gm, function (wholeMatch, m1) {
+    var bq = m1;
+
+    // attacklab: hack around Konqueror 3.5.4 bug:
+    // "----------bug".replace(/^-/g,"") == "bug"
+    bq = bq.replace(/^[ \t]*>[ \t]?/gm, '~0'); // trim one level of quoting
+
+    // attacklab: clean up hack
+    bq = bq.replace(/~0/g, '');
+
+    bq = bq.replace(/^[ \t]+$/gm, ''); // trim whitespace-only lines
+    bq = showdown.subParser('blockGamut')(bq, options, globals); // recurse
+
+    bq = bq.replace(/(^|\n)/g, '$1  ');
+    // These leading spaces screw with <pre> content, so we need to fix that:
+    bq = bq.replace(/(\s*<pre>[^\r]+?<\/pre>)/gm, function (wholeMatch, m1) {
+      var pre = m1;
+      // attacklab: hack around Konqueror 3.5.4 bug:
+      pre = pre.replace(/^  /mg, '~0');
+      pre = pre.replace(/~0/g, '');
+      return pre;
+    });
+
+    return showdown.subParser('hashBlock')('<blockquote>\n' + bq + '\n</blockquote>', options, globals);
+  });
+  return text;
+});
+
+/**
+ * Process Markdown `<pre><code>` blocks.
+ */
+showdown.subParser('codeBlocks', function (text, options, globals) {
+  'use strict';
+
+  /*
+   text = text.replace(text,
+   /(?:\n\n|^)
+   (								// $1 = the code block -- one or more lines, starting with a space/tab
+   (?:
+   (?:[ ]{4}|\t)			// Lines must start with a tab or a tab-width of spaces - attacklab: g_tab_width
+   .*\n+
+   )+
+   )
+   (\n*[ ]{0,3}[^ \t\n]|(?=~0))	// attacklab: g_tab_width
+   /g,function(){...});
+   */
+
+  // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+  text += '~0';
+
+  var pattern = /(?:\n\n|^)((?:(?:[ ]{4}|\t).*\n+)+)(\n*[ ]{0,3}[^ \t\n]|(?=~0))/g;
+  text = text.replace(pattern, function (wholeMatch, m1, m2) {
+    var codeblock = m1,
+        nextChar = m2,
+        end = '\n';
+
+    codeblock = showdown.subParser('outdent')(codeblock);
+    codeblock = showdown.subParser('encodeCode')(codeblock);
+    codeblock = showdown.subParser('detab')(codeblock);
+    codeblock = codeblock.replace(/^\n+/g, ''); // trim leading newlines
+    codeblock = codeblock.replace(/\n+$/g, ''); // trim trailing newlines
+
+    if (options.omitExtraWLInCodeBlocks) {
+      end = '';
+    }
+
+    codeblock = '<pre><code>' + codeblock + end + '</code></pre>';
+
+    return showdown.subParser('hashBlock')(codeblock, options, globals) + nextChar;
+  });
+
+  // attacklab: strip sentinel
+  text = text.replace(/~0/, '');
+
+  return text;
+});
+
+/**
+ *
+ *   *  Backtick quotes are used for <code></code> spans.
+ *
+ *   *  You can use multiple backticks as the delimiters if you want to
+ *     include literal backticks in the code span. So, this input:
+ *
+ *         Just type ``foo `bar` baz`` at the prompt.
+ *
+ *       Will translate to:
+ *
+ *         <p>Just type <code>foo `bar` baz</code> at the prompt.</p>
+ *
+ *    There's no arbitrary limit to the number of backticks you
+ *    can use as delimters. If you need three consecutive backticks
+ *    in your code, use four for delimiters, etc.
+ *
+ *  *  You can use spaces to get literal backticks at the edges:
+ *
+ *         ... type `` `bar` `` ...
+ *
+ *       Turns to:
+ *
+ *         ... type <code>`bar`</code> ...
+ */
+showdown.subParser('codeSpans', function (text) {
+  'use strict';
+
+  /*
+   text = text.replace(/
+   (^|[^\\])					// Character before opening ` can't be a backslash
+   (`+)						// $2 = Opening run of `
+   (							// $3 = The code block
+   [^\r]*?
+   [^`]					// attacklab: work around lack of lookbehind
+   )
+   \2							// Matching closer
+   (?!`)
+   /gm, function(){...});
+   */
+
+  text = text.replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm, function (wholeMatch, m1, m2, m3) {
+    var c = m3;
+    c = c.replace(/^([ \t]*)/g, '');	// leading whitespace
+    c = c.replace(/[ \t]*$/g, '');	// trailing whitespace
+    c = showdown.subParser('encodeCode')(c);
+    return m1 + '<code>' + c + '</code>';
+  });
+
+  return text;
+
+});
+
+/**
+ * Convert all tabs to spaces
+ */
+showdown.subParser('detab', function (text) {
+  'use strict';
+
+  // expand first n-1 tabs
+  text = text.replace(/\t(?=\t)/g, '    '); // g_tab_width
+
+  // replace the nth with two sentinels
+  text = text.replace(/\t/g, '~A~B');
+
+  // use the sentinel to anchor our regex so it doesn't explode
+  text = text.replace(/~B(.+?)~A/g, function (wholeMatch, m1) {
+    var leadingText = m1,
+        numSpaces = 4 - leadingText.length % 4;  // g_tab_width
+
+    // there *must* be a better way to do this:
+    for (var i = 0; i < numSpaces; i++) {
+      leadingText += ' ';
+    }
+
+    return leadingText;
+  });
+
+  // clean up sentinels
+  text = text.replace(/~A/g, '    ');  // g_tab_width
+  text = text.replace(/~B/g, '');
+
+  return text;
+
+});
+
+/**
+ * Smart processing for ampersands and angle brackets that need to be encoded.
+ */
+showdown.subParser('encodeAmpsAndAngles', function (text) {
+  'use strict';
+  // Ampersand-encoding based entirely on Nat Irons's Amputator MT plugin:
+  // http://bumppo.net/projects/amputator/
+  text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)/g, '&amp;');
+
+  // Encode naked <'s
+  text = text.replace(/<(?![a-z\/?\$!])/gi, '&lt;');
+
+  return text;
+});
+
+/**
+ * Returns the string, with after processing the following backslash escape sequences.
+ *
+ * attacklab: The polite way to do this is with the new escapeCharacters() function:
+ *
+ *    text = escapeCharacters(text,"\\",true);
+ *    text = escapeCharacters(text,"`*_{}[]()>#+-.!",true);
+ *
+ * ...but we're sidestepping its use of the (slow) RegExp constructor
+ * as an optimization for Firefox.  This function gets called a LOT.
+ */
+showdown.subParser('encodeBackslashEscapes', function (text) {
+  'use strict';
+  text = text.replace(/\\(\\)/g, showdown.helper.escapeCharactersCallback);
+  text = text.replace(/\\([`*_{}\[\]()>#+-.!])/g, showdown.helper.escapeCharactersCallback);
+  return text;
+});
+
+/**
+ * Encode/escape certain characters inside Markdown code runs.
+ * The point is that in code, these characters are literals,
+ * and lose their special Markdown meanings.
+ */
+showdown.subParser('encodeCode', function (text) {
+  'use strict';
+
+  // Encode all ampersands; HTML entities are not
+  // entities within a Markdown code span.
+  text = text.replace(/&/g, '&amp;');
+
+  // Do the angle bracket song and dance:
+  text = text.replace(/</g, '&lt;');
+  text = text.replace(/>/g, '&gt;');
+
+  // Now, escape characters that are magic in Markdown:
+  text = showdown.helper.escapeCharacters(text, '*_{}[]\\', false);
+
+  // jj the line above breaks this:
+  //---
+  //* Item
+  //   1. Subitem
+  //            special char: *
+  // ---
+
+  return text;
+});
+
+/**
+ *  Input: an email address, e.g. "foo@example.com"
+ *
+ *  Output: the email address as a mailto link, with each character
+ *    of the address encoded as either a decimal or hex entity, in
+ *    the hopes of foiling most address harvesting spam bots. E.g.:
+ *
+ *    <a href="&#x6D;&#97;&#105;&#108;&#x74;&#111;:&#102;&#111;&#111;&#64;&#101;
+ *       x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;">&#102;&#111;&#111;
+ *       &#64;&#101;x&#x61;&#109;&#x70;&#108;&#x65;&#x2E;&#99;&#111;&#109;</a>
+ *
+ *  Based on a filter by Matthew Wickline, posted to the BBEdit-Talk
+ *  mailing list: <http://tinyurl.com/yu7ue>
+ *
+ */
+showdown.subParser('encodeEmailAddress', function (addr) {
+  'use strict';
+
+  var encode = [
+    function (ch) {
+      return '&#' + ch.charCodeAt(0) + ';';
+    },
+    function (ch) {
+      return '&#x' + ch.charCodeAt(0).toString(16) + ';';
+    },
+    function (ch) {
+      return ch;
+    }
+  ];
+
+  addr = 'mailto:' + addr;
+
+  addr = addr.replace(/./g, function (ch) {
+    if (ch === '@') {
+      // this *must* be encoded. I insist.
+      ch = encode[Math.floor(Math.random() * 2)](ch);
+    } else if (ch !== ':') {
+      // leave ':' alone (to spot mailto: later)
+      var r = Math.random();
+      // roughly 10% raw, 45% hex, 45% dec
+      ch = (
+        r > 0.9 ? encode[2](ch) : r > 0.45 ? encode[1](ch) : encode[0](ch)
+      );
+    }
+    return ch;
+  });
+
+  addr = '<a href="' + addr + '">' + addr + '</a>';
+  addr = addr.replace(/">.+:/g, '">'); // strip the mailto: from the visible part
+
+  return addr;
+});
+
+/**
+ * Within tags -- meaning between < and > -- encode [\ ` * _] so they
+ * don't conflict with their use in Markdown for code, italics and strong.
+ */
+showdown.subParser('escapeSpecialCharsWithinTagAttributes', function (text) {
+  'use strict';
+
+  // Build a regex to find HTML tags and comments.  See Friedl's
+  // "Mastering Regular Expressions", 2nd Ed., pp. 200-201.
+  var regex = /(<[a-z\/!$]("[^"]*"|'[^']*'|[^'">])*>|<!(--.*?--\s*)+>)/gi;
+
+  text = text.replace(regex, function (wholeMatch) {
+    var tag = wholeMatch.replace(/(.)<\/?code>(?=.)/g, '$1`');
+    tag = showdown.helper.escapeCharacters(tag, '\\`*_', false);
+    return tag;
+  });
+
+  return text;
+});
+
+/**
+ * Handle github codeblocks prior to running HashHTML so that
+ * HTML contained within the codeblock gets escaped properly
+ * Example:
+ * ```ruby
+ *     def hello_world(x)
+ *       puts "Hello, #{x}"
+ *     end
+ * ```
+ */
+showdown.subParser('githubCodeBlocks', function (text, options, globals) {
+  'use strict';
+
+  text += '~0';
+
+  text = text.replace(/(?:^|\n)```(.*)\n([\s\S]*?)\n```/g, function (wholeMatch, m1, m2) {
+    var language = m1,
+        codeblock = m2,
+        end = '\n';
+
+    if (options.omitExtraWLInCodeBlocks) {
+      end = '';
+    }
+
+    codeblock = showdown.subParser('encodeCode')(codeblock);
+    codeblock = showdown.subParser('detab')(codeblock);
+    codeblock = codeblock.replace(/^\n+/g, ''); // trim leading newlines
+    codeblock = codeblock.replace(/\n+$/g, ''); // trim trailing whitespace
+
+    codeblock = '<pre><code' + (language ? ' class="' + language + '"' : '') + '>' + codeblock + end + '</code></pre>';
+
+    return showdown.subParser('hashBlock')(codeblock, options, globals);
+  });
+
+  // attacklab: strip sentinel
+  text = text.replace(/~0/, '');
+
+  return text;
+
+});
+
+showdown.subParser('hashBlock', function (text, options, globals) {
+  'use strict';
+  text = text.replace(/(^\n+|\n+$)/g, '');
+  return '\n\n~K' + (globals.gHtmlBlocks.push(text) - 1) + 'K\n\n';
+});
+
+showdown.subParser('hashElement', function (text, options, globals) {
+  'use strict';
+
+  return function (wholeMatch, m1) {
+    var blockText = m1;
+
+    // Undo double lines
+    blockText = blockText.replace(/\n\n/g, '\n');
+    blockText = blockText.replace(/^\n/, '');
+
+    // strip trailing blank lines
+    blockText = blockText.replace(/\n+$/g, '');
+
+    // Replace the element text with a marker ("~KxK" where x is its key)
+    blockText = '\n\n~K' + (globals.gHtmlBlocks.push(blockText) - 1) + 'K\n\n';
+
+    return blockText;
+  };
+});
+
+showdown.subParser('hashHTMLBlocks', function (text, options, globals) {
+  'use strict';
+
+  // attacklab: Double up blank lines to reduce lookaround
+  text = text.replace(/\n/g, '\n\n');
+
+  // Hashify HTML blocks:
+  // We only want to do this for block-level HTML tags, such as headers,
+  // lists, and tables. That's because we still want to wrap <p>s around
+  // "paragraphs" that are wrapped in non-block-level tags, such as anchors,
+  // phrase emphasis, and spans. The list of tags we're looking for is
+  // hard-coded:
+  //var block_tags_a =
+  // 'p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del|style|section|header|footer|nav|article|aside';
+  // var block_tags_b =
+  // 'p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside';
+
+  // First, look for nested blocks, e.g.:
+  //   <div>
+  //     <div>
+  //     tags for inner block must be indented.
+  //     </div>
+  //   </div>
+  //
+  // The outermost tags must start at the left margin for this to match, and
+  // the inner nested divs must be indented.
+  // We need to do this before the next, more liberal match, because the next
+  // match will start at the first `<div>` and stop at the first `</div>`.
+
+  // attacklab: This regex can be expensive when it fails.
+  /*
+   var text = text.replace(/
+   (						// save in $1
+   ^					// start of line  (with /m)
+   <($block_tags_a)	// start tag = $2
+   \b					// word break
+   // attacklab: hack around khtml/pcre bug...
+   [^\r]*?\n			// any number of lines, minimally matching
+   </\2>				// the matching end tag
+   [ \t]*				// trailing spaces/tabs
+   (?=\n+)				// followed by a newline
+   )						// attacklab: there are sentinel newlines at end of document
+   /gm,function(){...}};
+   */
+  text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)\b[^\r]*?\n<\/\2>[ \t]*(?=\n+))/gm,
+                      showdown.subParser('hashElement')(text, options, globals));
+
+  //
+  // Now match more liberally, simply from `\n<tag>` to `</tag>\n`
+  //
+
+  /*
+   var text = text.replace(/
+   (						// save in $1
+   ^					// start of line  (with /m)
+   <($block_tags_b)	// start tag = $2
+   \b					// word break
+   // attacklab: hack around khtml/pcre bug...
+   [^\r]*?				// any number of lines, minimally matching
+   </\2>				// the matching end tag
+   [ \t]*				// trailing spaces/tabs
+   (?=\n+)				// followed by a newline
+   )						// attacklab: there are sentinel newlines at end of document
+   /gm,function(){...}};
+   */
+  text = text.replace(/^(<(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|style|section|header|footer|nav|article|aside|address|audio|canvas|figure|hgroup|output|video)\b[^\r]*?<\/\2>[ \t]*(?=\n+)\n)/gm,
+                      showdown.subParser('hashElement')(text, options, globals));
+
+  // Special case just for <hr />. It was easier to make a special case than
+  // to make the other regex more complicated.
+
+  /*
+   text = text.replace(/
+   (						// save in $1
+   \n\n				// Starting after a blank line
+   [ ]{0,3}
+   (<(hr)				// start tag = $2
+   \b					// word break
+   ([^<>])*?			//
+   \/?>)				// the matching end tag
+   [ \t]*
+   (?=\n{2,})			// followed by a blank line
+   )
+   /g,showdown.subParser('hashElement')(text, options, globals));
+   */
+  text = text.replace(/(\n[ ]{0,3}(<(hr)\b([^<>])*?\/?>)[ \t]*(?=\n{2,}))/g,
+                      showdown.subParser('hashElement')(text, options, globals));
+
+  // Special case for standalone HTML comments:
+
+  /*
+   text = text.replace(/
+   (						// save in $1
+   \n\n				// Starting after a blank line
+   [ ]{0,3}			// attacklab: g_tab_width - 1
+   <!
+   (--[^\r]*?--\s*)+
+   >
+   [ \t]*
+   (?=\n{2,})			// followed by a blank line
+   )
+   /g,showdown.subParser('hashElement')(text, options, globals));
+   */
+  text = text.replace(/(\n\n[ ]{0,3}<!(--[^\r]*?--\s*)+>[ \t]*(?=\n{2,}))/g,
+                      showdown.subParser('hashElement')(text, options, globals));
+
+  // PHP and ASP-style processor instructions (<?...?> and <%...%>)
+
+  /*
+   text = text.replace(/
+   (?:
+   \n\n				// Starting after a blank line
+   )
+   (						// save in $1
+   [ ]{0,3}			// attacklab: g_tab_width - 1
+   (?:
+   <([?%])			// $2
+   [^\r]*?
+   \2>
+   )
+   [ \t]*
+   (?=\n{2,})			// followed by a blank line
+   )
+   /g,showdown.subParser('hashElement')(text, options, globals));
+   */
+  text = text.replace(/(?:\n\n)([ ]{0,3}(?:<([?%])[^\r]*?\2>)[ \t]*(?=\n{2,}))/g,
+                      showdown.subParser('hashElement')(text, options, globals));
+
+  // attacklab: Undo double lines (see comment at top of this function)
+  text = text.replace(/\n\n/g, '\n');
+  return text;
+
+});
+
+showdown.subParser('headers', function (text, options, globals) {
+  'use strict';
+
+  var prefixHeader = options.prefixHeaderId;
+
+  // Set text-style headers:
+  //	Header 1
+  //	========
+  //
+  //	Header 2
+  //	--------
+  //
+  text = text.replace(/^(.+)[ \t]*\n=+[ \t]*\n+/gm, function (wholeMatch, m1) {
+    var spanGamut = showdown.subParser('spanGamut')(m1, options, globals),
+        hashBlock = '<h1 id="' + headerId(m1) + '">' + spanGamut + '</h1>';
+    return showdown.subParser('hashBlock')(hashBlock, options, globals);
+  });
+
+  text = text.replace(/^(.+)[ \t]*\n-+[ \t]*\n+/gm, function (matchFound, m1) {
+    var spanGamut = showdown.subParser('spanGamut')(m1, options, globals),
+        hashBlock = '<h2 id="' + headerId(m1) + '">' + spanGamut + '</h2>';
+    return showdown.subParser('hashBlock')(hashBlock, options, globals);
+  });
+
+  // atx-style headers:
+  //  # Header 1
+  //  ## Header 2
+  //  ## Header 2 with closing hashes ##
+  //  ...
+  //  ###### Header 6
+  //
+
+  /*
+   text = text.replace(/
+   ^(\#{1,6})				// $1 = string of #'s
+   [ \t]*
+   (.+?)					// $2 = Header text
+   [ \t]*
+   \#*						// optional closing #'s (not counted)
+   \n+
+   /gm, function() {...});
+   */
+
+  text = text.replace(/^(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm, function (wholeMatch, m1, m2) {
+    var span = showdown.subParser('spanGamut')(m2, options, globals),
+        header = '<h' + m1.length + ' id="' + headerId(m2) + '">' + span + '</h' + m1.length + '>';
+
+    return showdown.subParser('hashBlock')(header, options, globals);
+  });
+
+  function headerId(m) {
+    var title, escapedId = m.replace(/[^\w]/g, '').toLowerCase();
+
+    if (globals.hashLinkCounts[escapedId]) {
+      title = escapedId + '-' + (globals.hashLinkCounts[escapedId]++);
+    } else {
+      title = escapedId;
+      globals.hashLinkCounts[escapedId] = 1;
+    }
+
+    // Prefix id to prevent causing inadvertent pre-existing style matches.
+    if (prefixHeader === true) {
+      prefixHeader = 'section';
+    }
+
+    if (showdown.helper.isString(prefixHeader)) {
+      return prefixHeader + title;
+    }
+    return title;
+  }
+
+  return text;
+});
+
+/**
+ * Turn Markdown image shortcuts into <img> tags.
+ */
+showdown.subParser('images', function (text, options, globals) {
+  'use strict';
+
+  var writeImageTag = function (wholeMatch, m1, m2, m3, m4, m5, m6, m7) {
+
+    wholeMatch = m1;
+    var altText = m2,
+        linkId = m3.toLowerCase(),
+        url = m4,
+        title = m7,
+        gUrls = globals.gUrls,
+        gTitles = globals.gTitles;
+
+    if (!title) {
+      title = '';
+    }
+
+    if (url === '' || url === null) {
+      if (linkId === '' || linkId === null) {
+        // lower-case and turn embedded newlines into spaces
+        linkId = altText.toLowerCase().replace(/ ?\n/g, ' ');
       }
-    };
-  }).
-  directive('btfMarkdown', ['$sanitize', 'markdownConverter', function ($sanitize, markdownConverter) {
-    return {
-      restrict: 'AE',
-      link: function (scope, element, attrs) {
-        if (attrs.btfMarkdown) {
-          scope.$watch(attrs.btfMarkdown, function (newVal) {
-            var html = newVal ? $sanitize(markdownConverter.makeHtml(newVal)) : '';
-            element.html(html);
-          });
-        } else {
-          var html = $sanitize(markdownConverter.makeHtml(element.text()));
-          element.html(html);
+      url = '#' + linkId;
+
+      if (typeof gUrls[linkId] !== 'undefined') {
+        url = gUrls[linkId];
+        if (typeof gTitles[linkId] !== 'undefined') {
+          title = gTitles[linkId];
+        }
+      } else {
+        return wholeMatch;
+      }
+    }
+
+    altText = altText.replace(/"/g, '&quot;');
+    url = showdown.helper.escapeCharacters(url, '*_', false);
+    var result = '<img src="' + url + '" alt="' + altText + '"';
+
+    // attacklab: Markdown.pl adds empty title attributes to images.
+    // Replicate this bug.
+
+    //if (title != "") {
+    title = title.replace(/"/g, '&quot;');
+    title = showdown.helper.escapeCharacters(title, '*_', false);
+    result += ' title="' + title + '"';
+    //}
+
+    result += ' />';
+
+    return result;
+  };
+
+  // First, handle reference-style labeled images: ![alt text][id]
+  /*
+   text = text.replace(/
+   (						// wrap whole match in $1
+   !\[
+   (.*?)				// alt text = $2
+   \]
+
+   [ ]?				// one optional space
+   (?:\n[ ]*)?			// one optional newline followed by spaces
+
+   \[
+   (.*?)				// id = $3
+   \]
+   )()()()()				// pad rest of backreferences
+   /g,writeImageTag);
+   */
+  text = text.replace(/(!\[(.*?)\][ ]?(?:\n[ ]*)?\[(.*?)\])()()()()/g, writeImageTag);
+
+  // Next, handle inline images:  ![alt text](url "optional title")
+  // Don't forget: encode * and _
+  /*
+   text = text.replace(/
+   (						// wrap whole match in $1
+   !\[
+   (.*?)				// alt text = $2
+   \]
+   \s?					// One optional whitespace character
+   \(					// literal paren
+   [ \t]*
+   ()					// no id, so leave $3 empty
+   <?(\S+?)>?			// src url = $4
+   [ \t]*
+   (					// $5
+   (['"])			// quote char = $6
+   (.*?)			// title = $7
+   \6				// matching quote
+   [ \t]*
+   )?					// title is optional
+   \)
+   )
+   /g,writeImageTag);
+   */
+  text = text.replace(/(!\[(.*?)\]\s?\([ \t]*()<?(\S+?)>?[ \t]*((['"])(.*?)\6[ \t]*)?\))/g, writeImageTag);
+
+  return text;
+});
+
+showdown.subParser('italicsAndBold', function (text) {
+  'use strict';
+  // <strong> must go first:
+  text = text.replace(/(\*\*|__)(?=\S)([^\r]*?\S[*_]*)\1/g, '<strong>$2</strong>');
+
+  text = text.replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g, '<em>$2</em>');
+
+  return text;
+});
+
+/**
+ * Run language extensions
+ */
+showdown.subParser('languageExtensions', function (text, config, globals) {
+  'use strict';
+
+  showdown.helper.forEach(globals.langExtensions, function (ext) {
+    text = showdown.subParser('runExtension')(ext, text);
+  });
+  return text;
+});
+
+/**
+ * Form HTML ordered (numbered) and unordered (bulleted) lists.
+ */
+showdown.subParser('lists', function (text, options, globals) {
+  'use strict';
+
+  /**
+   * Process the contents of a single ordered or unordered list, splitting it
+   * into individual list items.
+   * @param {string} listStr
+   * @returns {string|*}
+   */
+  var processListItems = function (listStr) {
+    // The $g_list_level global keeps track of when we're inside a list.
+    // Each time we enter a list, we increment it; when we leave a list,
+    // we decrement. If it's zero, we're not in a list anymore.
+    //
+    // We do this because when we're not inside a list, we want to treat
+    // something like this:
+    //
+    //    I recommend upgrading to version
+    //    8. Oops, now this line is treated
+    //    as a sub-list.
+    //
+    // As a single paragraph, despite the fact that the second line starts
+    // with a digit-period-space sequence.
+    //
+    // Whereas when we're inside a list (or sub-list), that line will be
+    // treated as the start of a sub-list. What a kludge, huh? This is
+    // an aspect of Markdown's syntax that's hard to parse perfectly
+    // without resorting to mind-reading. Perhaps the solution is to
+    // change the syntax rules such that sub-lists must start with a
+    // starting cardinal number; e.g. "1." or "a.".
+
+    globals.gListLevel++;
+
+    // trim trailing blank lines:
+    listStr = listStr.replace(/\n{2,}$/, '\n');
+
+    // attacklab: add sentinel to emulate \z
+    listStr += '~0';
+
+    /*
+     list_str = list_str.replace(/
+     (\n)?							// leading line = $1
+     (^[ \t]*)						// leading whitespace = $2
+     ([*+-]|\d+[.]) [ \t]+			// list marker = $3
+     ([^\r]+?						// list item text   = $4
+     (\n{1,2}))
+     (?= \n* (~0 | \2 ([*+-]|\d+[.]) [ \t]+))
+     /gm, function(){...});
+     */
+    listStr = listStr.replace(/(\n)?(^[ \t]*)([*+-]|\d+[.])[ \t]+([^\r]+?(\n{1,2}))(?=\n*(~0|\2([*+-]|\d+[.])[ \t]+))/gm,
+                              function (wholeMatch, m1, m2, m3, m4) {
+                                var item = showdown.subParser('outdent')(m4, options, globals);
+                                //m1 - LeadingLine
+
+                                if (m1 || (item.search(/\n{2,}/) > -1)) {
+                                  item = showdown.subParser('blockGamut')(item, options, globals);
+                                } else {
+                                  // Recursion for sub-lists:
+                                  item = showdown.subParser('lists')(item, options, globals);
+                                  item = item.replace(/\n$/, ''); // chomp(item)
+                                  item = showdown.subParser('spanGamut')(item, options, globals);
+                                }
+
+                                return '<li>' + item + '</li>\n';
+                              });
+
+    // attacklab: strip sentinel
+    listStr = listStr.replace(/~0/g, '');
+
+    globals.gListLevel--;
+    return listStr;
+  };
+
+  // attacklab: add sentinel to hack around khtml/safari bug:
+  // http://bugs.webkit.org/show_bug.cgi?id=11231
+  text += '~0';
+
+  // Re-usable pattern to match any entirel ul or ol list:
+
+  /*
+   var whole_list = /
+   (									// $1 = whole list
+   (								// $2
+   [ ]{0,3}					// attacklab: g_tab_width - 1
+   ([*+-]|\d+[.])				// $3 = first list item marker
+   [ \t]+
+   )
+   [^\r]+?
+   (								// $4
+   ~0							// sentinel for workaround; should be $
+   |
+   \n{2,}
+   (?=\S)
+   (?!							// Negative lookahead for another list item marker
+   [ \t]*
+   (?:[*+-]|\d+[.])[ \t]+
+   )
+   )
+   )/g
+   */
+  var wholeList = /^(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/gm;
+
+  if (globals.gListLevel) {
+    text = text.replace(wholeList, function (wholeMatch, m1, m2) {
+      var list = m1,
+          listType = (m2.search(/[*+-]/g) > -1) ? 'ul' : 'ol';
+
+      // Turn double returns into triple returns, so that we can make a
+      // paragraph for the last item in a list, if necessary:
+      list = list.replace(/\n{2,}/g, '\n\n\n');
+
+      var result = processListItems(list);
+
+      // Trim any trailing whitespace, to put the closing `</$list_type>`
+      // up on the preceding line, to get it past the current stupid
+      // HTML block parser. This is a hack to work around the terrible
+      // hack that is the HTML block parser.
+      result = result.replace(/\s+$/, '');
+      result = '<' + listType + '>' + result + '</' + listType + '>\n';
+      return result;
+    });
+  } else {
+    wholeList = /(\n\n|^\n?)(([ ]{0,3}([*+-]|\d+[.])[ \t]+)[^\r]+?(~0|\n{2,}(?=\S)(?![ \t]*(?:[*+-]|\d+[.])[ \t]+)))/g;
+
+    text = text.replace(wholeList, function (wholeMatch, m1, m2, m3) {
+
+      // Turn double returns into triple returns, so that we can make a
+      // paragraph for the last item in a list, if necessary:
+      var list = m2.replace(/\n{2,}/g, '\n\n\n'),
+          listType = (m3.search(/[*+-]/g) > -1) ? 'ul' : 'ol',
+          result = processListItems(list);
+
+      return m1 + '<' + listType + '>\n' + result + '</' + listType + '>\n';
+    });
+  }
+
+  // attacklab: strip sentinel
+  text = text.replace(/~0/, '');
+
+  return text;
+});
+
+/**
+ * Remove one level of line-leading tabs or spaces
+ */
+showdown.subParser('outdent', function (text) {
+  'use strict';
+
+  // attacklab: hack around Konqueror 3.5.4 bug:
+  // "----------bug".replace(/^-/g,"") == "bug"
+  text = text.replace(/^(\t|[ ]{1,4})/gm, '~0'); // attacklab: g_tab_width
+
+  // attacklab: clean up hack
+  text = text.replace(/~0/g, '');
+
+  return text;
+});
+
+/**
+ * Run language extensions
+ */
+showdown.subParser('outputModifiers', function (text, config, globals) {
+  'use strict';
+
+  showdown.helper.forEach(globals.outputModifiers, function (ext) {
+    text = showdown.subParser('runExtension')(ext, text);
+  });
+  return text;
+});
+
+/**
+ *
+ */
+showdown.subParser('paragraphs', function (text, options, globals) {
+  'use strict';
+
+  // Strip leading and trailing lines:
+  text = text.replace(/^\n+/g, '');
+  text = text.replace(/\n+$/g, '');
+
+  var grafs = text.split(/\n{2,}/g),
+      grafsOut = [],
+      end = grafs.length; // Wrap <p> tags
+
+  for (var i = 0; i < end; i++) {
+    var str = grafs[i];
+
+    // if this is an HTML marker, copy it
+    if (str.search(/~K(\d+)K/g) >= 0) {
+      grafsOut.push(str);
+    } else if (str.search(/\S/) >= 0) {
+      str = showdown.subParser('spanGamut')(str, options, globals);
+      str = str.replace(/^([ \t]*)/g, '<p>');
+      str += '</p>';
+      grafsOut.push(str);
+    }
+  }
+
+  /** Unhashify HTML blocks */
+  end = grafsOut.length;
+  for (i = 0; i < end; i++) {
+    // if this is a marker for an html block...
+    while (grafsOut[i].search(/~K(\d+)K/) >= 0) {
+      var blockText = globals.gHtmlBlocks[RegExp.$1];
+      blockText = blockText.replace(/\$/g, '$$$$'); // Escape any dollar signs
+      grafsOut[i] = grafsOut[i].replace(/~K\d+K/, blockText);
+    }
+  }
+
+  return grafsOut.join('\n\n');
+});
+
+/**
+ * Run language extensions
+ */
+showdown.subParser('runExtension', function (ext, text) {
+  'use strict';
+
+  if (ext.regex) {
+    var re = new RegExp(ext.regex, 'g');
+    return text.replace(re, ext.replace);
+  } else if (ext.filter) {
+    return ext.filter(text);
+  }
+});
+
+/**
+ * These are all the transformations that occur *within* block-level
+ * tags like paragraphs, headers, and list items.
+ */
+showdown.subParser('spanGamut', function (text, options, globals) {
+  'use strict';
+
+  text = showdown.subParser('codeSpans')(text, options, globals);
+  text = showdown.subParser('escapeSpecialCharsWithinTagAttributes')(text, options, globals);
+  text = showdown.subParser('encodeBackslashEscapes')(text, options, globals);
+
+  // Process anchor and image tags. Images must come first,
+  // because ![foo][f] looks like an anchor.
+  text = showdown.subParser('images')(text, options, globals);
+  text = showdown.subParser('anchors')(text, options, globals);
+
+  // Make links out of things like `<http://example.com/>`
+  // Must come after _DoAnchors(), because you can use < and >
+  // delimiters in inline links like [this](<url>).
+  text = showdown.subParser('autoLinks')(text, options, globals);
+  text = showdown.subParser('encodeAmpsAndAngles')(text, options, globals);
+  text = showdown.subParser('italicsAndBold')(text, options, globals);
+
+  // Do hard breaks:
+  text = text.replace(/  +\n/g, ' <br />\n');
+
+  return text;
+
+});
+
+/**
+ * Strip any lines consisting only of spaces and tabs.
+ * This makes subsequent regexs easier to write, because we can
+ * match consecutive blank lines with /\n+/ instead of something
+ * contorted like /[ \t]*\n+/
+ */
+showdown.subParser('stripBlankLines', function (text) {
+  'use strict';
+  return text.replace(/^[ \t]+$/mg, '');
+});
+
+/**
+ * Strips link definitions from text, stores the URLs and titles in
+ * hash references.
+ * Link defs are in the form: ^[id]: url "optional title"
+ *
+ * ^[ ]{0,3}\[(.+)\]: // id = $1  attacklab: g_tab_width - 1
+ * [ \t]*
+ * \n?                  // maybe *one* newline
+ * [ \t]*
+ * <?(\S+?)>?          // url = $2
+ * [ \t]*
+ * \n?                // maybe one newline
+ * [ \t]*
+ * (?:
+ * (\n*)              // any lines skipped = $3 attacklab: lookbehind removed
+ * ["(]
+ * (.+?)              // title = $4
+ * [")]
+ * [ \t]*
+ * )?                 // title is optional
+ * (?:\n+|$)
+ * /gm,
+ * function(){...});
+ *
+ */
+showdown.subParser('stripLinkDefinitions', function (text, options, globals) {
+  'use strict';
+
+  var regex = /^[ ]{0,3}\[(.+)]:[ \t]*\n?[ \t]*<?(\S+?)>?[ \t]*\n?[ \t]*(?:(\n*)["(](.+?)[")][ \t]*)?(?:\n+|(?=~0))/gm;
+
+  // attacklab: sentinel workarounds for lack of \A and \Z, safari\khtml bug
+  text += '~0';
+
+  text = text.replace(regex, function (wholeMatch, m1, m2, m3, m4) {
+    m1 = m1.toLowerCase();
+    globals.gUrls[m1] = showdown.subParser('encodeAmpsAndAngles')(m2);  // Link IDs are case-insensitive
+    if (m3) {
+      // Oops, found blank lines, so it's not a title.
+      // Put back the parenthetical statement we stole.
+      return m3 + m4;
+
+    } else if (m4) {
+      globals.gTitles[m1] = m4.replace(/"/g, '&quot;');
+    }
+
+    // Completely remove the definition from the text
+    return '';
+  });
+
+  // attacklab: strip sentinel
+  text = text.replace(/~0/, '');
+
+  return text;
+});
+
+/**
+ * Swap back in all the special characters we've hidden.
+ */
+showdown.subParser('unescapeSpecialChars', function (text) {
+  'use strict';
+
+  text = text.replace(/~E(\d+)E/g, function (wholeMatch, m1) {
+    var charCodeToReplace = parseInt(m1);
+    return String.fromCharCode(charCodeToReplace);
+  });
+  return text;
+});
+
+var root = this;
+
+// CommonJS/nodeJS Loader
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = showdown;
+
+// AMD Loader
+} else if (typeof define === 'function' && define.amd) {
+  define('showdown', function () {
+    'use strict';
+    return showdown;
+  });
+
+// Regular Browser loader
+} else {
+  root.showdown = showdown;
+}
+}).call(this);
+//showdown.js.map
+/*! showdown-github 03-06-2015 */
+
+(function () {
+  'use strict';
+
+  var github = function () {
+    return [
+      {
+        type:    'lang',
+        regex:   '(~T){2}([^~]+)(~T){2}',
+        replace: function (match, prefix, content) {
+          return '<del>' + content + '</del>';
         }
       }
-    };
-  }]);
+    ];
+  };
+  if (typeof window !== 'undefined' && window.showdown && window.showdown.extensions) {
+    window.showdown.extensions.github = github;
+  }
+  if (typeof module !== 'undefined') {
+    module.exports = github;
+  }
 
+}());
+
+//showdown-github.js.map
+;/*! ng-showdown 19-10-2015 */
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(['angular', 'showdown'], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like environments that support module.exports,
+    // like Node.
+    module.exports = factory(require('angular'), require('showdown'));
+  } else {
+    // Browser globals (root is window)
+    root.ngShowdown = factory(root.angular, root.showdown);
+  }
+}(this, function (angular, showdown) {
+  //Check if AngularJs and Showdown is defined and only load ng-Showdown if both are present
+  if (typeof angular === 'undefined' || typeof showdown === 'undefined') {
+    throw new Error('ng-showdown was not loaded because one of its dependencies (AngularJS or Showdown) was not met');
+  }
+
+  angular.module('ng-showdown', ['ngSanitize'])
+    .provider('$showdown', ngShowdown)
+    .directive('sdModelToHtml', ['$showdown', '$sanitize', '$sce', sdModelToHtmlDirective]) //<-- DEPRECATED: will be removed in the next major version release
+    .directive('markdownToHtml', ['$showdown', '$sanitize', '$sce', markdownToHtmlDirective])
+    .filter('sdStripHtml', ['$showdown', stripHtmlFilter]) //<-- DEPRECATED: will be removed in the next major version release
+    .filter('stripHtml', ['$showdown', stripHtmlFilter]);
+
+  /**
+   * Angular Provider
+   * Enables configuration of showdown via angular.config and Dependency Injection into controllers, views
+   * directives, etc... This assures the directives and filters provided by the library itself stay consistent
+   * with the user configurations.
+   * If the user wants to use a different configuration in a determined context, he can use the "classic" Showdown
+   * object instead.
+   */
+  function ngShowdown() {
+
+    // Configuration parameters for Showdown
+    var config = {
+      extensions: [],
+      sanitize: false
+    };
+
+    /**
+     * Sets a configuration option
+     *
+     * @param {string} key Config parameter key
+     * @param {string} value Config parameter value
+     */
+    /* jshint validthis: true */
+    this.setOption = function (key, value) {
+      config[key] = value;
+      return this;
+    };
+
+    /**
+     * Gets the value of the configuration parameter specified by key
+     *
+     * @param {string} key The config parameter key
+     * @returns {string|null} Returns the value of the config parameter. (or null if the config parameter is not set)
+     */
+    this.getOption = function (key) {
+      if (config.hasOwnProperty(key)) {
+        return config[key];
+      } else {
+        return undefined;
+      }
+    };
+
+    /**
+     * Loads a Showdown Extension
+     *
+     * @param {string} extensionName The name of the extension to load
+     */
+    this.loadExtension = function (extensionName) {
+      config.extensions.push(extensionName);
+
+      return this;
+    };
+
+    function SDObject() {
+      var converter = new showdown.Converter(config);
+
+      /**
+       * Converts a markdown text into HTML
+       *
+       * @param {string} markdown The markdown string to be converted to HTML
+       * @returns {string} The converted HTML
+       */
+      this.makeHtml = function (markdown) {
+        return converter.makeHtml(markdown);
+      };
+
+      /**
+       * Strips a text of it's HTML tags. See http://stackoverflow.com/questions/17289448/angularjs-to-output-plain-text-instead-of-html
+       *
+       * @param {string} text
+       * @returns {string}
+       */
+      this.stripHtml = function (text) {
+        return String(text).replace(/<[^>]+>/gm, '');
+      };
+
+      /**
+       * Gets the value of the configuration parameter of CONVERTER specified by key
+       * @param {string} key The config parameter key
+       * @returns {*}
+       */
+      this.getOption = function (key) {
+        return converter.getOption(key);
+      };
+
+      /**
+       * Gets the converter configuration params
+       * @returns {*}
+       */
+      this.getOptions = function () {
+        return converter.getOptions();
+      };
+
+      /**
+       * Sets a configuration option
+       *
+       * @param {string} key Config parameter key
+       * @param {string} value Config parameter value
+       * @returns {SDObject}
+       */
+      this.setOption = function (key, value) {
+        converter.setOption(key, value);
+        return this;
+      };
+    }
+
+    // The object returned by service provider
+    this.$get = function () {
+      return new SDObject();
+    };
+  }
+
+  /**
+   * @deprecated
+   * Legacy AngularJS Directive to Md to HTML transformation
+   *
+   * Usage example:
+   * <div sd-model-to-html="markdownText" ></div>
+   *
+   * @param {showdown.Converter} $showdown
+   * @param {$sanitize} $sanitize
+   * @param {$sce} $sce
+   * @returns {*}
+   */
+  function sdModelToHtmlDirective($showdown, $sanitize, $sce) {
+    return {
+      restrict: 'A',
+      link: getLinkFn($showdown, $sanitize, $sce),
+      scope: {
+        model: '=sdModelToHtml'
+      },
+      template: '<div ng-bind-html="trustedHtml"></div>'
+    };
+  }
+
+  /**
+   * AngularJS Directive to Md to HTML transformation
+   *
+   * Usage example:
+   * <div markdown-to-html="markdownText" ></div>
+   *
+   * @param {showdown.Converter} $showdown
+   * @param {$sanitize} $sanitize
+   * @param {$sce} $sce
+   * @returns {*}
+   */
+  function markdownToHtmlDirective($showdown, $sanitize, $sce) {
+    return {
+      restrict: 'A',
+      link: getLinkFn($showdown, $sanitize, $sce),
+      scope: {
+        model: '=markdownToHtml'
+      },
+      template: '<div ng-bind-html="trustedHtml"></div>'
+    };
+  }
+
+  function getLinkFn($showdown, $sanitize, $sce) {
+    return function (scope, element, attrs) {
+      scope.$watch('model', function (newValue) {
+        var showdownHTML;
+        if (typeof newValue === 'string') {
+          showdownHTML = $showdown.makeHtml(newValue);
+          scope.trustedHtml = ($showdown.getOption('sanitize')) ? $sanitize(showdownHTML) : $sce.trustAsHtml(showdownHTML);
+        } else {
+          scope.trustedHtml = typeof newValue;
+        }
+      });
+    };
+  }
+
+  /**
+   * AngularJS Filter to Strip HTML tags from text
+   *
+   * @returns {Function}
+   */
+  function stripHtmlFilter($showdown) {
+    return function (text) {
+      return $showdown.stripHtml(text);
+    };
+  }
+
+  return angular.module('ng-showdown');
+}));
+
+//ng-showdown.js.map
 /*!
  * angular-ui-uploader
  * https://github.com/angular-ui/ui-uploader
@@ -76728,12 +76806,12 @@ var app = angular.module('app', [
 	'ngResource',
     'ui.tree',
     'ngSanitize',
+    'ng-showdown',
     'ngAnimate',
     'ngQuantum',
     'mgcrea.ngStrap',
     'ngTagsInput',
     'ui.bootstrap.showErrors',
-    'btford.markdown',
     'ui.uploader',
     'agGrid',
     'gettext']
@@ -77340,28 +77418,26 @@ app.config(function($routeProvider, $locationProvider) {
             .when('/:lang_short' + url, routes[url]);
     }
 });
-app.config(['$resourceProvider','$httpProvider', function($resourceProvider,$httpProvider) {
+app.config(['$resourceProvider', '$httpProvider', function($resourceProvider, $httpProvider) {
     $resourceProvider.defaults.stripTrailingSlashes = false;
     $httpProvider.defaults.xsrfCookieName = 'csrftoken';
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
-}])
-.config(function ($routeProvider, $locationProvider, markdownConverterProvider) {
+  }])
+  .config(function($routeProvider, $locationProvider, $showdownProvider) {
     $routeProvider
       .otherwise({
         redirectTo: '/'
       });
 
     $locationProvider.html5Mode({
-        enabled: true,
-        requireBase: false
+      enabled: true,
+      requireBase: false
     });
 
-  // options to be passed to Showdown
-  // see: https://github.com/coreyti/showdown#extensions
-  markdownConverterProvider.config({
-    extensions: ['twitter', 'github', 'prettify', 'table']
+    // options to be passed to Showdown
+    // see: https://github.com/coreyti/showdown#extensions
+    $showdownProvider.loadExtension('github');
   });
-});
 angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="ItemName" translate>Name</label>\n' +
     '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
@@ -77964,7 +78040,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <thead>\n' +
     '    <tr>\n' +
     '        <th translate>#</th>\n' +
-    '        <th translate>Name</th>\n' +
+    '        <th style="width:200px" translate>Name</th>\n' +
     '        <th translate>Empty</th>\n' +
     '        <th class="text-right" style="width:200px" translate>Actions</th>\n' +
     '    </tr>\n' +
@@ -78563,8 +78639,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
     '    </div>\n' +
     '    <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
-    '        <btf-markdown ng-model="ProjectSvc.item.markdown">\n' +
-    '        </btf-markdown>\n' +
+    '        <p markdown-to-html="ProjectSvc.item.markdown">\n' +
+    '        </p>\n' +
     '    </div>\n' +
     '</div><!--//desc-->');
 	a.put('views/project/create.html', '<div class="container sections-wrapper" ng-init="ProjectSvc.initEmptyItem()">\n' +
@@ -78844,8 +78920,8 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <p ng-bind-html="PostSvc.item.url | unsafe"></p>\n' +
     '    </div>\n' +
     '    <div ng-if="PostSvc.item.type==4 && PostSvc.item.markdown">\n' +
-    '        <btf-markdown ng-model="PostSvc.item.markdown">\n' +
-    '        </btf-markdown>\n' +
+    '        <p markdown-to-html="PostSvc.item.markdown">\n' +
+    '        </p>\n' +
     '    </div>\n' +
     '</div><!--//desc-->');
 	a.put('views/post/create.html', '<div class="container sections-wrapper" ng-init="PostSvc.initEmptyItem()">\n' +
@@ -79738,16 +79814,17 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
             url: url
         }).then(
             function(response) {
-                if (response !== null && response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                if (response !== null && response !== undefined && response.data !== undefined &&
+                    response.data.code !== undefined && response.data.code == 'ok') {
                     deferred.resolve(response.data.data, response);
                 }
             },
             function(response) {
-                if (response !== null && response !== undefined && response.data !== undefined && response.data.code !== undefined){
+                if (response !== null && response !== undefined && response.data !== undefined &&
+                    response.data.code !== undefined) {
                     MessageSvc.error(response.data.code, response.data);
                     deferred.reject(response.data, response);
-                }
-                else
+                } else
                     deferred.reject(null);
             }
         );
@@ -79761,16 +79838,17 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
         data = angular.copy(data);
         $http.post(url, data).then(
             function(response) {
-                if (response !== null && response !== undefined && response.data !== undefined && response.data.code !== undefined && response.data.code == 'ok') {
+                if (response !== null && response !== undefined && response.data !== undefined &&
+                    response.data !== null && response.data.code !== undefined && response.data.code == 'ok') {
                     deferred.resolve(response.data.data, response);
                 }
             },
             function(response) {
-                if (response !== null && response !== undefined && response.data !== undefined && response.data.code !== undefined){
+                if (response !== null && response !== undefined && response.data !== undefined &&
+                    response.data !== null && response.data.code !== undefined) {
                     MessageSvc.error(response.data.code, response.data);
                     deferred.reject(response.data, response);
-                }
-                else
+                } else
                     deferred.reject(null);
             }
         );
@@ -80934,7 +81012,7 @@ app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppCons
     service.slugName = function(value) {
         if (service.item.id === undefined)
             service.item.name = getSlug(value, {
-                lang: 'ru',
+                lang: AppSvc.currentLangShort,
                 uric: true
             });
     };
@@ -81118,7 +81196,7 @@ app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppC
     service.slugName = function(value) {
         if (service.item.id === undefined)
             service.item.name = getSlug(value, {
-                lang: 'ru',
+                lang: AppSvc.currentLangShort,
                 uric: true
             });
     };
