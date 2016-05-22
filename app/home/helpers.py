@@ -15,6 +15,8 @@ def get_config(request):
 
     config['host'] = '%s://%s' % (protocol, request.get_host())
     config['host_name'] = '%s://%s' % (protocol, request.get_host().decode('idna'))
+    config['lang'] = settings.LANGUAGE_CODE.replace('-', '_')
+    config['lang_short'] = settings.LANGUAGE_CODE.split('-')[0]
 
     user = helpers.get_user(request)
 
@@ -80,6 +82,8 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
     return render(request, template % settings.THEME, {
         'host_url': '//' + request.get_host(),
         'config': json.dumps(config, sort_keys=True, indent=4),
+        'lang': settings.LANGUAGE_CODE.replace('-', '_'),
+        'lang_short': settings.LANGUAGE_CODE.split('-')[0],
         'settings': settings,
         'meta_tag_list': meta_tag_list,
         'properties_list': properties_list,

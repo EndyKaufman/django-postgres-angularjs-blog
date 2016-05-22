@@ -4,6 +4,918 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
+#: account/user_app/list.html:4
+#: file/list.html:25
+#: manager/html_cache/list.html:4
+#: manager/meta_tag/list.html:4
+#: manager/properties/list.html:4
+#: manager/public_link/list.html:4
+#: manager/tag/list.html:4
+msgid "#"
+msgstr ""
+
+#: account/const.js:53
+msgid "Account created!"
+msgstr ""
+
+#: account/const.js:55
+msgid "Account deleted!"
+msgstr ""
+
+#: account/user_app/list.html:7
+#: file/list.html:28
+#: manager/html_cache/list.html:7
+#: manager/meta_tag/list.html:7
+#: manager/properties/list.html:7
+#: manager/public_link/list.html:10
+#: manager/tag/list.html:7
+msgid "Actions"
+msgstr ""
+
+#: file/list.html:4
+msgid "Add file"
+msgstr ""
+
+#: post/create.html:23
+#: post/update.html:26
+#: project/create.html:23
+#: project/update.html:27
+msgid "Add image"
+msgstr ""
+
+#: account/user_app/user_app.svc.js:19
+msgid "Add new application"
+msgstr ""
+
+#: file/file.svc.js:57
+msgid "Add new file"
+msgstr ""
+
+#: manager/html_cache/htm_cache.svc.js:66
+msgid "Add new html cache"
+msgstr ""
+
+#: manager/meta_tag/meta_tag.svc.js:19
+msgid "Add new meta tag"
+msgstr ""
+
+#: manager/properties/properties.svc.js:18
+msgid "Add new properties"
+msgstr ""
+
+#: manager/public_link/public_link.svc.js:23
+msgid "Add new public link"
+msgstr ""
+
+#: tag/tag.svc.js:30
+msgid "Add new tag"
+msgstr ""
+
+#: post/inputs/right.html:19
+#: project/inputs/right.html:19
+msgid "add tag"
+msgstr ""
+
+#: account/sidebar.html:3
+#: manager/sidebar.html:3
+#: post/create.html:35
+#: post/update.html:38
+#: project/create.html:35
+#: project/update.html:39
+msgid "Additionally"
+msgstr ""
+
+#: home/list-posts.html:4
+#: search/list-posts.html:4
+#: tag/list-posts.html:4
+msgid "All posts"
+msgstr ""
+
+#: home/list-projects.html:4
+#: search/list-projects.html:4
+#: tag/list-projects.html:4
+msgid "All projects"
+msgstr ""
+
+#: account/user_app/inputs.html:18
+msgid "allowed URIs list, space separated"
+msgstr ""
+
+#: account/const.js:57
+msgid "Application <strong>%s</strong> created!"
+msgstr ""
+
+#: account/const.js:59
+msgid "Application <strong>%s</strong> deleted!"
+msgstr ""
+
+#: account/const.js:58
+msgid "Application <strong>%s</strong> updated!"
+msgstr ""
+
+#: account/const.js:24
+msgid "Applications"
+msgstr ""
+
+#: account/const.js:26
+msgid "Applications of user"
+msgstr ""
+
+#: manager/meta_tag/inputs.html:11
+msgid "Attributes"
+msgstr ""
+
+#: account/const.js:11
+msgid "Authorization on site"
+msgstr ""
+
+#: account/const.js:48
+msgid "Bye-Bye!"
+msgstr ""
+
+#: manager/const.js:38
+msgid "Cache <strong>%s</strong> created!"
+msgstr ""
+
+#: manager/const.js:40
+msgid "Cache <strong>%s</strong> deleted!"
+msgstr ""
+
+#: manager/const.js:39
+msgid "Cache <strong>%s</strong> updated!"
+msgstr ""
+
+#: account/user_app/user_app.svc.js:26
+#: account/user_app/user_app.svc.js:53
+#: file/file.svc.js:30
+#: file/file.svc.js:64
+#: file/file.svc.js:91
+#: manager/html_cache/htm_cache.svc.js:110
+#: manager/html_cache/htm_cache.svc.js:73
+#: manager/meta_tag/meta_tag.svc.js:26
+#: manager/meta_tag/meta_tag.svc.js:53
+#: manager/properties/properties.svc.js:25
+#: manager/properties/properties.svc.js:52
+#: manager/public_link/public_link.svc.js:30
+#: manager/public_link/public_link.svc.js:57
+#: tag/tag.svc.js:37
+#: tag/tag.svc.js:64
+msgid "Cancel"
+msgstr ""
+
+#: account/reset.html:13
+msgid "Change password"
+msgstr ""
+
+#: account/const.js:51
+msgid "Check email <strong>%s</strong> for code to reset password"
+msgstr ""
+
+#: account/user_app/inputs.html:6
+#: account/user_app/list.html:6
+msgid "Client ID"
+msgstr ""
+
+#: account/user_app/inputs.html:11
+msgid "Client secret"
+msgstr ""
+
+#: account/reset/inputs.html:2
+msgid "Code:"
+msgstr ""
+
+#: file/inputs.html:11
+#: file/list.html:27
+#: manager/properties/inputs.html:2
+msgid "Comment"
+msgstr ""
+
+#: contact/const.js:4
+#: contact/const.js:5
+msgid "Contact us"
+msgstr ""
+
+#: manager/html_cache/inputs.html:6
+#: manager/meta_tag/inputs.html:6
+#: manager/meta_tag/list.html:6
+msgid "Content"
+msgstr ""
+
+#: account/reg.html:12
+#: account/user_app/list-header.html:4
+#: account/user_app/user_app.svc.js:25
+#: file/file.svc.js:63
+#: manager/html_cache/htm_cache.svc.js:72
+#: manager/meta_tag/list-header.html:4
+#: manager/meta_tag/meta_tag.svc.js:25
+#: manager/properties/list-header.html:4
+#: manager/properties/properties.svc.js:24
+#: manager/public_link/list-header.html:4
+#: manager/public_link/public_link.svc.js:29
+#: manager/tag/list-header.html:4
+#: post/create.html:15
+#: post/list-header.html:3
+#: project/create.html:15
 #: project/list-header.html:3
+#: tag/tag.svc.js:36
 msgid "Create"
+msgstr ""
+
+#: manager/const.js:32
+msgid "Create from sitemap.xml"
+msgstr ""
+
+#: post/create.html:8
+msgid "Create post"
+msgstr ""
+
+#: project/create.html:8
+msgid "Create project"
+msgstr ""
+
+#: account/user_app/list.html:21
+#: file/list.html:42
+#: manager/html_cache/list.html:21
+#: manager/meta_tag/list.html:21
+#: manager/properties/list.html:21
+#: manager/public_link/list.html:29
+#: manager/tag/list.html:21
+#: post/list-item.html:17
+#: project/list-item.html:17
+msgid "Delete"
+msgstr ""
+
+#: account/profile.html:17
+msgid "Delete account"
+msgstr ""
+
+#: post/inputs/central.html:41
+#: project/inputs/central.html:41
+msgid "Delete image"
+msgstr ""
+
+#: post/create.html:19
+#: post/update.html:22
+msgid "Delete post"
+msgstr ""
+
+#: project/create.html:19
+#: project/update.html:23
+msgid "Delete project"
+msgstr ""
+
+#: manager/public_link/inputs.html:11
+#: manager/tag/inputs.html:7
+#: manager/tag/list.html:6
+#: post/inputs/right.html:24
+#: post/item.html:23
+#: project/inputs/right.html:24
+#: project/item.html:23
+msgid "Description"
+msgstr ""
+
+#: post/list-item.html:33
+#: project/list-item.html:33
+msgid "Detail..."
+msgstr ""
+
+#: account/const.js:52
+msgid "Do you really want to delete account?"
+msgstr ""
+
+#: account/const.js:56
+msgid "Do you really want to delete application <strong>%s</strong>?"
+msgstr ""
+
+#: file/const.js:4
+msgid "Do you really want to delete file <strong>%s</strong>?"
+msgstr ""
+
+#: manager/const.js:37
+msgid "Do you really want to delete html cache <strong>%s</strong>?"
+msgstr ""
+
+#: manager/const.js:62
+msgid "Do you really want to delete meta tag <strong>%s</strong>?"
+msgstr ""
+
+#: post/const.js:21
+msgid "Do you really want to delete post <strong>%s</strong>?"
+msgstr ""
+
+#: project/const.js:21
+msgid "Do you really want to delete project <strong>%s</strong>?"
+msgstr ""
+
+#: manager/const.js:47
+msgid "Do you really want to delete property <strong>%s</strong>?"
+msgstr ""
+
+#: manager/const.js:52
+msgid "Do you really want to delete public link <strong>%s</strong>?"
+msgstr ""
+
+#: manager/const.js:57
+msgid "Do you really want to delete tag <strong>%s</strong>?"
+msgstr ""
+
+#: manager/const.js:42
+msgid "Do you really want to delete user <strong>%s</strong>?"
+msgstr ""
+
+#: account/const.js:49
+msgid "Do you really want to leave?"
+msgstr ""
+
+#: account/user_app/list.html:18
+#: file/list.html:39
+#: manager/html_cache/list.html:18
+#: manager/meta_tag/list.html:18
+#: manager/properties/list.html:18
+#: manager/public_link/list.html:26
+#: manager/tag/list.html:18
+#: post/item.html:9
+#: post/list-item.html:12
+#: project/item.html:9
+#: project/list-item.html:12
+msgid "Edit"
+msgstr ""
+
+#: account/user_app/user_app.svc.js:46
+msgid "Edit application"
+msgstr ""
+
+#: file/file.svc.js:84
+msgid "Edit file properties"
+msgstr ""
+
+#: manager/html_cache/htm_cache.svc.js:103
+msgid "Edit html cache"
+msgstr ""
+
+#: manager/meta_tag/meta_tag.svc.js:46
+msgid "Edit meta tag"
+msgstr ""
+
+#: post/update.html:8
+msgid "Edit post"
+msgstr ""
+
+#: project/update.html:9
+msgid "Edit project"
+msgstr ""
+
+#: manager/properties/properties.svc.js:45
+#: tag/tag.svc.js:57
+msgid "Edit properties"
+msgstr ""
+
+#: manager/public_link/public_link.svc.js:50
+msgid "Edit public link"
+msgstr ""
+
+#: account/profile/inputs.html:29
+#: account/reg/inputs.html:2
+#: contact/list.html:20
+msgid "Email"
+msgstr ""
+
+#: account/const.js:40
+msgid "Email is empty!"
+msgstr ""
+
+#: account/const.js:42
+msgid "Email is incorrect!"
+msgstr ""
+
+#: account/login/inputs.html:2
+#: account/recovery/inputs.html:2
+msgid "Email:"
+msgstr ""
+
+#: manager/html_cache/list.html:6
+msgid "Empty"
+msgstr ""
+
+#: app.const.js:10
+msgid "EN"
+msgstr ""
+
+#: account/reset/inputs.html:4
+msgid "enter code from email"
+msgstr ""
+
+#: account/reset/inputs.html:14
+msgid "enter new password"
+msgstr ""
+
+#: account/login/inputs.html:3
+#: account/recovery/inputs.html:3
+msgid "enter you email"
+msgstr ""
+
+#: account/login/inputs.html:13
+msgid "enter you password"
+msgstr ""
+
+#: not-access.html:6
+#: not-founded.html:6
+msgid "Error"
+msgstr ""
+
+#: file/inputs.html:2
+#: file/inputs.html:6
+msgid "File"
+msgstr ""
+
+#: file/const.js:5
+msgid "File <strong>%s</strong> created!"
+msgstr ""
+
+#: file/const.js:7
+msgid "File <strong>%s</strong> deleted!"
+msgstr ""
+
+#: file/const.js:6
+msgid "File <strong>%s</strong> updated!"
+msgstr ""
+
+#: manager/const.js:33
+msgid "Filling from sitemap.xml..."
+msgstr ""
+
+#: account/profile/inputs.html:2
+msgid "First name"
+msgstr ""
+
+#: post/const.js:12
+#: post/inputs/central.html:15
+#: project/const.js:12
+#: project/inputs/central.html:15
+msgid "Html"
+msgstr ""
+
+#: manager/const.js:29
+#: manager/const.js:30
+msgid "Html cache"
+msgstr ""
+
+#: manager/public_link/inputs.html:16
+#: manager/public_link/list.html:5
+msgid "Icon"
+msgstr ""
+
+#: account/profile/inputs.html:40
+msgid "if empty, the password will not be changed"
+msgstr ""
+
+#: manager/public_link/inputs.html:39
+#: manager/public_link/list.html:8
+msgid "In contact"
+msgstr ""
+
+#: manager/public_link/inputs.html:44
+#: manager/public_link/list.html:9
+msgid "In footer"
+msgstr ""
+
+#: manager/public_link/inputs.html:34
+#: manager/public_link/list.html:7
+msgid "In header"
+msgstr ""
+
+#: account/profile/inputs.html:11
+msgid "Last name"
+msgstr ""
+
+#: account/login.html:13
+msgid "Login"
+msgstr ""
+
+#: account/const.js:9
+msgid "Login on site"
+msgstr ""
+
+#: account/const.js:14
+msgid "Logout"
+msgstr ""
+
+#: account/const.js:16
+msgid "Logout from site"
+msgstr ""
+
+#: manager/const.js:4
+msgid "Manager"
+msgstr ""
+
+#: manager/const.js:6
+msgid "Manager descriptions"
+msgstr ""
+
+#: post/const.js:18
+#: post/inputs/central.html:25
+#: project/const.js:18
+#: project/inputs/central.html:25
+msgid "Markdown"
+msgstr ""
+
+#: contact/list.html:28
+msgid "Message"
+msgstr ""
+
+#: contact/const.js:8
+msgid "Message sent successfully!"
+msgstr ""
+
+#: manager/const.js:63
+msgid "Meta tag <strong>%s</strong> created!"
+msgstr ""
+
+#: manager/const.js:65
+msgid "Meta tag <strong>%s</strong> deleted!"
+msgstr ""
+
+#: manager/const.js:64
+msgid "Meta tag <strong>%s</strong> updated!"
+msgstr ""
+
+#: manager/const.js:10
+#: manager/const.js:9
+msgid "Meta tags"
+msgstr ""
+
+#: account/user_app/inputs.html:2
+#: account/user_app/list.html:5
+#: manager/html_cache/inputs.html:2
+#: manager/html_cache/list.html:5
+#: manager/meta_tag/inputs.html:2
+#: manager/meta_tag/list.html:5
+#: manager/properties/inputs.html:7
+#: manager/properties/list.html:5
+#: post/inputs/right.html:2
+#: project/inputs/right.html:2
+msgid "Name"
+msgstr ""
+
+#: account/reset/inputs.html:12
+msgid "New password:"
+msgstr ""
+
+#: message/message.svc.js:120
+msgid "No"
+msgstr ""
+
+#: search/list.html:8
+#: tag/list.html:8
+msgid "No results found..."
+msgstr ""
+
+#: not-access.html:7
+msgid "Not access!"
+msgstr ""
+
+#: not-founded.html:7
+msgid "Not founded!"
+msgstr ""
+
+#: contact/sidebar.html:3
+msgid "Other"
+msgstr ""
+
+#: account/profile/inputs.html:37
+#: account/reg/inputs.html:11
+msgid "Password"
+msgstr ""
+
+#: account/const.js:41
+msgid "Password is empty!"
+msgstr ""
+
+#: account/login/inputs.html:11
+msgid "Password:"
+msgstr ""
+
+#: account/reset.html:10
+msgid "Please enter code from email and new password for you account"
+msgstr ""
+
+#: account/login.html:10
+msgid "Please enter you email address and password for login on site"
+msgstr ""
+
+#: account/recovery.html:10
+msgid "Please enter you email address used on registration"
+msgstr ""
+
+#: manager/meta_tag/inputs.html:16
+#: manager/public_link/inputs.html:29
+msgid "Position"
+msgstr ""
+
+#: post/const.js:22
+msgid "Post <strong>%s</strong> created!"
+msgstr ""
+
+#: post/const.js:24
+msgid "Post <strong>%s</strong> deleted!"
+msgstr ""
+
+#: post/const.js:23
+msgid "Post <strong>%s</strong> updated!"
+msgstr ""
+
+#: post/const.js:4
+msgid "Posts"
+msgstr ""
+
+#: post/const.js:5
+msgid "Posts descriptions"
+msgstr ""
+
+#: account/const.js:19
+msgid "Profile"
+msgstr ""
+
+#: account/const.js:21
+msgid "Profile of user"
+msgstr ""
+
+#: account/const.js:54
+msgid "Profile updated!"
+msgstr ""
+
+#: project/const.js:22
+msgid "Project <strong>%s</strong> created!"
+msgstr ""
+
+#: project/const.js:24
+msgid "Project <strong>%s</strong> deleted!"
+msgstr ""
+
+#: project/const.js:23
+msgid "Project <strong>%s</strong> updated!"
+msgstr ""
+
+#: project/const.js:4
+msgid "Projects"
+msgstr ""
+
+#: project/const.js:5
+msgid "Projects descriptions"
+msgstr ""
+
+#: manager/const.js:21
+#: manager/const.js:22
+msgid "Properties"
+msgstr ""
+
+#: manager/const.js:48
+msgid "Property <strong>%s</strong> created!"
+msgstr ""
+
+#: manager/const.js:50
+msgid "Property <strong>%s</strong> deleted!"
+msgstr ""
+
+#: manager/const.js:49
+msgid "Property <strong>%s</strong> updated!"
+msgstr ""
+
+#: manager/const.js:53
+msgid "Public link <strong>%s</strong> created!"
+msgstr ""
+
+#: manager/const.js:55
+msgid "Public link <strong>%s</strong> deleted!"
+msgstr ""
+
+#: manager/const.js:54
+msgid "Public link <strong>%s</strong> updated!"
+msgstr ""
+
+#: manager/const.js:17
+#: manager/const.js:18
+msgid "Public links"
+msgstr ""
+
+#: account/const.js:29
+msgid "Recovery access"
+msgstr ""
+
+#: account/const.js:31
+msgid "Recovery access to site"
+msgstr ""
+
+#: account/user_app/inputs.html:16
+msgid "Redirect uris"
+msgstr ""
+
+#: account/const.js:4
+msgid "Registration form"
+msgstr ""
+
+#: account/const.js:6
+msgid "Registration on site"
+msgstr ""
+
+#: account/const.js:34
+msgid "Reset password"
+msgstr ""
+
+#: account/const.js:36
+msgid "Reset password for account"
+msgstr ""
+
+#: app.const.js:6
+msgid "RU"
+msgstr ""
+
+#: account/profile.html:14
+#: account/user_app/user_app.svc.js:52
+#: file/file.svc.js:90
+#: manager/html_cache/htm_cache.svc.js:109
+#: manager/meta_tag/meta_tag.svc.js:52
+#: manager/properties/properties.svc.js:51
+#: manager/public_link/public_link.svc.js:56
+#: post/update.html:18
+#: project/update.html:19
+#: tag/tag.svc.js:63
+msgid "Save"
+msgstr ""
+
+#: file/list.html:13
+#: home/sidebar.html:3
+#: post/create.html:44
+#: post/item.html:41
+#: post/sidebar.html:3
+#: post/update.html:47
+#: project/create.html:44
+#: project/item.html:41
+#: project/sidebar.html:3
+#: project/update.html:48
+#: search.html:7
+#: search/const.js:4
+msgid "Search"
+msgstr ""
+
+#: search/const.js:5
+msgid "Search result for text \"%s\""
+msgstr ""
+
+#: navbar/const.js:5
+msgid "search text"
+msgstr ""
+
+#: file/file.svc.js:29
+#: post/inputs/central.html:37
+#: project/inputs/central.html:37
+msgid "Select"
+msgstr ""
+
+#: file/file.svc.js:23
+msgid "Select file"
+msgstr ""
+
+#: contact/list.html:38
+msgid "Send message"
+msgstr ""
+
+#: account/recovery.html:14
+msgid "Sent link to reset password"
+msgstr ""
+
+#: home/list-tags.html:6
+msgid "Show all"
+msgstr ""
+
+#: manager/const.js:26
+msgid "Site users"
+msgstr ""
+
+#: manager/public_link/inputs.html:2
+msgid "Src"
+msgstr ""
+
+#: manager/const.js:58
+msgid "Tag <strong>%s</strong> created!"
+msgstr ""
+
+#: manager/const.js:60
+msgid "Tag <strong>%s</strong> deleted!"
+msgstr ""
+
+#: manager/const.js:59
+msgid "Tag <strong>%s</strong> updated!"
+msgstr ""
+
+#: tag/const.js:5
+msgid "Tag: %s"
+msgstr ""
+
+#: home/sidebar.html:12
+#: manager/const.js:13
+#: manager/const.js:14
+#: post/inputs/right.html:18
+#: post/item.html:32
+#: post/sidebar.html:12
+#: project/inputs/right.html:18
+#: project/item.html:32
+#: project/sidebar.html:12
+#: tag/const.js:4
+msgid "Tags"
+msgstr ""
+
+#: manager/tag/inputs.html:2
+#: manager/tag/list.html:5
+#: post/const.js:9
+#: post/inputs/central.html:10
+#: project/const.js:9
+#: project/inputs/central.html:10
+msgid "Text"
+msgstr ""
+
+#: manager/public_link/inputs.html:6
+#: manager/public_link/list.html:6
+#: post/inputs/central.html:2
+#: project/inputs/central.html:2
+msgid "Title"
+msgstr ""
+
+#: post/inputs/right.html:9
+#: project/inputs/right.html:9
+msgid "Type"
+msgstr ""
+
+#: file/list.html:26
+#: post/const.js:15
+#: post/inputs/central.html:20
+#: project/const.js:15
+#: project/inputs/central.html:20
+msgid "Url"
+msgstr ""
+
+#: manager/const.js:43
+msgid "User <strong>%s</strong> created!"
+msgstr ""
+
+#: manager/const.js:45
+msgid "User <strong>%s</strong> deleted!"
+msgstr ""
+
+#: manager/const.js:44
+msgid "User <strong>%s</strong> updated!"
+msgstr ""
+
+#: account/const.js:45
+msgid "User not activated!"
+msgstr ""
+
+#: account/const.js:43
+msgid "User not founded!"
+msgstr ""
+
+#: account/const.js:39
+msgid "User with email <strong>%s</strong> is exists!"
+msgstr ""
+
+#: account/const.js:50
+msgid "User with email <strong>%s</strong> not found!"
+msgstr ""
+
+#: account/profile/inputs.html:20
+msgid "Username"
+msgstr ""
+
+#: manager/const.js:25
+msgid "Users"
+msgstr ""
+
+#: manager/properties/inputs.html:11
+#: manager/properties/list.html:6
+msgid "Value"
+msgstr ""
+
+#: post/update.html:11
+#: project/update.html:12
+msgid "View"
+msgstr ""
+
+#: account/const.js:44
+msgid "Wrong password!"
+msgstr ""
+
+#: message/message.svc.js:119
+msgid "Yes"
+msgstr ""
+
+#: account/const.js:47
+msgid "You authorizing!"
+msgstr ""
+
+#: contact/list.html:11
+msgid "You name"
+msgstr ""
+
+#: account/const.js:46
+msgid "You not activated!"
 msgstr ""

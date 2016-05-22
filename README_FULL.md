@@ -21,7 +21,7 @@ https://django-postgres-angularjs-blog.herokuapp.com
 11. **Add others modules**
 12. ~~SEO optimizations for Google & Yandex~~
 13. Add social publisher (Facebook, Twitter, Vkontakte)
-14. Add multi languages support
+14. **Add multi languages support**
 
 # CREATE PROJECT
 ```
