@@ -48,7 +48,7 @@ def create(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': [user.get_ser_data()]}, 200, user
+        return {'code': 'ok', 'data': [user.get_user_data()]}, 200, user
     else:
         auth.logout(request)
         return {'code': 'account/not_active'}, 404, user
@@ -83,7 +83,7 @@ def update(request):
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.save()
 
-    return {'code': 'ok', 'data': [user.get_ser_data()]}, 200, user
+    return {'code': 'ok', 'data': [user.get_user_data()]}, 200, user
 
 
 def delete(request):
@@ -118,7 +118,7 @@ def login(request):
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         auth.login(request, user)
 
-        return {'code': 'ok', 'data': [user.get_ser_data()]}, 200, user
+        return {'code': 'ok', 'data': [user.get_user_data()]}, 200, user
     else:
         auth.logout(request)
         return {'code': 'account/not_active'}, 404, False
@@ -146,17 +146,19 @@ def recovery(request):
 
     code = Code.objects.create(text=helpers.make_code(), created_user=user, type=1)
 
-    from app import home
+    from app.home.helpers import get_config
+    from app.manager.properties import resource as properties_resource
 
-    config = home.helpers.getConfig(request)
+    config = get_config(request)
     config['code'] = code.text
-    config['SHORT_SITE_NAME'] = settings.SHORT_SITE_NAME
     config['user_first_name'] = user.first_name
-
+    config['properties'] = properties_resource.get_list_of_names(['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME',
+                                                                  'SITE_LOGO'])
     helpers.send_mail(subject='Reset password',
                       html_content=render_to_string('account/templates/reset.email.htm', config),
                       text_content=render_to_string('account/templates/reset.email.txt', config),
-                      to_email=[data['email']])
+                      to_email=[data['email']],
+                      config=config)
 
     return {'code': 'ok', 'data': [data['email']]}, 200, user
 
@@ -202,7 +204,7 @@ def reset(request):
         auth.login(request, user)
         code.delete()
 
-        return {'code': 'ok', 'data': [user.getUserData()]}, 200, user
+        return {'code': 'ok', 'data': [user.get_user_data()]}, 200, user
     else:
         auth.logout(request)
         return {'code': 'account/not_active'}, 404, False

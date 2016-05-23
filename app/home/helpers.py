@@ -23,7 +23,7 @@ def get_config(request):
     if not user or user is None:
         config['user'] = {}
     else:
-        config['user'] = user.get_ser_data().copy()
+        config['user'] = user.get_user_data().copy()
 
     return config
 

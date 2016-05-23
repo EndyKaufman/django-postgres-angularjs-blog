@@ -18,9 +18,9 @@ def send(request):
     if data['email'] == '':
         return {'code': 'contact/not_email'}, 404, False
     if data['username'] == '':
-        return {'code': 'contact/nousername'}, 404, False
+        return {'code': 'contact/not_username'}, 404, False
     if data['message'] == '':
-        return {'code': 'contact/nomessage'}, 404, False
+        return {'code': 'contact/not_message'}, 404, False
 
     # Validate values of fields
     try:

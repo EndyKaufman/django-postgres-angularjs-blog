@@ -165,8 +165,11 @@ def make_code(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size)).lower()
 
 
-def send_mail(subject, text_content, html_content=None, to_email=None, message_id=None):
-    from_email = '%s <%s>' % (settings.SITE_NAME, settings.SERVER_EMAIL)
+def send_mail(subject, text_content, html_content=None, to_email=None, message_id=None, config=None):
+    if config is None:
+        from_email = '%s <%s>' % (settings.SERVER_EMAIL, settings.SERVER_EMAIL)
+    else:
+        from_email = '%s <%s>' % (config['properties']['SITE_TITLE'], settings.SERVER_EMAIL)
 
     if to_email is None:
         to_email = [settings.SERVER_EMAIL]

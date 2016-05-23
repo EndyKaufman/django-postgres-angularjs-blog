@@ -52,7 +52,7 @@ msgstr "Добавить новое приложение"
 msgid "Add new file"
 msgstr "Добавить новый файл"
 
-#: manager/html_cache/htm_cache.svc.js:66
+#: manager/html_cache/htm_cache.svc.js:70
 msgid "Add new html cache"
 msgstr "Добавить новый кэш файл"
 
@@ -140,8 +140,8 @@ msgstr "Кэш файл <strong>%s</strong> успешно изменен!"
 
 #: account/user_app/user_app.svc.js:26 account/user_app/user_app.svc.js:53
 #: file/file.svc.js:30 file/file.svc.js:64 file/file.svc.js:91
-#: manager/html_cache/htm_cache.svc.js:110
-#: manager/html_cache/htm_cache.svc.js:73 manager/meta_tag/meta_tag.svc.js:26
+#: manager/html_cache/htm_cache.svc.js:114
+#: manager/html_cache/htm_cache.svc.js:77 manager/meta_tag/meta_tag.svc.js:26
 #: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:25
 #: manager/properties/properties.svc.js:52
 #: manager/public_link/public_link.svc.js:30
@@ -176,6 +176,10 @@ msgstr "Код:"
 msgid "Comment"
 msgstr "Комментарий"
 
+#: message/message.svc.js:98
+msgid "Confirm"
+msgstr "Подтверждение"
+
 #: contact/const.js:4 contact/const.js:5
 msgid "Contact us"
 msgstr "Контакты"
@@ -187,7 +191,7 @@ msgstr "Содержимое"
 
 #: account/reg.html:12 account/user_app/list-header.html:4
 #: account/user_app/user_app.svc.js:25 file/file.svc.js:63
-#: manager/html_cache/htm_cache.svc.js:72 manager/meta_tag/list-header.html:4
+#: manager/html_cache/htm_cache.svc.js:76 manager/meta_tag/list-header.html:4
 #: manager/meta_tag/meta_tag.svc.js:25 manager/properties/list-header.html:4
 #: manager/properties/properties.svc.js:24
 #: manager/public_link/list-header.html:4
@@ -306,7 +310,7 @@ msgstr "редактировать приложение"
 msgid "Edit file properties"
 msgstr "Редактировать свойства файла"
 
-#: manager/html_cache/htm_cache.svc.js:103
+#: manager/html_cache/htm_cache.svc.js:107
 msgid "Edit html cache"
 msgstr "Редактировать кэш файл"
 
@@ -371,7 +375,7 @@ msgstr "введите вашу почу"
 msgid "enter you password"
 msgstr "введите ваше пароль"
 
-#: not-access.html:6 not-founded.html:6
+#: message/message.svc.js:35 not-access.html:6 not-founded.html:6
 msgid "Error"
 msgstr "Ошибка"
 
@@ -428,6 +432,10 @@ msgstr "В подвале"
 msgid "In header"
 msgstr "В шапке"
 
+#: message/message.svc.js:67
+msgid "Info"
+msgstr "Информация"
+
 #: account/profile/inputs.html:11
 msgid "Last name"
 msgstr "Фамилия"
@@ -465,6 +473,10 @@ msgstr "Markdown"
 msgid "Message"
 msgstr "Сообщение"
 
+#: contact/const.js:9
+msgid "Message not sent, try later!"
+msgstr "Не удалось отправить сообщение, попробуйте попозже..."
+
 #: contact/const.js:8
 msgid "Message sent successfully!"
 msgstr "Сообщение успешно отправлено! "
@@ -497,7 +509,7 @@ msgstr "Название"
 msgid "New password:"
 msgstr "Новый пароль:"
 
-#: message/message.svc.js:120
+#: message/message.svc.js:125
 msgid "No"
 msgstr "Нет"
 
@@ -596,7 +608,7 @@ msgstr "Проекты"
 
 #: project/const.js:5
 msgid "Projects descriptions"
-msgstr "Описание проекта"
+msgstr "Список собственных небольших и больших проектов"
 
 #: manager/const.js:21 manager/const.js:22
 msgid "Properties"
@@ -663,7 +675,7 @@ msgid "RU"
 msgstr "RU"
 
 #: account/profile.html:14 account/user_app/user_app.svc.js:52
-#: file/file.svc.js:90 manager/html_cache/htm_cache.svc.js:109
+#: file/file.svc.js:90 manager/html_cache/htm_cache.svc.js:113
 #: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:51
 #: manager/public_link/public_link.svc.js:56 post/update.html:18
 #: project/update.html:19 tag/tag.svc.js:63
@@ -805,7 +817,7 @@ msgstr "Смотреть"
 msgid "Wrong password!"
 msgstr "Неверный пароль!"
 
-#: message/message.svc.js:119
+#: message/message.svc.js:124
 msgid "Yes"
 msgstr "Да"
 

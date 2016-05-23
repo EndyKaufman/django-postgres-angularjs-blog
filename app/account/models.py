@@ -7,7 +7,7 @@ from django.db import models
 
 # User model
 class User(AbstractUser):
-    def get_ser_data(self):
+    def get_user_data(self):
 
         roles = []
 
