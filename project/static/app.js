@@ -79810,7 +79810,7 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
         }).then(
             function(response) {
                 if (response !== null && response !== undefined && response.data !== undefined &&
-                    response.data.code !== undefined && response.data.code == 'ok') {
+                    response.data !== null && response.data.code !== undefined && response.data.code == 'ok') {
                     deferred.resolve(response.data.data, response);
                 } else {
                     deferred.resolve(response.data, response);
@@ -79818,7 +79818,7 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
             },
             function(response) {
                 if (response !== null && response !== undefined && response.data !== undefined &&
-                    response.data.code !== undefined) {
+                    response.data !== null && response.data.code !== undefined) {
                     MessageSvc.error(response.data.code, response.data);
                     deferred.reject(response.data, response);
                 } else

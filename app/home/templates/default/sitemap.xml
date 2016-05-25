@@ -44,4 +44,9 @@
   <changefreq>hourly</changefreq>
   <priority>0.80</priority>
 </url>
+{% endfor %}{% for tag in tag_list %}<url>
+  <loc>{{ config.host_name }}/tag/{{ tag.text }}</loc>
+  <changefreq>hourly</changefreq>
+  <priority>0.80</priority>
+</url>
 {% endfor %}</urlset>

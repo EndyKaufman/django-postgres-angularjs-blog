@@ -111,8 +111,12 @@ def render_sitemap_xml(request):
     from app.post.models import Post
     post_list = Post.objects.all().order_by('-created').all()
 
+    from app.tag.models import Tag
+    tag_list = Tag.objects.all().order_by('-created').all()
+
     return render(request, 'home/templates/%s/sitemap.xml' % settings.THEME, {
         'config': config,
         'project_list': project_list,
-        'post_list': post_list
+        'post_list': post_list,
+        'tag_list': tag_list
     })
