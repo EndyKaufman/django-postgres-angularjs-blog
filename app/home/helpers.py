@@ -6,6 +6,7 @@ from django.conf import settings
 import json
 from app.manager.meta_tag import resource as meta_tag_resource
 from app.manager.properties import resource as properties_resource
+from django.utils.translation import get_language
 
 
 def get_config(request):
@@ -15,6 +16,7 @@ def get_config(request):
 
     config['host'] = '%s://%s' % (protocol, request.get_host())
     config['host_name'] = '%s://%s' % (protocol, request.get_host().decode('idna'))
+    config['current_lang'] = get_language()
     config['lang'] = settings.LANGUAGE_CODE
 
     user = helpers.get_user(request)
@@ -81,7 +83,7 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
     return render(request, template % settings.THEME, {
         'host_url': '//' + request.get_host(),
         'config': json.dumps(config, sort_keys=True, indent=4),
-        'lang': settings.LANGUAGE_CODE,
+        'lang': get_language(),
         'settings': settings,
         'meta_tag_list': meta_tag_list,
         'properties_list': properties_list,
