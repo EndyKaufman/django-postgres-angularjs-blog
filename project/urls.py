@@ -33,6 +33,7 @@ import app.post.api_v1_urls
 import app.project.views
 import app.project.urls
 import app.project.api_v1_urls
+import app.manager.urls
 import app.manager.api_v1_urls
 import app.user_app.api_v1_urls
 import app.home.views
@@ -57,19 +58,19 @@ urlpatterns = urlpatterns + [
     url(r'^api/v1/user_app/', include(app.user_app.api_v1_urls))]
 
 urlpatterns = urlpatterns + solid_i18n_patterns(
-    url(r'^contact', app.contact.views.index, name='index'),
-    url(r'^post', app.post.views.get_list, name='get_list'),
-    url(r'^project', app.project.views.get_list, name='get_list'),
-
     url(r'^oauth2/', include(app.account.oauth2_urls, namespace='oauth2_provider')),
     url(r'^account/', include(app.account.urls)),
     url(r'^contact/', include(app.contact.urls)),
     url(r'^post/', include(app.post.urls)),
     url(r'^project/', include(app.project.urls)),
+    url(r'^manager/', include(app.manager.urls)),
+
+    url(r'^contact', app.contact.views.index, name='index'),
+    url(r'^post', app.post.views.get_list, name='get_list'),
+    url(r'^project', app.project.views.get_list, name='get_list'),
 
     url(r'^tag/.*$', app.home.views.index, name='index'),
     url(r'^search/.*$', app.home.views.index, name='index'),
-    url(r'^manager/.*$', app.home.views.index, name='index'),
     # url(r'^admin/', admin.site.urls),
     # url(r'^.*$', app.home.views.index, name='index')
 )

@@ -76925,31 +76925,31 @@ app.factory('ManagerConst', function(gettext) {
         strings: {
             title: gettext('Manager'),
             url: 'manager/meta_tag',
-            description: gettext('Manager descriptions')
+            description: gettext('Manager description')
         },
         meta_tag: {
             title: gettext('Meta tags'),
-            description: gettext('Meta tags')
+            description: gettext('Meta tags description')
         },
         tag: {
             title: gettext('Tags'),
-            description: gettext('Tags')
+            description: gettext('Tags description')
         },
         public_link: {
             title: gettext('Public links'),
-            description: gettext('Public links')
+            description: gettext('Public links description')
         },
         properties: {
             title: gettext('Properties'),
-            description: gettext('Properties')
+            description: gettext('Properties description')
         },
         users: {
             title: gettext('Users'),
-            description: gettext('Site users')
+            description: gettext('Users description')
         },
         html_cache: {
             title: gettext('Html cache'),
-            description: gettext('Html cache'),
+            description: gettext('Html cache description'),
             strings: {
                 scanSitemap_title: gettext('Create from sitemap.xml'),
                 scanSitemap_process: gettext('Filling from sitemap.xml...')
@@ -77004,7 +77004,7 @@ app.factory('PostConst', function(gettext) {
     return {
         strings: {
             title: gettext('Posts'),
-            description: gettext('Posts descriptions')
+            description: gettext('Posts description')
         },
         types: [{
             id: 1,
@@ -77031,7 +77031,7 @@ app.factory('ProjectConst', function(gettext) {
     return {
         strings: {
             title: gettext('Projects'),
-            description: gettext('Projects descriptions')
+            description: gettext('Projects description')
         },
         types: [{
             id: 1,
@@ -77433,25 +77433,7 @@ app.config(['$resourceProvider', '$httpProvider', function($resourceProvider, $h
     // see: https://github.com/coreyti/showdown#extensions
     $showdownProvider.loadExtension('github');
   });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/account/reg/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="email" translate>Email</label>\n' +
-    '    <input type="email" class="form-control" name="email" id="email"\n' +
-    '           ng-model="AccountSvc.item.email" required>\n' +
-    '                                        <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
-    '                                              class="form-control-feedback"\n' +
-    '                                              ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                              aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="password" translate>Password</label>\n' +
-    '    <input type="password" class="form-control" name="password" id="password"\n' +
-    '           ng-model="AccountSvc.item.password" required>\n' +
-    '                                        <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
-    '                                              class="form-control-feedback"\n' +
-    '                                              ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                              aria-hidden="true"></span>\n' +
-    '</div>');
-	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="ItemName" translate>Name</label>\n' +
     '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
     '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
@@ -78237,6 +78219,24 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/account/
     '                                      ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                                      aria-hidden="true"></span>\n' +
     '</div>');
+	a.put('views/account/reg/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="email" translate>Email</label>\n' +
+    '    <input type="email" class="form-control" name="email" id="email"\n' +
+    '           ng-model="AccountSvc.item.email" required>\n' +
+    '                                        <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
+    '                                              class="form-control-feedback"\n' +
+    '                                              ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                              aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="password" translate>Password</label>\n' +
+    '    <input type="password" class="form-control" name="password" id="password"\n' +
+    '           ng-model="AccountSvc.item.password" required>\n' +
+    '                                        <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
+    '                                              class="form-control-feedback"\n' +
+    '                                              ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                              aria-hidden="true"></span>\n' +
+    '</div>');
 	a.put('views/account/recovery/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="email" translate>Email:</label>\n' +
     '    <input type="email" class="form-control" name="email" id="email" placeholder="{{ \'enter you email\' |  translate}}"\n' +
@@ -78310,106 +78310,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/account/
     '                                      ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                                      aria-hidden="true"></span>\n' +
     '</div>');
-	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h1 class="heading" ng-bind-html="TagSvc.description | unsafe">\n' +
-    '                    </h1>\n' +
-    '                    <div class="content" ng-if="TagSvc.allListSumSize==0" translate>\n' +
-    '                        No results found...\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '            <div ng-repeat="allItem in TagSvc.allList" ng-if="TagSvc.allListSumSize>0">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\' && allItem.list.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\' && allItem.list.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '            </div>\n' +
-    '\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <div ng-include="\'views/home/sidebar.html\'" ng-controller="SidebarCtrl"></div>\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/tag/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/project\'}}"><translate>All projects</translate> <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/tag/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/post\'}}"><translate>All posts</translate> <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/search/list.html', '<div class="container sections-wrapper">\n' +
-    '    <div class="row">\n' +
-    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
-    '            <section class="latest section">\n' +
-    '                <div class="section-inner">\n' +
-    '                    <h1 class="heading" ng-bind-html="SearchSvc.description | unsafe">\n' +
-    '                    </h1>\n' +
-    '                    <div class="content" ng-if="SearchSvc.allListSumSize==0" translate>\n' +
-    '                        No results found...\n' +
-    '                    </div><!--//content-->\n' +
-    '                </div><!--//section-inner-->\n' +
-    '            </section><!--//section-->\n' +
-    '\n' +
-    '            <div ng-repeat="allItem in SearchSvc.allList" ng-if="SearchSvc.allListSumSize>0">\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'project\' && allItem.list.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '                <section class="latest section" ng-if="allItem.name==\'post\' && allItem.list.length>0">\n' +
-    '                    <div class="section-inner">\n' +
-    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
-    '                        </h2>\n' +
-    '                        <div class="content">\n' +
-    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
-    '                        </div><!--//content-->\n' +
-    '                    </div><!--//section-inner-->\n' +
-    '                </section><!--//section-->\n' +
-    '            </div>\n' +
-    '\n' +
-    '        </div><!--//primary-->\n' +
-    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
-    '            <div ng-include="\'views/home/sidebar.html\'" ng-controller="SidebarCtrl"></div>\n' +
-    '        </div><!--//secondary-->\n' +
-    '    </div><!--//row-->\n' +
-    '</div><!--//masonry-->');
-	a.put('views/search/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/project\'}}"><translate>All projects</translate> <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
-	a.put('views/search/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
-    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
-    '</div><!--//item-->\n' +
-    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/post\'}}"><translate>All posts</translate> <i\n' +
-    '        class="fa fa-chevron-right"></i></a>');
 	a.put('views/project/update.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
     '    <form name="projectForm">\n' +
@@ -78692,6 +78592,106 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/account/
     '        </div><!--//row-->\n' +
     '    </form>\n' +
     '</div><!--//masonry-->');
+	a.put('views/tag/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-bind-html="TagSvc.description | unsafe">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content" ng-if="TagSvc.allListSumSize==0" translate>\n' +
+    '                        No results found...\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '            <div ng-repeat="allItem in TagSvc.allList" ng-if="TagSvc.allListSumSize>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\' && allItem.list.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\' && allItem.list.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '            </div>\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <div ng-include="\'views/home/sidebar.html\'" ng-controller="SidebarCtrl"></div>\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/tag/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/project\'}}"><translate>All projects</translate> <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/tag/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/post\'}}"><translate>All posts</translate> <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/search/list.html', '<div class="container sections-wrapper">\n' +
+    '    <div class="row">\n' +
+    '        <div class="primary col-md-8 col-sm-12 col-xs-12">\n' +
+    '            <section class="latest section">\n' +
+    '                <div class="section-inner">\n' +
+    '                    <h1 class="heading" ng-bind-html="SearchSvc.description | unsafe">\n' +
+    '                    </h1>\n' +
+    '                    <div class="content" ng-if="SearchSvc.allListSumSize==0" translate>\n' +
+    '                        No results found...\n' +
+    '                    </div><!--//content-->\n' +
+    '                </div><!--//section-inner-->\n' +
+    '            </section><!--//section-->\n' +
+    '\n' +
+    '            <div ng-repeat="allItem in SearchSvc.allList" ng-if="SearchSvc.allListSumSize>0">\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'project\' && allItem.list.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/project/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-projects.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '                <section class="latest section" ng-if="allItem.name==\'post\' && allItem.list.length>0">\n' +
+    '                    <div class="section-inner">\n' +
+    '                        <h2 class="heading" ng-include="\'views/post/list-header.html\'">\n' +
+    '                        </h2>\n' +
+    '                        <div class="content">\n' +
+    '                            <div ng-include="\'views/tag/list-posts.html\'"></div>\n' +
+    '                        </div><!--//content-->\n' +
+    '                    </div><!--//section-inner-->\n' +
+    '                </section><!--//section-->\n' +
+    '            </div>\n' +
+    '\n' +
+    '        </div><!--//primary-->\n' +
+    '        <div class="secondary col-md-4 col-sm-12 col-xs-12">\n' +
+    '            <div ng-include="\'views/home/sidebar.html\'" ng-controller="SidebarCtrl"></div>\n' +
+    '        </div><!--//secondary-->\n' +
+    '    </div><!--//row-->\n' +
+    '</div><!--//masonry-->');
+	a.put('views/search/list-projects.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:ProjectSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/project/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/project\'}}"><translate>All projects</translate> <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
+	a.put('views/search/list-posts.html', '<div class="item row" ng-repeat="item in allItem.list | limitTo:PostSvc.limitOnHome">\n' +
+    '    <div ng-include="\'views/post/list-item.html\'"></div>\n' +
+    '</div><!--//item-->\n' +
+    '<a class="btn btn-cta-secondary" ng-href="{{AppSvc.currentLangUrlPrefix+\'/post\'}}"><translate>All posts</translate> <i\n' +
+    '        class="fa fa-chevron-right"></i></a>');
 	a.put('views/post/update.html', '<div class="container sections-wrapper">\n' +
     '    <form name="postForm">\n' +
     '        <div class="row">\n' +
@@ -80196,7 +80196,7 @@ app.factory('AppSvc', function($rootScope, $q, gettextCatalog, $route, $timeout,
         if (service.currentLang != code) {
             service.currentLang = code;
             if (service.currentLang != service.siteLang)
-                service.currentLangUrlPrefix = '/' + service.currentLangShort;
+                service.currentLangUrlPrefix = '/' + service.currentLang;
             else
                 service.currentLangUrlPrefix = '';
 
@@ -80664,7 +80664,7 @@ app.factory('ManagerSvc', function(AppConst, $routeParams, $route, AppSvc, gette
     var service = {};
 
     service.setMeta = function() {
-        AppSvc.setTitle([service.title, AppConst.manager.strings.title]);
+        AppSvc.setTitle([service.title, gettextCatalog.getString(AppConst.manager.strings.title)]);
         AppSvc.setDescription(service.description);
         AppSvc.setUrl('manager/' + $routeParams.subNavId);
     };
@@ -82549,11 +82549,11 @@ jQuery(document).ready(function($) {
 });
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100 */
-    gettextCatalog.setStrings('en', {"#":"#","Account created!":"Account created!","Account deleted!":"Account deleted!","Actions":"Actions","Add file":"Add file","Add image":"Add image","Add new application":"Add new application","Add new file":"Add new file","Add new html cache":"Add new html cache","Add new meta tag":"Add new meta tag","Add new properties":"Add new properties","Add new public link":"Add new public link","Add new tag":"Add new tag","add tag":"add tag","Additionally":"Additionally","All posts":"All posts","All projects":"All projects","allowed URIs list, space separated":"allowed URIs list, space separated","Application <strong>%s</strong> created!":"Application <strong>%s</strong> created!","Application <strong>%s</strong> deleted!":"Application <strong>%s</strong> deleted!","Application <strong>%s</strong> updated!":"Application <strong>%s</strong> updated!","Applications":"Applications","Applications of user":"Applications of user","Attributes":"Attributes","Authorization on site":"Authorization on site","Bye-Bye!":"Bye-Bye!","Cache <strong>%s</strong> created!":"Cache <strong>%s</strong> created!","Cache <strong>%s</strong> deleted!":"Cache <strong>%s</strong> deleted!","Cache <strong>%s</strong> updated!":"Cache <strong>%s</strong> updated!","Cancel":"Cancel","Change password":"Change password","Check email <strong>%s</strong> for code to reset password":"Check email <strong>%s</strong> for code to reset password","Client ID":"Client ID","Client secret":"Client secret","Code:":"Code:","Comment":"Comment","Confirm":"Confirm","Contact us":"Contact us","Contact us description":"Contact us description","Content":"Content","Create":"Create","Create from sitemap.xml":"Create from sitemap.xml","Create post":"Create post","Create project":"Create project","Delete":"Delete","Delete account":"Delete account","Delete image":"Delete image","Delete post":"Delete post","Delete project":"Delete project","Description":"Description","Detail...":"Detail...","Do you really want to delete account?":"Do you really want to delete account?","Do you really want to delete application <strong>%s</strong>?":"Do you really want to delete application <strong>%s</strong>?","Do you really want to delete file <strong>%s</strong>?":"Do you really want to delete file <strong>%s</strong>?","Do you really want to delete html cache <strong>%s</strong>?":"Do you really want to delete html cache <strong>%s</strong>?","Do you really want to delete meta tag <strong>%s</strong>?":"Do you really want to delete meta tag <strong>%s</strong>?","Do you really want to delete post <strong>%s</strong>?":"Do you really want to delete post <strong>%s</strong>?","Do you really want to delete project <strong>%s</strong>?":"Do you really want to delete project <strong>%s</strong>?","Do you really want to delete property <strong>%s</strong>?":"Do you really want to delete property <strong>%s</strong>?","Do you really want to delete public link <strong>%s</strong>?":"Do you really want to delete public link <strong>%s</strong>?","Do you really want to delete tag <strong>%s</strong>?":"Do you really want to delete tag <strong>%s</strong>?","Do you really want to delete user <strong>%s</strong>?":"Do you really want to delete user <strong>%s</strong>?","Do you really want to leave?":"Do you really want to leave?","Edit":"Edit","Edit application":"Edit application","Edit file properties":"Edit file properties","Edit html cache":"Edit html cache","Edit meta tag":"Edit meta tag","Edit post":"Edit post","Edit project":"Edit project","Edit properties":"Edit properties","Edit public link":"Edit public link","Email":"Email","Email is empty!":"Email is empty!","Email is incorrect!":"Email is incorrect!","Email:":"Email:","Empty":"Empty","EN":"EN","enter code from email":"enter code from email","enter new password":"enter new password","enter you email":"enter you email","enter you password":"enter you password","Error":"Error","File":"File","File <strong>%s</strong> created!":"File <strong>%s</strong> created!","File <strong>%s</strong> deleted!":"File <strong>%s</strong> deleted!","File <strong>%s</strong> updated!":"File <strong>%s</strong> updated!","Filling from sitemap.xml...":"Filling from sitemap.xml...","First name":"First name","Html":"Html","Html cache":"Html cache","Icon":"Icon","if empty, the password will not be changed":"if empty, the password will not be changed","In contact":"In contact","In footer":"In footer","In header":"In header","Info":"Info","Last name":"Last name","Login":"Login","Login on site":"Login on site","Logout":"Logout","Logout from site":"Logout from site","Manager":"Manager","Manager descriptions":"Manager descriptions","Markdown":"Markdown","Message":"Message","Message not sent, try later!":"Message not sent, try later!","Message sent successfully!":"Message sent successfully!","Meta tag <strong>%s</strong> created!":"Meta tag <strong>%s</strong> created!","Meta tag <strong>%s</strong> deleted!":"Meta tag <strong>%s</strong> deleted!","Meta tag <strong>%s</strong> updated!":"Meta tag <strong>%s</strong> updated!","Meta tags":"Meta tags","Name":"Name","New password:":"New password:","No":"No","No results found...":"No results found...","Not access!":"Not access!","Not founded!":"Not founded!","Other":"Other","Password":"Password","Password is empty!":"Password is empty!","Password:":"Password:","Please enter code from email and new password for you account":"Please enter code from email and new password for you account","Please enter you email address and password for login on site":"Please enter you email address and password for login on site","Please enter you email address used on registration":"Please enter you email address used on registration","Position":"Position","Post <strong>%s</strong> created!":"Post <strong>%s</strong> created!","Post <strong>%s</strong> deleted!":"Post <strong>%s</strong> deleted!","Post <strong>%s</strong> updated!":"Post <strong>%s</strong> updated!","Posts":"Posts","Posts descriptions":"Notes and small posts","Profile":"Profile","Profile of user":"Profile of user","Profile updated!":"Profile updated!","Project <strong>%s</strong> created!":"Project <strong>%s</strong> created!","Project <strong>%s</strong> deleted!":"Project <strong>%s</strong> deleted!","Project <strong>%s</strong> updated!":"Project <strong>%s</strong> updated!","Projects":"Projects","Projects descriptions":"List their own more and more projects","Properties":"Properties","Property <strong>%s</strong> created!":"Property <strong>%s</strong> created!","Property <strong>%s</strong> deleted!":"Property <strong>%s</strong> deleted!","Property <strong>%s</strong> updated!":"Property <strong>%s</strong> updated!","Public link <strong>%s</strong> created!":"Public link <strong>%s</strong> created!","Public link <strong>%s</strong> deleted!":"Public link <strong>%s</strong> deleted!","Public link <strong>%s</strong> updated!":"Public link <strong>%s</strong> updated!","Public links":"Public links","Recovery access":"Recovery access","Recovery access to site":"Recovery access to site","Redirect uris":"Redirect uris","Registration form":"Registration form","Registration on site":"Registration on site","Reset password":"Reset password","Reset password for account":"Reset password for account","RU":"RU","Save":"Save","Search":"Search","Search result for text \"%s\"":"Search result for text \"%s\"","search text":"search text","Select":"Select","Select file":"Select file","Send message":"Send message","Sent link to reset password":"Sent link to reset password","Show all":"Show all","Site users":"Site users","Src":"Src","Tag <strong>%s</strong> created!":"Tag <strong>%s</strong> created!","Tag <strong>%s</strong> deleted!":"Tag <strong>%s</strong> deleted!","Tag <strong>%s</strong> updated!":"Tag <strong>%s</strong> updated!","Tag: %s":"Tag: %s","Tags":"Tags","Text":"Text","Title":"Title","Type":"Type","Url":"Url","User <strong>%s</strong> created!":"User <strong>%s</strong> created!","User <strong>%s</strong> deleted!":"User <strong>%s</strong> deleted!","User <strong>%s</strong> updated!":"User <strong>%s</strong> updated!","User not activated!":"User not activated!","User not founded!":"User not founded!","User with email <strong>%s</strong> is exists!":"User with email <strong>%s</strong> is exists!","User with email <strong>%s</strong> not found!":"User with email <strong>%s</strong> not found!","Username":"Username","Users":"Users","Value":"Value","View":"View","Wrong password!":"Wrong password!","Yes":"Yes","You authorizing!":"You authorizing!","You name":"You name","You not activated!":"You not activated!"});
+    gettextCatalog.setStrings('en', {"#":"#","Account created!":"Account created!","Account deleted!":"Account deleted!","Actions":"Actions","Add file":"Add file","Add image":"Add image","Add new application":"Add new application","Add new file":"Add new file","Add new html cache":"Add new html cache","Add new meta tag":"Add new meta tag","Add new properties":"Add new properties","Add new public link":"Add new public link","Add new tag":"Add new tag","add tag":"add tag","Additionally":"Additionally","All posts":"All posts","All projects":"All projects","allowed URIs list, space separated":"allowed URIs list, space separated","Application <strong>%s</strong> created!":"Application <strong>%s</strong> created!","Application <strong>%s</strong> deleted!":"Application <strong>%s</strong> deleted!","Application <strong>%s</strong> updated!":"Application <strong>%s</strong> updated!","Applications":"Applications","Applications of user":"Applications of user","Attributes":"Attributes","Authorization on site":"Authorization on site","Bye-Bye!":"Bye-Bye!","Cache <strong>%s</strong> created!":"Cache <strong>%s</strong> created!","Cache <strong>%s</strong> deleted!":"Cache <strong>%s</strong> deleted!","Cache <strong>%s</strong> updated!":"Cache <strong>%s</strong> updated!","Cancel":"Cancel","Change password":"Change password","Check email <strong>%s</strong> for code to reset password":"Check email <strong>%s</strong> for code to reset password","Client ID":"Client ID","Client secret":"Client secret","Code:":"Code:","Comment":"Comment","Confirm":"Confirm","Contact us":"Contact us","Contact us description":"Contact us description","Content":"Content","Create":"Create","Create from sitemap.xml":"Create from sitemap.xml","Create post":"Create post","Create project":"Create project","Delete":"Delete","Delete account":"Delete account","Delete image":"Delete image","Delete post":"Delete post","Delete project":"Delete project","Description":"Description","Detail...":"Detail...","Do you really want to delete account?":"Do you really want to delete account?","Do you really want to delete application <strong>%s</strong>?":"Do you really want to delete application <strong>%s</strong>?","Do you really want to delete file <strong>%s</strong>?":"Do you really want to delete file <strong>%s</strong>?","Do you really want to delete html cache <strong>%s</strong>?":"Do you really want to delete html cache <strong>%s</strong>?","Do you really want to delete meta tag <strong>%s</strong>?":"Do you really want to delete meta tag <strong>%s</strong>?","Do you really want to delete post <strong>%s</strong>?":"Do you really want to delete post <strong>%s</strong>?","Do you really want to delete project <strong>%s</strong>?":"Do you really want to delete project <strong>%s</strong>?","Do you really want to delete property <strong>%s</strong>?":"Do you really want to delete property <strong>%s</strong>?","Do you really want to delete public link <strong>%s</strong>?":"Do you really want to delete public link <strong>%s</strong>?","Do you really want to delete tag <strong>%s</strong>?":"Do you really want to delete tag <strong>%s</strong>?","Do you really want to delete user <strong>%s</strong>?":"Do you really want to delete user <strong>%s</strong>?","Do you really want to leave?":"Do you really want to leave?","Edit":"Edit","Edit application":"Edit application","Edit file properties":"Edit file properties","Edit html cache":"Edit html cache","Edit meta tag":"Edit meta tag","Edit post":"Edit post","Edit project":"Edit project","Edit properties":"Edit properties","Edit public link":"Edit public link","Email":"Email","Email is empty!":"Email is empty!","Email is incorrect!":"Email is incorrect!","Email:":"Email:","Empty":"Empty","EN":"EN","enter code from email":"enter code from email","enter new password":"enter new password","enter you email":"enter you email","enter you password":"enter you password","Error":"Error","File":"File","File <strong>%s</strong> created!":"File <strong>%s</strong> created!","File <strong>%s</strong> deleted!":"File <strong>%s</strong> deleted!","File <strong>%s</strong> updated!":"File <strong>%s</strong> updated!","Filling from sitemap.xml...":"Filling from sitemap.xml...","First name":"First name","Html":"Html","Html cache":"Html cache","Html cache description":"Cached files to return the search bots and other","Icon":"Icon","if empty, the password will not be changed":"if empty, the password will not be changed","In contact":"In contact","In footer":"In footer","In header":"In header","Info":"Info","Last name":"Last name","Login":"Login","Login on site":"Login on site","Logout":"Logout","Logout from site":"Logout from site","Manager":"Manager","Manager description":"Site Control Panel","Markdown":"Markdown","Message":"Message","Message not sent, try later!":"Message not sent, try later!","Message sent successfully!":"Message sent successfully!","Meta tag <strong>%s</strong> created!":"Meta tag <strong>%s</strong> created!","Meta tag <strong>%s</strong> deleted!":"Meta tag <strong>%s</strong> deleted!","Meta tag <strong>%s</strong> updated!":"Meta tag <strong>%s</strong> updated!","Meta tags":"Meta tags","Meta tags description":"Common to all of the pages meta tags which will be displayed in the header of the page","Name":"Name","New password:":"New password:","No":"No","No results found...":"No results found...","Not access!":"Not access!","Not founded!":"Not founded!","Other":"Other","Password":"Password","Password is empty!":"Password is empty!","Password:":"Password:","Please enter code from email and new password for you account":"Please enter code from email and new password for you account","Please enter you email address and password for login on site":"Please enter you email address and password for login on site","Please enter you email address used on registration":"Please enter you email address used on registration","Position":"Position","Post <strong>%s</strong> created!":"Post <strong>%s</strong> created!","Post <strong>%s</strong> deleted!":"Post <strong>%s</strong> deleted!","Post <strong>%s</strong> updated!":"Post <strong>%s</strong> updated!","Posts":"Posts","Posts description":"Notes and small posts","Profile":"Profile","Profile of user":"Profile of user","Profile updated!":"Profile updated!","Project <strong>%s</strong> created!":"Project <strong>%s</strong> created!","Project <strong>%s</strong> deleted!":"Project <strong>%s</strong> deleted!","Project <strong>%s</strong> updated!":"Project <strong>%s</strong> updated!","Projects":"Projects","Projects description":"List their own small and large projects","Properties":"Properties","Properties description":"Properties used in the construction of the withdrawal site and","Property <strong>%s</strong> created!":"Property <strong>%s</strong> created!","Property <strong>%s</strong> deleted!":"Property <strong>%s</strong> deleted!","Property <strong>%s</strong> updated!":"Property <strong>%s</strong> updated!","Public link <strong>%s</strong> created!":"Public link <strong>%s</strong> created!","Public link <strong>%s</strong> deleted!":"Public link <strong>%s</strong> deleted!","Public link <strong>%s</strong> updated!":"Public link <strong>%s</strong> updated!","Public links":"Public links","Public links description":"Contact links to other resources","Recovery access":"Recovery access","Recovery access to site":"Recovery access to site","Redirect uris":"Redirect uris","Registration form":"Registration form","Registration on site":"Registration on site","Reset password":"Reset password","Reset password for account":"Reset password for account","RU":"RU","Save":"Save","Search":"Search","Search result for text \"%s\"":"Search result for text \"%s\"","search text":"search text","Select":"Select","Select file":"Select file","Send message":"Send message","Sent link to reset password":"Sent link to reset password","Show all":"Show all","Src":"Src","Tag <strong>%s</strong> created!":"Tag <strong>%s</strong> created!","Tag <strong>%s</strong> deleted!":"Tag <strong>%s</strong> deleted!","Tag <strong>%s</strong> updated!":"Tag <strong>%s</strong> updated!","Tag: %s":"Tag: %s","Tags":"Tags","Tags description":"List of tags used on the site","Text":"Text","Title":"Title","Type":"Type","Url":"Url","User <strong>%s</strong> created!":"User <strong>%s</strong> created!","User <strong>%s</strong> deleted!":"User <strong>%s</strong> deleted!","User <strong>%s</strong> updated!":"User <strong>%s</strong> updated!","User not activated!":"User not activated!","User not founded!":"User not founded!","User with email <strong>%s</strong> is exists!":"User with email <strong>%s</strong> is exists!","User with email <strong>%s</strong> not found!":"User with email <strong>%s</strong> not found!","Username":"Username","Users":"Users","Users description":"Site users","Value":"Value","View":"View","Wrong password!":"Wrong password!","Yes":"Yes","You authorizing!":"You authorizing!","You name":"You name","You not activated!":"You not activated!"});
 /* jshint +W100 */
 }]);
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100 */
-    gettextCatalog.setStrings('ru', {"#":"№","Account created!":"Вы зарегистрированы!","Account deleted!":"Учетная запись успешно удалена!","Actions":"Команды","Add file":"Добавить файл","Add image":"Добавить изображение","Add new application":"Добавить новое приложение","Add new file":"Добавить новый файл","Add new html cache":"Добавить новый кэш файл","Add new meta tag":"Добавить новый мета тэг","Add new properties":"Добавить новое свойство","Add new public link":"Добавить новую публичную ссылку","Add new tag":"Добавить новый тэг","add tag":"добавьте тэги","Additionally":"Дополнительно","All posts":"Все заметки","All projects":"Все проекты","allowed URIs list, space separated":"список разрешенных uri-адресов, указанные через запятую","Application <strong>%s</strong> created!":"Приложение <strong>%s</strong> успешно создано!","Application <strong>%s</strong> deleted!":"Приложение <strong>%s</strong> успешно удалено!","Application <strong>%s</strong> updated!":"Приложение <strong>%s</strong> успешно изменено!","Applications":"Приложения","Applications of user":"Приложения пользователя","Attributes":"Атрибуты","Authorization on site":"Авторизация на сайте","Bye-Bye!":"До свидания!","Cache <strong>%s</strong> created!":"Кэш файл <strong>%s</strong> успешно создан!","Cache <strong>%s</strong> deleted!":"Кэш файл <strong>%s</strong> успешно удален!","Cache <strong>%s</strong> updated!":"Кэш файл <strong>%s</strong> успешно изменен!","Cancel":"Отмена","Change password":"Изменить пароль","Check email <strong>%s</strong> for code to reset password":"Проверьте электронную почту <strong>%s</strong> на наличие кода для сброса пароля","Client ID":"Client ID","Client secret":"Client secret","Code:":"Код:","Comment":"Комментарий","Confirm":"Подтверждение","Contact us":"Контакты","Contact us description":"Форма для обратной связи, а также контактные данный для связи","Content":"Содержимое","Create":"Создать","Create from sitemap.xml":"Создать из карты сайта","Create post":"Создать заметку","Create project":"Создать проект","Delete":"Удалить","Delete account":"Удалить учетную запись","Delete image":"Удалить","Delete post":"Удалить заметку","Delete project":"Удалить проект","Description":"Описание","Detail...":"Подробнее...","Do you really want to delete account?":"Вы действительно хотите удалить вашу учетную запись?","Do you really want to delete application <strong>%s</strong>?":"Вы действительно хотите удалить приложение <strong>%s</strong>?","Do you really want to delete file <strong>%s</strong>?":"Вы действительно хотите удалить файл <strong>%s</strong>?","Do you really want to delete html cache <strong>%s</strong>?":"Вы действительно хотите удалить кэш файл <strong>%s</strong>?","Do you really want to delete meta tag <strong>%s</strong>?":"Вы действительно хотите удалить мета тэг <strong>%s</strong>?","Do you really want to delete post <strong>%s</strong>?":"Вы действительно хотите удалить заметку <strong>%s</strong>?","Do you really want to delete project <strong>%s</strong>?":"Вы действительно хотите удалить проект <strong>%s</strong>?","Do you really want to delete property <strong>%s</strong>?":"Вы действительно хотите удалить свойство <strong>%s</strong>?","Do you really want to delete public link <strong>%s</strong>?":"Вы действительно хотите удалить публичную ссылку <strong>%s</strong>?","Do you really want to delete tag <strong>%s</strong>?":"Вы действительно хотите удалить тэг <strong>%s</strong>?","Do you really want to delete user <strong>%s</strong>?":"Вы действительно хотите удалить пользователя <strong>%s</strong>?","Do you really want to leave?":"Вы действительно хотите выйти из сервиса?","Edit":"Редактировать","Edit application":"редактировать приложение","Edit file properties":"Редактировать свойства файла","Edit html cache":"Редактировать кэш файл","Edit meta tag":"Редактировать мета тэг","Edit post":"Редактировать заметку","Edit project":"Редактировать проект","Edit properties":"Редактировать свойство","Edit public link":"Редактировать публичную ссылку","Email":"Email","Email is empty!":"Не указан адрес электронной почты!","Email is incorrect!":"Не корректный адрес электронной почты!","Email:":"Email:","Empty":"Пусто","EN":"EN","enter code from email":"введите код полученный по почте","enter new password":"введите новый пароль","enter you email":"введите вашу почу","enter you password":"введите ваше пароль","Error":"Ошибка","File":"Файл","File <strong>%s</strong> created!":"Файл <strong>%s</strong> успешно загружен!","File <strong>%s</strong> deleted!":"Файл <strong>%s</strong> успешно удален!","File <strong>%s</strong> updated!":"Параметры файла <strong>%s</strong> успешно изменены!","Filling from sitemap.xml...":"Наполнение из карты сайта...","First name":"Имя","Html":"Html","Html cache":"Кэш файлы","Icon":"Иконка","if empty, the password will not be changed":"если оставить поле пустым, то пароль не будет изменен","In contact":"В контактах","In footer":"В подвале","In header":"В шапке","Info":"Информация","Last name":"Фамилия","Login":"Войти","Login on site":"Вход","Logout":"Выход","Logout from site":"Выход с сайта","Manager":"Управление","Manager descriptions":"Управление параметрами сайта","Markdown":"Markdown","Message":"Сообщение","Message not sent, try later!":"Не удалось отправить сообщение, попробуйте попозже...","Message sent successfully!":"Сообщение успешно отправлено! ","Meta tag <strong>%s</strong> created!":"Мета тэг <strong>%s</strong> успешно создано!","Meta tag <strong>%s</strong> deleted!":"Мета тэг <strong>%s</strong> успешно удалено!","Meta tag <strong>%s</strong> updated!":"Мета тэг <strong>%s</strong> успешно изменено!","Meta tags":"Мета тэги","Name":"Название","New password:":"Новый пароль:","No":"Нет","No results found...":"Ничего не найдено...","Not access!":"Нет доступа!","Not founded!":"Не найдено!","Other":"Еще","Password":"Пароль","Password is empty!":"Не указан пароль!","Password:":"Пароль:","Please enter code from email and new password for you account":"Пожалуйста введите код высланный вам на почту и укажите новый пароль","Please enter you email address and password for login on site":"Пожалуйста введите адрес ваш электронной почты и пароль для входа на сайт","Please enter you email address used on registration":"Укажите ваш адрес электронной почты","Position":"Позиция","Post <strong>%s</strong> created!":"Заметка <strong>%s</strong> успешно создана!","Post <strong>%s</strong> deleted!":"Заметка <strong>%s</strong> успешно удалена!","Post <strong>%s</strong> updated!":"Заметка <strong>%s</strong> успешно изменена!","Posts":"Заметки","Posts descriptions":"Заметки и небольшие посты","Profile":"Профиль","Profile of user":"Профиль пользователя","Profile updated!":"Профиль изменен!","Project <strong>%s</strong> created!":"Проект <strong>%s</strong> успешно создан!","Project <strong>%s</strong> deleted!":"Проект <strong>%s</strong> успешно удален!","Project <strong>%s</strong> updated!":"Проект <strong>%s</strong> успешно изменен!","Projects":"Проекты","Projects descriptions":"Список собственных небольших и больших проектов","Properties":"Свойства","Property <strong>%s</strong> created!":"Свойство <strong>%s</strong> успешно создано!","Property <strong>%s</strong> deleted!":"Свойство <strong>%s</strong> успешно удалено!","Property <strong>%s</strong> updated!":"Свойство <strong>%s</strong> успешно изменено!","Public link <strong>%s</strong> created!":"Публичная ссылка <strong>%s</strong> успешно создано!","Public link <strong>%s</strong> deleted!":"Публичная ссылка <strong>%s</strong> успешно удалено!","Public link <strong>%s</strong> updated!":"Публичная ссылка <strong>%s</strong> успешно изменено!","Public links":"Публичные ссылки","Recovery access":"Восстановить доступ","Recovery access to site":"Восстановление доступа к сайту","Redirect uris":"Redirect uris","Registration form":"Регистрация","Registration on site":"Регистрация на сайте","Reset password":"Сброс пароля","Reset password for account":"Сброс пароля для учетной записи","RU":"RU","Save":"Сохранить","Search":"Поиск","Search result for text \"%s\"":"Результат поиска \"%s\"","search text":"текст для поиска","Select":"Выбрать","Select file":"Выбрать файл","Send message":"Отправить сообщение","Sent link to reset password":"Отправить ссылку для сброса пароля","Show all":"Показать все","Site users":"Пользователи","Src":"Источник","Tag <strong>%s</strong> created!":"Тэг <strong>%s</strong> успешно создан!","Tag <strong>%s</strong> deleted!":"Тэг <strong>%s</strong> успешно удален!","Tag <strong>%s</strong> updated!":"Тэг <strong>%s</strong> успешно изменено!","Tag: %s":"Тэги: %s","Tags":"Тэги","Text":"Текст","Title":"Заголовок","Type":"Тип","Url":"Url","User <strong>%s</strong> created!":"Пользователь <strong>%s</strong> успешно создан!","User <strong>%s</strong> deleted!":"Пользователь <strong>%s</strong> успешно удален!","User <strong>%s</strong> updated!":"Пользователь <strong>%s</strong> успешно изменен!","User not activated!":"Пользователь не активирован!","User not founded!":"Пользователь не найден!","User with email <strong>%s</strong> is exists!":"Пользователь с почтой <strong>%s</strong> уже зарегистрирован!","User with email <strong>%s</strong> not found!":"Пользователь с почтой <strong>%s</strong> не найден!","Username":"Имя пользователя","Users":"Пользователи","Value":"Значение","View":"Смотреть","Wrong password!":"Неверный пароль!","Yes":"Да","You authorizing!":"Вы авторизованы!","You name":"Ваше имя","You not activated!":"Вы не активировали учетную запись!"});
+    gettextCatalog.setStrings('ru', {"#":"№","Account created!":"Вы зарегистрированы!","Account deleted!":"Учетная запись успешно удалена!","Actions":"Команды","Add file":"Добавить файл","Add image":"Добавить изображение","Add new application":"Добавить новое приложение","Add new file":"Добавить новый файл","Add new html cache":"Добавить новый кэш файл","Add new meta tag":"Добавить новый мета тэг","Add new properties":"Добавить новое свойство","Add new public link":"Добавить новую публичную ссылку","Add new tag":"Добавить новый тэг","add tag":"добавьте тэги","Additionally":"Дополнительно","All posts":"Все заметки","All projects":"Все проекты","allowed URIs list, space separated":"список разрешенных uri-адресов, указанные через запятую","Application <strong>%s</strong> created!":"Приложение <strong>%s</strong> успешно создано!","Application <strong>%s</strong> deleted!":"Приложение <strong>%s</strong> успешно удалено!","Application <strong>%s</strong> updated!":"Приложение <strong>%s</strong> успешно изменено!","Applications":"Приложения","Applications of user":"Приложения пользователя","Attributes":"Атрибуты","Authorization on site":"Авторизация на сайте","Bye-Bye!":"До свидания!","Cache <strong>%s</strong> created!":"Кэш файл <strong>%s</strong> успешно создан!","Cache <strong>%s</strong> deleted!":"Кэш файл <strong>%s</strong> успешно удален!","Cache <strong>%s</strong> updated!":"Кэш файл <strong>%s</strong> успешно изменен!","Cancel":"Отмена","Change password":"Изменить пароль","Check email <strong>%s</strong> for code to reset password":"Проверьте электронную почту <strong>%s</strong> на наличие кода для сброса пароля","Client ID":"Client ID","Client secret":"Client secret","Code:":"Код:","Comment":"Комментарий","Confirm":"Подтверждение","Contact us":"Контакты","Contact us description":"Форма для обратной связи, а также контактные данный для связи","Content":"Содержимое","Create":"Создать","Create from sitemap.xml":"Создать из карты сайта","Create post":"Создать заметку","Create project":"Создать проект","Delete":"Удалить","Delete account":"Удалить учетную запись","Delete image":"Удалить","Delete post":"Удалить заметку","Delete project":"Удалить проект","Description":"Описание","Detail...":"Подробнее...","Do you really want to delete account?":"Вы действительно хотите удалить вашу учетную запись?","Do you really want to delete application <strong>%s</strong>?":"Вы действительно хотите удалить приложение <strong>%s</strong>?","Do you really want to delete file <strong>%s</strong>?":"Вы действительно хотите удалить файл <strong>%s</strong>?","Do you really want to delete html cache <strong>%s</strong>?":"Вы действительно хотите удалить кэш файл <strong>%s</strong>?","Do you really want to delete meta tag <strong>%s</strong>?":"Вы действительно хотите удалить мета тэг <strong>%s</strong>?","Do you really want to delete post <strong>%s</strong>?":"Вы действительно хотите удалить заметку <strong>%s</strong>?","Do you really want to delete project <strong>%s</strong>?":"Вы действительно хотите удалить проект <strong>%s</strong>?","Do you really want to delete property <strong>%s</strong>?":"Вы действительно хотите удалить свойство <strong>%s</strong>?","Do you really want to delete public link <strong>%s</strong>?":"Вы действительно хотите удалить публичную ссылку <strong>%s</strong>?","Do you really want to delete tag <strong>%s</strong>?":"Вы действительно хотите удалить тэг <strong>%s</strong>?","Do you really want to delete user <strong>%s</strong>?":"Вы действительно хотите удалить пользователя <strong>%s</strong>?","Do you really want to leave?":"Вы действительно хотите выйти из сервиса?","Edit":"Редактировать","Edit application":"редактировать приложение","Edit file properties":"Редактировать свойства файла","Edit html cache":"Редактировать кэш файл","Edit meta tag":"Редактировать мета тэг","Edit post":"Редактировать заметку","Edit project":"Редактировать проект","Edit properties":"Редактировать свойство","Edit public link":"Редактировать публичную ссылку","Email":"Email","Email is empty!":"Не указан адрес электронной почты!","Email is incorrect!":"Не корректный адрес электронной почты!","Email:":"Email:","Empty":"Пусто","EN":"EN","enter code from email":"введите код полученный по почте","enter new password":"введите новый пароль","enter you email":"введите вашу почу","enter you password":"введите ваше пароль","Error":"Ошибка","File":"Файл","File <strong>%s</strong> created!":"Файл <strong>%s</strong> успешно загружен!","File <strong>%s</strong> deleted!":"Файл <strong>%s</strong> успешно удален!","File <strong>%s</strong> updated!":"Параметры файла <strong>%s</strong> успешно изменены!","Filling from sitemap.xml...":"Наполнение из карты сайта...","First name":"Имя","Html":"Html","Html cache":"Кэш файлы","Html cache description":"Закэшированые файлы для отдачи поисковым и другим ботам","Icon":"Иконка","if empty, the password will not be changed":"если оставить поле пустым, то пароль не будет изменен","In contact":"В контактах","In footer":"В подвале","In header":"В шапке","Info":"Информация","Last name":"Фамилия","Login":"Войти","Login on site":"Вход","Logout":"Выход","Logout from site":"Выход с сайта","Manager":"Управление","Manager description":"Панель управления сайтом","Markdown":"Markdown","Message":"Сообщение","Message not sent, try later!":"Не удалось отправить сообщение, попробуйте попозже...","Message sent successfully!":"Сообщение успешно отправлено! ","Meta tag <strong>%s</strong> created!":"Мета тэг <strong>%s</strong> успешно создано!","Meta tag <strong>%s</strong> deleted!":"Мета тэг <strong>%s</strong> успешно удалено!","Meta tag <strong>%s</strong> updated!":"Мета тэг <strong>%s</strong> успешно изменено!","Meta tags":"Мета тэги","Meta tags description":"Общие для всех страниц мета тэги которые будут выведены в header страницы","Name":"Название","New password:":"Новый пароль:","No":"Нет","No results found...":"Ничего не найдено...","Not access!":"Нет доступа!","Not founded!":"Не найдено!","Other":"Еще","Password":"Пароль","Password is empty!":"Не указан пароль!","Password:":"Пароль:","Please enter code from email and new password for you account":"Пожалуйста введите код высланный вам на почту и укажите новый пароль","Please enter you email address and password for login on site":"Пожалуйста введите адрес ваш электронной почты и пароль для входа на сайт","Please enter you email address used on registration":"Укажите ваш адрес электронной почты","Position":"Позиция","Post <strong>%s</strong> created!":"Заметка <strong>%s</strong> успешно создана!","Post <strong>%s</strong> deleted!":"Заметка <strong>%s</strong> успешно удалена!","Post <strong>%s</strong> updated!":"Заметка <strong>%s</strong> успешно изменена!","Posts":"Заметки","Posts description":"Заметки и небольшие посты","Profile":"Профиль","Profile of user":"Профиль пользователя","Profile updated!":"Профиль изменен!","Project <strong>%s</strong> created!":"Проект <strong>%s</strong> успешно создан!","Project <strong>%s</strong> deleted!":"Проект <strong>%s</strong> успешно удален!","Project <strong>%s</strong> updated!":"Проект <strong>%s</strong> успешно изменен!","Projects":"Проекты","Projects description":"Список собственных небольших и больших проектов","Properties":"Свойства","Properties description":"Свойства используемые при построении и выводе сайта","Property <strong>%s</strong> created!":"Свойство <strong>%s</strong> успешно создано!","Property <strong>%s</strong> deleted!":"Свойство <strong>%s</strong> успешно удалено!","Property <strong>%s</strong> updated!":"Свойство <strong>%s</strong> успешно изменено!","Public link <strong>%s</strong> created!":"Публичная ссылка <strong>%s</strong> успешно создано!","Public link <strong>%s</strong> deleted!":"Публичная ссылка <strong>%s</strong> успешно удалено!","Public link <strong>%s</strong> updated!":"Публичная ссылка <strong>%s</strong> успешно изменено!","Public links":"Публичные ссылки","Public links description":"Контактные ссылки на другие ресурсы","Recovery access":"Восстановить доступ","Recovery access to site":"Восстановление доступа к сайту","Redirect uris":"Redirect uris","Registration form":"Регистрация","Registration on site":"Регистрация на сайте","Reset password":"Сброс пароля","Reset password for account":"Сброс пароля для учетной записи","RU":"RU","Save":"Сохранить","Search":"Поиск","Search result for text \"%s\"":"Результат поиска \"%s\"","search text":"текст для поиска","Select":"Выбрать","Select file":"Выбрать файл","Send message":"Отправить сообщение","Sent link to reset password":"Отправить ссылку для сброса пароля","Show all":"Показать все","Src":"Источник","Tag <strong>%s</strong> created!":"Тэг <strong>%s</strong> успешно создан!","Tag <strong>%s</strong> deleted!":"Тэг <strong>%s</strong> успешно удален!","Tag <strong>%s</strong> updated!":"Тэг <strong>%s</strong> успешно изменено!","Tag: %s":"Тэги: %s","Tags":"Тэги","Tags description":"Список тэгов используемых на сайте","Text":"Текст","Title":"Заголовок","Type":"Тип","Url":"Url","User <strong>%s</strong> created!":"Пользователь <strong>%s</strong> успешно создан!","User <strong>%s</strong> deleted!":"Пользователь <strong>%s</strong> успешно удален!","User <strong>%s</strong> updated!":"Пользователь <strong>%s</strong> успешно изменен!","User not activated!":"Пользователь не активирован!","User not founded!":"Пользователь не найден!","User with email <strong>%s</strong> is exists!":"Пользователь с почтой <strong>%s</strong> уже зарегистрирован!","User with email <strong>%s</strong> not found!":"Пользователь с почтой <strong>%s</strong> не найден!","Username":"Имя пользователя","Users":"Пользователи","Users description":"Пользователи сайта","Value":"Значение","View":"Смотреть","Wrong password!":"Неверный пароль!","Yes":"Да","You authorizing!":"Вы авторизованы!","You name":"Ваше имя","You not activated!":"Вы не активировали учетную запись!"});
 /* jshint +W100 */
 }]);

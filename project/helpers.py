@@ -191,6 +191,15 @@ def send_mail(subject, text_content, html_content=None, to_email=None, message_i
     return True
 
 
+def get_thumbnail_url(request, url):
+    thumbnail = get_thumbnail(url)
+    if thumbnail:
+        return 'http://%s%s%s' % (
+            request.get_host(), settings.MEDIA_URL, thumbnail)
+    else:
+        return False
+
+
 def objects_to_json(request, items):
     json_items = serializers.serialize('json', items)
     data = json.loads(json_items)
@@ -217,10 +226,9 @@ def objects_to_json(request, items):
                     try:
                         result['%s_url' % static_field] = 'http://%s%s%s' % (
                             request.get_host(), settings.MEDIA_URL, field_value)
-                        thumbnail = get_thumbnail(field_value)
-                        if thumbnail:
-                            result['%s_thumbnail_url' % static_field] = 'http://%s%s%s' % (
-                                request.get_host(), settings.MEDIA_URL, thumbnail)
+                        thumbnail_url = get_thumbnail_url(request, field_value)
+                        if thumbnail_url:
+                            result['%s_thumbnail_url' % static_field] = thumbnail_url
                     except:
                         result['%s_url' % static_field] = ''
 

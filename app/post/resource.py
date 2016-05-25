@@ -113,7 +113,7 @@ def create(request):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.post.models import Post
+    from models import Post
 
     item, created = Post.objects.get_or_create(name=data['name'], type=1, created_user=user)
     reload_source = []
@@ -132,7 +132,7 @@ def update(request, post_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.post.models import Post
+    from models import Post
 
     try:
         item = Post.objects.get(pk=post_id)
@@ -147,7 +147,7 @@ def update(request, post_id):
 def delete(request, post_id):
     """Update record"""
 
-    from app.post.models import Post
+    from models import Post
 
     try:
         item = Post.objects.get(pk=post_id)
@@ -160,7 +160,7 @@ def delete(request, post_id):
 
 
 def get_item(request, post_id):
-    from app.post.models import Post
+    from models import Post
 
     try:
         item = Post.objects.get(pk=post_id)
@@ -170,8 +170,19 @@ def get_item(request, post_id):
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
+def get_object_by_name(request, post_name):
+    from models import Post
+
+    try:
+        item = Post.objects.get(name=post_name)
+    except Post.DoesNotExist:
+        item = False
+
+    return item
+
+
 def get_item_by_name(request, post_name):
-    from app.post.models import Post
+    from models import Post
 
     try:
         item = Post.objects.get(name=post_name)
@@ -182,7 +193,7 @@ def get_item_by_name(request, post_name):
 
 
 def get_list(request):
-    from app.post.models import Post
+    from models import Post
 
     items = Post.objects.all().order_by('-created').all()
 
@@ -190,7 +201,7 @@ def get_list(request):
 
 
 def get_list_by_tag(request, tag_text):
-    from app.post.models import Post
+    from models import Post
 
     items = Post.objects.filter(tags__text=tag_text).order_by('-created').all()
 
@@ -201,7 +212,7 @@ def get_search(request, search_text):
     if search_text == 'all':
         return get_list(request)
     else:
-        from app.post.models import Post
+        from models import Post
 
         items = Post.objects.filter(
             Q(title__icontains=search_text) |

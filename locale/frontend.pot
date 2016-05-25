@@ -464,8 +464,11 @@ msgid "Html"
 msgstr ""
 
 #: manager/const.js:29
-#: manager/const.js:30
 msgid "Html cache"
+msgstr ""
+
+#: manager/const.js:30
+msgid "Html cache description"
 msgstr ""
 
 #: manager/public_link/inputs.html:16
@@ -521,7 +524,7 @@ msgid "Manager"
 msgstr ""
 
 #: manager/const.js:6
-msgid "Manager descriptions"
+msgid "Manager description"
 msgstr ""
 
 #: post/const.js:18
@@ -555,9 +558,12 @@ msgstr ""
 msgid "Meta tag <strong>%s</strong> updated!"
 msgstr ""
 
-#: manager/const.js:10
 #: manager/const.js:9
 msgid "Meta tags"
+msgstr ""
+
+#: manager/const.js:10
+msgid "Meta tags description"
 msgstr ""
 
 #: account/user_app/inputs.html:2
@@ -645,7 +651,7 @@ msgid "Posts"
 msgstr ""
 
 #: post/const.js:5
-msgid "Posts descriptions"
+msgid "Posts description"
 msgstr ""
 
 #: account/const.js:19
@@ -677,12 +683,15 @@ msgid "Projects"
 msgstr ""
 
 #: project/const.js:5
-msgid "Projects descriptions"
+msgid "Projects description"
 msgstr ""
 
 #: manager/const.js:21
-#: manager/const.js:22
 msgid "Properties"
+msgstr ""
+
+#: manager/const.js:22
+msgid "Properties description"
 msgstr ""
 
 #: manager/const.js:48
@@ -710,8 +719,11 @@ msgid "Public link <strong>%s</strong> updated!"
 msgstr ""
 
 #: manager/const.js:17
-#: manager/const.js:18
 msgid "Public links"
+msgstr ""
+
+#: manager/const.js:18
+msgid "Public links description"
 msgstr ""
 
 #: account/const.js:29
@@ -804,10 +816,6 @@ msgstr ""
 msgid "Show all"
 msgstr ""
 
-#: manager/const.js:26
-msgid "Site users"
-msgstr ""
-
 #: manager/public_link/inputs.html:2
 msgid "Src"
 msgstr ""
@@ -830,7 +838,6 @@ msgstr ""
 
 #: home/sidebar.html:12
 #: manager/const.js:13
-#: manager/const.js:14
 #: post/inputs/right.html:18
 #: post/item.html:32
 #: post/sidebar.html:12
@@ -839,6 +846,10 @@ msgstr ""
 #: project/sidebar.html:12
 #: tag/const.js:4
 msgid "Tags"
+msgstr ""
+
+#: manager/const.js:14
+msgid "Tags description"
 msgstr ""
 
 #: manager/tag/inputs.html:2
@@ -904,6 +915,10 @@ msgstr ""
 
 #: manager/const.js:25
 msgid "Users"
+msgstr ""
+
+#: manager/const.js:26
+msgid "Users description"
 msgstr ""
 
 #: manager/properties/inputs.html:11

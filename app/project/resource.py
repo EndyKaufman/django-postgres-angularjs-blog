@@ -113,7 +113,7 @@ def create(request):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.project.models import Project
+    from models import Project
 
     item, created = Project.objects.get_or_create(name=data['name'], type=1, created_user=user)
     reload_source = []
@@ -132,7 +132,7 @@ def update(request, project_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.project.models import Project
+    from models import Project
 
     try:
         item = Project.objects.get(pk=project_id)
@@ -147,7 +147,7 @@ def update(request, project_id):
 def delete(request, project_id):
     """Update record"""
 
-    from app.project.models import Project
+    from models import Project
 
     try:
         item = Project.objects.get(pk=project_id)
@@ -160,7 +160,7 @@ def delete(request, project_id):
 
 
 def get_item(request, project_id):
-    from app.project.models import Project
+    from models import Project
 
     try:
         item = Project.objects.get(pk=project_id)
@@ -170,8 +170,19 @@ def get_item(request, project_id):
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
+def get_object_by_name(request, project_name):
+    from models import Project
+
+    try:
+        item = Project.objects.get(name=project_name)
+    except Project.DoesNotExist:
+        item = False
+
+    return item
+
+
 def get_item_by_name(request, project_name):
-    from app.project.models import Project
+    from models import Project
 
     try:
         item = Project.objects.get(name=project_name)
@@ -182,7 +193,7 @@ def get_item_by_name(request, project_name):
 
 
 def get_list(request):
-    from app.project.models import Project
+    from models import Project
 
     items = Project.objects.all().order_by('-created').all()
 
@@ -190,7 +201,7 @@ def get_list(request):
 
 
 def get_list_by_tag(request, tag_text):
-    from app.project.models import Project
+    from models import Project
 
     items = Project.objects.filter(tags__text=tag_text).order_by('-created').all()
 
@@ -201,7 +212,7 @@ def get_search(request, search_text):
     if search_text == 'all':
         return get_list(request)
     else:
-        from app.project.models import Project
+        from models import Project
 
         items = Project.objects.filter(
             Q(title__icontains=search_text) |

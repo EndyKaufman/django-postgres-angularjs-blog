@@ -412,9 +412,13 @@ msgstr "Имя"
 msgid "Html"
 msgstr "Html"
 
-#: manager/const.js:29 manager/const.js:30
+#: manager/const.js:29
 msgid "Html cache"
 msgstr "Кэш файлы"
+
+#: manager/const.js:30
+msgid "Html cache description"
+msgstr "Закэшированые файлы для отдачи поисковым и другим ботам"
 
 #: manager/public_link/inputs.html:16 manager/public_link/list.html:5
 msgid "Icon"
@@ -465,8 +469,8 @@ msgid "Manager"
 msgstr "Управление"
 
 #: manager/const.js:6
-msgid "Manager descriptions"
-msgstr "Управление параметрами сайта"
+msgid "Manager description"
+msgstr "Панель управления сайтом"
 
 #: post/const.js:18 post/inputs/central.html:25 project/const.js:18
 #: project/inputs/central.html:25
@@ -497,9 +501,14 @@ msgstr "Мета тэг <strong>%s</strong> успешно удалено!"
 msgid "Meta tag <strong>%s</strong> updated!"
 msgstr "Мета тэг <strong>%s</strong> успешно изменено!"
 
-#: manager/const.js:10 manager/const.js:9
+#: manager/const.js:9
 msgid "Meta tags"
 msgstr "Мета тэги"
+
+#: manager/const.js:10
+msgid "Meta tags description"
+msgstr ""
+"Общие для всех страниц мета тэги которые будут выведены в header страницы"
 
 #: account/user_app/inputs.html:2 account/user_app/list.html:5
 #: manager/html_cache/inputs.html:2 manager/html_cache/list.html:5
@@ -579,7 +588,7 @@ msgid "Posts"
 msgstr "Заметки"
 
 #: post/const.js:5
-msgid "Posts descriptions"
+msgid "Posts description"
 msgstr "Заметки и небольшие посты"
 
 #: account/const.js:19
@@ -611,12 +620,16 @@ msgid "Projects"
 msgstr "Проекты"
 
 #: project/const.js:5
-msgid "Projects descriptions"
+msgid "Projects description"
 msgstr "Список собственных небольших и больших проектов"
 
-#: manager/const.js:21 manager/const.js:22
+#: manager/const.js:21
 msgid "Properties"
 msgstr "Свойства"
+
+#: manager/const.js:22
+msgid "Properties description"
+msgstr "Свойства используемые при построении и выводе сайта"
 
 #: manager/const.js:48
 msgid "Property <strong>%s</strong> created!"
@@ -642,9 +655,13 @@ msgstr "Публичная ссылка <strong>%s</strong> успешно уд�
 msgid "Public link <strong>%s</strong> updated!"
 msgstr "Публичная ссылка <strong>%s</strong> успешно изменено!"
 
-#: manager/const.js:17 manager/const.js:18
+#: manager/const.js:17
 msgid "Public links"
 msgstr "Публичные ссылки"
+
+#: manager/const.js:18
+msgid "Public links description"
+msgstr "Контактные ссылки на другие ресурсы"
 
 #: account/const.js:29
 msgid "Recovery access"
@@ -722,10 +739,6 @@ msgstr "Отправить ссылку для сброса пароля"
 msgid "Show all"
 msgstr "Показать все"
 
-#: manager/const.js:26
-msgid "Site users"
-msgstr "Пользователи"
-
 #: manager/public_link/inputs.html:2
 msgid "Src"
 msgstr "Источник"
@@ -746,12 +759,15 @@ msgstr "Тэг <strong>%s</strong> успешно изменено!"
 msgid "Tag: %s"
 msgstr "Тэги: %s"
 
-#: home/sidebar.html:12 manager/const.js:13 manager/const.js:14
-#: post/inputs/right.html:18 post/item.html:32 post/sidebar.html:12
-#: project/inputs/right.html:18 project/item.html:32 project/sidebar.html:12
-#: tag/const.js:4
+#: home/sidebar.html:12 manager/const.js:13 post/inputs/right.html:18
+#: post/item.html:32 post/sidebar.html:12 project/inputs/right.html:18
+#: project/item.html:32 project/sidebar.html:12 tag/const.js:4
 msgid "Tags"
 msgstr "Тэги"
+
+#: manager/const.js:14
+msgid "Tags description"
+msgstr "Список тэгов используемых на сайте"
 
 #: manager/tag/inputs.html:2 manager/tag/list.html:5 post/const.js:9
 #: post/inputs/central.html:10 project/const.js:9
@@ -809,6 +825,10 @@ msgstr "Имя пользователя"
 msgid "Users"
 msgstr "Пользователи"
 
+#: manager/const.js:26
+msgid "Users description"
+msgstr "Пользователи сайта"
+
 #: manager/properties/inputs.html:11 manager/properties/list.html:6
 msgid "Value"
 msgstr "Значение"
@@ -836,3 +856,15 @@ msgstr "Ваше имя"
 #: account/const.js:46
 msgid "You not activated!"
 msgstr "Вы не активировали учетную запись!"
+
+#~ msgid "Manager descriptions"
+#~ msgstr "Управление параметрами сайта"
+
+#~ msgid "Posts descriptions"
+#~ msgstr "Заметки и небольшие посты"
+
+#~ msgid "Projects descriptions"
+#~ msgstr "Список собственных небольших и больших проектов"
+
+#~ msgid "Site users"
+#~ msgstr "Пользователи"

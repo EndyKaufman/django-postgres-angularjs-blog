@@ -76,7 +76,7 @@ class CustomPrerenderIO(PrerenderIO):
             'allow_redirects': False
         }
 
-        item = resource.get_item_by_url_base(new_url)
+        item = resource.get_object_by_url(new_url)
 
         if not item or item.content is None or item.content == '':
             try:

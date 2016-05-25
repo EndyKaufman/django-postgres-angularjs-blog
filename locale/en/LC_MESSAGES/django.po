@@ -409,9 +409,13 @@ msgstr "First name"
 msgid "Html"
 msgstr "Html"
 
-#: manager/const.js:29 manager/const.js:30
+#: manager/const.js:29
 msgid "Html cache"
 msgstr "Html cache"
+
+#: manager/const.js:30
+msgid "Html cache description"
+msgstr "Cached files to return the search bots and other"
 
 #: manager/public_link/inputs.html:16 manager/public_link/list.html:5
 msgid "Icon"
@@ -462,8 +466,8 @@ msgid "Manager"
 msgstr "Manager"
 
 #: manager/const.js:6
-msgid "Manager descriptions"
-msgstr "Manager descriptions"
+msgid "Manager description"
+msgstr "Site Control Panel"
 
 #: post/const.js:18 post/inputs/central.html:25 project/const.js:18
 #: project/inputs/central.html:25
@@ -494,9 +498,13 @@ msgstr "Meta tag <strong>%s</strong> deleted!"
 msgid "Meta tag <strong>%s</strong> updated!"
 msgstr "Meta tag <strong>%s</strong> updated!"
 
-#: manager/const.js:10 manager/const.js:9
+#: manager/const.js:9
 msgid "Meta tags"
 msgstr "Meta tags"
+
+#: manager/const.js:10
+msgid "Meta tags description"
+msgstr "Common to all of the pages meta tags which will be displayed in the header of the page"
 
 #: account/user_app/inputs.html:2 account/user_app/list.html:5
 #: manager/html_cache/inputs.html:2 manager/html_cache/list.html:5
@@ -575,7 +583,7 @@ msgid "Posts"
 msgstr "Posts"
 
 #: post/const.js:5
-msgid "Posts descriptions"
+msgid "Posts description"
 msgstr "Notes and small posts"
 
 #: account/const.js:19
@@ -607,12 +615,16 @@ msgid "Projects"
 msgstr "Projects"
 
 #: project/const.js:5
-msgid "Projects descriptions"
-msgstr "List their own more and more projects"
+msgid "Projects description"
+msgstr "List their own small and large projects"
 
-#: manager/const.js:21 manager/const.js:22
+#: manager/const.js:21
 msgid "Properties"
 msgstr "Properties"
+
+#: manager/const.js:22
+msgid "Properties description"
+msgstr "Properties used in the construction of the withdrawal site and"
 
 #: manager/const.js:48
 msgid "Property <strong>%s</strong> created!"
@@ -638,9 +650,13 @@ msgstr "Public link <strong>%s</strong> deleted!"
 msgid "Public link <strong>%s</strong> updated!"
 msgstr "Public link <strong>%s</strong> updated!"
 
-#: manager/const.js:17 manager/const.js:18
+#: manager/const.js:17
 msgid "Public links"
 msgstr "Public links"
+
+#: manager/const.js:18
+msgid "Public links description"
+msgstr "Contact links to other resources"
 
 #: account/const.js:29
 msgid "Recovery access"
@@ -718,10 +734,6 @@ msgstr "Sent link to reset password"
 msgid "Show all"
 msgstr "Show all"
 
-#: manager/const.js:26
-msgid "Site users"
-msgstr "Site users"
-
 #: manager/public_link/inputs.html:2
 msgid "Src"
 msgstr "Src"
@@ -742,12 +754,15 @@ msgstr "Tag <strong>%s</strong> updated!"
 msgid "Tag: %s"
 msgstr "Tag: %s"
 
-#: home/sidebar.html:12 manager/const.js:13 manager/const.js:14
-#: post/inputs/right.html:18 post/item.html:32 post/sidebar.html:12
-#: project/inputs/right.html:18 project/item.html:32 project/sidebar.html:12
-#: tag/const.js:4
+#: home/sidebar.html:12 manager/const.js:13 post/inputs/right.html:18
+#: post/item.html:32 post/sidebar.html:12 project/inputs/right.html:18
+#: project/item.html:32 project/sidebar.html:12 tag/const.js:4
 msgid "Tags"
 msgstr "Tags"
+
+#: manager/const.js:14
+msgid "Tags description"
+msgstr "List of tags used on the site"
 
 #: manager/tag/inputs.html:2 manager/tag/list.html:5 post/const.js:9
 #: post/inputs/central.html:10 project/const.js:9
@@ -805,6 +820,10 @@ msgstr "Username"
 msgid "Users"
 msgstr "Users"
 
+#: manager/const.js:26
+msgid "Users description"
+msgstr "Site users"
+
 #: manager/properties/inputs.html:11 manager/properties/list.html:6
 msgid "Value"
 msgstr "Value"
@@ -832,6 +851,18 @@ msgstr "You name"
 #: account/const.js:46
 msgid "You not activated!"
 msgstr "You not activated!"
+
+#~ msgid "Manager descriptions"
+#~ msgstr "Manager descriptions"
+
+#~ msgid "Posts descriptions"
+#~ msgstr "Notes and small posts"
+
+#~ msgid "Projects descriptions"
+#~ msgstr "List their own more and more projects"
+
+#~ msgid "Site users"
+#~ msgstr "Site users"
 
 #~ msgid "Do you really want to delete html_cache <strong>%s</strong>?"
 #~ msgstr "Do you really want to delete html_cache <strong>%s</strong>?"
