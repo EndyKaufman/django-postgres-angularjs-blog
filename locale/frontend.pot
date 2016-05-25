@@ -195,8 +195,11 @@ msgid "Confirm"
 msgstr ""
 
 #: contact/const.js:4
-#: contact/const.js:5
 msgid "Contact us"
+msgstr ""
+
+#: contact/const.js:5
+msgid "Contact us description"
 msgstr ""
 
 #: manager/html_cache/inputs.html:6
@@ -401,7 +404,7 @@ msgstr ""
 msgid "Empty"
 msgstr ""
 
-#: app.const.js:10
+#: app.const.js:5
 msgid "EN"
 msgstr ""
 
@@ -739,7 +742,7 @@ msgstr ""
 msgid "Reset password for account"
 msgstr ""
 
-#: app.const.js:6
+#: app.const.js:4
 msgid "RU"
 msgstr ""
 

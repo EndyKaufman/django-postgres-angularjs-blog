@@ -305,4 +305,13 @@ curl 'http://localhost:5000/api/v1/project/update/project1' -H "Authorization: B
 ```
 
 ##frontend translated with https://angular-gettext.rocketeer.be
+```
 sudo apt-get install poedit
+```
+make pot file
+```
+gulp pot
+```
+then create translate file with django.po name on root/locale/en/LC_MESSAGES and other languages,
+for use frontend translated dictionary on backend
+

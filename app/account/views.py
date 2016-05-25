@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-s
+from __future__ import print_function
 from django.views.decorators.csrf import ensure_csrf_cookie
 from app.home.helpers import render_index
-
+from django.utils.translation import ugettext
 
 @ensure_csrf_cookie
 def login(request):
     """Index page"""
     return render_index(request, {
-        'site_title': ['Login on site'],
-        'site_description': 'Authorization on site',
+        'site_title': [ugettext('Login on site')],
+        'site_description': ugettext('Authorization on site'),
         'site_url': '/account/login'
     })
 
@@ -17,8 +18,8 @@ def login(request):
 def profile(request):
     """Index page"""
     return render_index(request, {
-        'site_title': ['Profile'],
-        'site_description': 'Profile of user',
+        'site_title': [ugettext('Profile')],
+        'site_description': ugettext('Profile of user'),
         'site_url': '/account/profile'
     })
 
@@ -27,8 +28,8 @@ def profile(request):
 def reg(request):
     """Index page"""
     return render_index(request, {
-        'site_title': ['Registration form'],
-        'site_description': 'Registration on site',
+        'site_title': [ugettext('Registration form')],
+        'site_description': ugettext('Registration on site'),
         'site_url': '/account/reg'
     })
 
@@ -37,8 +38,8 @@ def reg(request):
 def recovery(request):
     """Index page"""
     return render_index(request, {
-        'site_title': ['Recovery access'],
-        'site_description': 'Recovery access to site',
+        'site_title': [ugettext('Recovery access')],
+        'site_description': ugettext('Recovery access to site'),
         'site_url': '/account/recovery'
     })
 
@@ -47,8 +48,8 @@ def recovery(request):
 def reset(request):
     """Index page"""
     return render_index(request, {
-        'site_title': ['Reset password'],
-        'site_description': 'Reset password for account',
+        'site_title': [ugettext('Reset password')],
+        'site_description': ugettext('Reset password for account'),
         'site_url': '/account/reset'
     })
 
@@ -57,7 +58,7 @@ def reset(request):
 def user_app(request):
     """Index page"""
     return render_index(request, {
-        'site_title': ['User app'],
-        'site_description': 'User app of user',
+        'site_title': [ugettext('Application')],
+        'site_description': ugettext('Applications of user'),
         'site_url': '/account/user_app'
     })

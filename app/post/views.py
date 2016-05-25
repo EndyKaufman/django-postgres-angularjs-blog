@@ -4,14 +4,15 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from app.home.helpers import render_index
 from project import settings
 import resource
+from django.utils.translation import ugettext
 
 
 @ensure_csrf_cookie
 def get_list(request):
     """List data"""
     strings = {
-        'site_title': ['My post'],
-        'site_description': 'Posts descriptions',
+        'site_title': [ugettext('Posts')],
+        'site_description': ugettext('Notes and small posts'),
         'site_url': 'post'
     }
     return render_index(request, strings)
@@ -31,7 +32,7 @@ def get_item_by_name(request, post_name):
     if item:
         item_data = data['data'][0]
         strings = {
-            'site_title': [item_data['title'], 'My post'],
+            'site_title': [item_data['title'], ugettext('Posts')],
             'site_description': item_data['description'],
             'site_url': 'post/%s' % item_data['name']
         }

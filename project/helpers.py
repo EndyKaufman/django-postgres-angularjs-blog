@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.core import serializers
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-import os
+from django.contrib.auth import get_user_model
 import json
 import inspect
 import string
@@ -23,11 +22,11 @@ def get_user(request):
     if not request.user.is_authenticated():
         return False
 
-    from app.account.models import User
+    user_model = get_user_model()
 
     try:
-        user = User.objects.get(pk=request.user.id)
-    except User.DoesNotExist:
+        user = user_model.objects.get(pk=request.user.id)
+    except user_model.DoesNotExist:
         return None
 
     return user

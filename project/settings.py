@@ -211,7 +211,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware'
+    'django.middleware.security.SecurityMiddleware',
+    'solid_i18n.middleware.SolidLocaleMiddleware'
 )
 
 ROOT_URLCONF = 'project.urls'
@@ -252,11 +253,27 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = os.environ.get('LANGUAGE_CODE', 'en-US')
+LANGUAGE_CODE = os.environ.get('LANGUAGE_CODE', 'en')
+
+# supported languages
+LANGUAGES = (
+    ('en', 'English'),
+    ('ru', 'Russian'),
+)
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'app')
+]
+SOLID_I18N_HANDLE_DEFAULT_PREFIX = True
+
+SOLID_I18N_DEFAULT_PREFIX_REDIRECT = True
+
+SOLID_I18N_PREFIX_STRICT = True
 
 TIME_ZONE = 'UTC'
 USE_I18N = True
-USE_L10N = False
+USE_L10N = True
 USE_TZ = True
 
 # Parse database configuration from $DATABASE_URL

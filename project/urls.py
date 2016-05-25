@@ -14,6 +14,7 @@ Including another URLconf
     2. Import the include() function: from django.conf.urls import url, include
     3. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from solid_i18n.urls import solid_i18n_patterns
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
@@ -55,7 +56,7 @@ urlpatterns = urlpatterns + [
     url(r'^api/v1/manager/', include(app.manager.api_v1_urls)),
     url(r'^api/v1/user_app/', include(app.user_app.api_v1_urls))]
 
-urlpatterns = urlpatterns + [
+urlpatterns = urlpatterns + solid_i18n_patterns(
     url(r'^contact', app.contact.views.index, name='index'),
     url(r'^post', app.post.views.get_list, name='get_list'),
     url(r'^project', app.project.views.get_list, name='get_list'),
@@ -71,6 +72,6 @@ urlpatterns = urlpatterns + [
     url(r'^manager/.*$', app.home.views.index, name='index'),
     # url(r'^admin/', admin.site.urls),
     # url(r'^.*$', app.home.views.index, name='index')
-]
+)
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
