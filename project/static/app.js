@@ -77433,7 +77433,100 @@ app.config(['$resourceProvider', '$httpProvider', function($resourceProvider, $h
     // see: https://github.com/coreyti/showdown#extensions
     $showdownProvider.loadExtension('github');
   });
-angular.module("app").run(['$templateCache', function(a) { a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
+angular.module("app").run(['$templateCache', function(a) { a.put('views/manager/tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
+    '            <form name="tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title | translate"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagUpdateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!tagForm.$valid" id="tagUpdateConfirm">\n' +
+    '                        <i class="fa fa-floppy-o"></i> {{confirmText | translate}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/manager/tag/list.html', '<table class="table table-hover">\n' +
+    '    <thead>\n' +
+    '    <tr>\n' +
+    '        <th translate>#</th>\n' +
+    '        <th translate>Text</th>\n' +
+    '        <th translate>Description</th>\n' +
+    '        <th class="text-right" style="width:200px" translate>Actions</th>\n' +
+    '    </tr>\n' +
+    '    </thead>\n' +
+    '    <tbody>\n' +
+    '    <tr ng-repeat="item in TagSvc.list"\n' +
+    '        ng-class="(TagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
+    '        <td ng-bind="item.id" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item.text" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td class="break-word" ng-bind="item.description" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td class="text-right">\n' +
+    '            <button ng-click="TagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
+    '                    id="{{\'tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate>\n' +
+    '            </button>\n' +
+    '            <button ng-click="TagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
+    '                    id="{{\'tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> <translate>Delete</translate>\n' +
+    '            </button>\n' +
+    '        </td>\n' +
+    '    </tr>\n' +
+    '    </tbody>\n' +
+    '</table>');
+	a.put('views/manager/tag/list-header.html', '<span ng-bind="ManagerSvc.title"></span>\n' +
+    '<button ng-click="TagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
+    '        type="button" id="tagCreate">\n' +
+    '    <i class="fa fa-plus"></i> <translate>Create</translate>\n' +
+    '</button>');
+	a.put('views/manager/tag/inputs.html', '<div class="form-group">\n' +
+    '    <label for="TagText" translate>Text</label>\n' +
+    '    <input type="text" class="form-control" id="TagText"\n' +
+    '           ng-model="TagSvc.item.text"/>\n' +
+    '</div>\n' +
+    '<div class="form-group">\n' +
+    '    <label for="TagDescription" translate>Description</label>\n' +
+    '    <textarea class="form-control" id="TagDescription"\n' +
+    '              ng-model="TagSvc.item.description"></textarea>\n' +
+    '</div>');
+	a.put('views/manager/tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
+    '            <form name="tagForm">\n' +
+    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title | translate"></h4></div>\n' +
+    '                <div class="modal-body">\n' +
+    '                    <div class="modal-body-inner">\n' +
+    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
+    '                    </div>\n' +
+    '                </div>\n' +
+    '                <div class="modal-footer">\n' +
+    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagCreateCancel">\n' +
+    '                        <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
+    '                    </button>\n' +
+    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
+    '                            ng-disabled="!tagForm.$valid" id="tagCreateConfirm">\n' +
+    '                        <i class="fa fa-check"></i> {{confirmText | translate}}\n' +
+    '                    </button>\n' +
+    '                </div>\n' +
+    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                    <i class="fa fa-times"></i>\n' +
+    '                </button>\n' +
+    '            </form>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/project/inputs/right.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="ItemName" translate>Name</label>\n' +
     '    <input type="text" class="form-control" id="ItemName" name="ItemName" ng-model="ProjectSvc.item.name" required>\n' +
     '    <span ng-show="projectForm.$submitted || projectForm.ItemName.$touched" class="form-control-feedback"\n' +
@@ -77575,99 +77668,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                                <i class="fa fa-trash"></i> <translate>Delete image</translate>\n' +
     '                            </button>\n' +
     '                        </span>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/manager/tag/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
-    '            <form name="tagForm">\n' +
-    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title | translate"></h4></div>\n' +
-    '                <div class="modal-body">\n' +
-    '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagUpdateCancel">\n' +
-    '                        <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
-    '                    </button>\n' +
-    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!tagForm.$valid" id="tagUpdateConfirm">\n' +
-    '                        <i class="fa fa-floppy-o"></i> {{confirmText | translate}}\n' +
-    '                    </button>\n' +
-    '                </div>\n' +
-    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                    <i class="fa fa-times"></i>\n' +
-    '                </button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/manager/tag/list.html', '<table class="table table-hover">\n' +
-    '    <thead>\n' +
-    '    <tr>\n' +
-    '        <th translate>#</th>\n' +
-    '        <th translate>Text</th>\n' +
-    '        <th translate>Description</th>\n' +
-    '        <th class="text-right" style="width:200px" translate>Actions</th>\n' +
-    '    </tr>\n' +
-    '    </thead>\n' +
-    '    <tbody>\n' +
-    '    <tr ng-repeat="item in TagSvc.list"\n' +
-    '        ng-class="(TagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
-    '        <td ng-bind="item.id" ng-click="TagSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind="item.text" ng-click="TagSvc.selectItem(item)"></td>\n' +
-    '        <td class="break-word" ng-bind="item.description" ng-click="TagSvc.selectItem(item)"></td>\n' +
-    '        <td class="text-right">\n' +
-    '            <button ng-click="TagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
-    '                    id="{{\'tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate>\n' +
-    '            </button>\n' +
-    '            <button ng-click="TagSvc.doDelete(item)" class="btn btn-cta-red btn-xs" type="button"\n' +
-    '                    id="{{\'tag\'+item.id+\'Delete\'}}"><i class="fa fa-trash"></i> <translate>Delete</translate>\n' +
-    '            </button>\n' +
-    '        </td>\n' +
-    '    </tr>\n' +
-    '    </tbody>\n' +
-    '</table>');
-	a.put('views/manager/tag/list-header.html', '<span ng-bind="ManagerSvc.title"></span>\n' +
-    '<button ng-click="TagSvc.showCreate()" class="btn btn-cta-secondary pull-right btn-xs"\n' +
-    '        type="button" id="tagCreate">\n' +
-    '    <i class="fa fa-plus"></i> <translate>Create</translate>\n' +
-    '</button>');
-	a.put('views/manager/tag/inputs.html', '<div class="form-group">\n' +
-    '    <label for="TagText" translate>Text</label>\n' +
-    '    <input type="text" class="form-control" id="TagText"\n' +
-    '           ng-model="TagSvc.item.text"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="TagDescription" translate>Description</label>\n' +
-    '    <textarea class="form-control" id="TagDescription"\n' +
-    '              ng-model="TagSvc.item.description"></textarea>\n' +
-    '</div>');
-	a.put('views/manager/tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content" ng-controller="TagCtrl">\n' +
-    '            <form name="tagForm">\n' +
-    '                <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title | translate"></h4></div>\n' +
-    '                <div class="modal-body">\n' +
-    '                    <div class="modal-body-inner">\n' +
-    '                        <div ng-include="\'views/manager/tag/inputs.html\'"></div>\n' +
-    '                    </div>\n' +
-    '                </div>\n' +
-    '                <div class="modal-footer">\n' +
-    '                    <button type="button" class="btn btn-cta-default" ng-click="$cancel()" id="tagCreateCancel">\n' +
-    '                        <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
-    '                    </button>\n' +
-    '                    <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()"\n' +
-    '                            ng-disabled="!tagForm.$valid" id="tagCreateConfirm">\n' +
-    '                        <i class="fa fa-check"></i> {{confirmText | translate}}\n' +
-    '                    </button>\n' +
-    '                </div>\n' +
-    '                <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                    <i class="fa fa-times"></i>\n' +
-    '                </button>\n' +
-    '            </form>\n' +
-    '        </div>\n' +
     '    </div>\n' +
     '</div>');
 	a.put('views/manager/public_link/update.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
@@ -78199,6 +78199,24 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div>\n' +
     '    </div>\n' +
     '</div>');
+	a.put('views/account/reg/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="email" translate>Email</label>\n' +
+    '    <input type="email" class="form-control" name="email" id="email"\n' +
+    '           ng-model="AccountSvc.item.email" required>\n' +
+    '                                        <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
+    '                                              class="form-control-feedback"\n' +
+    '                                              ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                              aria-hidden="true"></span>\n' +
+    '</div>\n' +
+    '<div class="form-group has-feedback" show-errors>\n' +
+    '    <label for="password" translate>Password</label>\n' +
+    '    <input type="password" class="form-control" name="password" id="password"\n' +
+    '           ng-model="AccountSvc.item.password" required>\n' +
+    '                                        <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
+    '                                              class="form-control-feedback"\n' +
+    '                                              ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '                                              aria-hidden="true"></span>\n' +
+    '</div>');
 	a.put('views/account/reset/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="code" translate>Code:</label>\n' +
     '    <input type="text" class="form-control" name="code" id="code"\n' +
@@ -78218,24 +78236,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                                      class="form-control-feedback"\n' +
     '                                      ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
     '                                      aria-hidden="true"></span>\n' +
-    '</div>');
-	a.put('views/account/reg/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="email" translate>Email</label>\n' +
-    '    <input type="email" class="form-control" name="email" id="email"\n' +
-    '           ng-model="AccountSvc.item.email" required>\n' +
-    '                                        <span ng-show="accountForm.$submitted || accountForm.email.$touched"\n' +
-    '                                              class="form-control-feedback"\n' +
-    '                                              ng-class="!accountForm.email.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                              aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="password" translate>Password</label>\n' +
-    '    <input type="password" class="form-control" name="password" id="password"\n' +
-    '           ng-model="AccountSvc.item.password" required>\n' +
-    '                                        <span ng-show="accountForm.$submitted || accountForm.password.$touched"\n' +
-    '                                              class="form-control-feedback"\n' +
-    '                                              ng-class="!accountForm.password.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '                                              aria-hidden="true"></span>\n' +
     '</div>');
 	a.put('views/account/recovery/inputs.html', '<div class="form-group has-feedback" show-errors>\n' +
     '    <label for="email" translate>Email:</label>\n' +
@@ -80192,7 +80192,7 @@ app.factory('AppSvc', function($rootScope, $q, gettextCatalog, $route, $timeout,
 
     service.setLangCode = function(code) {
         if (code === undefined)
-            code = service.siteLang;
+            code = service.currentLang;
 
         if (service.currentLang != code || service.langInited === false) {
             service.langInited = true;
