@@ -356,7 +356,7 @@ msgstr "Email:"
 msgid "Empty"
 msgstr "Empty"
 
-#: app.const.js:5
+#: app.lang.js:11
 msgid "EN"
 msgstr "EN"
 
@@ -478,11 +478,15 @@ msgstr "Markdown"
 msgid "Message"
 msgstr "Message"
 
-#: contact/const.js:9
+#: contact/const.js:6
+msgid "Message from contact form"
+msgstr "Message from contact form"
+
+#: contact/const.js:10
 msgid "Message not sent, try later!"
 msgstr "Message not sent, try later!"
 
-#: contact/const.js:8
+#: contact/const.js:9
 msgid "Message sent successfully!"
 msgstr "Message sent successfully!"
 
@@ -504,7 +508,9 @@ msgstr "Meta tags"
 
 #: manager/const.js:10
 msgid "Meta tags description"
-msgstr "Common to all of the pages meta tags which will be displayed in the header of the page"
+msgstr ""
+"Common to all of the pages meta tags which will be displayed in the header "
+"of the page"
 
 #: account/user_app/inputs.html:2 account/user_app/list.html:5
 #: manager/html_cache/inputs.html:2 manager/html_cache/list.html:5
@@ -686,7 +692,7 @@ msgstr "Reset password"
 msgid "Reset password for account"
 msgstr "Reset password for account"
 
-#: app.const.js:4
+#: app.lang.js:10
 msgid "RU"
 msgstr "RU"
 

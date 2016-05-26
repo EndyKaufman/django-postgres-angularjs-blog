@@ -359,7 +359,7 @@ msgstr "Email:"
 msgid "Empty"
 msgstr "Пусто"
 
-#: app.const.js:5
+#: app.lang.js:11
 msgid "EN"
 msgstr "EN"
 
@@ -481,11 +481,15 @@ msgstr "Markdown"
 msgid "Message"
 msgstr "Сообщение"
 
-#: contact/const.js:9
+#: contact/const.js:6
+msgid "Message from contact form"
+msgstr "Сообщение с контактной формы"
+
+#: contact/const.js:10
 msgid "Message not sent, try later!"
 msgstr "Не удалось отправить сообщение, попробуйте попозже..."
 
-#: contact/const.js:8
+#: contact/const.js:9
 msgid "Message sent successfully!"
 msgstr "Сообщение успешно отправлено! "
 
@@ -691,7 +695,7 @@ msgstr "Сброс пароля"
 msgid "Reset password for account"
 msgstr "Сброс пароля для учетной записи"
 
-#: app.const.js:4
+#: app.lang.js:10
 msgid "RU"
 msgstr "RU"
 

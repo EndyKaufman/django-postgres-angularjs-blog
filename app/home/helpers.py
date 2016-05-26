@@ -93,12 +93,12 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
 
 
 def render_404(request, strings):
-    return render_index(request, strings, 'home/templates/%s/404.htm')
+    return render_index(request, strings)
 
 
 def render_robots_txt(request):
     properties_list = properties_resource.get_list_of_names(['ROBOT_TXT'])
-    return render(request, 'home/templates/%s/robots.txt' % settings.THEME, {'properties_list': properties_list})
+    return render(request, 'home/templates/robots.txt', {'properties_list': properties_list})
 
 
 def render_sitemap_xml(request):

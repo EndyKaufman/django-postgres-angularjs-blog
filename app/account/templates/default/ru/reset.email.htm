@@ -1,0 +1,21 @@
+<p>
+    Здравствуйте, <em>{{ user_first_name }}</em>
+</p>
+<p>
+    Код для сброса пароля:
+    <strong class="code">{{ code |safe }}</strong>
+    <br/>
+    <strong>или</strong>
+    <br/>
+    Нажмите на ссылку:
+    <a href="{{ host |safe }}/account/reset/{{ code |safe }}">
+        {{ host |safe }}/account/reset/{{ code |safe }}
+    </a>
+</p>
+<p>
+    --
+    <br/>
+    <em>С уважением,</em>
+    <br/>
+    <em>{{ properties.SITE_TITLE |safe }}</em>
+</p>

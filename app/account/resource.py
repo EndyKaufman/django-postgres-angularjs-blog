@@ -4,9 +4,12 @@ from django.db.models import Q
 from django.contrib import auth
 from project import settings
 from django.template.loader import render_to_string
+from django.utils.translation import ugettext, get_language
+
 
 def get_fields():
     return ['email', 'password', 'username', 'firstname', 'lastname']
+
 
 def get_item_by_email(request, email):
     from app.account.models import User
@@ -154,9 +157,11 @@ def recovery(request):
     config['user_first_name'] = user.first_name
     config['properties'] = properties_resource.get_list_of_names(['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME',
                                                                   'SITE_LOGO'])
-    helpers.send_mail(subject='Reset password',
-                      html_content=render_to_string('account/templates/reset.email.htm', config),
-                      text_content=render_to_string('account/templates/reset.email.txt', config),
+    helpers.send_mail(subject=ugettext('Reset password'),
+                      html_content=render_to_string(
+                          'account/templates/%s/%s/reset.email.htm' % (settings.THEME, get_language()), config),
+                      text_content=render_to_string(
+                          'account/templates/%s/%s/reset.email.txt' % (settings.THEME, get_language()), config),
                       to_email=[data['email']],
                       config=config)
 

@@ -538,11 +538,15 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
-#: contact/const.js:9
+#: contact/const.js:6
+msgid "Message from contact form"
+msgstr ""
+
+#: contact/const.js:10
 msgid "Message not sent, try later!"
 msgstr ""
 
-#: contact/const.js:8
+#: contact/const.js:9
 msgid "Message sent successfully!"
 msgstr ""
 
