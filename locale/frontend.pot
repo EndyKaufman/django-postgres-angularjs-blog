@@ -404,7 +404,7 @@ msgstr ""
 msgid "Empty"
 msgstr ""
 
-#: app.const.js:5
+#: app.lang.js:11
 msgid "EN"
 msgstr ""
 
@@ -754,7 +754,7 @@ msgstr ""
 msgid "Reset password for account"
 msgstr ""
 
-#: app.const.js:4
+#: app.lang.js:10
 msgid "RU"
 msgstr ""
 
