@@ -78968,83 +78968,6 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//row-->\n' +
     '    </form>\n' +
     '</div><!--//masonry-->');
-	a.put('views/message/prompt.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content">\n' +
-    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '            <div class="modal-body">\n' +
-    '                <div class="modal-body-inner" ng-bind="content"></div>\n' +
-    '                <div class="margin-t form-group"><label for="promptModel">{{promptLabel | translate}}</label><input type="text"\n' +
-    '                                                                                                        class="form-control"\n' +
-    '                                                                                                        name="promptModel"\n' +
-    '                                                                                                        ng-model="promptModel">\n' +
-    '                </div>\n' +
-    '            </div>\n' +
-    '            <div class="modal-footer">\n' +
-    '                <button type="button" class="btn btn-cta-default" ng-click="$cancel()">\n' +
-    '                    <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
-    '                </button>\n' +
-    '                <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()">\n' +
-    '                    <i class="fa fa-check"></i> {{confirmText | translate}}\n' +
-    '                </button>\n' +
-    '            </div>\n' +
-    '            <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                <i class="fa fa-times"></i>\n' +
-    '            </button>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/message/modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content">\n' +
-    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '            <div class="modal-body" ng-bind="content"></div>\n' +
-    '            <div class="modal-footer">\n' +
-    '                <button type="button" class="btn btn-cta-secondary" ng-click="$hide()">{{closeText | translate}}</button>\n' +
-    '            </div>\n' +
-    '            <button type="button" class="close" ng-click="$hide()" ng-bind-html="closeIcon">&nbsp;</button>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/message/confirm.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content">\n' +
-    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '            <div class="modal-body">\n' +
-    '                <div class="modal-body-inner" ng-bind="content"></div>\n' +
-    '            </div>\n' +
-    '            <div class="modal-footer">\n' +
-    '                <button type="button" class="btn btn-cta-default" ng-click="$cancel()">\n' +
-    '                    <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
-    '                </button>\n' +
-    '                <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()">\n' +
-    '                    <i class="fa fa-check"></i> {{confirmText | translate}}\n' +
-    '                </button>\n' +
-    '            </div>\n' +
-    '            <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
-    '                <i class="fa fa-times"></i>\n' +
-    '            </button>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
-	a.put('views/message/alert.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
-    '    <div class="modal-dialog">\n' +
-    '        <div class="modal-content">\n' +
-    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
-    '            <div class="modal-body">\n' +
-    '                <div class="modal-body-inner" ng-bind="content"></div>\n' +
-    '            </div>\n' +
-    '            <div class="modal-footer">\n' +
-    '                <button type="button" class="btn btn-cta-secondary" ng-click="$hide()">\n' +
-    '                    <i class="fa fa-check"></i> {{okText | translate}}\n' +
-    '                </button>\n' +
-    '            </div>\n' +
-    '            <button type="button" class="close" ng-click="$hide()" ng-bind-html="closeIcon">\n' +
-    '                <i class="fa fa-times"></i>\n' +
-    '            </button>\n' +
-    '        </div>\n' +
-    '    </div>\n' +
-    '</div>');
 	a.put('views/manager/tag.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isAdmin()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isAdmin()">\n' +
     '    <div class="row">\n' +
@@ -79186,6 +79109,83 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </div><!--//secondary-->\n' +
     '    </div><!--//row-->\n' +
     '</div><!--//masonry-->');
+	a.put('views/message/prompt.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content">\n' +
+    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '            <div class="modal-body">\n' +
+    '                <div class="modal-body-inner" ng-bind="content"></div>\n' +
+    '                <div class="margin-t form-group"><label for="promptModel">{{promptLabel | translate}}</label><input type="text"\n' +
+    '                                                                                                        class="form-control"\n' +
+    '                                                                                                        name="promptModel"\n' +
+    '                                                                                                        ng-model="promptModel">\n' +
+    '                </div>\n' +
+    '            </div>\n' +
+    '            <div class="modal-footer">\n' +
+    '                <button type="button" class="btn btn-cta-default" ng-click="$cancel()">\n' +
+    '                    <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
+    '                </button>\n' +
+    '                <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()">\n' +
+    '                    <i class="fa fa-check"></i> {{confirmText | translate}}\n' +
+    '                </button>\n' +
+    '            </div>\n' +
+    '            <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                <i class="fa fa-times"></i>\n' +
+    '            </button>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/message/modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content">\n' +
+    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '            <div class="modal-body" ng-bind="content"></div>\n' +
+    '            <div class="modal-footer">\n' +
+    '                <button type="button" class="btn btn-cta-secondary" ng-click="$hide()">{{closeText | translate}}</button>\n' +
+    '            </div>\n' +
+    '            <button type="button" class="close" ng-click="$hide()" ng-bind-html="closeIcon">&nbsp;</button>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/message/confirm.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content">\n' +
+    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '            <div class="modal-body">\n' +
+    '                <div class="modal-body-inner" ng-bind="content"></div>\n' +
+    '            </div>\n' +
+    '            <div class="modal-footer">\n' +
+    '                <button type="button" class="btn btn-cta-default" ng-click="$cancel()">\n' +
+    '                    <i class="fa fa-undo"></i> {{cancelText | translate}}\n' +
+    '                </button>\n' +
+    '                <button type="button" class="btn btn-cta-secondary" ng-click="$confirm()">\n' +
+    '                    <i class="fa fa-check"></i> {{confirmText | translate}}\n' +
+    '                </button>\n' +
+    '            </div>\n' +
+    '            <button type="button" class="close" ng-click="$cancel()" ng-bind-html="closeIcon">\n' +
+    '                <i class="fa fa-times"></i>\n' +
+    '            </button>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
+	a.put('views/message/alert.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
+    '    <div class="modal-dialog">\n' +
+    '        <div class="modal-content">\n' +
+    '            <div class="modal-header" ng-show="title"><h4 class="modal-title" ng-bind="title"></h4></div>\n' +
+    '            <div class="modal-body">\n' +
+    '                <div class="modal-body-inner" ng-bind="content"></div>\n' +
+    '            </div>\n' +
+    '            <div class="modal-footer">\n' +
+    '                <button type="button" class="btn btn-cta-secondary" ng-click="$hide()">\n' +
+    '                    <i class="fa fa-check"></i> {{okText | translate}}\n' +
+    '                </button>\n' +
+    '            </div>\n' +
+    '            <button type="button" class="close" ng-click="$hide()" ng-bind-html="closeIcon">\n' +
+    '                <i class="fa fa-times"></i>\n' +
+    '            </button>\n' +
+    '        </div>\n' +
+    '    </div>\n' +
+    '</div>');
 	a.put('views/home/sidebar.html', '<aside class="info aside section">\n' +
     '    <div class="section-inner">\n' +
     '        <h2 class="heading sr-only" translate>Search</h2>\n' +
@@ -82082,8 +82082,8 @@ app.factory('PropertiesSvc', function(AppConst, AppProperties, PropertiesRes, $r
     service.updateItemOnList = function(item) {
         for (var i = 0; i < service.list.length; i++) {
             if (item.id === service.list[i].id) {
-                AppProperties.set(service.list[i].name, service.list[i].value);
                 angular.extend(service.list[i], angular.copy(item));
+                AppProperties.set(service.list[i].name, service.list[i].value);
             }
         }
     };
@@ -82507,7 +82507,7 @@ app.factory('AppLang', function($rootScope, $timeout, gettext, gettextCatalog) {
 });
 app.factory('AppProperties', function() {
     var service = {},
-        list = AppConfig.properties;
+        list = angular.copy(AppConfig.properties);
 
     service.load = function(newList) {
         list = {};
