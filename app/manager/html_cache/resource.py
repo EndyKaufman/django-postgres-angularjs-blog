@@ -7,6 +7,12 @@ def get_fields():
     return ['url', 'content']
 
 
+def create_by_url(url, content):
+    from app.manager.models import HtmlCache
+    item, created = HtmlCache.objects.get_or_create(url=url, content=content)
+    return item
+
+
 def create(request):
     data = request.DATA
 
@@ -16,15 +22,14 @@ def create(request):
 
     from app.manager.models import HtmlCache
 
-    item, created = HtmlCache.objects.get_or_create(url=data['url'], content=data['content'], created_user=user)
+    item, created = HtmlCache.objects.get_or_create(url=data['url'])
+
+    if created:
+        helpers.json_to_objects(item, data)
+        item.created_user = user
+        item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
-
-
-def create_by_url(url, content):
-    from app.manager.models import HtmlCache
-    item, created = HtmlCache.objects.get_or_create(url=url, content=content)
-    return item
 
 
 def update_by_url(url, content):
@@ -56,12 +61,7 @@ def update(request, html_cache_id):
     except HtmlCache.DoesNotExist:
         return {'code': 'html_cache/not_found', 'values': [html_cache_id]}, 404, False
 
-    if data['url'] is not None:
-        item.url = data['url']
-    if data['content'] is not None:
-        item.content = data['content']
-
-    item.created_user = user
+    helpers.json_to_objects(item, data)
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

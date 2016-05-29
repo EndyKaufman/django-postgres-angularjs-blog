@@ -14,11 +14,11 @@ msgstr ""
 msgid "#"
 msgstr ""
 
-#: account/const.js:53
+#: account/const.js:56
 msgid "Account created!"
 msgstr ""
 
-#: account/const.js:55
+#: account/const.js:58
 msgid "Account deleted!"
 msgstr ""
 
@@ -51,7 +51,7 @@ msgstr ""
 msgid "Add new file"
 msgstr ""
 
-#: manager/html_cache/htm_cache.svc.js:70
+#: manager/html_cache/htm_cache.svc.js:83
 msgid "Add new html cache"
 msgstr ""
 
@@ -101,35 +101,35 @@ msgstr ""
 msgid "allowed URIs list, space separated"
 msgstr ""
 
-#: account/const.js:57
+#: account/const.js:60
 msgid "Application <strong>%s</strong> created!"
 msgstr ""
 
-#: account/const.js:59
+#: account/const.js:62
 msgid "Application <strong>%s</strong> deleted!"
 msgstr ""
 
-#: account/const.js:58
+#: account/const.js:61
 msgid "Application <strong>%s</strong> updated!"
 msgstr ""
 
-#: account/const.js:24
+#: account/const.js:27
 msgid "Applications"
 msgstr ""
 
-#: account/const.js:26
+#: account/const.js:29
 msgid "Applications of user"
 msgstr ""
 
-#: manager/meta_tag/inputs.html:11
+#: manager/meta_tag/inputs.html:17
 msgid "Attributes"
 msgstr ""
 
-#: account/const.js:11
+#: account/const.js:14
 msgid "Authorization on site"
 msgstr ""
 
-#: account/const.js:48
+#: account/const.js:51
 msgid "Bye-Bye!"
 msgstr ""
 
@@ -150,8 +150,8 @@ msgstr ""
 #: file/file.svc.js:30
 #: file/file.svc.js:64
 #: file/file.svc.js:91
-#: manager/html_cache/htm_cache.svc.js:114
-#: manager/html_cache/htm_cache.svc.js:77
+#: manager/html_cache/htm_cache.svc.js:127
+#: manager/html_cache/htm_cache.svc.js:90
 #: manager/meta_tag/meta_tag.svc.js:26
 #: manager/meta_tag/meta_tag.svc.js:53
 #: manager/properties/properties.svc.js:25
@@ -167,7 +167,7 @@ msgstr ""
 msgid "Change password"
 msgstr ""
 
-#: account/const.js:51
+#: account/const.js:54
 msgid "Check email <strong>%s</strong> for code to reset password"
 msgstr ""
 
@@ -184,9 +184,9 @@ msgstr ""
 msgid "Code:"
 msgstr ""
 
-#: file/inputs.html:11
+#: file/inputs.html:13
 #: file/list.html:27
-#: manager/properties/inputs.html:2
+#: manager/properties/inputs.html:15
 msgid "Comment"
 msgstr ""
 
@@ -203,7 +203,7 @@ msgid "Contact us description"
 msgstr ""
 
 #: manager/html_cache/inputs.html:6
-#: manager/meta_tag/inputs.html:6
+#: manager/meta_tag/inputs.html:12
 #: manager/meta_tag/list.html:6
 msgid "Content"
 msgstr ""
@@ -212,7 +212,7 @@ msgstr ""
 #: account/user_app/list-header.html:4
 #: account/user_app/user_app.svc.js:25
 #: file/file.svc.js:63
-#: manager/html_cache/htm_cache.svc.js:76
+#: manager/html_cache/htm_cache.svc.js:89
 #: manager/meta_tag/list-header.html:4
 #: manager/meta_tag/meta_tag.svc.js:25
 #: manager/properties/list-header.html:4
@@ -256,8 +256,8 @@ msgstr ""
 msgid "Delete account"
 msgstr ""
 
-#: post/inputs/central.html:41
-#: project/inputs/central.html:41
+#: post/inputs/central.html:46
+#: project/inputs/central.html:45
 msgid "Delete image"
 msgstr ""
 
@@ -271,12 +271,12 @@ msgstr ""
 msgid "Delete project"
 msgstr ""
 
-#: manager/public_link/inputs.html:11
-#: manager/tag/inputs.html:7
+#: manager/public_link/inputs.html:13
+#: manager/tag/inputs.html:9
 #: manager/tag/list.html:6
-#: post/inputs/right.html:24
+#: post/inputs/right.html:26
 #: post/item.html:23
-#: project/inputs/right.html:24
+#: project/inputs/right.html:26
 #: project/item.html:23
 msgid "Description"
 msgstr ""
@@ -286,11 +286,11 @@ msgstr ""
 msgid "Detail..."
 msgstr ""
 
-#: account/const.js:52
+#: account/const.js:55
 msgid "Do you really want to delete account?"
 msgstr ""
 
-#: account/const.js:56
+#: account/const.js:59
 msgid "Do you really want to delete application <strong>%s</strong>?"
 msgstr ""
 
@@ -330,7 +330,7 @@ msgstr ""
 msgid "Do you really want to delete user <strong>%s</strong>?"
 msgstr ""
 
-#: account/const.js:49
+#: account/const.js:52
 msgid "Do you really want to leave?"
 msgstr ""
 
@@ -356,7 +356,7 @@ msgstr ""
 msgid "Edit file properties"
 msgstr ""
 
-#: manager/html_cache/htm_cache.svc.js:107
+#: manager/html_cache/htm_cache.svc.js:120
 msgid "Edit html cache"
 msgstr ""
 
@@ -387,11 +387,11 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: account/const.js:40
+#: account/const.js:43
 msgid "Email is empty!"
 msgstr ""
 
-#: account/const.js:42
+#: account/const.js:45
 msgid "Email is incorrect!"
 msgstr ""
 
@@ -457,9 +457,9 @@ msgid "First name"
 msgstr ""
 
 #: post/const.js:12
-#: post/inputs/central.html:15
+#: post/inputs/central.html:18
 #: project/const.js:12
-#: project/inputs/central.html:15
+#: project/inputs/central.html:17
 msgid "Html"
 msgstr ""
 
@@ -471,7 +471,7 @@ msgstr ""
 msgid "Html cache description"
 msgstr ""
 
-#: manager/public_link/inputs.html:16
+#: manager/public_link/inputs.html:20
 #: manager/public_link/list.html:5
 msgid "Icon"
 msgstr ""
@@ -480,17 +480,17 @@ msgstr ""
 msgid "if empty, the password will not be changed"
 msgstr ""
 
-#: manager/public_link/inputs.html:39
+#: manager/public_link/inputs.html:43
 #: manager/public_link/list.html:8
 msgid "In contact"
 msgstr ""
 
-#: manager/public_link/inputs.html:44
+#: manager/public_link/inputs.html:48
 #: manager/public_link/list.html:9
 msgid "In footer"
 msgstr ""
 
-#: manager/public_link/inputs.html:34
+#: manager/public_link/inputs.html:38
 #: manager/public_link/list.html:7
 msgid "In header"
 msgstr ""
@@ -507,15 +507,15 @@ msgstr ""
 msgid "Login"
 msgstr ""
 
-#: account/const.js:9
+#: account/const.js:12
 msgid "Login on site"
 msgstr ""
 
-#: account/const.js:14
+#: account/const.js:17
 msgid "Logout"
 msgstr ""
 
-#: account/const.js:16
+#: account/const.js:19
 msgid "Logout from site"
 msgstr ""
 
@@ -528,9 +528,9 @@ msgid "Manager description"
 msgstr ""
 
 #: post/const.js:18
-#: post/inputs/central.html:25
+#: post/inputs/central.html:28
 #: project/const.js:18
-#: project/inputs/central.html:25
+#: project/inputs/central.html:27
 msgid "Markdown"
 msgstr ""
 
@@ -576,7 +576,7 @@ msgstr ""
 #: manager/html_cache/list.html:5
 #: manager/meta_tag/inputs.html:2
 #: manager/meta_tag/list.html:5
-#: manager/properties/inputs.html:7
+#: manager/properties/inputs.html:2
 #: manager/properties/list.html:5
 #: post/inputs/right.html:2
 #: project/inputs/right.html:2
@@ -613,7 +613,7 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: account/const.js:41
+#: account/const.js:44
 msgid "Password is empty!"
 msgstr ""
 
@@ -633,8 +633,8 @@ msgstr ""
 msgid "Please enter you email address used on registration"
 msgstr ""
 
-#: manager/meta_tag/inputs.html:16
-#: manager/public_link/inputs.html:29
+#: manager/meta_tag/inputs.html:6
+#: manager/public_link/inputs.html:33
 msgid "Position"
 msgstr ""
 
@@ -658,15 +658,15 @@ msgstr ""
 msgid "Posts description"
 msgstr ""
 
-#: account/const.js:19
+#: account/const.js:22
 msgid "Profile"
 msgstr ""
 
-#: account/const.js:21
+#: account/const.js:24
 msgid "Profile of user"
 msgstr ""
 
-#: account/const.js:54
+#: account/const.js:57
 msgid "Profile updated!"
 msgstr ""
 
@@ -730,11 +730,11 @@ msgstr ""
 msgid "Public links description"
 msgstr ""
 
-#: account/const.js:29
+#: account/const.js:32
 msgid "Recovery access"
 msgstr ""
 
-#: account/const.js:31
+#: account/const.js:34
 msgid "Recovery access to site"
 msgstr ""
 
@@ -742,19 +742,20 @@ msgstr ""
 msgid "Redirect uris"
 msgstr ""
 
-#: account/const.js:4
+#: account/const.js:7
 msgid "Registration form"
 msgstr ""
 
-#: account/const.js:6
+#: account/const.js:9
 msgid "Registration on site"
 msgstr ""
 
-#: account/const.js:34
+#: account/const.js:37
+#: account/const.js:4
 msgid "Reset password"
 msgstr ""
 
-#: account/const.js:36
+#: account/const.js:39
 msgid "Reset password for account"
 msgstr ""
 
@@ -765,7 +766,7 @@ msgstr ""
 #: account/profile.html:14
 #: account/user_app/user_app.svc.js:52
 #: file/file.svc.js:90
-#: manager/html_cache/htm_cache.svc.js:113
+#: manager/html_cache/htm_cache.svc.js:126
 #: manager/meta_tag/meta_tag.svc.js:52
 #: manager/properties/properties.svc.js:51
 #: manager/public_link/public_link.svc.js:56
@@ -799,8 +800,8 @@ msgid "search text"
 msgstr ""
 
 #: file/file.svc.js:29
-#: post/inputs/central.html:37
-#: project/inputs/central.html:37
+#: post/inputs/central.html:42
+#: project/inputs/central.html:41
 msgid "Select"
 msgstr ""
 
@@ -859,16 +860,16 @@ msgstr ""
 #: manager/tag/inputs.html:2
 #: manager/tag/list.html:5
 #: post/const.js:9
-#: post/inputs/central.html:10
+#: post/inputs/central.html:13
 #: project/const.js:9
-#: project/inputs/central.html:10
+#: project/inputs/central.html:12
 msgid "Text"
 msgstr ""
 
-#: manager/public_link/inputs.html:6
+#: manager/public_link/inputs.html:8
 #: manager/public_link/list.html:6
-#: post/inputs/central.html:2
-#: project/inputs/central.html:2
+#: post/inputs/central.html:5
+#: project/inputs/central.html:4
 msgid "Title"
 msgstr ""
 
@@ -879,9 +880,9 @@ msgstr ""
 
 #: file/list.html:26
 #: post/const.js:15
-#: post/inputs/central.html:20
+#: post/inputs/central.html:23
 #: project/const.js:15
-#: project/inputs/central.html:20
+#: project/inputs/central.html:22
 msgid "Url"
 msgstr ""
 
@@ -897,19 +898,19 @@ msgstr ""
 msgid "User <strong>%s</strong> updated!"
 msgstr ""
 
-#: account/const.js:45
+#: account/const.js:48
 msgid "User not activated!"
 msgstr ""
 
-#: account/const.js:43
+#: account/const.js:46
 msgid "User not founded!"
 msgstr ""
 
-#: account/const.js:39
+#: account/const.js:42
 msgid "User with email <strong>%s</strong> is exists!"
 msgstr ""
 
-#: account/const.js:50
+#: account/const.js:53
 msgid "User with email <strong>%s</strong> not found!"
 msgstr ""
 
@@ -925,7 +926,7 @@ msgstr ""
 msgid "Users description"
 msgstr ""
 
-#: manager/properties/inputs.html:11
+#: manager/properties/inputs.html:9
 #: manager/properties/list.html:6
 msgid "Value"
 msgstr ""
@@ -935,7 +936,7 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: account/const.js:44
+#: account/const.js:47
 msgid "Wrong password!"
 msgstr ""
 
@@ -943,7 +944,7 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: account/const.js:47
+#: account/const.js:50
 msgid "You authorizing!"
 msgstr ""
 
@@ -951,6 +952,6 @@ msgstr ""
 msgid "You name"
 msgstr ""
 
-#: account/const.js:46
+#: account/const.js:49
 msgid "You not activated!"
 msgstr ""

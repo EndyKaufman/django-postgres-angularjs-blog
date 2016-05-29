@@ -68,20 +68,10 @@ def update(request):
 
     user = helpers.get_user(request)
 
-    if data['email'] is not None:
-        user.email = data['email']
+    helpers.json_to_objects(user, data)
 
     if data['password'] is not None:
         user.set_password(data['password'])
-
-    if data['username'] is not None:
-        user.username = data['username']
-
-    if data['firstname'] is not None:
-        user.first_name = data['firstname']
-
-    if data['lastname'] is not None:
-        user.last_name = data['lastname']
 
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.save()
@@ -188,20 +178,11 @@ def reset(request):
             user = False
 
     if user.is_active and code:
-        if data['email'] is not None:
-            user.email = data['email']
 
         if data['password'] is not None:
             user.set_password(data['password'])
 
-        if data['username'] is not None:
-            user.username = data['username']
-
-        if data['firstname'] is not None:
-            user.first_name = data['firstname']
-
-        if data['lastname'] is not None:
-            user.last_name = data['lastname']
+        helpers.json_to_objects(user, data)
 
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()

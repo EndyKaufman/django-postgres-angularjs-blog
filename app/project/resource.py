@@ -7,22 +7,7 @@ def update_from_json_data(request, item, data, user):
     from app.image.models import Image
     from app.tag.models import Tag
 
-    if data['title'] is not None:
-        item.title = data['title']
-    if data['name'] is not None:
-        item.name = data['name']
-    if data['description'] is not None:
-        item.description = data['description']
-    if data['url'] is not None:
-        item.url = data['url']
-    if data['text'] is not None:
-        item.text = data['text']
-    if data['html'] is not None:
-        item.html = data['html']
-    if data['markdown'] is not None:
-        item.markdown = data['markdown']
-    if data['type'] is not None:
-        item.type = data['type']
+    helpers.json_to_objects(item, data)
 
     if item.type is None:
         item.type = 1

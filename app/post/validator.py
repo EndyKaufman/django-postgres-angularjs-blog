@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from project import helpers
 import resource
-
+from django.utils.translation import get_language
 
 def create(request):
     data = request.DATA
@@ -13,9 +13,9 @@ def create(request):
 
     if data['name'] is None:
         return {'code': 'post/no_name'}, 404, False
-    if data['title'] is None:
+    if data['title_%s' % get_language()] is None:
         return {'code': 'post/no_title'}, 404, False
-    if data['description'] is None:
+    if data['description_%s' % get_language()] is None:
         return {'code': 'post/no_description'}, 404, False
 
     user = helpers.get_user(request)
@@ -45,9 +45,9 @@ def update(request, post_id):
 
     if data['name'] is None:
         return {'code': 'post/no_name'}, 404, False
-    if data['title'] is None:
+    if data['title_%s' % get_language()] is None:
         return {'code': 'post/no_title'}, 404, False
-    if data['description'] is None:
+    if data['description_%s' % get_language()] is None:
         return {'code': 'post/no_description'}, 404, False
 
     user = helpers.get_user(request)

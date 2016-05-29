@@ -16,12 +16,12 @@ def create(request):
 
     from app.manager.models import PublicLink
 
-    item, created = PublicLink.objects.get_or_create(src=data['src'], title=data['title'],
-                                                     icon=data['icon'], in_header=data['in_header'],
-                                                     in_footer=data['in_footer'],
-                                                     position=data['position'],
-                                                     in_contact=data['in_contact'],
-                                                     created_user=user)
+    item, created = PublicLink.objects.get_or_create(src=data['src'])
+
+    if created:
+        helpers.json_to_objects(item, data)
+        item.created_user = user
+        item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
@@ -42,21 +42,7 @@ def update(request, public_link_id):
     except PublicLink.DoesNotExist:
         return {'code': 'public_link/not_found', 'values': [public_link_id]}, 404, False
 
-    if data['src'] is not None:
-        item.src = data['src']
-    if data['title'] is not None:
-        item.title = data['title']
-    if data['icon'] is not None:
-        item.icon = data['icon']
-    if data['in_header'] is not None:
-        item.in_header = data['in_header']
-    if data['in_footer'] is not None:
-        item.in_footer = data['in_footer']
-    if data['position'] is not None:
-        item.position = data['position']
-    if data['in_contact'] is not None:
-        item.in_contact = data['in_contact']
-
+    helpers.json_to_objects(item, data)
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

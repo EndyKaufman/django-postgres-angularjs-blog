@@ -1,52 +1,152 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<url>
-  <loc>{{ config.host_name }}</loc>
-  <changefreq>hourly</changefreq>
-  <priority>1.00</priority>
-</url>
-<url>
-  <loc>{{ config.host_name }}/contact</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>{{ config.host_name }}/account/login</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>{{ config.host_name }}/account/reg</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>{{ config.host_name }}/project</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-<url>
-  <loc>{{ config.host_name }}/post</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-{% for project in project_list %}<url>
-  <loc>{{ config.host_name }}/project/{{ project.name }}</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-{% endfor %}{% for post in post_list %}<url>
-  <loc>{{ config.host_name }}/post/{{ post.name }}</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-{% endfor %}{% for tag in tag_list %}<url>
-  <loc>{{ config.host_name }}/tag/{{ tag.text }}</loc>
-  <changefreq>hourly</changefreq>
-  <priority>0.80</priority>
-</url>
-{% endfor %}</urlset>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>{{ config.host_name }}</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name |safe}}"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name |safe}}/{{lang_item.code}}"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>1.00</priority>
+    </url>
+    <url>
+        <loc>{{ config.host_name }}/contact</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name |safe}}/contact"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name |safe}}/{{lang_item.code}}/contact"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ config.host_name }}/account/login</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name |safe}}/account/login"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name |safe}}/{{lang_item.code}}/account/login"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ config.host_name }}/account/reg</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name |safe}}/account/reg"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name |safe}}/{{lang_item.code}}/account/reg"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ config.host_name }}/project</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name |safe}}/project"
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name |safe}}/{{lang_item.code}}/project"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ config.host_name }}/post</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name |safe}}/post"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name |safe}}/{{lang_item.code}}/post"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    {% for project in project_list %}
+    <url>
+        <loc>{{ config.host_name }}/project/{{ project.name }}</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name }}/project/{{ project.name }}"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name }}/{{lang_item.code}}/project/{{ project.name }}"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    {% endfor %}{% for post in post_list %}
+    <url>
+        <loc>{{ config.host_name }}/post/{{ post.name }}</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name }}/post/{{ post.name }}"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name }}/{{lang_item.code}}/post/{{ post.name }}"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    {% endfor %}{% for tag in tag_list %}
+    <url>
+        <loc>{{ config.host_name }}/tag/{{ tag.text }}</loc>
+        {% for lang_item in lang_list %}{% if lang_item.code == lang %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang}}"
+                href="{{ config.host_name }}/tag/{{ tag.text }}"/>
+        {% else %}
+        <xhtml:link
+                rel="alternate"
+                hreflang="{{lang_item.code}}"
+                href="{{ config.host_name }}/{{lang_item.code}}/tag/{{ tag.text }}"/>
+        {% endif %}{% endfor %}
+        <changefreq>hourly</changefreq>
+        <priority>0.80</priority>
+    </url>
+    {% endfor %}
+</urlset>

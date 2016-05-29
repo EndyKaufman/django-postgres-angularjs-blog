@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from project import helpers
 import resource
+from django.utils.translation import get_language
 
 
 def create(request):
@@ -13,9 +14,9 @@ def create(request):
 
     if data['name'] is None:
         return {'code': 'project/no_name'}, 404, False
-    if data['title'] is None:
+    if data['title_%s' % get_language()] is None:
         return {'code': 'project/no_title'}, 404, False
-    if data['description'] is None:
+    if data['description_%s' % get_language()] is None:
         return {'code': 'project/no_description'}, 404, False
 
     user = helpers.get_user(request)
@@ -42,6 +43,13 @@ def update(request, project_id):
         return {'code': 'no_data'}, 404, False
 
     data = helpers.set_null_values_if_not_exist(data, resource.get_fields())
+
+    if data['name'] is None:
+        return {'code': 'project/no_name'}, 404, False
+    if data['title_%s' % get_language()] is None:
+        return {'code': 'project/no_title'}, 404, False
+    if data['description_%s' % get_language()] is None:
+        return {'code': 'project/no_description'}, 404, False
 
     user = helpers.get_user(request)
 

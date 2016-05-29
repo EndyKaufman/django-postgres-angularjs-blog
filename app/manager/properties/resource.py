@@ -16,9 +16,13 @@ def create(request):
 
     from app.manager.models import Properties
 
-    item, created = Properties.objects.get_or_create(name=data['name'], value=data['value'],
-                                                     comment=data['comment'],
-                                                     created_user=user, only_update=0)
+    item, created = Properties.objects.get_or_create(name=data['name'])
+
+    if created:
+        helpers.json_to_objects(item, data)
+        item.created_user = user
+        item.only_update = 0
+        item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
@@ -39,14 +43,8 @@ def update(request, properties_id):
     except Properties.DoesNotExist:
         return {'code': 'properties/not_found', 'values': [properties_id]}, 404, False
 
-    if data['name'] is not None:
-        item.name = data['name']
-    if data['value'] is not None:
-        item.value = data['value']
-    if data['comment'] is not None:
-        item.comment = data['comment']
-
-    item.created_user = user
+    helpers.json_to_objects(item, data)
+    item.only_update = 0
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

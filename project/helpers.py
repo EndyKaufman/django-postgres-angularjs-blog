@@ -11,6 +11,7 @@ import hashlib
 import os.path
 import os
 import shutil
+import datetime
 from transliterate import slugify
 
 
@@ -198,6 +199,16 @@ def get_thumbnail_url(request, url):
             request.get_host(), settings.MEDIA_URL, thumbnail)
     else:
         return False
+
+
+def json_to_objects(obj, json_data, ignored_fields=['id', 'pk', 'created', 'updated', 'only_update', 'created_user']):
+    for key in json_data:
+        if getattr(obj, key, None) is not None and key.lower() not in ignored_fields:
+            if isinstance(getattr(obj, key, None), datetime.datetime):
+                setattr(obj, key, datetime.datetime.strptime(json_data[key], '%Y-%m-%dT%H:%M:%S.%fZ'))
+            else:
+                if 'django' not in str(type(getattr(obj, key, None))):
+                    setattr(obj, key, json_data[key])
 
 
 def objects_to_json(request, items):

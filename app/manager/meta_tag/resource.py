@@ -16,9 +16,12 @@ def create(request):
 
     from app.manager.models import MetaTag
 
-    item, created = MetaTag.objects.get_or_create(name=data['name'], content=data['content'],
-                                                  attributes=data['attributes'],
-                                                  position=data['position'], created_user=user)
+    item, created = MetaTag.objects.get_or_create(name=data['name'])
+
+    if created:
+        helpers.json_to_objects(item, data)
+        item.created_user = user
+        item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
@@ -39,16 +42,7 @@ def update(request, meta_tag_id):
     except MetaTag.DoesNotExist:
         return {'code': 'meta_tag/not_found', 'values': [meta_tag_id]}, 404, False
 
-    if data['name'] is not None:
-        item.name = data['name']
-    if data['content'] is not None:
-        item.content = data['content']
-    if data['attributes'] is not None:
-        item.attributes = data['attributes'],
-    if data['position'] is not None:
-        item.position = data['position']
-
-    item.created_user = user
+    helpers.json_to_objects(item, data)
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

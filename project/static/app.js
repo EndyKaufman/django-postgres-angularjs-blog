@@ -76833,6 +76833,9 @@ app.config(function($selectProvider, showErrorsConfigProvider, $carouselProvider
 });
 app.factory('AccountConst', function(gettext) {
     return {
+        strings: {
+            'mail/subject/reset_password': gettext('Reset password')
+        },
         reg: {
             title: gettext('Registration form'),
             url: 'account/reg',
@@ -77451,38 +77454,46 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
     '    </tags-input>\n' +
     '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="ItemDescription" translate>Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
-    '                          ng-model="ProjectSvc.item.description" required></textarea>\n' +
+    '<div data-nq-tabset="" data-tabset-model="ItemDescriptionTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="ItemDescription_{{lang}}" translate>Description</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemDescription_{{lang}}" name="ItemDescription"\n' +
+    '                              ng-model="ProjectSvc.item[\'description_\'+lang]" required></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>');
-	a.put('views/project/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemTitle" translate>Title</label>\n' +
-    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="ProjectSvc.item.title"\n' +
-    '           ng-change="ProjectSvc.slugName(ProjectSvc.item.title)" required>\n' +
-    '    <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!projectForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==1">\n' +
-    '    <label for="ItemText" translate>Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="ProjectSvc.item.text" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==2">\n' +
-    '    <label for="ItemHtml" translate>Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="ProjectSvc.item.html" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==3">\n' +
-    '    <label for="ItemUrl" translate>Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="ProjectSvc.item.url" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="ProjectSvc.item.type==4">\n' +
-    '    <label for="ItemMarkdown" translate>Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="ProjectSvc.item.markdown" rows="15"></textarea>\n' +
+	a.put('views/project/inputs/central.html', '<div data-nq-tabset="" data-tabset-model="ItemDescriptionTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group has-feedback" show-errors>\n' +
+    '        <label for="ItemTitle_{{lang}}" translate>Title</label>\n' +
+    '        <input type="text" class="form-control" id="ItemTitle_{{lang}}" name="ItemTitle_{{lang}}" ng-model="ProjectSvc.item[\'title_\'+lang]"\n' +
+    '               ng-change="ProjectSvc.slugName(ProjectSvc.item[\'title\'+lang])" required>\n' +
+    '        <span ng-show="projectForm.$submitted || projectForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '              ng-class="!projectForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '              aria-hidden="true"></span>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="ProjectSvc.item.type==1">\n' +
+    '        <label for="ItemText_{{lang}}" translate>Text</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemText_{{lang}}"\n' +
+    '                              ng-model="ProjectSvc.item[\'text_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="ProjectSvc.item.type==2">\n' +
+    '        <label for="ItemHtml_{{lang}}" translate>Html</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemHtml_{{lang}}"\n' +
+    '                              ng-model="ProjectSvc.item[\'html_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="ProjectSvc.item.type==3">\n' +
+    '        <label for="ItemUrl_{{lang}}" translate>Url</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemUrl_{{lang}}"\n' +
+    '                              ng-model="ProjectSvc.item[\'url_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="ProjectSvc.item.type==4">\n' +
+    '        <label for="ItemMarkdown_{{lang}}" translate>Markdown</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemMarkdown_{{lang}}"\n' +
+    '                              ng-model="ProjectSvc.item[\'markdown_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>\n' +
     '<div class="form-group" ng-repeat="image in ProjectSvc.item.images track by image.id">\n' +
     '    <label for="{{\'ItemImage\'+($index+1)}}" translate translate-n="($index+1)" translate-plural="Image {{$count}}"></label>\n' +
@@ -77523,38 +77534,47 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <auto-complete source="TagSvc.searchTag($query)"></auto-complete>\n' +
     '    </tags-input>\n' +
     '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="ItemDescription" translate>Description</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemDescription" name="ItemDescription"\n' +
-    '                          ng-model="PostSvc.item.description" required></textarea>\n' +
+    '<div data-nq-tabset="" data-tabset-model="ItemDescriptionTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="ItemDescription_{{lang}}" translate>Description</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemDescription_{{lang}}" name="ItemDescription"\n' +
+    '                              ng-model="PostSvc.item[\'description_\'+lang]" required></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>');
-	a.put('views/post/inputs/central.html', '<div class="form-group has-feedback" show-errors>\n' +
-    '    <label for="ItemTitle" translate>Title</label>\n' +
-    '    <input type="text" class="form-control" id="ItemTitle" name="ItemTitle" ng-model="PostSvc.item.title"\n' +
-    '           ng-change="PostSvc.slugName(PostSvc.item.title)" required>\n' +
-    '    <span ng-show="postForm.$submitted || postForm.ItemTitle.$touched" class="form-control-feedback"\n' +
-    '          ng-class="!postForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
-    '          aria-hidden="true"></span>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==1">\n' +
-    '    <label for="ItemText" translate>Text</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemText"\n' +
-    '                          ng-model="PostSvc.item.text" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==2">\n' +
-    '    <label for="ItemHtml" translate>Html</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemHtml"\n' +
-    '                          ng-model="PostSvc.item.html" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==3">\n' +
-    '    <label for="ItemUrl" translate>Url</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemUrl"\n' +
-    '                          ng-model="PostSvc.item.url" rows="15"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group has-feedback" ng-if="PostSvc.item.type==4">\n' +
-    '    <label for="ItemMarkdown" translate>Markdown</label>\n' +
-    '                <textarea type="text" class="form-control" id="ItemMarkdown"\n' +
-    '                          ng-model="PostSvc.item.markdown" rows="15"></textarea>\n' +
+	a.put('views/post/inputs/central.html', '\n' +
+    '<div data-nq-tabset="" data-tabset-model="ItemDescriptionTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group has-feedback" show-errors>\n' +
+    '        <label for="ItemTitle_{{lang}}" translate>Title</label>\n' +
+    '        <input type="text" class="form-control" id="ItemTitle_{{lang}}" name="ItemTitle_{{lang}}" ng-model="PostSvc.item[\'title_\'+lang]"\n' +
+    '               ng-change="PostSvc.slugName(PostSvc.item[\'title\'+lang])" required>\n' +
+    '        <span ng-show="postForm.$submitted || postForm.ItemTitle.$touched" class="form-control-feedback"\n' +
+    '              ng-class="!postForm.ItemTitle.$valid ? \'glyphicon glyphicon-remove\' : \'glyphicon glyphicon-ok\'"\n' +
+    '              aria-hidden="true"></span>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="PostSvc.item.type==1">\n' +
+    '        <label for="ItemText_{{lang}}" translate>Text</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemText_{{lang}}"\n' +
+    '                              ng-model="PostSvc.item[\'text_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="PostSvc.item.type==2">\n' +
+    '        <label for="ItemHtml_{{lang}}" translate>Html</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemHtml_{{lang}}"\n' +
+    '                              ng-model="PostSvc.item[\'html_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="PostSvc.item.type==3">\n' +
+    '        <label for="ItemUrl_{{lang}}" translate>Url</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemUrl_{{lang}}"\n' +
+    '                              ng-model="PostSvc.item[\'url_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '    <div class="form-group has-feedback" ng-if="PostSvc.item.type==4">\n' +
+    '        <label for="ItemMarkdown_{{lang}}" translate>Markdown</label>\n' +
+    '                    <textarea type="text" class="form-control" id="ItemMarkdown_{{lang}}"\n' +
+    '                              ng-model="PostSvc.item[\'markdown_\'+lang]" rows="15"></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>\n' +
     '<div class="form-group" ng-repeat="image in PostSvc.item.images track by image.id">\n' +
     '    <label for="{{\'ItemImage\'+($index+1)}}" translate translate-n="($index+1)" translate-plural="Image {{$count}}"></label>\n' +
@@ -77613,7 +77633,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        ng-class="(TagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
     '        <td ng-bind="item.id" ng-click="TagSvc.selectItem(item)"></td>\n' +
     '        <td ng-bind="item.text" ng-click="TagSvc.selectItem(item)"></td>\n' +
-    '        <td class="break-word" ng-bind="item.description" ng-click="TagSvc.selectItem(item)"></td>\n' +
+    '        <td class="break-word" ng-bind="item[\'description_\'+AppLang.getCurrent()]" ng-click="TagSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
     '            <button ng-click="TagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
     '                    id="{{\'tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate>\n' +
@@ -77635,10 +77655,14 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <input type="text" class="form-control" id="TagText"\n' +
     '           ng-model="TagSvc.item.text"/>\n' +
     '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="TagDescription" translate>Description</label>\n' +
-    '    <textarea class="form-control" id="TagDescription"\n' +
-    '              ng-model="TagSvc.item.description"></textarea>\n' +
+    '<div data-nq-tabset="" data-tabset-model="TagDescriptionTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="TagDescription_{{lang}}" translate>Description</label>\n' +
+    '        <textarea class="form-control" id="TagDescription_{{lang}}"\n' +
+    '                  ng-model="TagSvc.item[\'description_\'+lang]"></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>');
 	a.put('views/manager/tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
@@ -77711,7 +77735,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        <td ng-click="PublicLinkSvc.selectItem(item)">\n' +
     '            <i class="{{(item.icon==\'\')?\'fa\':item.icon}}"></i>\n' +
     '        </td>\n' +
-    '        <td class="break-word" ng-bind="item.title" ng-click="PublicLinkSvc.selectItem(item)"></td>\n' +
+    '        <td class="break-word" ng-bind="item[\'title_\'+AppLang.getCurrent()]" ng-click="PublicLinkSvc.selectItem(item)"></td>\n' +
     '        <td ng-bind="(item.in_header==1)?\'Yes\':\'No\'" ng-click="PublicLinkSvc.selectItem(item)"></td>\n' +
     '        <td ng-bind="(item.in_contact)?\'Yes\':\'No\'" ng-click="PublicLinkSvc.selectItem(item)"></td>\n' +
     '        <td ng-bind="(item.in_footer)?\'Yes\':\'No\'" ng-click="PublicLinkSvc.selectItem(item)"></td>\n' +
@@ -77735,15 +77759,19 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <label for="PublicLinkSrc" translate>Src</label>\n' +
     '    <input class="form-control" type="text" id="PublicLinkSrc" ng-model="PublicLinkSvc.item.src"/>\n' +
     '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="PublicLinkTitle" translate>Title</label>\n' +
-    '    <input type="text" class="form-control" id="PublicLinkTitle"\n' +
-    '           ng-model="PublicLinkSvc.item.title"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="PublicLinkDescription" translate>Description</label>\n' +
-    '    <textarea class="form-control" id="PublicLinkDescription"\n' +
-    '              ng-model="PublicLinkSvc.item.description"></textarea>\n' +
+    '<div data-nq-tabset="" data-tabset-model="PublicLinkTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="PublicLinkTitle_{{lang}}" translate>Title</label>\n' +
+    '        <input type="text" class="form-control" id="PublicLinkTitle_{{lang}}"\n' +
+    '               ng-model="PublicLinkSvc.item[\'title_\'+lang]"/>\n' +
+    '    </div>\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="PublicLinkDescription_{{lang}}" translate>Description</label>\n' +
+    '        <textarea class="form-control" id="PublicLinkDescription_{{lang}}"\n' +
+    '                  ng-model="PublicLinkSvc.item[\'description_\'+lang]"></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>\n' +
     '<div class="form-group">\n' +
     '    <label for="PublicLinkIcon" translate>Icon</label>\n' +
@@ -77843,7 +77871,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        ng-class="(PropertiesSvc.item.id==item.id)?\'bold\':\'\'">\n' +
     '        <td ng-bind="item.id" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
     '        <td ng-bind="item.name" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
-    '        <td class="break-word" ng-bind="item.value" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
+    '        <td class="break-word" ng-bind="item[\'value_\'+AppLang.getCurrent()]" ng-click="PropertiesSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
     '            <button ng-click="PropertiesSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
     '                    id="{{\'properties\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate>\n' +
@@ -77861,18 +77889,24 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <i class="fa fa-plus"></i> <translate>Create</translate>\n' +
     '</button>');
 	a.put('views/manager/properties/inputs.html', '<div class="form-group">\n' +
-    '    <label for="PropertiesComment" translate>Comment</label>\n' +
-    '    <textarea class="form-control" id="PropertiesComment"\n' +
-    '              ng-model="PropertiesSvc.item.comment" ng-disabled="PropertiesSvc.item.only_update==1"></textarea>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
     '    <label for="PropertiesName" translate>Name</label>\n' +
     '    <input class="form-control" type="text" id="PropertiesName" ng-model="PropertiesSvc.item.name" ng-disabled="PropertiesSvc.item.only_update==1"/>\n' +
     '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="PropertiesValue" translate>Value</label>\n' +
-    '    <textarea class="form-control" id="PropertiesValue"\n' +
-    '              ng-model="PropertiesSvc.item.value"></textarea>\n' +
+    '\n' +
+    '<div data-nq-tabset="" data-tabset-model="PropertiesCommentTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="PropertiesValue_{{lang}}" translate>Value</label>\n' +
+    '        <textarea class="form-control" id="PropertiesValue_{{lang}}"\n' +
+    '                  ng-model="PropertiesSvc.item[\'value_\'+lang]"></textarea>\n' +
+    '    </div>\n' +
+    '\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="PropertiesComment_{{lang}}" translate>Comment</label>\n' +
+    '        <textarea class="form-control" id="PropertiesComment_{{lang}}"\n' +
+    '                  ng-model="PropertiesSvc.item[\'comment_\'+lang]" ng-disabled="PropertiesSvc.item.only_update==1"></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>');
 	a.put('views/manager/properties/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
@@ -77940,7 +77974,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        ng-class="(MetaTagSvc.item.id==item.id)?\'bold\':\'\'">\n' +
     '        <td ng-bind="item.id" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
     '        <td ng-bind="item.name" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
-    '        <td class="break-word" ng-bind="item.content" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
+    '        <td class="break-word" ng-bind="item[\'content_\'+AppLang.getCurrent()]" ng-click="MetaTagSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
     '            <button ng-click="MetaTagSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
     '                    id="{{\'meta_tag\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate>\n' +
@@ -77962,18 +77996,22 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <input class="form-control" type="text" id="MetaTagName" ng-model="MetaTagSvc.item.name"/>\n' +
     '</div>\n' +
     '<div class="form-group">\n' +
-    '    <label for="MetaTagContent" translate>Content</label>\n' +
-    '    <input type="text" class="form-control" id="MetaTagContent"\n' +
-    '           ng-model="MetaTagSvc.item.content"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="MetaTagAttributes" translate>Attributes</label>\n' +
-    '    <input type="text" class="form-control" id="MetaTagAttributes"\n' +
-    '           ng-model="MetaTagSvc.item.attributes"/>\n' +
-    '</div>\n' +
-    '<div class="form-group">\n' +
     '    <label for="MetaTagPosition" translate>Position</label>\n' +
     '    <input class="form-control" type="text" id="MetaTagPosition" ng-model="MetaTagSvc.item.position"/>\n' +
+    '</div>\n' +
+    '<div data-nq-tabset="" data-tabset-model="MetaTagTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="MetaTagContent_{{lang}}" translate>Content</label>\n' +
+    '        <input type="text" class="form-control" id="MetaTagContent_{{lang}}"\n' +
+    '               ng-model="MetaTagSvc.item[\'content_\'+lang]"/>\n' +
+    '    </div>\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="MetaTagAttributes_{{lang}}" translate>Attributes</label>\n' +
+    '        <input type="text" class="form-control" id="MetaTagAttributes_{{lang}}"\n' +
+    '               ng-model="MetaTagSvc.item[\'attributes_\'+lang]"/>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>');
 	a.put('views/manager/meta_tag/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
@@ -78506,7 +78544,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/project/list-item.html', '<a class="col-md-4 col-sm-4 col-xs-12" ng-href="{{AppLang.getUrlPrefix()+\'/project/\'+item.name}}" ng-if="item.images.length>0">\n' +
     '    <img class="img-responsive project-image" ng-src="{{item.images[0].src_thumbnail_url}}"\n' +
     '         ng-if="item.images.length>0"\n' +
-    '         alt="{{item.title}}"/>\n' +
+    '         alt="{{item[\'title_\'+AppLang.getCurrent()]}}"/>\n' +
     '</a>\n' +
     '<div class="desc col-xs-12" ng-class="item.images.length>0?\'col-md-8 col-sm-8\':\'col-md-12 col-sm-12\'">\n' +
     '    <div class="pull-right">\n' +
@@ -78523,9 +78561,9 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </a>\n' +
     '    </div>\n' +
     '    <h3 class="title">\n' +
-    '        <a ng-href="{{AppLang.getUrlPrefix()+\'/project/\'+item.name}}" ng-bind-html="item.title | unsafe"></a>\n' +
+    '        <a ng-href="{{AppLang.getUrlPrefix()+\'/project/\'+item.name}}" ng-bind-html="item[\'title_\'+AppLang.getCurrent()] | unsafe"></a>\n' +
     '    </h3>\n' +
-    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '    <p ng-bind-html="item[\'description_\'+AppLang.getCurrent()] | unsafe"></p>\n' +
     '    <p ng-if="item.tags.length>0">\n' +
     '        <span ng-repeat="tag in item.tags">\n' +
     '            <i class="fa fa-tag"></i>\n' +
@@ -78550,7 +78588,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
     '                    <h1 class="heading">\n' +
-    '                        <span ng-bind-html="ProjectSvc.item.title | unsafe"></span>\n' +
+    '                        <span ng-bind-html="ProjectSvc.item[\'title_\'+AppLang.getCurrent()] | unsafe"></span>\n' +
     '                        <a ng-href="{{AppLang.getUrlPrefix()+\'/project/update/\'+ProjectSvc.item.name}}"\n' +
     '                           class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="projectUpdate"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate></a>\n' +
     '                    </h1>\n' +
@@ -78568,7 +78606,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="section-inner">\n' +
     '                    <h2 class="heading" translate>Description</h2>\n' +
     '                    <div class="content">\n' +
-    '                        <span ng-bind-html="ProjectSvc.item.description | unsafe"></span>\n' +
+    '                        <span ng-bind-html="ProjectSvc.item[\'description_\'+AppLang.getCurrent()] | unsafe"></span>\n' +
     '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </aside><!--//section-->\n' +
@@ -78620,17 +78658,17 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '</div>\n' +
     '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
-    '    <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item.text">\n' +
-    '        <p ng-bind-html="ProjectSvc.item.text | unsafe"></p>\n' +
+    '    <div ng-if="ProjectSvc.item.type==1 && ProjectSvc.item[\'text_\'+AppLang.getCurrent()]">\n' +
+    '        <p ng-bind-html="ProjectSvc.item[\'text_\'+AppLang.getCurrent()] | unsafe"></p>\n' +
     '    </div>\n' +
-    '    <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item.html">\n' +
-    '        <p ng-bind-html="ProjectSvc.item.html | unsafe"></p>\n' +
+    '    <div ng-if="ProjectSvc.item.type==2 && ProjectSvc.item[\'html_\'+AppLang.getCurrent()]">\n' +
+    '        <p ng-bind-html="ProjectSvc.item[\'html_\'+AppLang.getCurrent()] | unsafe"></p>\n' +
     '    </div>\n' +
     '    <div ng-if="ProjectSvc.item.type==3 && ProjectSvc.item.url">\n' +
     '        <p ng-bind-html="ProjectSvc.item.url | unsafe"></p>\n' +
     '    </div>\n' +
-    '    <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item.markdown">\n' +
-    '        <p markdown-to-html="ProjectSvc.item.markdown">\n' +
+    '    <div ng-if="ProjectSvc.item.type==4 && ProjectSvc.item[\'markdown_\'+AppLang.getCurrent()]">\n' +
+    '        <p markdown-to-html="ProjectSvc.item[\'markdown_\'+AppLang.getCurrent()]">\n' +
     '        </p>\n' +
     '    </div>\n' +
     '</div><!--//desc-->');
@@ -78787,7 +78825,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
 	a.put('views/post/list-item.html', '<a class="col-md-4 col-sm-4 col-xs-12" ng-href="{{AppLang.getUrlPrefix()+\'/post/\'+item.name}}" ng-if="item.images.length>0">\n' +
     '    <img class="img-responsive post-image" ng-src="{{item.images[0].src_thumbnail_url}}"\n' +
     '         ng-if="item.images.length>0"\n' +
-    '         alt="{{item.title}}"/>\n' +
+    '         alt="{{item[\'title_\'+AppLang.getCurrent()]}}"/>\n' +
     '</a>\n' +
     '<div class="desc col-xs-12" ng-class="item.images.length>0?\'col-md-8 col-sm-8\':\'col-md-12 col-sm-12\'">\n' +
     '    <div class="pull-right">\n' +
@@ -78804,9 +78842,9 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        </a>\n' +
     '    </div>\n' +
     '    <h3 class="title">\n' +
-    '        <a ng-href="{{AppLang.getUrlPrefix()+\'/post/\'+item.name}}" ng-bind-html="item.title | unsafe"></a>\n' +
+    '        <a ng-href="{{AppLang.getUrlPrefix()+\'/post/\'+item.name}}" ng-bind-html="item[\'title_\'+AppLang.getCurrent()] | unsafe"></a>\n' +
     '    </h3>\n' +
-    '    <p ng-bind-html="item.description | unsafe"></p>\n' +
+    '    <p ng-bind-html="item[\'description_\'+AppLang.getCurrent()] | unsafe"></p>\n' +
     '    <p ng-if="item.tags.length>0">\n' +
     '        <span ng-repeat="tag in item.tags">\n' +
     '            <i class="fa fa-tag"></i>\n' +
@@ -78831,7 +78869,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            <section class="latest section">\n' +
     '                <div class="section-inner">\n' +
     '                    <h1 class="heading">\n' +
-    '                        <span ng-bind-html="PostSvc.item.title | unsafe"></span>\n' +
+    '                        <span ng-bind-html="PostSvc.item[\'title_\'+AppLang.getCurrent()] | unsafe"></span>\n' +
     '                        <a ng-href="{{AppLang.getUrlPrefix()+\'/post/update/\'+PostSvc.item.name}}"\n' +
     '                           class="btn btn-cta-secondary pull-right btn-xs" ng-if="AccountSvc.isAdmin()" id="postUpdate"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate></a>\n' +
     '                    </h1>\n' +
@@ -78849,7 +78887,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <div class="section-inner">\n' +
     '                    <h2 class="heading" translate>Description</h2>\n' +
     '                    <div class="content">\n' +
-    '                        <span ng-bind-html="PostSvc.item.description | unsafe"></span>\n' +
+    '                        <span ng-bind-html="PostSvc.item[\'description_\'+AppLang.getCurrent()] | unsafe"></span>\n' +
     '                    </div><!--//content-->\n' +
     '                </div><!--//section-inner-->\n' +
     '            </aside><!--//section-->\n' +
@@ -78901,17 +78939,17 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    </div>\n' +
     '</div>\n' +
     '<div class="desc col-md-12 col-sm-12 col-xs-12">\n' +
-    '    <div ng-if="PostSvc.item.type==1 && PostSvc.item.text">\n' +
-    '        <p ng-bind-html="PostSvc.item.text | unsafe"></p>\n' +
+    '    <div ng-if="PostSvc.item.type==1 && PostSvc.item[\'text_\'+AppLang.getCurrent()]">\n' +
+    '        <p ng-bind-html="PostSvc.item[\'text_\'+AppLang.getCurrent()] | unsafe"></p>\n' +
     '    </div>\n' +
-    '    <div ng-if="PostSvc.item.type==2 && PostSvc.item.html">\n' +
-    '        <p ng-bind-html="PostSvc.item.html | unsafe"></p>\n' +
+    '    <div ng-if="PostSvc.item.type==2 && PostSvc.item[\'html_\'++AppLang.getCurrent()]">\n' +
+    '        <p ng-bind-html="PostSvc.item[\'html_\'++AppLang.getCurrent()] | unsafe"></p>\n' +
     '    </div>\n' +
     '    <div ng-if="PostSvc.item.type==3 && PostSvc.item.url">\n' +
     '        <p ng-bind-html="PostSvc.item.url | unsafe"></p>\n' +
     '    </div>\n' +
-    '    <div ng-if="PostSvc.item.type==4 && PostSvc.item.markdown">\n' +
-    '        <p markdown-to-html="PostSvc.item.markdown">\n' +
+    '    <div ng-if="PostSvc.item.type==4 && PostSvc.item[\'markdown_\'+AppLang.getCurrent()]">\n' +
+    '        <p markdown-to-html="PostSvc.item[\'markdown_\'+AppLang.getCurrent()]">\n' +
     '        </p>\n' +
     '    </div>\n' +
     '</div><!--//desc-->');
@@ -79336,7 +79374,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '        ng-class="(FileSvc.item.id==item.id)?\'bold\':\'\'">\n' +
     '        <td ng-bind="item.id" ng-click="FileSvc.selectItem(item)"></td>\n' +
     '        <td class="break-word" ng-bind="item.src" ng-click="FileSvc.selectItem(item)"></td>\n' +
-    '        <td ng-bind="item.comment" ng-click="FileSvc.selectItem(item)"></td>\n' +
+    '        <td ng-bind="item[\'comment_\'+AppLang.getCurrent()]" ng-click="FileSvc.selectItem(item)"></td>\n' +
     '        <td class="text-right">\n' +
     '            <button ng-click="FileSvc.showUpdate(item)" class="btn btn-cta-default btn-xs" type="button"\n' +
     '                    id="{{\'file\'+item.id+\'Update\'}}"><i class="fa fa-pencil-square-o"></i> <translate>Edit</translate>\n' +
@@ -79357,10 +79395,14 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '    <input class="form-control" type="text" id="FileUpload"\n' +
     '                  ng-model="FileSvc.item.src" disabled/>\n' +
     '</div>\n' +
-    '<div class="form-group">\n' +
-    '    <label for="FileComment" translate>Comment</label>\n' +
-    '        <textarea type="text" class="form-control" id="FileComment"\n' +
-    '                  ng-model="FileSvc.item.comment"></textarea>\n' +
+    '<div data-nq-tabset="" data-tabset-model="FileCommentTabset">\n' +
+    '  <div ng-repeat="(lang, title) in AppLang.langs" data-nq-tab="" data-heading="{{title | translate}}">\n' +
+    '    <div class="form-group">\n' +
+    '        <label for="FileComment_{{lang}}" translate>Comment</label>\n' +
+    '            <textarea type="text" class="form-control" id="FileComment_{{lang}}"\n' +
+    '                      ng-model="FileSvc.item[\'comment_\'+lang]"></textarea>\n' +
+    '    </div>\n' +
+    '  </div>\n' +
     '</div>');
 	a.put('views/file/create.modal.html', '<div class="modal" tabindex="-1" role="dialog">\n' +
     '    <div class="modal-dialog">\n' +
@@ -79451,7 +79493,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '</div><!--//masonry-->');
 	a.put('views/contact/links.html', '<ul class="list-unstyled">\n' +
     '    <li ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_contact"><i ng-class="item.icon"></i> <a\n' +
-    '            ng-href="{{item.src}}" target="_blank" ng-bind="item.title"></a></li>\n' +
+    '            ng-href="{{item.src}}" target="_blank" ng-bind="item[\'title\'+AppLang.getCurrent()]"></a></li>\n' +
     '</ul>');
 	a.put('views/account/user_app.html', '<div ng-include="\'views/not-access.html\'" ng-if="!AccountSvc.isLogged()"></div>\n' +
     '<div class="container sections-wrapper" ng-if="AccountSvc.isLogged()">\n' +
@@ -79718,12 +79760,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '               ng-click="item.click()"\n' +
     '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe | translate"\n' +
     '               ng-if="item.click" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
+    '               ng-class="[$routeParams.navId, $routeParams.subNavId].indexOf(item.name)!==-1 ? \'active\' : \'\'"></a>\n' +
     '            <a class="btn btn-cta-primary pull-right"\n' +
     '               ng-href="{{AppLang.getUrlPrefix()+\'/\'+(AppConst[item.name].strings.url || AppConst[item.parent][item.name].url || item.name)}}"\n' +
     '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe | translate"\n' +
     '               ng-if="!item.click" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
+    '               ng-class="[$routeParams.navId, $routeParams.subNavId].indexOf(item.name)!==-1 ? \'active\' : \'\'"></a>\n' +
     '\n' +
     '        </div>\n' +
     '\n' +
@@ -79732,12 +79774,12 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '               ng-click="item.click()"\n' +
     '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe | translate"\n' +
     '               ng-if="item.click" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
+    '               ng-class="[$routeParams.navId, $routeParams.subNavId].indexOf(item.name)!==-1 ? \'active\' : \'\'"></a>\n' +
     '            <a class="btn btn-cta-primary pull-right"\n' +
     '               ng-href="{{AppLang.getUrlPrefix()+\'/\'+(AppConst[item.name].strings.url || AppConst[item.parent][item.name].url || item.name)}}"\n' +
     '               ng-bind-html="(AppConst[item.name].strings.title || AppConst[item.parent][item.name].title) | unsafe | translate"\n' +
     '               ng-if="!item.click" id="{{item.name+\'Nav\'}}"\n' +
-    '               ng-class="item.name==$routeParams.navId ? \'active\' : \'\'"></a>\n' +
+    '               ng-class="[$routeParams.navId, $routeParams.subNavId].indexOf(item.name)!==-1 ? \'active\' : \'\'"></a>\n' +
     '        </div>\n' +
     '    </div><!--//container-->\n' +
     '</header><!--//header-->');
@@ -79749,7 +79791,7 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '                <li ng-repeat="item in PublicLinkSvc.list | orderBy:\'position\'" ng-if="item.in_footer">\n' +
     '                    <a ng-href="{{item.src}}" target="_blank">\n' +
     '                        <i class="" ng-class="item.icon"></i>\n' +
-    '                        <span ng-bind="item.title"></span>\n' +
+    '                        <span ng-bind="item[\'title_\'+AppLang.getCurrent()]"></span>\n' +
     '                    </a>\n' +
     '                </li>\n' +
     '            </ul>\n' +
@@ -79807,16 +79849,17 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
             function(response) {
                 if (response !== null && response !== undefined && response.data !== undefined &&
                     response.data !== null && response.data.code !== undefined && response.data.code == 'ok') {
-                    deferred.resolve(response.data.data, response);
+                    deferred.resolve(response.data);
                 } else {
-                    deferred.resolve(response.data, response);
+                    MessageSvc.error(response.data.code, response.data);
+                    deferred.reject(response.data);
                 }
             },
             function(response) {
                 if (response !== null && response !== undefined && response.data !== undefined &&
                     response.data !== null && response.data.code !== undefined) {
                     MessageSvc.error(response.data.code, response.data);
-                    deferred.reject(response.data, response);
+                    deferred.reject(response.data);
                 } else
                     deferred.reject(null);
             }
@@ -79831,18 +79874,20 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
         data = angular.copy(data);
         $http.post(url, data).then(
             function(response) {
+                console.log(response);
                 if (response !== null && response !== undefined && response.data !== undefined &&
                     response.data !== null && response.data.code !== undefined && response.data.code == 'ok') {
-                    deferred.resolve(response.data.data, response);
+                    deferred.resolve(response.data);
                 } else {
-                    deferred.resolve(response.data, response);
+                    MessageSvc.error(response.data.code, response.data);
+                    deferred.reject(response.data);
                 }
             },
             function(response) {
                 if (response !== null && response !== undefined && response.data !== undefined &&
                     response.data !== null && response.data.code !== undefined) {
                     MessageSvc.error(response.data.code, response.data);
-                    deferred.reject(response.data, response);
+                    deferred.reject(response.data);
                 } else
                     deferred.reject(null);
             }
@@ -80178,7 +80223,7 @@ app.factory('AppSvc', function($rootScope, $q, $route, $timeout, $location, AppL
             service.item.short_title = AppProperties.get('SITE_TITLE');
         } else {
             items.push(AppProperties.get('SITE_TITLE'));
-            service.item.title = angular.copy(items).join(' - ');
+            service.item.title = items[0];
             service.item.short_title = items[0];
         }
         $('title').html(service.item.title);
@@ -80274,7 +80319,7 @@ app.factory('AccountSvc', function(AppLang,$q, $location, AppConst, AccountRes, 
 
         $q.all([
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
             service.setMeta();
         });
     };
@@ -80289,8 +80334,8 @@ app.factory('AccountSvc', function(AppLang,$q, $location, AppConst, AccountRes, 
     service.doReg = function() {
         $rootScope.$broadcast('show-errors-check-validity');
         AccountRes.actionReg(service.item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 AppConfig.user = service.item;
 
                 MessageSvc.info('account/create/success');
@@ -80302,7 +80347,7 @@ app.factory('AccountSvc', function(AppLang,$q, $location, AppConst, AccountRes, 
     service.doRecovery = function() {
         $rootScope.$broadcast('show-errors-check-validity');
         AccountRes.actionRecovery(service.item.email).then(
-            function(data) {
+            function(response) {
 
                 MessageSvc.info('account/recovery/check_email', {
                     values: [service.item.email]
@@ -80315,8 +80360,8 @@ app.factory('AccountSvc', function(AppLang,$q, $location, AppConst, AccountRes, 
     service.doReset = function() {
         $rootScope.$broadcast('show-errors-check-validity');
         AccountRes.actionReset(service.item.code, service.item.password).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 AppConfig.user = service.item;
 
                 MessageSvc.info('account/login/success');
@@ -80327,8 +80372,8 @@ app.factory('AccountSvc', function(AppLang,$q, $location, AppConst, AccountRes, 
 
     service.doLogin = function() {
         AccountRes.actionLogin(service.item.email, service.item.password).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 AppConfig.user = service.item;
 
                 MessageSvc.info('account/login/success');
@@ -80340,7 +80385,7 @@ app.factory('AccountSvc', function(AppLang,$q, $location, AppConst, AccountRes, 
         MessageSvc.confirm('account/logout/confirm', {},
             function() {
                 AccountRes.actionLogout().then(
-                    function(data) {
+                    function(response) {
                         service.clearItem();
 
                         MessageSvc.info('account/logout/success');
@@ -80395,7 +80440,7 @@ app.factory('ContactSvc', function($q, $location, AppConst, ContactRes, MessageS
     service.doSend = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         ContactRes.actionSend(item).then(
-            function(data) {
+            function(response) {
                 service.clearItem();
 
                 MessageSvc.info('contact/send/success', {
@@ -80525,8 +80570,8 @@ app.factory('FileSvc', function(AppConst, FileRes, $rootScope, $q, $modalBox, $m
     service.doCreate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         FileRes.actionCreate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
             }
         );
@@ -80534,8 +80579,8 @@ app.factory('FileSvc', function(AppConst, FileRes, $rootScope, $q, $modalBox, $m
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         FileRes.actionUpdate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
             }
         );
@@ -80546,7 +80591,7 @@ app.factory('FileSvc', function(AppConst, FileRes, $rootScope, $q, $modalBox, $m
             },
             function() {
                 FileRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -80563,11 +80608,11 @@ app.factory('FileSvc', function(AppConst, FileRes, $rootScope, $q, $modalBox, $m
         var deferred = $q.defer();
         if (service.loaded !== true || reload === true) {
             service.loaded = true;
-            FileRes.getList().then(function(data) {
-                service.list = angular.copy(data);
+            FileRes.getList().then(function(response) {
+                service.list = angular.copy(response.data);
                 deferred.resolve(service.list);
                 $rootScope.$broadcast('file.load', service.list);
-            }, function(data) {
+            }, function(response) {
                 service.list = [];
                 deferred.resolve(service.list);
             });
@@ -80578,11 +80623,11 @@ app.factory('FileSvc', function(AppConst, FileRes, $rootScope, $q, $modalBox, $m
 
     service.doSearch = function(text) {
         var deferred = $q.defer();
-        FileRes.getSearch(text).then(function(data) {
-            service.list = angular.copy(data);
+        FileRes.getSearch(text).then(function(response) {
+            service.list = angular.copy(response.data);
             deferred.resolve(service.list);
             $rootScope.$broadcast('file.load', service.list);
-        }, function(data) {
+        }, function(response) {
             service.list = [];
             deferred.resolve(service.list);
         });
@@ -80610,7 +80655,7 @@ app.factory('HomeSvc', function($q, NavbarSvc, PropertiesSvc, AppSvc, TagSvc, Po
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
             ProjectSvc.initMeta();
             PostSvc.initMeta();
 
@@ -80861,8 +80906,8 @@ app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppCons
 
     service.setMeta = function() {
         if (service.postName !== undefined) {
-            AppSvc.setTitle([service.item.title, service.title]);
-            AppSvc.setDescription(service.item.description);
+            AppSvc.setTitle([service.item['title_'+AppLang.getCurrent()], service.title]);
+            AppSvc.setDescription(service.item['description_'+AppLang.getCurrent()]);
             AppSvc.setUrl('post/' + service.postName);
             if (service.item.images.length > 0)
                 AppSvc.setImage(service.item.images[0].src_url);
@@ -80885,7 +80930,7 @@ app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppCons
         $q.all([
             TagSvc.load(),
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
             service.setMeta();
         });
     };
@@ -80910,10 +80955,10 @@ app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppCons
         service.slugName(item.name);
         $rootScope.$broadcast('show-errors-check-validity');
         PostRes.actionCreate(item).then(
-            function(data, response) {
+            function(response) {
                 if (response.data.reload_source.tag === true)
                     TagSvc.load(true);
-                service.item = angular.copy(data[0]);
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
             }
         );
@@ -80922,10 +80967,10 @@ app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppCons
         service.slugName(item.name);
         $rootScope.$broadcast('show-errors-check-validity');
         PostRes.actionUpdate(item).then(
-            function(data, response) {
-                if (response.data.reload_source.tag === true)
+            function(response) {
+                if (response.reload_source.tag === true)
                     TagSvc.load(true);
-                service.item = angular.copy(data[0]);
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
 
                 MessageSvc.info('post/update/success', {
@@ -80941,7 +80986,7 @@ app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppCons
             },
             function() {
                 PostRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -80997,22 +81042,24 @@ app.factory('PostSvc', function($routeParams, $rootScope, $q, $location, AppCons
         if (service.postName !== undefined) {
             if (service.item.name !== service.postName)
                 PostRes.getItem(service.postName).then(
-                    function(data) {
-                        service.item = angular.copy(data[0]);
+                    function(response) {
+                        service.item = angular.copy(response.data[0]);
                         deferred.resolve(service.item);
                     },
-                    function(data) {
+                    function(response) {
                         service.clearItem();
                         deferred.resolve(service.item);
                     }
                 );
+            else
+                deferred.resolve(service.item);
         } else {
             if (service.loaded !== true || reload === true) {
                 service.loaded = true;
-                PostRes.getList().then(function(data) {
-                    service.list = angular.copy(data);
+                PostRes.getList().then(function(response) {
+                    service.list = angular.copy(response.data);
                     deferred.resolve(service.list);
-                }, function(data) {
+                }, function(response) {
                     service.list = [];
                     deferred.resolve(service.list);
                 });
@@ -81041,8 +81088,8 @@ app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppC
 
     service.setMeta = function() {
         if (service.projectName !== undefined) {
-            AppSvc.setTitle([service.item.title, service.title]);
-            AppSvc.setDescription(service.item.description);
+            AppSvc.setTitle([service.item['title_' + AppLang.getCurrent()], service.title]);
+            AppSvc.setDescription(service.item['description_' + AppLang.getCurrent()]);
             AppSvc.setUrl('project/' + service.projectName);
             if (service.item.images.length > 0)
                 AppSvc.setImage(service.item.images[0].src_url);
@@ -81063,11 +81110,11 @@ app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppC
         service.initMeta();
 
         $q.all([
-            TagSvc.load(),
+            //TagSvc.load(),
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
             service.setMeta();
-        });
+        }, function() {});
     };
 
     service.goList = function() {
@@ -81089,10 +81136,10 @@ app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppC
     service.doCreate = function(item) {
         service.slugName(item.name);
         ProjectRes.actionCreate(item).then(
-            function(data, response) {
-                if (response.data.reload_source.tag === true)
+            function(response) {
+                if (response.reload_source.tag === true)
                     TagSvc.load(true);
-                service.item = angular.copy(data[0]);
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
 
                 MessageSvc.info('project/create/success', {
@@ -81106,10 +81153,10 @@ app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppC
         service.slugName(item.name);
         $rootScope.$broadcast('show-errors-check-validity');
         ProjectRes.actionUpdate(item).then(
-            function(data, response) {
-                if (response.data.reload_source.tag === true)
+            function(response) {
+                if (response.reload_source.tag === true)
                     TagSvc.load(true);
-                service.item = angular.copy(data[0]);
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
 
                 MessageSvc.info('project/update/success', {
@@ -81125,7 +81172,7 @@ app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppC
             },
             function() {
                 ProjectRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -81181,22 +81228,24 @@ app.factory('ProjectSvc', function($routeParams, $rootScope, $q, $location, AppC
         if (service.projectName !== undefined) {
             if (service.item.name !== service.projectName)
                 ProjectRes.getItem(service.projectName).then(
-                    function(data) {
-                        service.item = angular.copy(data[0]);
+                    function(response) {
+                        service.item = angular.copy(response.data[0]);
                         deferred.resolve(service.item);
                     },
-                    function(data) {
+                    function(response) {
                         service.clearItem();
                         deferred.resolve(service.item);
                     }
                 );
+            else
+                deferred.resolve(service.item);
         } else {
             if (service.loaded !== true || reload === true) {
                 service.loaded = true;
-                ProjectRes.getList().then(function(data) {
-                    service.list = angular.copy(data);
+                ProjectRes.getList().then(function(response) {
+                    service.list = angular.copy(response.data);
                     deferred.resolve(service.list);
-                }, function(data) {
+                }, function(response) {
                     service.list = [];
                     deferred.resolve(service.list);
                 });
@@ -81254,22 +81303,22 @@ app.factory('SearchSvc', function($rootScope, $routeParams, $q, $location, AppCo
                 TagSvc.load(),
                 ProjectRes.getSearch($routeParams.searchText),
                 PostRes.getSearch($routeParams.searchText)
-            ]).then(function(dataList) {
+            ]).then(function(responseList) {
                 $rootScope.$broadcast('project.init.meta');
                 $rootScope.$broadcast('post.init.meta');
 
-                for (var i = 1; i < dataList.length; i++) {
-                    if (dataList[i] && dataList[i].length > 0)
-                        service.allListSumSize = service.allListSumSize + dataList[i].length;
+                for (var i = 1; i < responseList.length; i++) {
+                    if (responseList[i] && responseList[i].length > 0)
+                        service.allListSumSize = service.allListSumSize + responseList[i].length;
                     if (i == 1)
                         service.allList.push({
                             name: 'project',
-                            list: dataList[i]
+                            list: responseList[i]
                         });
                     if (i == 2)
                         service.allList.push({
                             name: 'post',
-                            list: dataList[i]
+                            list: responseList[i]
                         });
                 }
             });
@@ -81363,8 +81412,8 @@ app.factory('TagSvc', function($routeParams, $q, $rootScope, AppConst, TagRes, P
     service.doCreate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         TagRes.actionCreate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
             }
         );
@@ -81372,8 +81421,8 @@ app.factory('TagSvc', function($routeParams, $q, $rootScope, AppConst, TagRes, P
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         TagRes.actionUpdate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
             }
         );
@@ -81384,7 +81433,7 @@ app.factory('TagSvc', function($routeParams, $q, $rootScope, AppConst, TagRes, P
             },
             function() {
                 TagRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -81428,22 +81477,22 @@ app.factory('TagSvc', function($routeParams, $q, $rootScope, AppConst, TagRes, P
                 service.load(),
                 ProjectRes.getListByTag($routeParams.tagText),
                 PostRes.getListByTag($routeParams.tagText)
-            ]).then(function(dataList) {
+            ]).then(function(responseList) {
                 $rootScope.$broadcast('project.init.meta');
                 $rootScope.$broadcast('post.init.meta');
 
-                for (var i = 1; i < dataList.length; i++) {
-                    if (dataList[i] && dataList[i].length > 0)
-                        service.allListSumSize = service.allListSumSize + dataList[i].length;
+                for (var i = 1; i < responseList.length; i++) {
+                    if (responseList[i] && responseList[i].length > 0)
+                        service.allListSumSize = service.allListSumSize + responseList[i].length;
                     if (i == 1)
                         service.allList.push({
                             name: 'project',
-                            list: dataList[i]
+                            list: responseList[i]
                         });
                     if (i == 2)
                         service.allList.push({
                             name: 'post',
-                            list: dataList[i]
+                            list: responseList[i]
                         });
                 }
             });
@@ -81452,7 +81501,7 @@ app.factory('TagSvc', function($routeParams, $q, $rootScope, AppConst, TagRes, P
 
             $q.all([
                 service.load()
-            ]).then(function(dataList) {
+            ]).then(function(responseList) {
 
             });
         }
@@ -81471,11 +81520,11 @@ app.factory('TagSvc', function($routeParams, $q, $rootScope, AppConst, TagRes, P
         var deferred = $q.defer();
         if (service.loaded !== true || reload === true) {
             service.loaded = true;
-            TagRes.getList().then(function(data) {
-                    service.list = angular.copy(data);
+            TagRes.getList().then(function(response) {
+                    service.list = angular.copy(response.data);
                     deferred.resolve(service.list);
                 },
-                function(data) {
+                function(response) {
                     service.list = [];
                     deferred.resolve(service.list);
                 });
@@ -81493,8 +81542,8 @@ app.factory('ProfileSvc', function(AppConst, ProfileRes, $rootScope, $q, $modalB
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         ProfileRes.actionUpdate(item).then(
-            function(data) {
-                AccountSvc.item = angular.copy(data[0]);
+            function(response) {
+                AccountSvc.item = angular.copy(response.data[0]);
                 AppConfig.user = AccountSvc.item;
 
                 MessageSvc.info('account/update/success');
@@ -81506,7 +81555,7 @@ app.factory('ProfileSvc', function(AppConst, ProfileRes, $rootScope, $q, $modalB
         MessageSvc.confirm('account/delete/confirm', {},
             function() {
                 ProfileRes.actionDelete().then(
-                    function(data) {
+                    function(response) {
                         AccountSvc.clearItem();
 
                         MessageSvc.info('account/delete/success');
@@ -81531,7 +81580,7 @@ app.factory('AccountSidebarSvc', function($q, TagSvc, PostSvc, ProjectSvc) {
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
-        ]).then(function(dataList) {});
+        ]).then(function(responseList) {});
     };
     return service;
 });
@@ -81610,8 +81659,8 @@ app.factory('UserAppSvc', function(AppConst, UserAppRes, $rootScope, $q, $modalB
     service.doCreate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         UserAppRes.actionCreate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
             }
         );
@@ -81619,8 +81668,8 @@ app.factory('UserAppSvc', function(AppConst, UserAppRes, $rootScope, $q, $modalB
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         UserAppRes.actionUpdate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
             }
         );
@@ -81631,7 +81680,7 @@ app.factory('UserAppSvc', function(AppConst, UserAppRes, $rootScope, $q, $modalB
             },
             function() {
                 UserAppRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -81648,10 +81697,10 @@ app.factory('UserAppSvc', function(AppConst, UserAppRes, $rootScope, $q, $modalB
         var deferred = $q.defer();
         if (service.loaded !== true || reload === true) {
             service.loaded = true;
-            UserAppRes.getList().then(function(data) {
-                service.list = angular.copy(data);
+            UserAppRes.getList().then(function(response) {
+                service.list = angular.copy(response.data);
                 deferred.resolve(service.list);
-            }, function(data) {
+            }, function(response) {
                 service.list = [];
                 deferred.resolve(service.list);
             });
@@ -81665,7 +81714,7 @@ app.factory('UserAppSvc', function(AppConst, UserAppRes, $rootScope, $q, $modalB
 
         $q.all([
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
 
         });
     };
@@ -81679,11 +81728,12 @@ app.factory('SidebarSvc', function($q, TagSvc, PostSvc, ProjectSvc) {
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
-        ]).then(function(dataList) {});
+        ]).then(function(responseList) {});
     };
     return service;
 });
-app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc, gettextCatalog, gettext) {
+app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $modalBox, $modal,
+    $routeParams, MessageSvc, AppSvc, ManagerSvc, gettextCatalog, gettext, $timeout) {
     var service = {};
 
     service.item = {};
@@ -81705,20 +81755,24 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
             var $this = this;
             $this.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_process) + '(' + $this.currentUrlIndex + '/' + $this.urls.length + ')';
             $this.disabled = true;
-            HtmlCacheRes.getPage($this.urls[$this.currentUrlIndex]).then(function(data) {
+            HtmlCacheRes.getPage($this.urls[$this.currentUrlIndex]).then(function(response) {
                 $this.currentUrlIndex++;
-                if ($this.currentUrlIndex == $this.urls.length) {
-                    callback();
-                } else {
-                    $this.doUrl(callback);
-                }
-            }, function(data) {
+                $timeout(function() {
+                    if ($this.currentUrlIndex == $this.urls.length) {
+                        callback();
+                    } else {
+                        $this.doUrl(callback);
+                    }
+                }, 5000);
+            }, function(response) {
                 $this.currentUrlIndex++;
-                if ($this.currentUrlIndex == $this.urls.length) {
-                    callback();
-                } else {
-                    $this.doUrl(callback);
-                }
+                $timeout(function() {
+                    if ($this.currentUrlIndex == $this.urls.length) {
+                        callback();
+                    } else {
+                        $this.doUrl(callback);
+                    }
+                }, 5000);
             });
         },
         do: function() {
@@ -81726,18 +81780,26 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
             $this.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_process);
             $this.disabled = true;
 
-            HtmlCacheRes.getSiteMap().then(function(data) {
-                var locs = $(data).find('loc');
+            HtmlCacheRes.getSiteMap().then(function(response) {
+                var locs = $(response.data).find('loc');
 
                 $this.urls = [];
-                var url = '';
-                for (var i = 0; i < locs.length; i++) {
+                var url = '',
+                    i = 0;
+                for (i = 0; i < locs.length; i++) {
                     url = $(locs[i]).text();
-                    if (service.getItemByUrl(url) === false)
+                    if (service.getItemByUrl(url) === false && $this.urls.indexOf(url) === -1)
                         $this.urls.push(url);
                 }
 
-                $this.currentUrlIndex=0;
+                var hrefs = $(response.data).find('xhtml:link');
+                for (i = 0; i < hrefs.length; i++) {
+                    url = $(hrefs[i]).attr('href');
+                    if (service.getItemByUrl(url) === false && $this.urls.indexOf(url) === -1)
+                        $this.urls.push(url);
+                }
+
+                $this.currentUrlIndex = 0;
 
                 $this.doUrl(function() {
                     $this.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_title);
@@ -81819,8 +81881,8 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
     service.doCreate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         HtmlCacheRes.actionCreate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
             }
         );
@@ -81828,8 +81890,8 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         HtmlCacheRes.actionUpdate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
             }
         );
@@ -81840,7 +81902,7 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
             },
             function() {
                 HtmlCacheRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -81857,10 +81919,10 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
         var deferred = $q.defer();
         if (service.loaded !== true || reload === true) {
             service.loaded = true;
-            HtmlCacheRes.getList().then(function(data) {
-                service.list = angular.copy(data);
+            HtmlCacheRes.getList().then(function(response) {
+                service.list = angular.copy(response.data);
                 deferred.resolve(service.list);
-            }, function(data) {
+            }, function(response) {
                 service.list = [];
                 deferred.resolve(service.list);
             });
@@ -81874,7 +81936,7 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
 
         $q.all([
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
 
         });
     };
@@ -81956,8 +82018,8 @@ app.factory('MetaTagSvc', function(AppConst, MetaTagRes, $rootScope, $q, $modalB
     service.doCreate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         MetaTagRes.actionCreate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
             }
         );
@@ -81965,8 +82027,8 @@ app.factory('MetaTagSvc', function(AppConst, MetaTagRes, $rootScope, $q, $modalB
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         MetaTagRes.actionUpdate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
             }
         );
@@ -81977,7 +82039,7 @@ app.factory('MetaTagSvc', function(AppConst, MetaTagRes, $rootScope, $q, $modalB
             },
             function() {
                 MetaTagRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -81994,10 +82056,10 @@ app.factory('MetaTagSvc', function(AppConst, MetaTagRes, $rootScope, $q, $modalB
         var deferred = $q.defer();
         if (service.loaded !== true || reload === true) {
             service.loaded = true;
-            MetaTagRes.getList().then(function(data) {
-                service.list = angular.copy(data);
+            MetaTagRes.getList().then(function(response) {
+                service.list = angular.copy(response.data);
                 deferred.resolve(service.list);
-            }, function(data) {
+            }, function(response) {
                 service.list = [];
                 deferred.resolve(service.list);
             });
@@ -82011,7 +82073,7 @@ app.factory('MetaTagSvc', function(AppConst, MetaTagRes, $rootScope, $q, $modalB
 
         $q.all([
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
 
         });
     };
@@ -82092,8 +82154,8 @@ app.factory('PropertiesSvc', function(AppConst, AppProperties, PropertiesRes, $r
     service.doCreate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         PropertiesRes.actionCreate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
                 service.updateItemOnList(service.item);
             }
@@ -82102,8 +82164,8 @@ app.factory('PropertiesSvc', function(AppConst, AppProperties, PropertiesRes, $r
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         PropertiesRes.actionUpdate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
             }
         );
@@ -82114,7 +82176,7 @@ app.factory('PropertiesSvc', function(AppConst, AppProperties, PropertiesRes, $r
             },
             function() {
                 PropertiesRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -82131,12 +82193,12 @@ app.factory('PropertiesSvc', function(AppConst, AppProperties, PropertiesRes, $r
         var deferred = $q.defer();
         if (service.loaded !== true || reload === true) {
             service.loaded = true;
-            PropertiesRes.getList().then(function(data) {
-                service.list = angular.copy(data);
+            PropertiesRes.getList().then(function(response) {
+                service.list = angular.copy(response.data);
                 AppProperties.load(service.list);
 
                 deferred.resolve(service.list);
-            }, function(data) {
+            }, function(response) {
                 service.list = [];
                 AppProperties.load(service.list);
                 deferred.resolve(service.list);
@@ -82151,7 +82213,7 @@ app.factory('PropertiesSvc', function(AppConst, AppProperties, PropertiesRes, $r
 
         $q.all([
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
 
         });
     };
@@ -82236,8 +82298,8 @@ app.factory('PublicLinkSvc', function(AppConst, PublicLinkRes, $rootScope, $q, $
     service.doCreate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         PublicLinkRes.actionCreate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.list.push(service.item);
             }
         );
@@ -82245,8 +82307,8 @@ app.factory('PublicLinkSvc', function(AppConst, PublicLinkRes, $rootScope, $q, $
     service.doUpdate = function(item) {
         $rootScope.$broadcast('show-errors-check-validity');
         PublicLinkRes.actionUpdate(item).then(
-            function(data) {
-                service.item = angular.copy(data[0]);
+            function(response) {
+                service.item = angular.copy(response.data[0]);
                 service.updateItemOnList(service.item);
             }
         );
@@ -82257,7 +82319,7 @@ app.factory('PublicLinkSvc', function(AppConst, PublicLinkRes, $rootScope, $q, $
             },
             function() {
                 PublicLinkRes.actionDelete(item).then(
-                    function(data) {
+                    function(response) {
                         for (var i = 0; i < service.list.length; i++) {
                             if (service.list[i].id == item.id) {
                                 service.list.splice(i, 1);
@@ -82274,10 +82336,10 @@ app.factory('PublicLinkSvc', function(AppConst, PublicLinkRes, $rootScope, $q, $
         var deferred = $q.defer();
         if (service.loaded !== true || reload === true) {
             service.loaded = true;
-            PublicLinkRes.getList().then(function(data) {
-                service.list = angular.copy(data);
+            PublicLinkRes.getList().then(function(response) {
+                service.list = angular.copy(response.data);
                 deferred.resolve(service.list);
-            }, function(data) {
+            }, function(response) {
                 service.list = [];
                 deferred.resolve(service.list);
             });
@@ -82291,7 +82353,7 @@ app.factory('PublicLinkSvc', function(AppConst, PublicLinkRes, $rootScope, $q, $
 
         $q.all([
             service.load()
-        ]).then(function(dataList) {
+        ]).then(function(responseList) {
 
         });
     };
@@ -82305,7 +82367,7 @@ app.factory('ManagerSidebarSvc', function($q, TagSvc, PostSvc, ProjectSvc) {
             TagSvc.load(),
             ProjectSvc.load(),
             PostSvc.load()
-        ]).then(function(dataList) {});
+        ]).then(function(responseList) {});
 
     };
     return service;
@@ -82336,8 +82398,9 @@ app.controller('ContactCtrl', function ($scope, ContactSvc, ProjectSvc, PublicLi
     PublicLinkSvc.load();
 	ContactSvc.init();
 });
-app.controller('FileCtrl', function ($scope, FileSvc) {
+app.controller('FileCtrl', function ($scope, FileSvc, AppLang) {
 	$scope.FileSvc=FileSvc;
+    $scope.AppLang=AppLang;
 });
 app.controller('HomeCtrl', function ($scope, HomeSvc, ProjectSvc, PostSvc, AccountSvc, TagSvc, FileSvc, NavbarSvc) {
     $scope.AccountSvc=AccountSvc;
@@ -82422,37 +82485,41 @@ app.controller('SidebarCtrl', function ($scope, SidebarSvc, ProjectSvc, PostSvc,
 
     SidebarSvc.init();
 });
-app.controller('HtmlCacheCtrl', function ($scope, HtmlCacheSvc, $routeParams, AccountSvc, ManagerSvc) {
-	$scope.HtmlCacheSvc=HtmlCacheSvc;
-	$scope.AccountSvc=AccountSvc;
-	$scope.ManagerSvc=ManagerSvc;
-	$scope.$routeParams=$routeParams;
+app.controller('HtmlCacheCtrl', function($scope, HtmlCacheSvc, $routeParams, AccountSvc, ManagerSvc, AppLang) {
+    $scope.HtmlCacheSvc = HtmlCacheSvc;
+    $scope.AccountSvc = AccountSvc;
+    $scope.ManagerSvc = ManagerSvc;
+    $scope.$routeParams = $routeParams;
+    $scope.AppLang = AppLang;
 
-	HtmlCacheSvc.init();
+    HtmlCacheSvc.init();
 });
-app.controller('MetaTagCtrl', function ($scope, MetaTagSvc, $routeParams, AccountSvc, ManagerSvc) {
-	$scope.MetaTagSvc=MetaTagSvc;
-	$scope.AccountSvc=AccountSvc;
-	$scope.ManagerSvc=ManagerSvc;
-	$scope.$routeParams=$routeParams;
+app.controller('MetaTagCtrl', function($scope, MetaTagSvc, $routeParams, AccountSvc, ManagerSvc, AppLang) {
+    $scope.MetaTagSvc = MetaTagSvc;
+    $scope.AccountSvc = AccountSvc;
+    $scope.ManagerSvc = ManagerSvc;
+    $scope.$routeParams = $routeParams;
+    $scope.AppLang = AppLang;
 
-	MetaTagSvc.init();
+    MetaTagSvc.init();
 });
-app.controller('PropertiesCtrl', function ($scope, PropertiesSvc, $routeParams, AccountSvc, ManagerSvc) {
-	$scope.PropertiesSvc=PropertiesSvc;
-	$scope.AccountSvc=AccountSvc;
-	$scope.ManagerSvc=ManagerSvc;
-	$scope.$routeParams=$routeParams;
+app.controller('PropertiesCtrl', function($scope, PropertiesSvc, $routeParams, AccountSvc, ManagerSvc, AppLang) {
+    $scope.PropertiesSvc = PropertiesSvc;
+    $scope.AccountSvc = AccountSvc;
+    $scope.ManagerSvc = ManagerSvc;
+    $scope.$routeParams = $routeParams;
+    $scope.AppLang = AppLang;
 
-	PropertiesSvc.init();
+    PropertiesSvc.init();
 });
-app.controller('PublicLinkCtrl', function ($scope, PublicLinkSvc, $routeParams, AccountSvc, ManagerSvc) {
-	$scope.PublicLinkSvc=PublicLinkSvc;
-	$scope.AccountSvc=AccountSvc;
-	$scope.ManagerSvc=ManagerSvc;
-	$scope.$routeParams=$routeParams;
+app.controller('PublicLinkCtrl', function($scope, PublicLinkSvc, $routeParams, AccountSvc, ManagerSvc, AppLang) {
+    $scope.PublicLinkSvc = PublicLinkSvc;
+    $scope.AccountSvc = AccountSvc;
+    $scope.ManagerSvc = ManagerSvc;
+    $scope.$routeParams = $routeParams;
+    $scope.AppLang = AppLang;
 
-	PublicLinkSvc.init();
+    PublicLinkSvc.init();
 });
 app.controller('ManagerSidebarCtrl', function ($scope, ManagerSidebarSvc, ProjectSvc, PostSvc, TagSvc) {
     $scope.ManagerSidebarSvc=ManagerSidebarSvc;
@@ -82512,9 +82579,10 @@ app.factory('AppProperties', function() {
 
     service.load = function(newList) {
         list = {};
-        for (var i = 0; i < newList.length; i++) {
-            list[newList[i].name] = newList[i].value;
-        }
+        if (newList.length)
+            for (var i = 0; i < newList.length; i++) {
+                list[newList[i].name] = newList[i].value;
+            }
     };
 
     service.set = function(name, value) {

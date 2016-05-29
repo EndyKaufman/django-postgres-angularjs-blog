@@ -19,6 +19,12 @@ def get_config(request):
     config['current_lang'] = get_language()
     config['lang'] = settings.LANGUAGE_CODE
 
+    lang_list = []
+    for (lang, title) in settings.LANGUAGES:
+        lang_list.append({'code': lang, 'title': title})
+
+    config['lang_list'] = lang_list
+
     user = helpers.get_user(request)
 
     if not user or user is None:
@@ -42,7 +48,7 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
     else:
         strings['site_title'].append(config['properties']['SITE_TITLE'])
         strings['short_site_title'] = strings['site_title'][0]
-        strings['site_title'] = ' - '.join(strings['site_title'])
+        strings['site_title'] = strings['site_title'][0]
 
     if strings['site_description'] is None:
         strings['site_description'] = config['properties']['SITE_DESCRIPTION']
@@ -58,10 +64,12 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
 
     if strings['site_url'] is None:
         strings['site_url'] = config['host_name']
+        strings['short_site_url'] = ''
     else:
         temp_list = []
         temp_list.append(config['host_name'])
         temp_list.append(strings['site_url'])
+        strings['short_site_url'] = '/%s' % strings['site_url']
         strings['site_url'] = '/'.join(temp_list)
 
     meta_tag_list = meta_tag_resource.get_list_as_objects()
@@ -81,9 +89,12 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
         escaped_fragment_tag = ''
 
     return render(request, template % settings.THEME, {
+        'host_name': config['host_name'],
         'host_url': '//' + request.get_host(),
         'config': json.dumps(config, sort_keys=True, indent=4),
-        'lang': get_language(),
+        'current_lang': get_language(),
+        'lang': settings.LANGUAGE_CODE,
+        'lang_list': config['lang_list'],
         'settings': settings,
         'meta_tag_list': meta_tag_list,
         'properties_list': properties_list,
@@ -118,5 +129,8 @@ def render_sitemap_xml(request):
         'config': config,
         'project_list': project_list,
         'post_list': post_list,
-        'tag_list': tag_list
+        'tag_list': tag_list,
+        'current_lang': get_language(),
+        'lang': settings.LANGUAGE_CODE,
+        'lang_list': config['lang_list'],
     })

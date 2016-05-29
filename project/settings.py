@@ -188,6 +188,7 @@ INSTALLED_APPS = (
     'jsonview',
     'easy_thumbnails',
     'oauth2_provider',
+    'modeltranslation',
     'app.account',
     'app.file',
     'app.home',
@@ -257,15 +258,18 @@ LANGUAGE_CODE = os.environ.get('LANGUAGE_CODE', 'en')
 
 # supported languages
 LANGUAGES = (
-    ('en', 'English'),
-    ('ru', 'Russian'),
+    ('en', 'EN'),
+    ('ru', 'RU'),
 )
 
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
     os.path.join(BASE_DIR, 'app')
 ]
+
 SOLID_I18N_HANDLE_DEFAULT_PREFIX = True
+
+MODELTRANSLATION_LANGUAGES = ('en', 'ru')
 
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -273,7 +277,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Parse database configuration from $DATABASE_URL
-if os.environ.get('DATABASE_URL', None) != None and not USE_SQLITE:
+if os.environ.get('DATABASE_URL', None) is not None and not USE_SQLITE:
     DATABASES['default'] = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 
 # DATABASES['default']['ENGINE'] = 'django_postgrespool'

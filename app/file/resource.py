@@ -2,9 +2,9 @@
 from project import helpers
 from django.db.models import Q
 
-
 def get_fields():
     return ['comment']
+
 
 def create(request):
     """Create record"""
@@ -29,8 +29,7 @@ def create(request):
 
     item, created = File.objects.get_or_create(src=url)
     if created:
-        if data['comment'] is not None:
-            item.comment = data['comment']
+        helpers.json_to_objects(item, data)
         item.created_user = user
         item.save()
 
@@ -51,8 +50,7 @@ def update(request, file_id):
     except File.DoesNotExist:
         return {'code': 'file/not_found', 'values': [file_id]}, 404, False
 
-    if data['comment'] is not None:
-        item.comment = data['comment']
+    helpers.json_to_objects(item, data)
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

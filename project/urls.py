@@ -43,9 +43,7 @@ admin.autodiscover()
 
 urlpatterns = []
 urlpatterns = urlpatterns + [
-    url(r'^robots\.txt$', app.home.views.robots_txt, name='robots_txt'),
-    url(r'^sitemap\.xml$', app.home.views.sitemap_xml, name='sitemap_xml'),
-    url(r'^$', app.home.views.index, name='index')]
+    url(r'^robots\.txt$', app.home.views.robots_txt, name='robots_txt')]
 
 urlpatterns = urlpatterns + [
     url(r'^api/v1/file/', include(app.file.api_v1_urls)),
@@ -58,6 +56,9 @@ urlpatterns = urlpatterns + [
     url(r'^api/v1/user_app/', include(app.user_app.api_v1_urls))]
 
 urlpatterns = urlpatterns + solid_i18n_patterns(
+    url(r'^sitemap\.xml$', app.home.views.sitemap_xml, name='sitemap_xml'),
+    url(r'^$', app.home.views.index, name='index'),
+
     url(r'^oauth2/', include(app.account.oauth2_urls, namespace='oauth2_provider')),
     url(r'^account/', include(app.account.urls)),
     url(r'^contact/', include(app.contact.urls)),

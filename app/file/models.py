@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
 
-
 # File model
 class File(models.Model):
     comment = models.TextField(max_length=512, blank=True, null=True)
