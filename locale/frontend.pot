@@ -51,7 +51,7 @@ msgstr ""
 msgid "Add new file"
 msgstr ""
 
-#: manager/html_cache/htm_cache.svc.js:83
+#: manager/html_cache/htm_cache.svc.js:86
 msgid "Add new html cache"
 msgstr ""
 
@@ -150,8 +150,8 @@ msgstr ""
 #: file/file.svc.js:30
 #: file/file.svc.js:64
 #: file/file.svc.js:91
-#: manager/html_cache/htm_cache.svc.js:127
-#: manager/html_cache/htm_cache.svc.js:90
+#: manager/html_cache/htm_cache.svc.js:130
+#: manager/html_cache/htm_cache.svc.js:93
 #: manager/meta_tag/meta_tag.svc.js:26
 #: manager/meta_tag/meta_tag.svc.js:53
 #: manager/properties/properties.svc.js:25
@@ -212,7 +212,7 @@ msgstr ""
 #: account/user_app/list-header.html:4
 #: account/user_app/user_app.svc.js:25
 #: file/file.svc.js:63
-#: manager/html_cache/htm_cache.svc.js:89
+#: manager/html_cache/htm_cache.svc.js:92
 #: manager/meta_tag/list-header.html:4
 #: manager/meta_tag/meta_tag.svc.js:25
 #: manager/properties/list-header.html:4
@@ -356,7 +356,7 @@ msgstr ""
 msgid "Edit file properties"
 msgstr ""
 
-#: manager/html_cache/htm_cache.svc.js:120
+#: manager/html_cache/htm_cache.svc.js:123
 msgid "Edit html cache"
 msgstr ""
 
@@ -766,7 +766,7 @@ msgstr ""
 #: account/profile.html:14
 #: account/user_app/user_app.svc.js:52
 #: file/file.svc.js:90
-#: manager/html_cache/htm_cache.svc.js:126
+#: manager/html_cache/htm_cache.svc.js:129
 #: manager/meta_tag/meta_tag.svc.js:52
 #: manager/properties/properties.svc.js:51
 #: manager/public_link/public_link.svc.js:56
