@@ -4,16 +4,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: account/user_app/list.html:4
-#: file/list.html:25
-#: manager/html_cache/list.html:4
-#: manager/meta_tag/list.html:4
-#: manager/properties/list.html:4
-#: manager/public_link/list.html:4
-#: manager/tag/list.html:4
-msgid "#"
-msgstr ""
-
 #: account/const.js:56
 msgid "Account created!"
 msgstr ""
@@ -24,7 +14,7 @@ msgstr ""
 
 #: account/user_app/list.html:7
 #: file/list.html:28
-#: manager/html_cache/list.html:7
+#: manager/html_cache/list.html:8
 #: manager/meta_tag/list.html:7
 #: manager/properties/list.html:7
 #: manager/public_link/list.html:10
@@ -51,7 +41,7 @@ msgstr ""
 msgid "Add new file"
 msgstr ""
 
-#: manager/html_cache/htm_cache.svc.js:86
+#: manager/html_cache/htm_cache.svc.js:87
 msgid "Add new html cache"
 msgstr ""
 
@@ -59,7 +49,7 @@ msgstr ""
 msgid "Add new meta tag"
 msgstr ""
 
-#: manager/properties/properties.svc.js:18
+#: manager/properties/properties.svc.js:22
 msgid "Add new properties"
 msgstr ""
 
@@ -150,12 +140,12 @@ msgstr ""
 #: file/file.svc.js:30
 #: file/file.svc.js:64
 #: file/file.svc.js:91
-#: manager/html_cache/htm_cache.svc.js:130
-#: manager/html_cache/htm_cache.svc.js:93
+#: manager/html_cache/htm_cache.svc.js:131
+#: manager/html_cache/htm_cache.svc.js:94
 #: manager/meta_tag/meta_tag.svc.js:26
 #: manager/meta_tag/meta_tag.svc.js:53
-#: manager/properties/properties.svc.js:25
-#: manager/properties/properties.svc.js:52
+#: manager/properties/properties.svc.js:29
+#: manager/properties/properties.svc.js:56
 #: manager/public_link/public_link.svc.js:30
 #: manager/public_link/public_link.svc.js:57
 #: tag/tag.svc.js:37
@@ -212,11 +202,11 @@ msgstr ""
 #: account/user_app/list-header.html:4
 #: account/user_app/user_app.svc.js:25
 #: file/file.svc.js:63
-#: manager/html_cache/htm_cache.svc.js:92
+#: manager/html_cache/htm_cache.svc.js:93
 #: manager/meta_tag/list-header.html:4
 #: manager/meta_tag/meta_tag.svc.js:25
 #: manager/properties/list-header.html:4
-#: manager/properties/properties.svc.js:24
+#: manager/properties/properties.svc.js:28
 #: manager/public_link/list-header.html:4
 #: manager/public_link/public_link.svc.js:29
 #: manager/tag/list-header.html:4
@@ -242,7 +232,7 @@ msgstr ""
 
 #: account/user_app/list.html:21
 #: file/list.html:42
-#: manager/html_cache/list.html:21
+#: manager/html_cache/list.html:23
 #: manager/meta_tag/list.html:21
 #: manager/properties/list.html:21
 #: manager/public_link/list.html:29
@@ -254,6 +244,10 @@ msgstr ""
 
 #: account/profile.html:17
 msgid "Delete account"
+msgstr ""
+
+#: manager/html_cache/list-header.html:5
+msgid "Delete checked"
 msgstr ""
 
 #: post/inputs/central.html:46
@@ -294,6 +288,10 @@ msgstr ""
 msgid "Do you really want to delete application <strong>%s</strong>?"
 msgstr ""
 
+#: manager/const.js:41
+msgid "Do you really want to delete checked html caches?"
+msgstr ""
+
 #: file/const.js:4
 msgid "Do you really want to delete file <strong>%s</strong>?"
 msgstr ""
@@ -302,7 +300,7 @@ msgstr ""
 msgid "Do you really want to delete html cache <strong>%s</strong>?"
 msgstr ""
 
-#: manager/const.js:62
+#: manager/const.js:63
 msgid "Do you really want to delete meta tag <strong>%s</strong>?"
 msgstr ""
 
@@ -314,19 +312,19 @@ msgstr ""
 msgid "Do you really want to delete project <strong>%s</strong>?"
 msgstr ""
 
-#: manager/const.js:47
+#: manager/const.js:48
 msgid "Do you really want to delete property <strong>%s</strong>?"
 msgstr ""
 
-#: manager/const.js:52
+#: manager/const.js:53
 msgid "Do you really want to delete public link <strong>%s</strong>?"
 msgstr ""
 
-#: manager/const.js:57
+#: manager/const.js:58
 msgid "Do you really want to delete tag <strong>%s</strong>?"
 msgstr ""
 
-#: manager/const.js:42
+#: manager/const.js:43
 msgid "Do you really want to delete user <strong>%s</strong>?"
 msgstr ""
 
@@ -336,7 +334,7 @@ msgstr ""
 
 #: account/user_app/list.html:18
 #: file/list.html:39
-#: manager/html_cache/list.html:18
+#: manager/html_cache/list.html:20
 #: manager/meta_tag/list.html:18
 #: manager/properties/list.html:18
 #: manager/public_link/list.html:26
@@ -356,7 +354,7 @@ msgstr ""
 msgid "Edit file properties"
 msgstr ""
 
-#: manager/html_cache/htm_cache.svc.js:123
+#: manager/html_cache/htm_cache.svc.js:124
 msgid "Edit html cache"
 msgstr ""
 
@@ -372,7 +370,7 @@ msgstr ""
 msgid "Edit project"
 msgstr ""
 
-#: manager/properties/properties.svc.js:45
+#: manager/properties/properties.svc.js:49
 #: tag/tag.svc.js:57
 msgid "Edit properties"
 msgstr ""
@@ -400,7 +398,7 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
-#: manager/html_cache/list.html:6
+#: manager/html_cache/list.html:7
 msgid "Empty"
 msgstr ""
 
@@ -474,6 +472,16 @@ msgstr ""
 #: manager/public_link/inputs.html:20
 #: manager/public_link/list.html:5
 msgid "Icon"
+msgstr ""
+
+#: account/user_app/list.html:4
+#: file/list.html:25
+#: manager/html_cache/list.html:5
+#: manager/meta_tag/list.html:4
+#: manager/properties/list.html:4
+#: manager/public_link/list.html:4
+#: manager/tag/list.html:4
+msgid "ID"
 msgstr ""
 
 #: account/profile/inputs.html:40
@@ -550,15 +558,15 @@ msgstr ""
 msgid "Message sent successfully!"
 msgstr ""
 
-#: manager/const.js:63
+#: manager/const.js:64
 msgid "Meta tag <strong>%s</strong> created!"
 msgstr ""
 
-#: manager/const.js:65
+#: manager/const.js:66
 msgid "Meta tag <strong>%s</strong> deleted!"
 msgstr ""
 
-#: manager/const.js:64
+#: manager/const.js:65
 msgid "Meta tag <strong>%s</strong> updated!"
 msgstr ""
 
@@ -573,7 +581,7 @@ msgstr ""
 #: account/user_app/inputs.html:2
 #: account/user_app/list.html:5
 #: manager/html_cache/inputs.html:2
-#: manager/html_cache/list.html:5
+#: manager/html_cache/list.html:6
 #: manager/meta_tag/inputs.html:2
 #: manager/meta_tag/list.html:5
 #: manager/properties/inputs.html:2
@@ -698,27 +706,27 @@ msgstr ""
 msgid "Properties description"
 msgstr ""
 
-#: manager/const.js:48
+#: manager/const.js:49
 msgid "Property <strong>%s</strong> created!"
 msgstr ""
 
-#: manager/const.js:50
+#: manager/const.js:51
 msgid "Property <strong>%s</strong> deleted!"
 msgstr ""
 
-#: manager/const.js:49
+#: manager/const.js:50
 msgid "Property <strong>%s</strong> updated!"
 msgstr ""
 
-#: manager/const.js:53
+#: manager/const.js:54
 msgid "Public link <strong>%s</strong> created!"
 msgstr ""
 
-#: manager/const.js:55
+#: manager/const.js:56
 msgid "Public link <strong>%s</strong> deleted!"
 msgstr ""
 
-#: manager/const.js:54
+#: manager/const.js:55
 msgid "Public link <strong>%s</strong> updated!"
 msgstr ""
 
@@ -766,9 +774,9 @@ msgstr ""
 #: account/profile.html:14
 #: account/user_app/user_app.svc.js:52
 #: file/file.svc.js:90
-#: manager/html_cache/htm_cache.svc.js:129
+#: manager/html_cache/htm_cache.svc.js:130
 #: manager/meta_tag/meta_tag.svc.js:52
-#: manager/properties/properties.svc.js:51
+#: manager/properties/properties.svc.js:55
 #: manager/public_link/public_link.svc.js:56
 #: post/update.html:18
 #: project/update.html:19
@@ -825,15 +833,15 @@ msgstr ""
 msgid "Src"
 msgstr ""
 
-#: manager/const.js:58
+#: manager/const.js:59
 msgid "Tag <strong>%s</strong> created!"
 msgstr ""
 
-#: manager/const.js:60
+#: manager/const.js:61
 msgid "Tag <strong>%s</strong> deleted!"
 msgstr ""
 
-#: manager/const.js:59
+#: manager/const.js:60
 msgid "Tag <strong>%s</strong> updated!"
 msgstr ""
 
@@ -886,15 +894,15 @@ msgstr ""
 msgid "Url"
 msgstr ""
 
-#: manager/const.js:43
+#: manager/const.js:44
 msgid "User <strong>%s</strong> created!"
 msgstr ""
 
-#: manager/const.js:45
+#: manager/const.js:46
 msgid "User <strong>%s</strong> deleted!"
 msgstr ""
 
-#: manager/const.js:44
+#: manager/const.js:45
 msgid "User <strong>%s</strong> updated!"
 msgstr ""
 

@@ -13,23 +13,16 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: account/user_app/list.html:4 file/list.html:25
-#: manager/html_cache/list.html:4 manager/meta_tag/list.html:4
-#: manager/properties/list.html:4 manager/public_link/list.html:4
-#: manager/tag/list.html:4
-msgid "#"
-msgstr "№"
-
-#: account/const.js:53
+#: account/const.js:56
 msgid "Account created!"
 msgstr "Вы зарегистрированы!"
 
-#: account/const.js:55
+#: account/const.js:58
 msgid "Account deleted!"
 msgstr "Учетная запись успешно удалена!"
 
 #: account/user_app/list.html:7 file/list.html:28
-#: manager/html_cache/list.html:7 manager/meta_tag/list.html:7
+#: manager/html_cache/list.html:8 manager/meta_tag/list.html:7
 #: manager/properties/list.html:7 manager/public_link/list.html:10
 #: manager/tag/list.html:7
 msgid "Actions"
@@ -52,7 +45,7 @@ msgstr "Добавить новое приложение"
 msgid "Add new file"
 msgstr "Добавить новый файл"
 
-#: manager/html_cache/htm_cache.svc.js:70
+#: manager/html_cache/htm_cache.svc.js:87
 msgid "Add new html cache"
 msgstr "Добавить новый кэш файл"
 
@@ -60,7 +53,7 @@ msgstr "Добавить новый кэш файл"
 msgid "Add new meta tag"
 msgstr "Добавить новый мета тэг"
 
-#: manager/properties/properties.svc.js:18
+#: manager/properties/properties.svc.js:22
 msgid "Add new properties"
 msgstr "Добавить новое свойство"
 
@@ -94,35 +87,35 @@ msgstr "Все проекты"
 msgid "allowed URIs list, space separated"
 msgstr "список разрешенных uri-адресов, указанные через запятую"
 
-#: account/const.js:57
+#: account/const.js:60
 msgid "Application <strong>%s</strong> created!"
 msgstr "Приложение <strong>%s</strong> успешно создано!"
 
-#: account/const.js:59
+#: account/const.js:62
 msgid "Application <strong>%s</strong> deleted!"
 msgstr "Приложение <strong>%s</strong> успешно удалено!"
 
-#: account/const.js:58
+#: account/const.js:61
 msgid "Application <strong>%s</strong> updated!"
 msgstr "Приложение <strong>%s</strong> успешно изменено!"
 
-#: account/const.js:24
+#: account/const.js:27
 msgid "Applications"
 msgstr "Приложения"
 
-#: account/const.js:26
+#: account/const.js:29
 msgid "Applications of user"
 msgstr "Приложения пользователя"
 
-#: manager/meta_tag/inputs.html:11
+#: manager/meta_tag/inputs.html:17
 msgid "Attributes"
 msgstr "Атрибуты"
 
-#: account/const.js:11
+#: account/const.js:14
 msgid "Authorization on site"
 msgstr "Авторизация на сайте"
 
-#: account/const.js:48
+#: account/const.js:51
 msgid "Bye-Bye!"
 msgstr "До свидания!"
 
@@ -140,10 +133,10 @@ msgstr "Кэш файл <strong>%s</strong> успешно изменен!"
 
 #: account/user_app/user_app.svc.js:26 account/user_app/user_app.svc.js:53
 #: file/file.svc.js:30 file/file.svc.js:64 file/file.svc.js:91
-#: manager/html_cache/htm_cache.svc.js:114
-#: manager/html_cache/htm_cache.svc.js:77 manager/meta_tag/meta_tag.svc.js:26
-#: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:25
-#: manager/properties/properties.svc.js:52
+#: manager/html_cache/htm_cache.svc.js:131
+#: manager/html_cache/htm_cache.svc.js:94 manager/meta_tag/meta_tag.svc.js:26
+#: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:29
+#: manager/properties/properties.svc.js:56
 #: manager/public_link/public_link.svc.js:30
 #: manager/public_link/public_link.svc.js:57 tag/tag.svc.js:37
 #: tag/tag.svc.js:64
@@ -154,7 +147,7 @@ msgstr "Отмена"
 msgid "Change password"
 msgstr "Изменить пароль"
 
-#: account/const.js:51
+#: account/const.js:54
 msgid "Check email <strong>%s</strong> for code to reset password"
 msgstr ""
 "Проверьте электронную почту <strong>%s</strong> на наличие кода для сброса "
@@ -172,7 +165,7 @@ msgstr "Client secret"
 msgid "Code:"
 msgstr "Код:"
 
-#: file/inputs.html:11 file/list.html:27 manager/properties/inputs.html:2
+#: file/inputs.html:13 file/list.html:27 manager/properties/inputs.html:15
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -188,16 +181,16 @@ msgstr "Контакты"
 msgid "Contact us description"
 msgstr "Форма для обратной связи, а также контактные данный для связи"
 
-#: manager/html_cache/inputs.html:6 manager/meta_tag/inputs.html:6
+#: manager/html_cache/inputs.html:6 manager/meta_tag/inputs.html:12
 #: manager/meta_tag/list.html:6
 msgid "Content"
 msgstr "Содержимое"
 
 #: account/reg.html:12 account/user_app/list-header.html:4
 #: account/user_app/user_app.svc.js:25 file/file.svc.js:63
-#: manager/html_cache/htm_cache.svc.js:76 manager/meta_tag/list-header.html:4
+#: manager/html_cache/htm_cache.svc.js:93 manager/meta_tag/list-header.html:4
 #: manager/meta_tag/meta_tag.svc.js:25 manager/properties/list-header.html:4
-#: manager/properties/properties.svc.js:24
+#: manager/properties/properties.svc.js:28
 #: manager/public_link/list-header.html:4
 #: manager/public_link/public_link.svc.js:29 manager/tag/list-header.html:4
 #: post/create.html:15 post/list-header.html:3 project/create.html:15
@@ -218,7 +211,7 @@ msgid "Create project"
 msgstr "Создать проект"
 
 #: account/user_app/list.html:21 file/list.html:42
-#: manager/html_cache/list.html:21 manager/meta_tag/list.html:21
+#: manager/html_cache/list.html:23 manager/meta_tag/list.html:21
 #: manager/properties/list.html:21 manager/public_link/list.html:29
 #: manager/tag/list.html:21 post/list-item.html:17 project/list-item.html:17
 msgid "Delete"
@@ -228,7 +221,11 @@ msgstr "Удалить"
 msgid "Delete account"
 msgstr "Удалить учетную запись"
 
-#: post/inputs/central.html:41 project/inputs/central.html:41
+#: manager/html_cache/list-header.html:5
+msgid "Delete checked"
+msgstr "Удалить отмеченые"
+
+#: post/inputs/central.html:46 project/inputs/central.html:45
 msgid "Delete image"
 msgstr "Удалить"
 
@@ -240,9 +237,9 @@ msgstr "Удалить заметку"
 msgid "Delete project"
 msgstr "Удалить проект"
 
-#: manager/public_link/inputs.html:11 manager/tag/inputs.html:7
-#: manager/tag/list.html:6 post/inputs/right.html:24 post/item.html:23
-#: project/inputs/right.html:24 project/item.html:23
+#: manager/public_link/inputs.html:13 manager/tag/inputs.html:9
+#: manager/tag/list.html:6 post/inputs/right.html:26 post/item.html:23
+#: project/inputs/right.html:26 project/item.html:23
 msgid "Description"
 msgstr "Описание"
 
@@ -250,13 +247,17 @@ msgstr "Описание"
 msgid "Detail..."
 msgstr "Подробнее..."
 
-#: account/const.js:52
+#: account/const.js:55
 msgid "Do you really want to delete account?"
 msgstr "Вы действительно хотите удалить вашу учетную запись?"
 
-#: account/const.js:56
+#: account/const.js:59
 msgid "Do you really want to delete application <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить приложение <strong>%s</strong>?"
+
+#: manager/const.js:41
+msgid "Do you really want to delete checked html caches?"
+msgstr "Вы действительно хотите удалить отмеченые кэш файлы?"
 
 #: file/const.js:4
 msgid "Do you really want to delete file <strong>%s</strong>?"
@@ -266,7 +267,7 @@ msgstr "Вы действительно хотите удалить файл <st
 msgid "Do you really want to delete html cache <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить кэш файл <strong>%s</strong>?"
 
-#: manager/const.js:62
+#: manager/const.js:63
 msgid "Do you really want to delete meta tag <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить мета тэг <strong>%s</strong>?"
 
@@ -278,28 +279,28 @@ msgstr "Вы действительно хотите удалить заметк
 msgid "Do you really want to delete project <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить проект <strong>%s</strong>?"
 
-#: manager/const.js:47
+#: manager/const.js:48
 msgid "Do you really want to delete property <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить свойство <strong>%s</strong>?"
 
-#: manager/const.js:52
+#: manager/const.js:53
 msgid "Do you really want to delete public link <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить публичную ссылку <strong>%s</strong>?"
 
-#: manager/const.js:57
+#: manager/const.js:58
 msgid "Do you really want to delete tag <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить тэг <strong>%s</strong>?"
 
-#: manager/const.js:42
+#: manager/const.js:43
 msgid "Do you really want to delete user <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить пользователя <strong>%s</strong>?"
 
-#: account/const.js:49
+#: account/const.js:52
 msgid "Do you really want to leave?"
 msgstr "Вы действительно хотите выйти из сервиса?"
 
 #: account/user_app/list.html:18 file/list.html:39
-#: manager/html_cache/list.html:18 manager/meta_tag/list.html:18
+#: manager/html_cache/list.html:20 manager/meta_tag/list.html:18
 #: manager/properties/list.html:18 manager/public_link/list.html:26
 #: manager/tag/list.html:18 post/item.html:9 post/list-item.html:12
 #: project/item.html:9 project/list-item.html:12
@@ -314,7 +315,7 @@ msgstr "редактировать приложение"
 msgid "Edit file properties"
 msgstr "Редактировать свойства файла"
 
-#: manager/html_cache/htm_cache.svc.js:107
+#: manager/html_cache/htm_cache.svc.js:124
 msgid "Edit html cache"
 msgstr "Редактировать кэш файл"
 
@@ -330,7 +331,7 @@ msgstr "Редактировать заметку"
 msgid "Edit project"
 msgstr "Редактировать проект"
 
-#: manager/properties/properties.svc.js:45 tag/tag.svc.js:57
+#: manager/properties/properties.svc.js:49 tag/tag.svc.js:57
 msgid "Edit properties"
 msgstr "Редактировать свойство"
 
@@ -343,11 +344,11 @@ msgstr "Редактировать публичную ссылку"
 msgid "Email"
 msgstr "Email"
 
-#: account/const.js:40
+#: account/const.js:43
 msgid "Email is empty!"
 msgstr "Не указан адрес электронной почты!"
 
-#: account/const.js:42
+#: account/const.js:45
 msgid "Email is incorrect!"
 msgstr "Не корректный адрес электронной почты!"
 
@@ -355,7 +356,7 @@ msgstr "Не корректный адрес электронной почты!"
 msgid "Email:"
 msgstr "Email:"
 
-#: manager/html_cache/list.html:6
+#: manager/html_cache/list.html:7
 msgid "Empty"
 msgstr "Пусто"
 
@@ -407,8 +408,8 @@ msgstr "Наполнение из карты сайта..."
 msgid "First name"
 msgstr "Имя"
 
-#: post/const.js:12 post/inputs/central.html:15 project/const.js:12
-#: project/inputs/central.html:15
+#: post/const.js:12 post/inputs/central.html:18 project/const.js:12
+#: project/inputs/central.html:17
 msgid "Html"
 msgstr "Html"
 
@@ -420,23 +421,30 @@ msgstr "Кэш файлы"
 msgid "Html cache description"
 msgstr "Закэшированые файлы для отдачи поисковым и другим ботам"
 
-#: manager/public_link/inputs.html:16 manager/public_link/list.html:5
+#: manager/public_link/inputs.html:20 manager/public_link/list.html:5
 msgid "Icon"
 msgstr "Иконка"
+
+#: account/user_app/list.html:4 file/list.html:25
+#: manager/html_cache/list.html:5 manager/meta_tag/list.html:4
+#: manager/properties/list.html:4 manager/public_link/list.html:4
+#: manager/tag/list.html:4
+msgid "ID"
+msgstr "Ид."
 
 #: account/profile/inputs.html:40
 msgid "if empty, the password will not be changed"
 msgstr "если оставить поле пустым, то пароль не будет изменен"
 
-#: manager/public_link/inputs.html:39 manager/public_link/list.html:8
+#: manager/public_link/inputs.html:43 manager/public_link/list.html:8
 msgid "In contact"
 msgstr "В контактах"
 
-#: manager/public_link/inputs.html:44 manager/public_link/list.html:9
+#: manager/public_link/inputs.html:48 manager/public_link/list.html:9
 msgid "In footer"
 msgstr "В подвале"
 
-#: manager/public_link/inputs.html:34 manager/public_link/list.html:7
+#: manager/public_link/inputs.html:38 manager/public_link/list.html:7
 msgid "In header"
 msgstr "В шапке"
 
@@ -452,15 +460,15 @@ msgstr "Фамилия"
 msgid "Login"
 msgstr "Войти"
 
-#: account/const.js:9
+#: account/const.js:12
 msgid "Login on site"
 msgstr "Вход"
 
-#: account/const.js:14
+#: account/const.js:17
 msgid "Logout"
 msgstr "Выход"
 
-#: account/const.js:16
+#: account/const.js:19
 msgid "Logout from site"
 msgstr "Выход с сайта"
 
@@ -472,8 +480,8 @@ msgstr "Управление"
 msgid "Manager description"
 msgstr "Панель управления сайтом"
 
-#: post/const.js:18 post/inputs/central.html:25 project/const.js:18
-#: project/inputs/central.html:25
+#: post/const.js:18 post/inputs/central.html:28 project/const.js:18
+#: project/inputs/central.html:27
 msgid "Markdown"
 msgstr "Markdown"
 
@@ -493,15 +501,15 @@ msgstr "Не удалось отправить сообщение, попроб�
 msgid "Message sent successfully!"
 msgstr "Сообщение успешно отправлено! "
 
-#: manager/const.js:63
+#: manager/const.js:64
 msgid "Meta tag <strong>%s</strong> created!"
 msgstr "Мета тэг <strong>%s</strong> успешно создано!"
 
-#: manager/const.js:65
+#: manager/const.js:66
 msgid "Meta tag <strong>%s</strong> deleted!"
 msgstr "Мета тэг <strong>%s</strong> успешно удалено!"
 
-#: manager/const.js:64
+#: manager/const.js:65
 msgid "Meta tag <strong>%s</strong> updated!"
 msgstr "Мета тэг <strong>%s</strong> успешно изменено!"
 
@@ -515,9 +523,9 @@ msgstr ""
 "Общие для всех страниц мета тэги которые будут выведены в header страницы"
 
 #: account/user_app/inputs.html:2 account/user_app/list.html:5
-#: manager/html_cache/inputs.html:2 manager/html_cache/list.html:5
+#: manager/html_cache/inputs.html:2 manager/html_cache/list.html:6
 #: manager/meta_tag/inputs.html:2 manager/meta_tag/list.html:5
-#: manager/properties/inputs.html:7 manager/properties/list.html:5
+#: manager/properties/inputs.html:2 manager/properties/list.html:5
 #: post/inputs/right.html:2 project/inputs/right.html:2
 msgid "Name"
 msgstr "Название"
@@ -550,7 +558,7 @@ msgstr "Еще"
 msgid "Password"
 msgstr "Пароль"
 
-#: account/const.js:41
+#: account/const.js:44
 msgid "Password is empty!"
 msgstr "Не указан пароль!"
 
@@ -571,7 +579,7 @@ msgstr ""
 msgid "Please enter you email address used on registration"
 msgstr "Укажите ваш адрес электронной почты"
 
-#: manager/meta_tag/inputs.html:16 manager/public_link/inputs.html:29
+#: manager/meta_tag/inputs.html:6 manager/public_link/inputs.html:33
 msgid "Position"
 msgstr "Позиция"
 
@@ -595,15 +603,15 @@ msgstr "Заметки"
 msgid "Posts description"
 msgstr "Заметки и небольшие посты"
 
-#: account/const.js:19
+#: account/const.js:22
 msgid "Profile"
 msgstr "Профиль"
 
-#: account/const.js:21
+#: account/const.js:24
 msgid "Profile of user"
 msgstr "Профиль пользователя"
 
-#: account/const.js:54
+#: account/const.js:57
 msgid "Profile updated!"
 msgstr "Профиль изменен!"
 
@@ -635,27 +643,27 @@ msgstr "Свойства"
 msgid "Properties description"
 msgstr "Свойства используемые при построении и выводе сайта"
 
-#: manager/const.js:48
+#: manager/const.js:49
 msgid "Property <strong>%s</strong> created!"
 msgstr "Свойство <strong>%s</strong> успешно создано!"
 
-#: manager/const.js:50
+#: manager/const.js:51
 msgid "Property <strong>%s</strong> deleted!"
 msgstr "Свойство <strong>%s</strong> успешно удалено!"
 
-#: manager/const.js:49
+#: manager/const.js:50
 msgid "Property <strong>%s</strong> updated!"
 msgstr "Свойство <strong>%s</strong> успешно изменено!"
 
-#: manager/const.js:53
+#: manager/const.js:54
 msgid "Public link <strong>%s</strong> created!"
 msgstr "Публичная ссылка <strong>%s</strong> успешно создано!"
 
-#: manager/const.js:55
+#: manager/const.js:56
 msgid "Public link <strong>%s</strong> deleted!"
 msgstr "Публичная ссылка <strong>%s</strong> успешно удалено!"
 
-#: manager/const.js:54
+#: manager/const.js:55
 msgid "Public link <strong>%s</strong> updated!"
 msgstr "Публичная ссылка <strong>%s</strong> успешно изменено!"
 
@@ -667,11 +675,11 @@ msgstr "Публичные ссылки"
 msgid "Public links description"
 msgstr "Контактные ссылки на другие ресурсы"
 
-#: account/const.js:29
+#: account/const.js:32
 msgid "Recovery access"
 msgstr "Восстановить доступ"
 
-#: account/const.js:31
+#: account/const.js:34
 msgid "Recovery access to site"
 msgstr "Восстановление доступа к сайту"
 
@@ -679,19 +687,19 @@ msgstr "Восстановление доступа к сайту"
 msgid "Redirect uris"
 msgstr "Redirect uris"
 
-#: account/const.js:4
+#: account/const.js:7
 msgid "Registration form"
 msgstr "Регистрация"
 
-#: account/const.js:6
+#: account/const.js:9
 msgid "Registration on site"
 msgstr "Регистрация на сайте"
 
-#: account/const.js:34
+#: account/const.js:37 account/const.js:4
 msgid "Reset password"
 msgstr "Сброс пароля"
 
-#: account/const.js:36
+#: account/const.js:39
 msgid "Reset password for account"
 msgstr "Сброс пароля для учетной записи"
 
@@ -700,8 +708,8 @@ msgid "RU"
 msgstr "RU"
 
 #: account/profile.html:14 account/user_app/user_app.svc.js:52
-#: file/file.svc.js:90 manager/html_cache/htm_cache.svc.js:113
-#: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:51
+#: file/file.svc.js:90 manager/html_cache/htm_cache.svc.js:130
+#: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:55
 #: manager/public_link/public_link.svc.js:56 post/update.html:18
 #: project/update.html:19 tag/tag.svc.js:63
 msgid "Save"
@@ -722,8 +730,8 @@ msgstr "Результат поиска \"%s\""
 msgid "search text"
 msgstr "текст для поиска"
 
-#: file/file.svc.js:29 post/inputs/central.html:37
-#: project/inputs/central.html:37
+#: file/file.svc.js:29 post/inputs/central.html:42
+#: project/inputs/central.html:41
 msgid "Select"
 msgstr "Выбрать"
 
@@ -747,15 +755,15 @@ msgstr "Показать все"
 msgid "Src"
 msgstr "Источник"
 
-#: manager/const.js:58
+#: manager/const.js:59
 msgid "Tag <strong>%s</strong> created!"
 msgstr "Тэг <strong>%s</strong> успешно создан!"
 
-#: manager/const.js:60
+#: manager/const.js:61
 msgid "Tag <strong>%s</strong> deleted!"
 msgstr "Тэг <strong>%s</strong> успешно удален!"
 
-#: manager/const.js:59
+#: manager/const.js:60
 msgid "Tag <strong>%s</strong> updated!"
 msgstr "Тэг <strong>%s</strong> успешно изменено!"
 
@@ -774,13 +782,13 @@ msgid "Tags description"
 msgstr "Список тэгов используемых на сайте"
 
 #: manager/tag/inputs.html:2 manager/tag/list.html:5 post/const.js:9
-#: post/inputs/central.html:10 project/const.js:9
-#: project/inputs/central.html:10
+#: post/inputs/central.html:13 project/const.js:9
+#: project/inputs/central.html:12
 msgid "Text"
 msgstr "Текст"
 
-#: manager/public_link/inputs.html:6 manager/public_link/list.html:6
-#: post/inputs/central.html:2 project/inputs/central.html:2
+#: manager/public_link/inputs.html:8 manager/public_link/list.html:6
+#: post/inputs/central.html:5 project/inputs/central.html:4
 msgid "Title"
 msgstr "Заголовок"
 
@@ -788,36 +796,36 @@ msgstr "Заголовок"
 msgid "Type"
 msgstr "Тип"
 
-#: file/list.html:26 post/const.js:15 post/inputs/central.html:20
-#: project/const.js:15 project/inputs/central.html:20
+#: file/list.html:26 post/const.js:15 post/inputs/central.html:23
+#: project/const.js:15 project/inputs/central.html:22
 msgid "Url"
 msgstr "Url"
 
-#: manager/const.js:43
+#: manager/const.js:44
 msgid "User <strong>%s</strong> created!"
 msgstr "Пользователь <strong>%s</strong> успешно создан!"
 
-#: manager/const.js:45
+#: manager/const.js:46
 msgid "User <strong>%s</strong> deleted!"
 msgstr "Пользователь <strong>%s</strong> успешно удален!"
 
-#: manager/const.js:44
+#: manager/const.js:45
 msgid "User <strong>%s</strong> updated!"
 msgstr "Пользователь <strong>%s</strong> успешно изменен!"
 
-#: account/const.js:45
+#: account/const.js:48
 msgid "User not activated!"
 msgstr "Пользователь не активирован!"
 
-#: account/const.js:43
+#: account/const.js:46
 msgid "User not founded!"
 msgstr "Пользователь не найден!"
 
-#: account/const.js:39
+#: account/const.js:42
 msgid "User with email <strong>%s</strong> is exists!"
 msgstr "Пользователь с почтой <strong>%s</strong> уже зарегистрирован!"
 
-#: account/const.js:50
+#: account/const.js:53
 msgid "User with email <strong>%s</strong> not found!"
 msgstr "Пользователь с почтой <strong>%s</strong> не найден!"
 
@@ -833,7 +841,7 @@ msgstr "Пользователи"
 msgid "Users description"
 msgstr "Пользователи сайта"
 
-#: manager/properties/inputs.html:11 manager/properties/list.html:6
+#: manager/properties/inputs.html:9 manager/properties/list.html:6
 msgid "Value"
 msgstr "Значение"
 
@@ -841,7 +849,7 @@ msgstr "Значение"
 msgid "View"
 msgstr "Смотреть"
 
-#: account/const.js:44
+#: account/const.js:47
 msgid "Wrong password!"
 msgstr "Неверный пароль!"
 
@@ -849,7 +857,7 @@ msgstr "Неверный пароль!"
 msgid "Yes"
 msgstr "Да"
 
-#: account/const.js:47
+#: account/const.js:50
 msgid "You authorizing!"
 msgstr "Вы авторизованы!"
 
@@ -857,9 +865,12 @@ msgstr "Вы авторизованы!"
 msgid "You name"
 msgstr "Ваше имя"
 
-#: account/const.js:46
+#: account/const.js:49
 msgid "You not activated!"
 msgstr "Вы не активировали учетную запись!"
+
+#~ msgid "#"
+#~ msgstr "№"
 
 #~ msgid "Manager descriptions"
 #~ msgstr "Управление параметрами сайта"
