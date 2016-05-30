@@ -4,8 +4,8 @@ from project import helpers
 from django.shortcuts import render
 from django.conf import settings
 import json
-from app.manager.meta_tag import resource as meta_tag_resource
-from app.manager.properties import resource as properties_resource
+from ..manager.meta_tag import resource as meta_tag_resource
+from ..manager.properties import resource as properties_resource
 from django.utils.translation import get_language
 
 
@@ -116,13 +116,13 @@ def render_sitemap_xml(request):
     from helpers import get_config
     config = get_config(request)
 
-    from app.project.models import Project
+    from ..project.models import Project
     project_list = Project.objects.all().order_by('-created').all()
 
-    from app.post.models import Post
+    from ..post.models import Post
     post_list = Post.objects.all().order_by('-created').all()
 
-    from app.tag.models import Tag
+    from ..tag.models import Tag
     tag_list = Tag.objects.all().order_by('-created').all()
 
     return render(request, 'home/templates/%s/sitemap.xml' % settings.THEME, {

@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
-from app.image.models import Image
-from app.tag.models import Tag
+from ..image.models import Image
+from ..tag.models import Tag
 
 
 # Project model

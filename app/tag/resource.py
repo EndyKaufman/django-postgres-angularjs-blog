@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from project import helpers
-from django.db.models import Q
+from models import Tag
 
 
 def get_fields():
-    return ['text', 'description']
+    return [f.name for f in Tag._meta.get_fields()]
 
 
 def get_item_by_text(request, text):
-    from app.tag.models import Tag
     try:
         item = Tag.objects.get(text=text)
     except Tag.DoesNotExist:
@@ -25,12 +24,9 @@ def create(request):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.tag.models import Tag
-
     item, created = Tag.objects.get_or_create(text=data['text'])
     if created:
-        if data['description'] is not None:
-            item.description = data['description']
+        helpers.json_to_objects(item, data)
         item.created_user = user
         item.save()
 
@@ -44,18 +40,12 @@ def update(request, tag_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.tag.models import Tag
-
     try:
         item = Tag.objects.get(pk=tag_id)
     except Tag.DoesNotExist:
         return {'code': 'tag/not_found', 'values': [tag_id]}, 404, False
 
-    if data['text'] is not None:
-        item.text = data['text']
-    if data['description'] is not None:
-        item.description = data['description']
-        
+    helpers.json_to_objects(item, data)
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
@@ -63,9 +53,6 @@ def update(request, tag_id):
 
 def delete(request, tag_id):
     """Update record"""
-
-    from app.tag.models import Tag
-
     try:
         item = Tag.objects.get(pk=tag_id)
     except Tag.DoesNotExist:
@@ -77,8 +64,6 @@ def delete(request, tag_id):
 
 
 def get_item(request, tag_id):
-    from app.tag.models import Tag
-
     try:
         item = Tag.objects.get(pk=tag_id)
     except Tag.DoesNotExist:
@@ -88,10 +73,7 @@ def get_item(request, tag_id):
 
 
 def get_list(request):
-    from app.tag.models import Tag
-
     items = Tag.objects.all().order_by('created').all()
-
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
@@ -99,11 +81,8 @@ def get_search(request, search_text):
     if search_text == 'all':
         return get_list(request)
     else:
-        from app.tag.models import Tag
-
         items = Tag.objects.filter(
-            Q(text_icontains=search_text) |
-            Q(description__icontains=search_text)
+            helpers.get_searching_all_fields_qs(Tag, search_text)
         ).order_by('created').all()
 
         return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items

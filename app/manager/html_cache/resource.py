@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from project import helpers
-from django.db.models import Q
+from ..models import HtmlCache
 
 
 def get_fields():
-    return ['url', 'content']
+    return [f.name for f in HtmlCache._meta.get_fields()]
 
 
 def create_by_url(url, content):
-    from app.manager.models import HtmlCache
     item, created = HtmlCache.objects.get_or_create(url=url, content=content)
     return item
 
@@ -19,8 +18,6 @@ def create(request):
     user = helpers.get_user(request)
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
-
-    from app.manager.models import HtmlCache
 
     item, created = HtmlCache.objects.get_or_create(url=data['url'])
 
@@ -54,8 +51,6 @@ def update(request, html_cache_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.manager.models import HtmlCache
-
     try:
         item = HtmlCache.objects.get(pk=html_cache_id)
     except HtmlCache.DoesNotExist:
@@ -70,8 +65,6 @@ def update(request, html_cache_id):
 def delete(request, html_cache_id):
     """Update record"""
 
-    from app.manager.models import HtmlCache
-
     try:
         item = HtmlCache.objects.get(pk=html_cache_id)
     except HtmlCache.DoesNotExist:
@@ -83,8 +76,6 @@ def delete(request, html_cache_id):
 
 
 def get_item(request, html_cache_id):
-    from app.manager.models import HtmlCache
-
     try:
         item = HtmlCache.objects.get(pk=html_cache_id)
     except HtmlCache.DoesNotExist:
@@ -94,8 +85,6 @@ def get_item(request, html_cache_id):
 
 
 def get_object_by_url(html_cache_url):
-    from app.manager.models import HtmlCache
-
     try:
         return HtmlCache.objects.get(url=html_cache_url)
     except HtmlCache.DoesNotExist:
@@ -103,8 +92,6 @@ def get_object_by_url(html_cache_url):
 
 
 def get_item_by_url(request, html_cache_url):
-    from app.manager.models import HtmlCache
-
     try:
         item = HtmlCache.objects.get(url=html_cache_url)
     except HtmlCache.DoesNotExist:
@@ -114,8 +101,6 @@ def get_item_by_url(request, html_cache_url):
 
 
 def get_list(request):
-    from app.manager.models import HtmlCache
-
     items = HtmlCache.objects.all().order_by('-created').all()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
@@ -125,11 +110,8 @@ def get_search(request, search_text):
     if search_text == 'all':
         return get_list(request)
     else:
-        from app.manager.models import HtmlCache
-
         items = HtmlCache.objects.filter(
-            Q(url__icontains=search_text) |
-            Q(content__icontains=search_text)
+            helpers.get_searching_all_fields_qs(HtmlCache, search_text)
         ).order_by('-created').all()
 
         return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items

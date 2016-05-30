@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from project import helpers
-from django.db.models import Q
+from ..models import MetaTag
 
 
 def get_fields():
-    return ['name', 'content', 'attributes', 'position']
+    return [f.name for f in MetaTag._meta.get_fields()]
 
 
 def create(request):
@@ -13,8 +13,6 @@ def create(request):
     user = helpers.get_user(request)
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
-
-    from app.manager.models import MetaTag
 
     item, created = MetaTag.objects.get_or_create(name=data['name'])
 
@@ -35,8 +33,6 @@ def update(request, meta_tag_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.manager.models import MetaTag
-
     try:
         item = MetaTag.objects.get(pk=meta_tag_id)
     except MetaTag.DoesNotExist:
@@ -51,8 +47,6 @@ def update(request, meta_tag_id):
 def delete(request, meta_tag_id):
     """Update record"""
 
-    from app.manager.models import MetaTag
-
     try:
         item = MetaTag.objects.get(pk=meta_tag_id)
     except MetaTag.DoesNotExist:
@@ -64,8 +58,6 @@ def delete(request, meta_tag_id):
 
 
 def get_item(request, meta_tag_id):
-    from app.manager.models import MetaTag
-
     try:
         item = MetaTag.objects.get(pk=meta_tag_id)
     except MetaTag.DoesNotExist:
@@ -75,8 +67,6 @@ def get_item(request, meta_tag_id):
 
 
 def get_item_by_name(request, meta_tag_name):
-    from app.manager.models import MetaTag
-
     try:
         item = MetaTag.objects.get(name=meta_tag_name)
     except MetaTag.DoesNotExist:
@@ -86,16 +76,11 @@ def get_item_by_name(request, meta_tag_name):
 
 
 def get_list(request):
-    from app.manager.models import MetaTag
-
     items = MetaTag.objects.all().order_by('position').all()
-
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
 def get_list_as_objects():
-    from app.manager.models import MetaTag
-
     try:
         items = MetaTag.objects.all().order_by('position').all()
     except MetaTag.DoesNotExist:
@@ -107,12 +92,8 @@ def get_search(request, search_text):
     if search_text == 'all':
         return get_list(request)
     else:
-        from app.manager.models import MetaTag
-
         items = MetaTag.objects.filter(
-            Q(name__icontains=search_text) |
-            Q(content__icontains=search_text) |
-            Q(attributes__icontains=search_text)
+            helpers.get_searching_all_fields_qs(MetaTag, search_text)
         ).order_by('-created').all()
 
         return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items

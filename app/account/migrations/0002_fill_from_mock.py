@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from app.account.models import User
+from ..models import User
 import json
 
 

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from project import helpers
-from django.db.models import Q
+from models import Project
 
 
 def update_from_json_data(request, item, data, user):
-    from app.image.models import Image
-    from app.tag.models import Tag
+    from ..image.models import Image
+    from ..tag.models import Tag
 
     helpers.json_to_objects(item, data)
 
@@ -88,7 +88,7 @@ def update_from_json_data(request, item, data, user):
 
 
 def get_fields():
-    return ['name', 'title', 'description', 'url', 'text', 'html', 'markdown', 'type']
+    return [f.name for f in Project._meta.get_fields()]
 
 
 def create(request):
@@ -97,8 +97,6 @@ def create(request):
     user = helpers.get_user(request)
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
-
-    from models import Project
 
     item, created = Project.objects.get_or_create(name=data['name'], type=1, created_user=user)
     reload_source = []
@@ -117,8 +115,6 @@ def update(request, project_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from models import Project
-
     try:
         item = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
@@ -131,9 +127,6 @@ def update(request, project_id):
 
 def delete(request, project_id):
     """Update record"""
-
-    from models import Project
-
     try:
         item = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
@@ -145,8 +138,6 @@ def delete(request, project_id):
 
 
 def get_item(request, project_id):
-    from models import Project
-
     try:
         item = Project.objects.get(pk=project_id)
     except Project.DoesNotExist:
@@ -156,40 +147,28 @@ def get_item(request, project_id):
 
 
 def get_object_by_name(request, project_name):
-    from models import Project
-
     try:
         item = Project.objects.get(name=project_name)
     except Project.DoesNotExist:
         item = False
-
     return item
 
 
 def get_item_by_name(request, project_name):
-    from models import Project
-
     try:
         item = Project.objects.get(name=project_name)
     except Project.DoesNotExist:
         return {'code': 'project/not_found', 'values': [project_name]}, 404, False
-
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
 
 
 def get_list(request):
-    from models import Project
-
     items = Project.objects.all().order_by('-created').all()
-
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
 def get_list_by_tag(request, tag_text):
-    from models import Project
-
     items = Project.objects.filter(tags__text=tag_text).order_by('-created').all()
-
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
@@ -197,16 +176,8 @@ def get_search(request, search_text):
     if search_text == 'all':
         return get_list(request)
     else:
-        from models import Project
-
         items = Project.objects.filter(
-            Q(title__icontains=search_text) |
-            Q(name__icontains=search_text) |
-            Q(description__icontains=search_text) |
-            Q(url__icontains=search_text) |
-            Q(text__icontains=search_text) |
-            Q(html__icontains=search_text) |
-            Q(markdown__icontains=search_text)
+            helpers.get_searching_all_fields_qs(Project, search_text)
         ).order_by('-created').all()
 
         return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items

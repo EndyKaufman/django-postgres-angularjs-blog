@@ -456,6 +456,10 @@ msgstr "Информация"
 msgid "Last name"
 msgstr "Фамилия"
 
+#: search/const.js:6 tag/const.js:6
+msgid "Loading..."
+msgstr "Загрузка..."
+
 #: account/login.html:13
 msgid "Login"
 msgstr "Войти"
@@ -538,7 +542,7 @@ msgstr "Новый пароль:"
 msgid "No"
 msgstr "Нет"
 
-#: search/list.html:8 tag/list.html:8
+#: search/const.js:7 tag/const.js:7
 msgid "No results found..."
 msgstr "Ничего не найдено..."
 

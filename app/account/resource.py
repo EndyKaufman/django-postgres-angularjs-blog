@@ -5,14 +5,14 @@ from django.contrib import auth
 from project import settings
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext, get_language
+from models import User, Code
 
 
 def get_fields():
-    return ['email', 'password', 'username', 'firstname', 'lastname']
+    return [f.name for f in User._meta.get_fields()]
 
 
 def get_item_by_email(request, email):
-    from app.account.models import User
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
@@ -21,7 +21,6 @@ def get_item_by_email(request, email):
 
 
 def get_code(request, text):
-    from app.account.models import Code
     try:
         code = Code.objects.get(text=text)
     except Code.DoesNotExist:
@@ -35,8 +34,6 @@ def create(request):
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
     data['email'] = data['email'].lower()
-
-    from app.account.models import User
 
     user = User.objects.create_user(email=data['email'], password=data['password'],
                                     username=data['email'])
@@ -67,12 +64,9 @@ def update(request):
     data['email'] = data['email'].lower()
 
     user = helpers.get_user(request)
-
     helpers.json_to_objects(user, data)
-
     if data['password'] is not None:
         user.set_password(data['password'])
-
     user.backend = 'django.contrib.auth.backends.ModelBackend'
     user.save()
 
@@ -133,14 +127,12 @@ def recovery(request):
 
     data['email'] = data['email'].lower()
 
-    from app.account.models import Code
-
     user = get_item_by_email(request, data['email'])
 
     code = Code.objects.create(text=helpers.make_code(), created_user=user, type=1)
 
-    from app.home.helpers import get_config
-    from app.manager.properties import resource as properties_resource
+    from ..home.helpers import get_config
+    from ..manager.properties import resource as properties_resource
 
     config = get_config(request)
     config['code'] = code.text
@@ -169,8 +161,6 @@ def reset(request):
 
     code = get_code(request, data['code'])
 
-    from app.account.models import User
-
     if code:
         try:
             user = User.objects.get(pk=code.created_user.id)
@@ -181,9 +171,7 @@ def reset(request):
 
         if data['password'] is not None:
             user.set_password(data['password'])
-
         helpers.json_to_objects(user, data)
-
         user.backend = 'django.contrib.auth.backends.ModelBackend'
         user.save()
 

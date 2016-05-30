@@ -1,5 +1,5 @@
 from django.utils.decorators import available_attrs, decorator_from_middleware
-from app.account.middleware.access import AccessViewMiddleware
+from ..middleware.access import AccessViewMiddleware
 from functools import wraps
 
 csrf_or_api_token_protect = decorator_from_middleware(AccessViewMiddleware)

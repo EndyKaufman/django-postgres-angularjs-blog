@@ -202,6 +202,11 @@ def get_thumbnail_url(request, url):
 
 
 def json_to_objects(obj, json_data, ignored_fields=['id', 'pk', 'created', 'updated', 'only_update', 'created_user']):
+    """
+    :param obj: django.db.models.Model
+    :param json_data: json
+    :param ignored_fields: list
+    """
     for key in json_data:
         if getattr(obj, key, None) is not None and key.lower() not in ignored_fields:
             if isinstance(getattr(obj, key, None), datetime.datetime):
@@ -209,6 +214,25 @@ def json_to_objects(obj, json_data, ignored_fields=['id', 'pk', 'created', 'upda
             else:
                 if 'django' not in str(type(getattr(obj, key, None))):
                     setattr(obj, key, json_data[key])
+
+
+def get_searching_all_fields_qs(table, search_text):
+    """
+    :param table: django.db.models.Model
+    :param search_text: string
+    :return: django.db.models.Q
+    """
+    from django.db.models import TextField
+    from django.db.models import Q
+    fields = [f for f in table._meta.get_fields() if isinstance(f, TextField)]
+    queries = [Q(**{'%s__icontains' % f.name: search_text}) for f in fields]
+
+    qs = Q()
+    for query in queries:
+        qs = qs | query
+
+    return qs
+
 
 
 def objects_to_json(request, items):

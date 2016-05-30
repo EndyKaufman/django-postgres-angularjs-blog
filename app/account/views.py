@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-s
 from __future__ import print_function
 from django.views.decorators.csrf import ensure_csrf_cookie
-from app.home.helpers import render_index
+from ..home.helpers import render_index
 from django.utils.translation import ugettext
 
 

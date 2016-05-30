@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from project import helpers
-from django.db.models import Q
-
+from oauth2_provider.models import get_application_model
+from oauth2_provider.generators import generate_client_secret, generate_client_id
+from oauth2_provider.models import AbstractApplication
 
 def get_fields():
-    return ['client_id', 'user', 'redirect_uris', 'client_type', 'authorization_grant_type', 'client_secret', 'name',
-            'skip_authorization']
+    return [f.name for f in get_application_model()._meta.get_fields()]
 
 
 def create(request):
@@ -14,10 +14,6 @@ def create(request):
     user = helpers.get_user(request)
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
-
-    from oauth2_provider.models import get_application_model
-    from oauth2_provider.generators import generate_client_secret, generate_client_id
-    from oauth2_provider.models import AbstractApplication
 
     data['client_type'] = AbstractApplication.CLIENT_CONFIDENTIAL
     data['authorization_grant_type'] = AbstractApplication.GRANT_PASSWORD
@@ -47,10 +43,6 @@ def update(request, user_app_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from oauth2_provider.models import get_application_model
-    from oauth2_provider.generators import generate_client_secret, generate_client_id
-    from oauth2_provider.models import AbstractApplication
-
     try:
         item = get_application_model().objects.get(pk=user_app_id)
     except get_application_model().DoesNotExist:
@@ -62,19 +54,8 @@ def update(request, user_app_id):
     data['client_id'] = generate_client_id()
     data['client_secret'] = generate_client_secret()
 
-    # item.client_id = data['client_id']
+    helpers.json_to_objects(item, data)
     item.user = user
-    if data['redirect_uris'] is not None:
-        item.redirect_uris = data['redirect_uris']
-    if data['client_type'] is not None:
-        item.client_type = data['client_type']
-    if data['authorization_grant_type'] is not None:
-        item.authorization_grant_type = data['authorization_grant_type']
-    # item.client_secret = data['client_secret']
-    if data['name'] is not None:
-        item.name = data['name']
-    if data['skip_authorization'] is not None:
-        item.skip_authorization = data['skip_authorization']
     item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item

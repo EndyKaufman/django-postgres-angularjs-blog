@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from project import helpers
-from django.db.models import Q
+from ..models import PublicLink
 
 
 def get_fields():
-    return ['src', 'title', 'icon', 'in_header', 'in_footer', 'position', 'in_contact']
+    return [f.name for f in PublicLink._meta.get_fields()]
 
 
 def create(request):
@@ -13,8 +13,6 @@ def create(request):
     user = helpers.get_user(request)
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
-
-    from app.manager.models import PublicLink
 
     item, created = PublicLink.objects.get_or_create(src=data['src'])
 
@@ -35,8 +33,6 @@ def update(request, public_link_id):
 
     data = helpers.set_null_values_if_not_exist(data, get_fields())
 
-    from app.manager.models import PublicLink
-
     try:
         item = PublicLink.objects.get(pk=public_link_id)
     except PublicLink.DoesNotExist:
@@ -50,9 +46,6 @@ def update(request, public_link_id):
 
 def delete(request, public_link_id):
     """Update record"""
-
-    from app.manager.models import PublicLink
-
     try:
         item = PublicLink.objects.get(pk=public_link_id)
     except PublicLink.DoesNotExist:
@@ -64,8 +57,6 @@ def delete(request, public_link_id):
 
 
 def get_item(request, public_link_id):
-    from app.manager.models import PublicLink
-
     try:
         item = PublicLink.objects.get(pk=public_link_id)
     except PublicLink.DoesNotExist:
@@ -75,8 +66,6 @@ def get_item(request, public_link_id):
 
 
 def get_item_by_src(request, public_link_src):
-    from app.manager.models import PublicLink
-
     try:
         item = PublicLink.objects.get(src=public_link_src)
     except PublicLink.DoesNotExist:
@@ -86,10 +75,7 @@ def get_item_by_src(request, public_link_src):
 
 
 def get_list(request):
-    from app.manager.models import PublicLink
-
     items = PublicLink.objects.all().order_by('position').all()
-
     return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items
 
 
@@ -97,12 +83,8 @@ def get_search(request, search_text):
     if search_text == 'all':
         return get_list(request)
     else:
-        from app.manager.models import PublicLink
-
         items = PublicLink.objects.filter(
-            Q(src__icontains=search_text) |
-            Q(title__icontains=search_text) |
-            Q(icon__icontains=search_text)
+            helpers.get_searching_all_fields_qs(PublicLink, search_text)
         ).order_by('-created').all()
 
         return {'code': 'ok', 'data': helpers.objects_to_json(request, items)}, 200, items

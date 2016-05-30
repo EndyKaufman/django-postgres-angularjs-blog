@@ -57,7 +57,7 @@ msgstr ""
 msgid "Add new public link"
 msgstr ""
 
-#: tag/tag.svc.js:30
+#: tag/tag.svc.js:33
 msgid "Add new tag"
 msgstr ""
 
@@ -148,8 +148,8 @@ msgstr ""
 #: manager/properties/properties.svc.js:56
 #: manager/public_link/public_link.svc.js:30
 #: manager/public_link/public_link.svc.js:57
-#: tag/tag.svc.js:37
-#: tag/tag.svc.js:64
+#: tag/tag.svc.js:40
+#: tag/tag.svc.js:67
 msgid "Cancel"
 msgstr ""
 
@@ -214,7 +214,7 @@ msgstr ""
 #: post/list-header.html:3
 #: project/create.html:15
 #: project/list-header.html:3
-#: tag/tag.svc.js:36
+#: tag/tag.svc.js:39
 msgid "Create"
 msgstr ""
 
@@ -371,7 +371,7 @@ msgid "Edit project"
 msgstr ""
 
 #: manager/properties/properties.svc.js:49
-#: tag/tag.svc.js:57
+#: tag/tag.svc.js:60
 msgid "Edit properties"
 msgstr ""
 
@@ -511,6 +511,11 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
+#: search/const.js:6
+#: tag/const.js:6
+msgid "Loading..."
+msgstr ""
+
 #: account/login.html:13
 msgid "Login"
 msgstr ""
@@ -599,8 +604,8 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: search/list.html:8
-#: tag/list.html:8
+#: search/const.js:7
+#: tag/const.js:7
 msgid "No results found..."
 msgstr ""
 
@@ -780,7 +785,7 @@ msgstr ""
 #: manager/public_link/public_link.svc.js:56
 #: post/update.html:18
 #: project/update.html:19
-#: tag/tag.svc.js:63
+#: tag/tag.svc.js:66
 msgid "Save"
 msgstr ""
 

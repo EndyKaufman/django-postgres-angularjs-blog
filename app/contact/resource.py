@@ -2,7 +2,7 @@
 from project import helpers
 from project import settings
 from django.template.loader import render_to_string
-from app.manager.properties import resource as properties_resource
+from ..manager.properties import resource as properties_resource
 from django.utils.translation import ugettext, get_language
 
 

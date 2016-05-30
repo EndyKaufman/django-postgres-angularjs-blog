@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-s
 from django.views.decorators.csrf import ensure_csrf_cookie
-from app.home.helpers import render_index
+from ..home.helpers import render_index
 from django.utils.translation import ugettext
 
 
