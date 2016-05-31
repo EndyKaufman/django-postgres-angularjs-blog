@@ -35,7 +35,7 @@ def get_config(request):
     return config
 
 
-def render_index(request, strings, template='home/templates/%s/index.htm'):
+def render_index(request, strings, template='home/templates/%s/index.htm', noindex=False):
     config = get_config(request)
     config['properties'] = properties_resource.get_list_of_names(['SITE_TITLE', 'SITE_DESCRIPTION', 'SITE_NAME',
                                                                   'SITE_LOGO'])
@@ -88,6 +88,11 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
     else:
         escaped_fragment_tag = ''
 
+    if noindex:
+        noindex_tag = '<meta name="robots" content="noindex,nofollow" />'
+    else:
+        noindex_tag = ''
+
     return render(request, template % settings.THEME, {
         'host_name': config['host_name'],
         'host_url': '//' + request.get_host(),
@@ -99,6 +104,7 @@ def render_index(request, strings, template='home/templates/%s/index.htm'):
         'meta_tag_list': meta_tag_list,
         'properties_list': properties_list,
         'escaped_fragment_tag': escaped_fragment_tag,
+        'noindex_tag': noindex_tag,
         'strings': strings
     })
 
@@ -122,14 +128,10 @@ def render_sitemap_xml(request):
     from ..post.models import Post
     post_list = Post.objects.all().order_by('-created').all()
 
-    from ..tag.models import Tag
-    tag_list = Tag.objects.all().order_by('-created').all()
-
     return render(request, 'home/templates/%s/sitemap.xml' % settings.THEME, {
         'config': config,
         'project_list': project_list,
         'post_list': post_list,
-        'tag_list': tag_list,
         'current_lang': get_language(),
         'lang': settings.LANGUAGE_CODE,
         'lang_list': config['lang_list'],

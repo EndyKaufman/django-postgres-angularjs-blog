@@ -22,7 +22,7 @@ def profile(request):
         'site_title': [ugettext('Profile')],
         'site_description': ugettext('Profile of user'),
         'site_url': '/account/profile'
-    })
+    }, noindex=True)
 
 
 @ensure_csrf_cookie
@@ -42,7 +42,7 @@ def recovery(request):
         'site_title': [ugettext('Recovery access')],
         'site_description': ugettext('Recovery access to site'),
         'site_url': '/account/recovery'
-    })
+    }, noindex=True)
 
 
 @ensure_csrf_cookie
@@ -52,7 +52,7 @@ def reset(request):
         'site_title': [ugettext('Reset password')],
         'site_description': ugettext('Reset password for account'),
         'site_url': '/account/reset'
-    })
+    }, noindex=True)
 
 
 @ensure_csrf_cookie
@@ -62,4 +62,4 @@ def user_app(request):
         'site_title': [ugettext('Application')],
         'site_description': ugettext('Applications of user'),
         'site_url': '/account/user_app'
-    })
+    }, noindex=True)

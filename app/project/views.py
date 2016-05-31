@@ -41,3 +41,28 @@ def get_item_by_name(request, project_name):
         return render_index(request, strings)
     else:
         raise Http404
+
+
+@ensure_csrf_cookie
+def update(request, project_name):
+    """Item data"""
+
+    if settings.ENV == 'production':
+        try:
+            item = resource.get_object_by_name(request, project_name)
+        except:
+            item = False
+    else:
+        item = resource.get_object_by_name(request, project_name)
+    if item:
+        strings = {
+            'site_title': [item.title, ugettext('Projects')],
+            'site_description': item.description,
+            'site_url': 'project/update/%s' % item.name
+        }
+        images = list(item.images.all())
+        if images:
+            strings['site_image'] = helpers.get_thumbnail_url(request, images[0].src)
+        return render_index(request, strings, noindex=True)
+    else:
+        raise Http404

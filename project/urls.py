@@ -70,8 +70,8 @@ urlpatterns = urlpatterns + solid_i18n_patterns(
     url(r'^post', app.post.views.get_list, name='get_list'),
     url(r'^project', app.project.views.get_list, name='get_list'),
 
-    url(r'^tag/.*$', app.home.views.index, name='index'),
-    url(r'^search/.*$', app.home.views.index, name='index'),
+    url(r'^tag/.*$', app.home.views.noindex, name='noindex'),
+    url(r'^search/.*$', app.home.views.noindex, name='noindex'),
     # url(r'^admin/', admin.site.urls),
     # url(r'^.*$', app.home.views.index, name='index')
 )
