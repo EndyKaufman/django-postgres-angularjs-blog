@@ -113,7 +113,7 @@ LOGGING = {
     }
 }
 if ENV == 'production':
-    LOGGING.loggers = {
+    LOGGING['loggers'] = {
         'django': {
             'handlers': ['console'],
             'propagate': True,
