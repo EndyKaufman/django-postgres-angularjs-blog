@@ -55,117 +55,89 @@ ADMINS = (
 )
 
 # LOGGING
-if ENV == 'production':
-    LOGGING = LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
-        'handlers': {
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
-            'console': {
-                'level': 'INFO',
-                'class': 'logging.StreamHandler',
-                'formatter': 'simple'
-            },
-            'null': {
-                'level': 'DEBUG',
-                'class': 'logging.NullHandler',
-            },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
         },
-        'loggers': {
-            'django': {
-                'handlers': ['console'],
-                'propagate': True,
-            },
-            'django.request': {
-                'handlers': ['mail_admins'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            'django_seo_js.middleware.escaped_fragment': {
-                'handlers': ['mail_admins'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            'django_seo_js.middleware.hashbang': {
-                'handlers': ['mail_admins'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            'django_seo_js.middleware.useragent': {
-                'handlers': ['mail_admins'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'logging.NullHandler'
+        },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django_seo_js.middleware.escaped_fragment': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django_seo_js.middleware.hashbang': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django_seo_js.middleware.useragent': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
     }
-else:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-            },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
-            },
+}
+if ENV == 'production':
+    LOGGING.loggers = {
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
         },
-        'handlers': {
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler'
-            },
-            'console': {
-                'level': 'INFO',
-                'class': 'logging.StreamHandler',
-                'formatter': 'simple'
-            },
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'logging.NullHandler'
-            },
-            'null': {
-                'level': 'DEBUG',
-                'class': 'logging.NullHandler',
-            },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
         },
-        'loggers': {
-            'django': {
-                'handlers': ['console'],
-                'propagate': True,
-            },
-            'django.request': {
-                'handlers': ['console'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            'django_seo_js.middleware.escaped_fragment': {
-                'handlers': ['console'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            'django_seo_js.middleware.hashbang': {
-                'handlers': ['console'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-            'django_seo_js.middleware.useragent': {
-                'handlers': ['console'],
-                'level': 'ERROR',
-                'propagate': True,
-            },
-        }
+        'django_seo_js.middleware.escaped_fragment': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django_seo_js.middleware.hashbang': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django_seo_js.middleware.useragent': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
     }
 
 # CACHE
@@ -251,6 +223,10 @@ DATABASES = {
     }
 }
 
+# Parse database configuration from $DATABASE_URL
+if os.environ.get('DATABASE_URL', None) is not None and not USE_SQLITE:
+    DATABASES['default'] = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -262,6 +238,8 @@ LANGUAGES = (
     ('ru', 'RU'),
 )
 
+MODELTRANSLATION_LANGUAGES = ('en', 'ru')
+
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
     os.path.join(BASE_DIR, 'app')
@@ -269,18 +247,10 @@ LOCALE_PATHS = [
 
 SOLID_I18N_HANDLE_DEFAULT_PREFIX = True
 
-MODELTRANSLATION_LANGUAGES = ('en', 'ru')
-
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
-# Parse database configuration from $DATABASE_URL
-if os.environ.get('DATABASE_URL', None) is not None and not USE_SQLITE:
-    DATABASES['default'] = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-
-# DATABASES['default']['ENGINE'] = 'django_postgrespool'
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -319,6 +289,8 @@ else:
 
     STATIC_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, STATICFILES_LOCATION)
 
+THUMBNAIL_SUBDIR = 'thumbnail'
+
 # Backend to use
 SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', False)
 
@@ -335,11 +307,12 @@ SEO_JS_PRERENDER_RECACHE_URL = os.environ.get('SEO_JS_PRERENDER_RECACHE_URL', ''
 # Whether to run the middlewares and update_cache_for_url.  Useful to set False for unit testing.
 SEO_JS_ENABLED = True  # Defaults to *not* DEBUG.
 
-SEO_JS_PRERENDER_TIMEOUT = float(os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False))
+if os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False):
+    SEO_JS_PRERENDER_TIMEOUT = float(os.environ.get('SEO_JS_PRERENDER_TIMEOUT', False))
+else:
+    SEO_JS_PRERENDER_TIMEOUT = False
 
 SEO_JS_USER_AGENTS = [
     'Facebot',
     "Twitterbot"
 ]
-
-THUMBNAIL_SUBDIR = 'thumbnail'

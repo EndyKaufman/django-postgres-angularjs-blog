@@ -208,8 +208,8 @@ def json_to_objects(obj, json_data, ignored_fields=['id', 'pk', 'created', 'upda
     :param ignored_fields: list
     """
     for key in json_data:
-        if getattr(obj, key, None) is not None and getattr(obj, '%s_%s' % (key, settings.LANGUAGE_CODE),
-                                                           None) is None and key.lower() not in ignored_fields:
+        if getattr(obj, '%s_%s' % (key, settings.LANGUAGE_CODE),
+                   None) is None and key.lower() not in ignored_fields:
             if isinstance(getattr(obj, key, None), datetime.datetime):
                 setattr(obj, key, datetime.datetime.strptime(json_data[key], '%Y-%m-%dT%H:%M:%S.%fZ'))
             else:
