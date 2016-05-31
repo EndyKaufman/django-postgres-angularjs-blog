@@ -12,7 +12,7 @@ def index(request):
 @ensure_csrf_cookie
 def noindex(request):
     """Index page"""
-    return helpers.render_index(request, {}, no_index=True)
+    return helpers.render_index(request, {}, noindex=True)
 
 
 def robots_txt(request):
