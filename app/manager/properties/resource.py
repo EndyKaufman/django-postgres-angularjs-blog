@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-from project import helpers
+from project import helpers, settings
 from ..models import Properties
+from django.core.files import File
+import os
+from django.utils.translation import get_language
 
 
 def get_fields():
@@ -23,6 +26,21 @@ def create(request):
         item.save()
 
     return {'code': 'ok', 'data': helpers.objects_to_json(request, [item])}, 200, item
+
+
+def apply_on_site(request):
+    props = get_list_as_objects()
+    for prop in props:
+        if prop.name == 'FAVICON':
+            from favicon.models import Favicon
+            item, created = Favicon.objects.get_or_create(title='FAVICON')
+            file_name = getattr(prop, 'value_%s' % get_language(), None)
+            item.faviconImage.save(
+                os.path.basename(file_name),
+                File(open(os.path.join(settings.MEDIA_ROOT, file_name)))
+            )
+            item.save()
+    return {'code': 'ok'}, 200, True
 
 
 def update(request, properties_id):
@@ -82,10 +100,10 @@ def get_list_of_names(names):
         for item in items:
             for name in names:
                 if item.name == name:
-                    list_of_names[name] = item.value
+                    list_of_names[name] = getattr(item, 'value_%s' % get_language(), None)
     else:
         for item in items:
-            list_of_names[item.name] = item.value
+            list_of_names[item.name] = item['value_%s' % get_language()]
     return list_of_names
 
 

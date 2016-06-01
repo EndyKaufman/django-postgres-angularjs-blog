@@ -156,11 +156,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'storages',
     'jsonview',
     'easy_thumbnails',
     'oauth2_provider',
     'modeltranslation',
+    'favicon',
     'app.account',
     'app.file',
     'app.home',
@@ -290,6 +292,14 @@ else:
     STATIC_URL = 'http://%s.s3.amazonaws.com/%s/' % (AWS_STORAGE_BUCKET_NAME, STATICFILES_LOCATION)
 
 THUMBNAIL_SUBDIR = 'thumbnail'
+
+FAVICON_CONFIG = {
+    'shortcut icon': [16 ,32 ,48 ,128, 192],
+    'touch-icon': [196],
+    'icon': [196],
+    'apple-touch-icon': [57, 72, 114, 144, 180],
+    'apple-touch-icon-precomposed': [57, 72, 76, 114, 120, 144, 152,180],
+}
 
 # Backend to use
 SEO_JS_PRERENDER_TOKEN = os.environ.get('SEO_JS_PRERENDER_TOKEN', False)

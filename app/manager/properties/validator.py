@@ -29,6 +29,21 @@ def create(request):
     return {'code': 'ok'}, 200, True
 
 
+def apply_on_site(request):
+    """Update record"""
+
+    data = request.DATA
+
+    user = helpers.get_user(request)
+
+    if not user or not request.user.is_superuser:
+        return {'code': 'no_access'}, 404, False
+    if user is None:
+        return {'code': 'account/not_active'}, 404, False
+
+    return {'code': 'ok'}, 200, True
+
+
 def update(request, properties_id):
     """Update record"""
 

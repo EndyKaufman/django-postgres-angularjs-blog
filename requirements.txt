@@ -28,3 +28,5 @@ transliterate==1.7.6
 whitenoise==3.0
 solid-i18n==1.3.0
 django-modeltranslation==0.11
+django-compat==1.0.11
+django-favicon-plus==0.0.5

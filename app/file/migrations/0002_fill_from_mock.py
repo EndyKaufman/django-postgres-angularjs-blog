@@ -5,13 +5,14 @@ from __future__ import unicode_literals
 from django.db import migrations
 from project import helpers, settings
 import json
+import os
 
 
 def fill_from_mock(apps, schema_editor):
     helpers.mkdir_recursive(settings.MEDIA_ROOT)
-    helpers.copy_dir_recursive('mock/file/media', settings.MEDIA_ROOT, remove_if_exists=True)
+    helpers.copy_dir_recursive(os.path.join('mock', 'file', 'media'), settings.MEDIA_ROOT, remove_if_exists=True)
     try:
-        with open('mock/file/list.json') as f:
+        with open(os.path.join('mock', 'file', 'list.json')) as f:
             content = f.read()
             f.close()
     except IOError:

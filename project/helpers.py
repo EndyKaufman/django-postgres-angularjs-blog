@@ -103,7 +103,7 @@ def remove_file(path):
             os.remove(thumbnail.url)
         os.remove(path)
     else:
-        path = settings.MEDIA_ROOT + '/' + path
+        path = os.path.join(settings.MEDIA_ROOT, path)
         thumbnail = get_thumbnail(path)
         if thumbnail:
             os.remove(thumbnail.url)
@@ -130,10 +130,10 @@ def save_file(dest_path, f, filename=False):
                 url = slugify(new_filename) + file_extension
             except:
                 url = new_filename + file_extension
-            path = settings.MEDIA_ROOT + '/' + url
+            path = os.path.join(settings.MEDIA_ROOT, url)
         else:
             url = dest_path + '/' + slugify(new_filename) + file_extension
-            path = settings.MEDIA_ROOT + '/' + url
+            path = os.path.join(settings.MEDIA_ROOT, url)
 
         if os.path.isfile(path) == False:
             break
@@ -145,7 +145,7 @@ def save_file(dest_path, f, filename=False):
     if dest_path == False:
         mkdir_recursive(settings.MEDIA_ROOT)
     else:
-        mkdir_recursive(settings.MEDIA_ROOT + '/' + dest_path)
+        mkdir_recursive(os.path.join(settings.MEDIA_ROOT, dest_path))
 
     destination = open(path, 'wb+')
     for chunk in f.chunks():

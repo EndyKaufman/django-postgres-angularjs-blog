@@ -53,7 +53,7 @@ msgstr "Добавить новый кэш файл"
 msgid "Add new meta tag"
 msgstr "Добавить новый мета тэг"
 
-#: manager/properties/properties.svc.js:22
+#: manager/properties/properties.svc.js:23
 msgid "Add new properties"
 msgstr "Добавить новое свойство"
 
@@ -61,7 +61,7 @@ msgstr "Добавить новое свойство"
 msgid "Add new public link"
 msgstr "Добавить новую публичную ссылку"
 
-#: tag/tag.svc.js:30
+#: tag/tag.svc.js:33
 msgid "Add new tag"
 msgstr "Добавить новый тэг"
 
@@ -107,6 +107,14 @@ msgstr "Приложения"
 msgid "Applications of user"
 msgstr "Приложения пользователя"
 
+#: manager/const.js:24
+msgid "Apply"
+msgstr "Применить"
+
+#: manager/const.js:25
+msgid "Apply..."
+msgstr "Применяется..."
+
 #: manager/meta_tag/inputs.html:17
 msgid "Attributes"
 msgstr "Атрибуты"
@@ -119,15 +127,15 @@ msgstr "Авторизация на сайте"
 msgid "Bye-Bye!"
 msgstr "До свидания!"
 
-#: manager/const.js:38
+#: manager/const.js:42
 msgid "Cache <strong>%s</strong> created!"
 msgstr "Кэш файл <strong>%s</strong> успешно создан!"
 
-#: manager/const.js:40
+#: manager/const.js:44
 msgid "Cache <strong>%s</strong> deleted!"
 msgstr "Кэш файл <strong>%s</strong> успешно удален!"
 
-#: manager/const.js:39
+#: manager/const.js:43
 msgid "Cache <strong>%s</strong> updated!"
 msgstr "Кэш файл <strong>%s</strong> успешно изменен!"
 
@@ -135,11 +143,11 @@ msgstr "Кэш файл <strong>%s</strong> успешно изменен!"
 #: file/file.svc.js:30 file/file.svc.js:64 file/file.svc.js:91
 #: manager/html_cache/htm_cache.svc.js:131
 #: manager/html_cache/htm_cache.svc.js:94 manager/meta_tag/meta_tag.svc.js:26
-#: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:29
-#: manager/properties/properties.svc.js:56
+#: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:30
+#: manager/properties/properties.svc.js:57
 #: manager/public_link/public_link.svc.js:30
-#: manager/public_link/public_link.svc.js:57 tag/tag.svc.js:37
-#: tag/tag.svc.js:64
+#: manager/public_link/public_link.svc.js:57 tag/tag.svc.js:40
+#: tag/tag.svc.js:67
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -165,7 +173,7 @@ msgstr "Client secret"
 msgid "Code:"
 msgstr "Код:"
 
-#: file/inputs.html:13 file/list.html:27 manager/properties/inputs.html:15
+#: file/inputs.html:13 file/list.html:27 manager/properties/inputs.html:18
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -189,16 +197,16 @@ msgstr "Содержимое"
 #: account/reg.html:12 account/user_app/list-header.html:4
 #: account/user_app/user_app.svc.js:25 file/file.svc.js:63
 #: manager/html_cache/htm_cache.svc.js:93 manager/meta_tag/list-header.html:4
-#: manager/meta_tag/meta_tag.svc.js:25 manager/properties/list-header.html:4
-#: manager/properties/properties.svc.js:28
+#: manager/meta_tag/meta_tag.svc.js:25 manager/properties/list-header.html:9
+#: manager/properties/properties.svc.js:29
 #: manager/public_link/list-header.html:4
 #: manager/public_link/public_link.svc.js:29 manager/tag/list-header.html:4
 #: post/create.html:15 post/list-header.html:3 project/create.html:15
-#: project/list-header.html:3 tag/tag.svc.js:36
+#: project/list-header.html:3 tag/tag.svc.js:39
 msgid "Create"
 msgstr "Создать"
 
-#: manager/const.js:32
+#: manager/const.js:36
 msgid "Create from sitemap.xml"
 msgstr "Создать из карты сайта"
 
@@ -255,7 +263,7 @@ msgstr "Вы действительно хотите удалить вашу у�
 msgid "Do you really want to delete application <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить приложение <strong>%s</strong>?"
 
-#: manager/const.js:41
+#: manager/const.js:45
 msgid "Do you really want to delete checked html caches?"
 msgstr "Вы действительно хотите удалить отмеченые кэш файлы?"
 
@@ -263,11 +271,11 @@ msgstr "Вы действительно хотите удалить отмече
 msgid "Do you really want to delete file <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить файл <strong>%s</strong>?"
 
-#: manager/const.js:37
+#: manager/const.js:41
 msgid "Do you really want to delete html cache <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить кэш файл <strong>%s</strong>?"
 
-#: manager/const.js:63
+#: manager/const.js:67
 msgid "Do you really want to delete meta tag <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить мета тэг <strong>%s</strong>?"
 
@@ -279,19 +287,19 @@ msgstr "Вы действительно хотите удалить заметк
 msgid "Do you really want to delete project <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить проект <strong>%s</strong>?"
 
-#: manager/const.js:48
+#: manager/const.js:52
 msgid "Do you really want to delete property <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить свойство <strong>%s</strong>?"
 
-#: manager/const.js:53
+#: manager/const.js:57
 msgid "Do you really want to delete public link <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить публичную ссылку <strong>%s</strong>?"
 
-#: manager/const.js:58
+#: manager/const.js:62
 msgid "Do you really want to delete tag <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить тэг <strong>%s</strong>?"
 
-#: manager/const.js:43
+#: manager/const.js:47
 msgid "Do you really want to delete user <strong>%s</strong>?"
 msgstr "Вы действительно хотите удалить пользователя <strong>%s</strong>?"
 
@@ -331,7 +339,7 @@ msgstr "Редактировать заметку"
 msgid "Edit project"
 msgstr "Редактировать проект"
 
-#: manager/properties/properties.svc.js:49 tag/tag.svc.js:57
+#: manager/properties/properties.svc.js:50 tag/tag.svc.js:60
 msgid "Edit properties"
 msgstr "Редактировать свойство"
 
@@ -400,7 +408,7 @@ msgstr "Файл <strong>%s</strong> успешно удален!"
 msgid "File <strong>%s</strong> updated!"
 msgstr "Параметры файла <strong>%s</strong> успешно изменены!"
 
-#: manager/const.js:33
+#: manager/const.js:37
 msgid "Filling from sitemap.xml..."
 msgstr "Наполнение из карты сайта..."
 
@@ -413,11 +421,11 @@ msgstr "Имя"
 msgid "Html"
 msgstr "Html"
 
-#: manager/const.js:29
+#: manager/const.js:33
 msgid "Html cache"
 msgstr "Кэш файлы"
 
-#: manager/const.js:30
+#: manager/const.js:34
 msgid "Html cache description"
 msgstr "Закэшированые файлы для отдачи поисковым и другим ботам"
 
@@ -505,15 +513,15 @@ msgstr "Не удалось отправить сообщение, попроб�
 msgid "Message sent successfully!"
 msgstr "Сообщение успешно отправлено! "
 
-#: manager/const.js:64
+#: manager/const.js:68
 msgid "Meta tag <strong>%s</strong> created!"
 msgstr "Мета тэг <strong>%s</strong> успешно создано!"
 
-#: manager/const.js:66
+#: manager/const.js:70
 msgid "Meta tag <strong>%s</strong> deleted!"
 msgstr "Мета тэг <strong>%s</strong> успешно удалено!"
 
-#: manager/const.js:65
+#: manager/const.js:69
 msgid "Meta tag <strong>%s</strong> updated!"
 msgstr "Мета тэг <strong>%s</strong> успешно изменено!"
 
@@ -647,27 +655,27 @@ msgstr "Свойства"
 msgid "Properties description"
 msgstr "Свойства используемые при построении и выводе сайта"
 
-#: manager/const.js:49
+#: manager/const.js:53
 msgid "Property <strong>%s</strong> created!"
 msgstr "Свойство <strong>%s</strong> успешно создано!"
 
-#: manager/const.js:51
+#: manager/const.js:55
 msgid "Property <strong>%s</strong> deleted!"
 msgstr "Свойство <strong>%s</strong> успешно удалено!"
 
-#: manager/const.js:50
+#: manager/const.js:54
 msgid "Property <strong>%s</strong> updated!"
 msgstr "Свойство <strong>%s</strong> успешно изменено!"
 
-#: manager/const.js:54
+#: manager/const.js:58
 msgid "Public link <strong>%s</strong> created!"
 msgstr "Публичная ссылка <strong>%s</strong> успешно создано!"
 
-#: manager/const.js:56
+#: manager/const.js:60
 msgid "Public link <strong>%s</strong> deleted!"
 msgstr "Публичная ссылка <strong>%s</strong> успешно удалено!"
 
-#: manager/const.js:55
+#: manager/const.js:59
 msgid "Public link <strong>%s</strong> updated!"
 msgstr "Публичная ссылка <strong>%s</strong> успешно изменено!"
 
@@ -713,9 +721,9 @@ msgstr "RU"
 
 #: account/profile.html:14 account/user_app/user_app.svc.js:52
 #: file/file.svc.js:90 manager/html_cache/htm_cache.svc.js:130
-#: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:55
+#: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:56
 #: manager/public_link/public_link.svc.js:56 post/update.html:18
-#: project/update.html:19 tag/tag.svc.js:63
+#: project/update.html:19 tag/tag.svc.js:66
 msgid "Save"
 msgstr "Сохранить"
 
@@ -739,7 +747,7 @@ msgstr "текст для поиска"
 msgid "Select"
 msgstr "Выбрать"
 
-#: file/file.svc.js:23
+#: file/file.svc.js:23 manager/properties/inputs.html:15
 msgid "Select file"
 msgstr "Выбрать файл"
 
@@ -759,15 +767,15 @@ msgstr "Показать все"
 msgid "Src"
 msgstr "Источник"
 
-#: manager/const.js:59
+#: manager/const.js:63
 msgid "Tag <strong>%s</strong> created!"
 msgstr "Тэг <strong>%s</strong> успешно создан!"
 
-#: manager/const.js:61
+#: manager/const.js:65
 msgid "Tag <strong>%s</strong> deleted!"
 msgstr "Тэг <strong>%s</strong> успешно удален!"
 
-#: manager/const.js:60
+#: manager/const.js:64
 msgid "Tag <strong>%s</strong> updated!"
 msgstr "Тэг <strong>%s</strong> успешно изменено!"
 
@@ -805,15 +813,15 @@ msgstr "Тип"
 msgid "Url"
 msgstr "Url"
 
-#: manager/const.js:44
+#: manager/const.js:48
 msgid "User <strong>%s</strong> created!"
 msgstr "Пользователь <strong>%s</strong> успешно создан!"
 
-#: manager/const.js:46
+#: manager/const.js:50
 msgid "User <strong>%s</strong> deleted!"
 msgstr "Пользователь <strong>%s</strong> успешно удален!"
 
-#: manager/const.js:45
+#: manager/const.js:49
 msgid "User <strong>%s</strong> updated!"
 msgstr "Пользователь <strong>%s</strong> успешно изменен!"
 
@@ -837,11 +845,11 @@ msgstr "Пользователь с почтой <strong>%s</strong> не най
 msgid "Username"
 msgstr "Имя пользователя"
 
-#: manager/const.js:25
+#: manager/const.js:29
 msgid "Users"
 msgstr "Пользователи"
 
-#: manager/const.js:26
+#: manager/const.js:30
 msgid "Users description"
 msgstr "Пользователи сайта"
 

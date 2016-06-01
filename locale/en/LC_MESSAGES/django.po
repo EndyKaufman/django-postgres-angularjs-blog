@@ -52,7 +52,7 @@ msgstr "Add new html cache"
 msgid "Add new meta tag"
 msgstr "Add new meta tag"
 
-#: manager/properties/properties.svc.js:22
+#: manager/properties/properties.svc.js:23
 msgid "Add new properties"
 msgstr "Add new properties"
 
@@ -60,7 +60,7 @@ msgstr "Add new properties"
 msgid "Add new public link"
 msgstr "Add new public link"
 
-#: tag/tag.svc.js:30
+#: tag/tag.svc.js:33
 msgid "Add new tag"
 msgstr "Add new tag"
 
@@ -106,6 +106,14 @@ msgstr "Applications"
 msgid "Applications of user"
 msgstr "Applications of user"
 
+#: manager/const.js:24
+msgid "Apply"
+msgstr "Apply"
+
+#: manager/const.js:25
+msgid "Apply..."
+msgstr "Apply..."
+
 #: manager/meta_tag/inputs.html:17
 msgid "Attributes"
 msgstr "Attributes"
@@ -118,15 +126,15 @@ msgstr "Authorization on site"
 msgid "Bye-Bye!"
 msgstr "Bye-Bye!"
 
-#: manager/const.js:38
+#: manager/const.js:42
 msgid "Cache <strong>%s</strong> created!"
 msgstr "Cache <strong>%s</strong> created!"
 
-#: manager/const.js:40
+#: manager/const.js:44
 msgid "Cache <strong>%s</strong> deleted!"
 msgstr "Cache <strong>%s</strong> deleted!"
 
-#: manager/const.js:39
+#: manager/const.js:43
 msgid "Cache <strong>%s</strong> updated!"
 msgstr "Cache <strong>%s</strong> updated!"
 
@@ -134,11 +142,11 @@ msgstr "Cache <strong>%s</strong> updated!"
 #: file/file.svc.js:30 file/file.svc.js:64 file/file.svc.js:91
 #: manager/html_cache/htm_cache.svc.js:131
 #: manager/html_cache/htm_cache.svc.js:94 manager/meta_tag/meta_tag.svc.js:26
-#: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:29
-#: manager/properties/properties.svc.js:56
+#: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:30
+#: manager/properties/properties.svc.js:57
 #: manager/public_link/public_link.svc.js:30
-#: manager/public_link/public_link.svc.js:57 tag/tag.svc.js:37
-#: tag/tag.svc.js:64
+#: manager/public_link/public_link.svc.js:57 tag/tag.svc.js:40
+#: tag/tag.svc.js:67
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -162,7 +170,7 @@ msgstr "Client secret"
 msgid "Code:"
 msgstr "Code:"
 
-#: file/inputs.html:13 file/list.html:27 manager/properties/inputs.html:15
+#: file/inputs.html:13 file/list.html:27 manager/properties/inputs.html:18
 msgid "Comment"
 msgstr "Comment"
 
@@ -186,16 +194,16 @@ msgstr "Content"
 #: account/reg.html:12 account/user_app/list-header.html:4
 #: account/user_app/user_app.svc.js:25 file/file.svc.js:63
 #: manager/html_cache/htm_cache.svc.js:93 manager/meta_tag/list-header.html:4
-#: manager/meta_tag/meta_tag.svc.js:25 manager/properties/list-header.html:4
-#: manager/properties/properties.svc.js:28
+#: manager/meta_tag/meta_tag.svc.js:25 manager/properties/list-header.html:9
+#: manager/properties/properties.svc.js:29
 #: manager/public_link/list-header.html:4
 #: manager/public_link/public_link.svc.js:29 manager/tag/list-header.html:4
 #: post/create.html:15 post/list-header.html:3 project/create.html:15
-#: project/list-header.html:3 tag/tag.svc.js:36
+#: project/list-header.html:3 tag/tag.svc.js:39
 msgid "Create"
 msgstr "Create"
 
-#: manager/const.js:32
+#: manager/const.js:36
 msgid "Create from sitemap.xml"
 msgstr "Create from sitemap.xml"
 
@@ -252,7 +260,7 @@ msgstr "Do you really want to delete account?"
 msgid "Do you really want to delete application <strong>%s</strong>?"
 msgstr "Do you really want to delete application <strong>%s</strong>?"
 
-#: manager/const.js:41
+#: manager/const.js:45
 msgid "Do you really want to delete checked html caches?"
 msgstr "Do you really want to delete checked html caches?"
 
@@ -260,11 +268,11 @@ msgstr "Do you really want to delete checked html caches?"
 msgid "Do you really want to delete file <strong>%s</strong>?"
 msgstr "Do you really want to delete file <strong>%s</strong>?"
 
-#: manager/const.js:37
+#: manager/const.js:41
 msgid "Do you really want to delete html cache <strong>%s</strong>?"
 msgstr "Do you really want to delete html cache <strong>%s</strong>?"
 
-#: manager/const.js:63
+#: manager/const.js:67
 msgid "Do you really want to delete meta tag <strong>%s</strong>?"
 msgstr "Do you really want to delete meta tag <strong>%s</strong>?"
 
@@ -276,19 +284,19 @@ msgstr "Do you really want to delete post <strong>%s</strong>?"
 msgid "Do you really want to delete project <strong>%s</strong>?"
 msgstr "Do you really want to delete project <strong>%s</strong>?"
 
-#: manager/const.js:48
+#: manager/const.js:52
 msgid "Do you really want to delete property <strong>%s</strong>?"
 msgstr "Do you really want to delete property <strong>%s</strong>?"
 
-#: manager/const.js:53
+#: manager/const.js:57
 msgid "Do you really want to delete public link <strong>%s</strong>?"
 msgstr "Do you really want to delete public link <strong>%s</strong>?"
 
-#: manager/const.js:58
+#: manager/const.js:62
 msgid "Do you really want to delete tag <strong>%s</strong>?"
 msgstr "Do you really want to delete tag <strong>%s</strong>?"
 
-#: manager/const.js:43
+#: manager/const.js:47
 msgid "Do you really want to delete user <strong>%s</strong>?"
 msgstr "Do you really want to delete user <strong>%s</strong>?"
 
@@ -328,7 +336,7 @@ msgstr "Edit post"
 msgid "Edit project"
 msgstr "Edit project"
 
-#: manager/properties/properties.svc.js:49 tag/tag.svc.js:57
+#: manager/properties/properties.svc.js:50 tag/tag.svc.js:60
 msgid "Edit properties"
 msgstr "Edit properties"
 
@@ -397,7 +405,7 @@ msgstr "File <strong>%s</strong> deleted!"
 msgid "File <strong>%s</strong> updated!"
 msgstr "File <strong>%s</strong> updated!"
 
-#: manager/const.js:33
+#: manager/const.js:37
 msgid "Filling from sitemap.xml..."
 msgstr "Filling from sitemap.xml..."
 
@@ -410,11 +418,11 @@ msgstr "First name"
 msgid "Html"
 msgstr "Html"
 
-#: manager/const.js:29
+#: manager/const.js:33
 msgid "Html cache"
 msgstr "Html cache"
 
-#: manager/const.js:30
+#: manager/const.js:34
 msgid "Html cache description"
 msgstr "Cached files to return the search bots and other"
 
@@ -502,15 +510,15 @@ msgstr "Message not sent, try later!"
 msgid "Message sent successfully!"
 msgstr "Message sent successfully!"
 
-#: manager/const.js:64
+#: manager/const.js:68
 msgid "Meta tag <strong>%s</strong> created!"
 msgstr "Meta tag <strong>%s</strong> created!"
 
-#: manager/const.js:66
+#: manager/const.js:70
 msgid "Meta tag <strong>%s</strong> deleted!"
 msgstr "Meta tag <strong>%s</strong> deleted!"
 
-#: manager/const.js:65
+#: manager/const.js:69
 msgid "Meta tag <strong>%s</strong> updated!"
 msgstr "Meta tag <strong>%s</strong> updated!"
 
@@ -644,27 +652,27 @@ msgstr "Properties"
 msgid "Properties description"
 msgstr "Properties used in the construction of the withdrawal site and"
 
-#: manager/const.js:49
+#: manager/const.js:53
 msgid "Property <strong>%s</strong> created!"
 msgstr "Property <strong>%s</strong> created!"
 
-#: manager/const.js:51
+#: manager/const.js:55
 msgid "Property <strong>%s</strong> deleted!"
 msgstr "Property <strong>%s</strong> deleted!"
 
-#: manager/const.js:50
+#: manager/const.js:54
 msgid "Property <strong>%s</strong> updated!"
 msgstr "Property <strong>%s</strong> updated!"
 
-#: manager/const.js:54
+#: manager/const.js:58
 msgid "Public link <strong>%s</strong> created!"
 msgstr "Public link <strong>%s</strong> created!"
 
-#: manager/const.js:56
+#: manager/const.js:60
 msgid "Public link <strong>%s</strong> deleted!"
 msgstr "Public link <strong>%s</strong> deleted!"
 
-#: manager/const.js:55
+#: manager/const.js:59
 msgid "Public link <strong>%s</strong> updated!"
 msgstr "Public link <strong>%s</strong> updated!"
 
@@ -710,9 +718,9 @@ msgstr "RU"
 
 #: account/profile.html:14 account/user_app/user_app.svc.js:52
 #: file/file.svc.js:90 manager/html_cache/htm_cache.svc.js:130
-#: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:55
+#: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:56
 #: manager/public_link/public_link.svc.js:56 post/update.html:18
-#: project/update.html:19 tag/tag.svc.js:63
+#: project/update.html:19 tag/tag.svc.js:66
 msgid "Save"
 msgstr "Save"
 
@@ -736,7 +744,7 @@ msgstr "search text"
 msgid "Select"
 msgstr "Select"
 
-#: file/file.svc.js:23
+#: file/file.svc.js:23 manager/properties/inputs.html:15
 msgid "Select file"
 msgstr "Select file"
 
@@ -756,15 +764,15 @@ msgstr "Show all"
 msgid "Src"
 msgstr "Src"
 
-#: manager/const.js:59
+#: manager/const.js:63
 msgid "Tag <strong>%s</strong> created!"
 msgstr "Tag <strong>%s</strong> created!"
 
-#: manager/const.js:61
+#: manager/const.js:65
 msgid "Tag <strong>%s</strong> deleted!"
 msgstr "Tag <strong>%s</strong> deleted!"
 
-#: manager/const.js:60
+#: manager/const.js:64
 msgid "Tag <strong>%s</strong> updated!"
 msgstr "Tag <strong>%s</strong> updated!"
 
@@ -802,15 +810,15 @@ msgstr "Type"
 msgid "Url"
 msgstr "Url"
 
-#: manager/const.js:44
+#: manager/const.js:48
 msgid "User <strong>%s</strong> created!"
 msgstr "User <strong>%s</strong> created!"
 
-#: manager/const.js:46
+#: manager/const.js:50
 msgid "User <strong>%s</strong> deleted!"
 msgstr "User <strong>%s</strong> deleted!"
 
-#: manager/const.js:45
+#: manager/const.js:49
 msgid "User <strong>%s</strong> updated!"
 msgstr "User <strong>%s</strong> updated!"
 
@@ -834,11 +842,11 @@ msgstr "User with email <strong>%s</strong> not found!"
 msgid "Username"
 msgstr "Username"
 
-#: manager/const.js:25
+#: manager/const.js:29
 msgid "Users"
 msgstr "Users"
 
-#: manager/const.js:26
+#: manager/const.js:30
 msgid "Users description"
 msgstr "Site users"
 

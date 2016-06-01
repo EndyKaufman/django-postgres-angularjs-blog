@@ -82,6 +82,24 @@ def update(request, properties_id):
 
 
 @json_view
+def apply_on_site(request):
+    """Update record"""
+
+    data, code, valid = validator.apply_on_site(request)
+
+    if valid:
+        if settings.ENV == 'production':
+            try:
+                data, code, item = resource.apply_on_site(request)
+            except:
+                return {'code': 'properties/apply_on_site/fail'}, 404
+        else:
+            data, code, item = resource.apply_on_site(request)
+
+    return data, code
+
+
+@json_view
 def create(request):
     """Create record"""
 

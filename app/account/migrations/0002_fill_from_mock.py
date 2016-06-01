@@ -5,11 +5,12 @@ from __future__ import unicode_literals
 from django.db import migrations
 from ..models import User
 import json
+import os
 
 
 def fill_from_mock(apps, schema_editor):
     try:
-        with open('mock/account/users.json') as f:
+        with open(os.path.join('mock', 'account', 'users.json')) as f:
             content = f.read()
             f.close()
     except IOError:

@@ -30,6 +30,7 @@
     <link rel="alternate" hreflang="{{ lang }}" href="{{host_name}}{{strings.short_site_url |safe}}">{% else %}
     <link rel="alternate" hreflang="{{lang_item.code}}" href="{{host_name |safe}}/{{lang_item.code}}{{strings.short_site_url |safe}}">
     {% endif %}{% endfor %}
+    {% load favtags %}{% autoescape off %}{% placeFavicon %}{% endautoescape %}
     <script type="text/javascript">
     var AppConfig = {{ config |safe }};
     </script>
