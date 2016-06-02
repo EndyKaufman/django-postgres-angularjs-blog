@@ -81,7 +81,6 @@ class CustomPrerenderIO(PrerenderIO):
         if not item or item.content is None or item.content == '':
             try:
                 r = self.session.get(render_url, **self._request_kwargs(get_options))
-                assert r.status_code < 500
                 if r.status_code < 400:
                     new_response = self.build_django_response_from_requests_response(r)
                     resource.update_by_url(new_url, new_response.content)

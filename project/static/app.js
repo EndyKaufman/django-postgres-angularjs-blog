@@ -78115,9 +78115,9 @@ angular.module("app").run(['$templateCache', function(a) { a.put('views/project/
     '            type="button" id="doDeleteChecked" ng-disabled="HtmlCacheSvc.scanSitemap.disabled" ng-if="HtmlCacheSvc.checkeds.length>0">\n' +
     '        <i class="fa fa-trash"></i> <translate>Delete checked</translate>\n' +
     '    </button>\n' +
-    '    <button ng-click="HtmlCacheSvc.scanSitemap.do()" class="btn btn-cta-secondary btn-xs"\n' +
-    '            type="button" id="html_cacheScanSitemap" ng-disabled="HtmlCacheSvc.scanSitemap.disabled" >\n' +
-    '        <i class="fa fa-globe"></i> <span ng-bind="HtmlCacheSvc.scanSitemap.title"></span>\n' +
+    '    <button ng-click="HtmlCacheSvc.doScanSitemap()" class="btn btn-cta-secondary btn-xs"\n' +
+    '            type="button" id="html_cacheScanSitemap" ng-disabled="ScanSitemapSvc.disabled" >\n' +
+    '        <i class="fa fa-globe"></i> <span ng-bind="ScanSitemapSvc.title"></span>\n' +
     '    </button>\n' +
     '</div>');
 	a.put('views/manager/html_cache/inputs.html', '<div class="form-group">\n' +
@@ -80152,13 +80152,6 @@ app.factory('UserAppRes', function($q, AppConst, AppRes) {
 app.factory('HtmlCacheRes', function($q, AppConst, AppRes) {
     var service = {};
 
-    service.getSiteMap = function() {
-        return AppRes.get('/sitemap.xml');
-    };
-
-    service.getPage = function(url) {
-        return AppRes.get(url + '?_escaped_fragment_=');
-    };
 
     service.getList = function() {
         return AppRes.get('/api/v1/manager/html_cache/');
@@ -80173,6 +80166,19 @@ app.factory('HtmlCacheRes', function($q, AppConst, AppRes) {
     };
     service.actionDelete = function(item) {
         return AppRes.post('/api/v1/manager/html_cache/delete/' + item.id, item);
+    };
+
+    return service;
+});
+app.factory('ScanSitemapRes', function($q, AppConst, AppRes) {
+    var service = {};
+
+    service.getSiteMap = function() {
+        return AppRes.get('/sitemap.xml');
+    };
+
+    service.getPage = function(url) {
+        return AppRes.get(url + '?_escaped_fragment_=');
     };
 
     return service;
@@ -81789,7 +81795,7 @@ app.factory('SidebarSvc', function($q, TagSvc, PostSvc, ProjectSvc) {
     return service;
 });
 app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $modalBox, $modal,
-    $routeParams, MessageSvc, AppSvc, ManagerSvc, gettextCatalog, gettext, $timeout) {
+    $routeParams, MessageSvc, AppSvc, ManagerSvc, gettextCatalog, gettext, $timeout, ScanSitemapSvc) {
     var service = {};
 
     service.item = {};
@@ -81799,75 +81805,6 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
         service.item = {};
         service.item.url = '';
         service.item.content = '';
-    };
-
-
-    service.scanSitemap = {
-        disabled: false,
-        title: gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_title),
-        currentUrlIndex: 0,
-        urls: [],
-        timeout: 0,
-        doUrl: function(callback) {
-            var $this = this;
-            $this.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_process) + '(' + $this.currentUrlIndex + '/' + $this.urls.length + ')';
-            $this.disabled = true;
-            HtmlCacheRes.getPage($this.urls[$this.currentUrlIndex]).then(function(response) {
-                $this.currentUrlIndex++;
-                $timeout(function() {
-                    $this.timeout = 5000;
-                    if ($this.currentUrlIndex == $this.urls.length) {
-                        callback();
-                    } else {
-                        $this.doUrl(callback);
-                    }
-                }, $this.timeout);
-            }, function(response) {
-                $this.currentUrlIndex++;
-                $timeout(function() {
-                    $this.timeout = 5000;
-                    if ($this.currentUrlIndex == $this.urls.length) {
-                        callback();
-                    } else {
-                        $this.doUrl(callback);
-                    }
-                }, $this.timeout);
-            });
-        },
-        do: function() {
-            var $this = this;
-            $this.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_process);
-            $this.disabled = true;
-
-            HtmlCacheRes.getSiteMap().then(function(response) {
-                var locs = $(response).find('loc');
-
-                $this.urls = [];
-                var url = '',
-                    i = 0;
-                for (i = 0; i < locs.length; i++) {
-                    url = $(locs[i]).text();
-                    if (service.getItemByUrl(url) === false && $this.urls.indexOf(url) === -1)
-                        $this.urls.push(url);
-                }
-
-                var hrefs = $(response).find('[href]');
-
-                for (i = 0; i < hrefs.length; i++) {
-                    url = $(hrefs[i]).attr('href');
-                    if (service.getItemByUrl(url) === false && $this.urls.indexOf(url) === -1)
-                        $this.urls.push(url);
-                }
-                $this.currentUrlIndex = 0;
-
-                $this.doUrl(function() {
-                    $this.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_title);
-                    $this.disabled = false;
-                    service.load(true);
-                });
-
-            });
-        }
     };
 
     service.showCreate = function() {
@@ -81897,16 +81834,6 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
         service.item = angular.copy(item);
     };
 
-    service.getItemByUrl = function(url) {
-        var item = false;
-        for (var i = 0; i < service.list.length; i++) {
-            if (service.list[i].url == 'url') {
-                item = service.list[i];
-                break;
-            }
-        }
-        return item;
-    };
     service.showUpdate = function(item) {
         service.mode = 'update';
         service.item = angular.copy(item);
@@ -81928,6 +81855,12 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
             prefixEvent: 'html_cacheUpdate'
         };
         $modalBox(boxOptions);
+    };
+
+    service.doScanSitemap=function(){
+        ScanSitemapSvc.do(service.list).then(function(){
+            service.load(true);
+        });
     };
 
     service.updateItemOnList = function(item) {
@@ -81986,25 +81919,26 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
 
     service.collectCheckedItems=function(){
         service.checkeds=[];
-        for (var j = 0; j < service.list.length; j++) {
+        var j=0, len=service.list.length;
+        for (j = 0; j < len; j++) {
             if (service.list[j].CHECKED)
-                service.checkeds.push(service.list[j]);
+                service.checkeds.push(service.list[j].ID);
         }
     };
 
     service.doDeleteChecked = function(item) {
         MessageSvc.confirm('html_cache/delete_checked/confirm', {},
             function() {
-                var actions = [];
-                for (var j = 0; j < service.list.length; j++) {
-                    if (service.list[j].CHECKED)
+                var actions = [],j=0, len=service.list.length;
+                for (j = 0; j < len; j++) {
+                    if (service.list[j].CHECKED){
                         actions.push(HtmlCacheRes.actionDelete(service.list[j]));
+                    }
                 }
                 $q.all(actions).then(function(responseList) {
-                    for (var i = service.list.length - 1; i >= 0; i--) {
-                        if (service.list[i].CHECKED) {
-                            service.list.splice(i, 1);
-                            break;
+                    for (j = len - 1; j >= 0; j--) {
+                        if (service.list[j].CHECKED) {
+                            service.list.splice(j, 1);
                         }
                     }
                     service.clearItem();
@@ -82031,6 +81965,7 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
 
     service.init = function(reload) {
         ManagerSvc.init();
+        ScanSitemapSvc.init();
 
         $q.all([
             service.load()
@@ -82039,6 +81974,106 @@ app.factory('HtmlCacheSvc', function(AppConst, HtmlCacheRes, $rootScope, $q, $mo
         });
     };
 
+    return service;
+});
+app.factory('ScanSitemapSvc', function($q, AppConst, gettextCatalog, gettext, ScanSitemapRes, $timeout, $rootScope) {
+    var service = {};
+
+    service.disabled = false;
+    service.currentUrlIndex = 0;
+    service.urls = [];
+    service.timeout = 0;
+
+    service.list = [];
+
+    $rootScope.$on('lang.changed', function() {
+        service.setMeta();
+    });
+
+    service.setMeta = function() {
+        if (service.disabled)
+            service.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_process) + '(' + service.currentUrlIndex + '/' + service.urls.length + ')';
+        else
+            service.title = gettextCatalog.getString(AppConst.manager.html_cache.strings.scanSitemap_title);
+    };
+
+    service.init = function(reload) {
+        service.setMeta();
+    };
+
+    service.getItemByUrl = function(url) {
+        var item = false;
+        for (var i = 0; i < service.list.length; i++) {
+            if (service.list[i].url == 'url') {
+                item = service.list[i];
+                break;
+            }
+        }
+        return item;
+    };
+
+    service.doUrl = function(callback) {
+        service.disabled = true;
+        service.setMeta();
+        ScanSitemapRes.getPage(service.urls[service.currentUrlIndex]).then(function(response) {
+            service.currentUrlIndex++;
+            $timeout(function() {
+                service.timeout = 5000;
+                if (service.currentUrlIndex == service.urls.length) {
+                    callback();
+                } else {
+                    service.doUrl(callback);
+                }
+            }, service.timeout);
+        }, function(response) {
+            service.currentUrlIndex++;
+            $timeout(function() {
+                service.timeout = 5000;
+                if (service.currentUrlIndex == service.urls.length) {
+                    callback();
+                } else {
+                    service.doUrl(callback);
+                }
+            }, service.timeout);
+        });
+    };
+
+    service.do = function(list) {
+        var deferred = $q.defer();
+        service.list = list;
+        service.disabled = true;
+        service.setMeta();
+
+        ScanSitemapRes.getSiteMap().then(function(response) {
+            var locs = $(response).find('loc');
+
+            service.urls = [];
+            var url = '',
+                i = 0;
+            for (i = 0; i < locs.length; i++) {
+                url = $(locs[i]).text();
+                if (service.getItemByUrl(url) === false && service.urls.indexOf(url) === -1)
+                    service.urls.push(url);
+            }
+
+            var hrefs = $(response).find('[href]');
+
+            for (i = 0; i < hrefs.length; i++) {
+                url = $(hrefs[i]).attr('href');
+                if (service.getItemByUrl(url) === false && service.urls.indexOf(url) === -1)
+                    service.urls.push(url);
+            }
+            service.currentUrlIndex = 0;
+
+            service.doUrl(function() {
+                service.disabled = false;
+                service.setMeta();
+                deferred.resolve(true);
+            });
+
+        });
+        return deferred.promise;
+    };
     return service;
 });
 app.factory('MetaTagSvc', function(AppConst, MetaTagRes, $rootScope, $q, $modalBox, $modal, $routeParams, MessageSvc, AppSvc, ManagerSvc, gettext) {
@@ -82605,12 +82640,13 @@ app.controller('SidebarCtrl', function ($scope, SidebarSvc, ProjectSvc, PostSvc,
 
     SidebarSvc.init();
 });
-app.controller('HtmlCacheCtrl', function($scope, HtmlCacheSvc, $routeParams, AccountSvc, ManagerSvc, AppLang) {
+app.controller('HtmlCacheCtrl', function($scope, HtmlCacheSvc, $routeParams, AccountSvc, ManagerSvc, AppLang, ScanSitemapSvc) {
     $scope.HtmlCacheSvc = HtmlCacheSvc;
     $scope.AccountSvc = AccountSvc;
     $scope.ManagerSvc = ManagerSvc;
     $scope.$routeParams = $routeParams;
     $scope.AppLang = AppLang;
+    $scope.ScanSitemapSvc = ScanSitemapSvc;
 
     HtmlCacheSvc.init();
 });
@@ -82787,6 +82823,6 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 }]);
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100 */
-    gettextCatalog.setStrings('ru', {"Account created!":"Вы зарегистрированы!","Account deleted!":"Учетная запись успешно удалена!","Actions":"Команды","Add file":"Добавить файл","Add image":"Добавить изображение","Add new application":"Добавить новое приложение","Add new file":"Добавить новый файл","Add new html cache":"Добавить новый кэш файл","Add new meta tag":"Добавить новый мета тэг","Add new properties":"Добавить новое свойство","Add new public link":"Добавить новую публичную ссылку","Add new tag":"Добавить новый тэг","add tag":"добавьте тэги","Additionally":"Дополнительно","All posts":"Все заметки","All projects":"Все проекты","allowed URIs list, space separated":"список разрешенных uri-адресов, указанные через запятую","Application <strong>%s</strong> created!":"Приложение <strong>%s</strong> успешно создано!","Application <strong>%s</strong> deleted!":"Приложение <strong>%s</strong> успешно удалено!","Application <strong>%s</strong> updated!":"Приложение <strong>%s</strong> успешно изменено!","Applications":"Приложения","Applications of user":"Приложения пользователя","Apply":"Применить","Apply...":"Применяется...","Attributes":"Атрибуты","Authorization on site":"Авторизация на сайте","Bye-Bye!":"До свидания!","Cache <strong>%s</strong> created!":"Кэш файл <strong>%s</strong> успешно создан!","Cache <strong>%s</strong> deleted!":"Кэш файл <strong>%s</strong> успешно удален!","Cache <strong>%s</strong> updated!":"Кэш файл <strong>%s</strong> успешно изменен!","Cancel":"Отмена","Change password":"Изменить пароль","Check email <strong>%s</strong> for code to reset password":"Проверьте электронную почту <strong>%s</strong> на наличие кода для сброса пароля","Client ID":"Client ID","Client secret":"Client secret","Code:":"Код:","Comment":"Комментарий","Confirm":"Подтверждение","Contact us":"Контакты","Contact us description":"Форма для обратной связи, а также контактные данный для связи","Content":"Содержимое","Create":"Создать","Create from sitemap.xml":"Создать из карты сайта","Create post":"Создать заметку","Create project":"Создать проект","Delete":"Удалить","Delete account":"Удалить учетную запись","Delete checked":"Удалить отмеченые","Delete image":"Удалить","Delete post":"Удалить заметку","Delete project":"Удалить проект","Description":"Описание","Detail...":"Подробнее...","Do you really want to delete account?":"Вы действительно хотите удалить вашу учетную запись?","Do you really want to delete application <strong>%s</strong>?":"Вы действительно хотите удалить приложение <strong>%s</strong>?","Do you really want to delete checked html caches?":"Вы действительно хотите удалить отмеченые кэш файлы?","Do you really want to delete file <strong>%s</strong>?":"Вы действительно хотите удалить файл <strong>%s</strong>?","Do you really want to delete html cache <strong>%s</strong>?":"Вы действительно хотите удалить кэш файл <strong>%s</strong>?","Do you really want to delete meta tag <strong>%s</strong>?":"Вы действительно хотите удалить мета тэг <strong>%s</strong>?","Do you really want to delete post <strong>%s</strong>?":"Вы действительно хотите удалить заметку <strong>%s</strong>?","Do you really want to delete project <strong>%s</strong>?":"Вы действительно хотите удалить проект <strong>%s</strong>?","Do you really want to delete property <strong>%s</strong>?":"Вы действительно хотите удалить свойство <strong>%s</strong>?","Do you really want to delete public link <strong>%s</strong>?":"Вы действительно хотите удалить публичную ссылку <strong>%s</strong>?","Do you really want to delete tag <strong>%s</strong>?":"Вы действительно хотите удалить тэг <strong>%s</strong>?","Do you really want to delete user <strong>%s</strong>?":"Вы действительно хотите удалить пользователя <strong>%s</strong>?","Do you really want to leave?":"Вы действительно хотите выйти из сервиса?","Edit":"Редактировать","Edit application":"редактировать приложение","Edit file properties":"Редактировать свойства файла","Edit html cache":"Редактировать кэш файл","Edit meta tag":"Редактировать мета тэг","Edit post":"Редактировать заметку","Edit project":"Редактировать проект","Edit properties":"Редактировать свойство","Edit public link":"Редактировать публичную ссылку","Email":"Email","Email is empty!":"Не указан адрес электронной почты!","Email is incorrect!":"Не корректный адрес электронной почты!","Email:":"Email:","Empty":"Пусто","EN":"EN","enter code from email":"введите код полученный по почте","enter new password":"введите новый пароль","enter you email":"введите вашу почу","enter you password":"введите ваше пароль","Error":"Ошибка","File":"Файл","File <strong>%s</strong> created!":"Файл <strong>%s</strong> успешно загружен!","File <strong>%s</strong> deleted!":"Файл <strong>%s</strong> успешно удален!","File <strong>%s</strong> updated!":"Параметры файла <strong>%s</strong> успешно изменены!","Filling from sitemap.xml...":"Наполнение из карты сайта...","First name":"Имя","Html":"Html","Html cache":"Кэш файлы","Html cache description":"Закэшированые файлы для отдачи поисковым и другим ботам","Icon":"Иконка","ID":"Ид.","if empty, the password will not be changed":"если оставить поле пустым, то пароль не будет изменен","In contact":"В контактах","In footer":"В подвале","In header":"В шапке","Info":"Информация","Last name":"Фамилия","Loading...":"Загрузка...","Login":"Войти","Login on site":"Вход","Logout":"Выход","Logout from site":"Выход с сайта","Manager":"Управление","Manager description":"Панель управления сайтом","Markdown":"Markdown","Message":"Сообщение","Message from contact form":"Сообщение с контактной формы","Message not sent, try later!":"Не удалось отправить сообщение, попробуйте попозже...","Message sent successfully!":"Сообщение успешно отправлено! ","Meta tag <strong>%s</strong> created!":"Мета тэг <strong>%s</strong> успешно создано!","Meta tag <strong>%s</strong> deleted!":"Мета тэг <strong>%s</strong> успешно удалено!","Meta tag <strong>%s</strong> updated!":"Мета тэг <strong>%s</strong> успешно изменено!","Meta tags":"Мета тэги","Meta tags description":"Общие для всех страниц мета тэги которые будут выведены в header страницы","Name":"Название","New password:":"Новый пароль:","No":"Нет","No results found...":"Ничего не найдено...","Not access!":"Нет доступа!","Not founded!":"Не найдено!","Other":"Еще","Password":"Пароль","Password is empty!":"Не указан пароль!","Password:":"Пароль:","Please enter code from email and new password for you account":"Пожалуйста введите код высланный вам на почту и укажите новый пароль","Please enter you email address and password for login on site":"Пожалуйста введите адрес ваш электронной почты и пароль для входа на сайт","Please enter you email address used on registration":"Укажите ваш адрес электронной почты","Position":"Позиция","Post <strong>%s</strong> created!":"Заметка <strong>%s</strong> успешно создана!","Post <strong>%s</strong> deleted!":"Заметка <strong>%s</strong> успешно удалена!","Post <strong>%s</strong> updated!":"Заметка <strong>%s</strong> успешно изменена!","Posts":"Заметки","Posts description":"Заметки и небольшие посты","Profile":"Профиль","Profile of user":"Профиль пользователя","Profile updated!":"Профиль изменен!","Project <strong>%s</strong> created!":"Проект <strong>%s</strong> успешно создан!","Project <strong>%s</strong> deleted!":"Проект <strong>%s</strong> успешно удален!","Project <strong>%s</strong> updated!":"Проект <strong>%s</strong> успешно изменен!","Projects":"Проекты","Projects description":"Список собственных небольших и больших проектов","Properties":"Свойства","Properties description":"Свойства используемые при построении и выводе сайта","Property <strong>%s</strong> created!":"Свойство <strong>%s</strong> успешно создано!","Property <strong>%s</strong> deleted!":"Свойство <strong>%s</strong> успешно удалено!","Property <strong>%s</strong> updated!":"Свойство <strong>%s</strong> успешно изменено!","Public link <strong>%s</strong> created!":"Публичная ссылка <strong>%s</strong> успешно создано!","Public link <strong>%s</strong> deleted!":"Публичная ссылка <strong>%s</strong> успешно удалено!","Public link <strong>%s</strong> updated!":"Публичная ссылка <strong>%s</strong> успешно изменено!","Public links":"Публичные ссылки","Public links description":"Контактные ссылки на другие ресурсы","Recovery access":"Восстановить доступ","Recovery access to site":"Восстановление доступа к сайту","Redirect uris":"Redirect uris","Registration form":"Регистрация","Registration on site":"Регистрация на сайте","Reset password":"Сброс пароля","Reset password for account":"Сброс пароля для учетной записи","RU":"RU","Save":"Сохранить","Search":"Поиск","Search result for text \"%s\"":"Результат поиска \"%s\"","search text":"текст для поиска","Select":"Выбрать","Select file":"Выбрать файл","Send message":"Отправить сообщение","Sent link to reset password":"Отправить ссылку для сброса пароля","Show all":"Показать все","Src":"Источник","Tag <strong>%s</strong> created!":"Тэг <strong>%s</strong> успешно создан!","Tag <strong>%s</strong> deleted!":"Тэг <strong>%s</strong> успешно удален!","Tag <strong>%s</strong> updated!":"Тэг <strong>%s</strong> успешно изменено!","Tag: %s":"Тэги: %s","Tags":"Тэги","Tags description":"Список тэгов используемых на сайте","Text":"Текст","Title":"Заголовок","Type":"Тип","Url":"Url","User <strong>%s</strong> created!":"Пользователь <strong>%s</strong> успешно создан!","User <strong>%s</strong> deleted!":"Пользователь <strong>%s</strong> успешно удален!","User <strong>%s</strong> updated!":"Пользователь <strong>%s</strong> успешно изменен!","User not activated!":"Пользователь не активирован!","User not founded!":"Пользователь не найден!","User with email <strong>%s</strong> is exists!":"Пользователь с почтой <strong>%s</strong> уже зарегистрирован!","User with email <strong>%s</strong> not found!":"Пользователь с почтой <strong>%s</strong> не найден!","Username":"Имя пользователя","Users":"Пользователи","Users description":"Пользователи сайта","Value":"Значение","View":"Смотреть","Wrong password!":"Неверный пароль!","Yes":"Да","You authorizing!":"Вы авторизованы!","You name":"Ваше имя","You not activated!":"Вы не активировали учетную запись!"});
+    gettextCatalog.setStrings('ru', {"Account created!":"Вы зарегистрированы!","Account deleted!":"Учетная запись успешно удалена!","Actions":"Команды","Add file":"Добавить файл","Add image":"Добавить изображение","Add new application":"Добавить новое приложение","Add new file":"Добавить новый файл","Add new html cache":"Добавить новый кэш файл","Add new meta tag":"Добавить новый мета тэг","Add new properties":"Добавить новое свойство","Add new public link":"Добавить новую публичную ссылку","Add new tag":"Добавить новый тэг","add tag":"добавьте тэги","Additionally":"Дополнительно","All posts":"Все заметки","All projects":"Все проекты","allowed URIs list, space separated":"список разрешенных uri-адресов, указанные через запятую","Application <strong>%s</strong> created!":"Приложение <strong>%s</strong> успешно создано!","Application <strong>%s</strong> deleted!":"Приложение <strong>%s</strong> успешно удалено!","Application <strong>%s</strong> updated!":"Приложение <strong>%s</strong> успешно изменено!","Applications":"Приложения","Applications of user":"Приложения пользователя","Apply":"Применить","Apply...":"Применяется...","Attributes":"Атрибуты","Authorization on site":"Авторизация на сайте","Bye-Bye!":"До свидания!","Cache <strong>%s</strong> created!":"Кэш файл <strong>%s</strong> успешно создан!","Cache <strong>%s</strong> deleted!":"Кэш файл <strong>%s</strong> успешно удален!","Cache <strong>%s</strong> updated!":"Кэш файл <strong>%s</strong> успешно изменен!","Cancel":"Отмена","Change password":"Изменить пароль","Check email <strong>%s</strong> for code to reset password":"Проверьте электронную почту <strong>%s</strong> на наличие кода для сброса пароля","Client ID":"Client ID","Client secret":"Client secret","Code:":"Код:","Comment":"Комментарий","Confirm":"Подтверждение","Contact us":"Контакты","Contact us description":"Форма для обратной связи, а также контактные данные для связи","Content":"Содержимое","Create":"Создать","Create from sitemap.xml":"Создать из карты сайта","Create post":"Создать заметку","Create project":"Создать проект","Delete":"Удалить","Delete account":"Удалить учетную запись","Delete checked":"Удалить отмеченые","Delete image":"Удалить","Delete post":"Удалить заметку","Delete project":"Удалить проект","Description":"Описание","Detail...":"Подробнее...","Do you really want to delete account?":"Вы действительно хотите удалить вашу учетную запись?","Do you really want to delete application <strong>%s</strong>?":"Вы действительно хотите удалить приложение <strong>%s</strong>?","Do you really want to delete checked html caches?":"Вы действительно хотите удалить отмеченые кэш файлы?","Do you really want to delete file <strong>%s</strong>?":"Вы действительно хотите удалить файл <strong>%s</strong>?","Do you really want to delete html cache <strong>%s</strong>?":"Вы действительно хотите удалить кэш файл <strong>%s</strong>?","Do you really want to delete meta tag <strong>%s</strong>?":"Вы действительно хотите удалить мета тэг <strong>%s</strong>?","Do you really want to delete post <strong>%s</strong>?":"Вы действительно хотите удалить заметку <strong>%s</strong>?","Do you really want to delete project <strong>%s</strong>?":"Вы действительно хотите удалить проект <strong>%s</strong>?","Do you really want to delete property <strong>%s</strong>?":"Вы действительно хотите удалить свойство <strong>%s</strong>?","Do you really want to delete public link <strong>%s</strong>?":"Вы действительно хотите удалить публичную ссылку <strong>%s</strong>?","Do you really want to delete tag <strong>%s</strong>?":"Вы действительно хотите удалить тэг <strong>%s</strong>?","Do you really want to delete user <strong>%s</strong>?":"Вы действительно хотите удалить пользователя <strong>%s</strong>?","Do you really want to leave?":"Вы действительно хотите выйти из сервиса?","Edit":"Редактировать","Edit application":"редактировать приложение","Edit file properties":"Редактировать свойства файла","Edit html cache":"Редактировать кэш файл","Edit meta tag":"Редактировать мета тэг","Edit post":"Редактировать заметку","Edit project":"Редактировать проект","Edit properties":"Редактировать свойство","Edit public link":"Редактировать публичную ссылку","Email":"Email","Email is empty!":"Не указан адрес электронной почты!","Email is incorrect!":"Не корректный адрес электронной почты!","Email:":"Email:","Empty":"Пусто","EN":"EN","enter code from email":"введите код полученный по почте","enter new password":"введите новый пароль","enter you email":"введите вашу почу","enter you password":"введите ваше пароль","Error":"Ошибка","File":"Файл","File <strong>%s</strong> created!":"Файл <strong>%s</strong> успешно загружен!","File <strong>%s</strong> deleted!":"Файл <strong>%s</strong> успешно удален!","File <strong>%s</strong> updated!":"Параметры файла <strong>%s</strong> успешно изменены!","Filling from sitemap.xml...":"Наполнение из карты сайта...","First name":"Имя","Html":"Html","Html cache":"Кэш файлы","Html cache description":"Закэшированые файлы для отдачи поисковым и другим ботам","Icon":"Иконка","ID":"Ид.","if empty, the password will not be changed":"если оставить поле пустым, то пароль не будет изменен","In contact":"В контактах","In footer":"В подвале","In header":"В шапке","Info":"Информация","Last name":"Фамилия","Loading...":"Загрузка...","Login":"Войти","Login on site":"Вход","Logout":"Выход","Logout from site":"Выход с сайта","Manager":"Управление","Manager description":"Панель управления сайтом","Markdown":"Markdown","Message":"Сообщение","Message from contact form":"Сообщение с контактной формы","Message not sent, try later!":"Не удалось отправить сообщение, попробуйте попозже...","Message sent successfully!":"Сообщение успешно отправлено! ","Meta tag <strong>%s</strong> created!":"Мета тэг <strong>%s</strong> успешно создано!","Meta tag <strong>%s</strong> deleted!":"Мета тэг <strong>%s</strong> успешно удалено!","Meta tag <strong>%s</strong> updated!":"Мета тэг <strong>%s</strong> успешно изменено!","Meta tags":"Мета тэги","Meta tags description":"Общие для всех страниц мета тэги которые будут выведены в header страницы","Name":"Название","New password:":"Новый пароль:","No":"Нет","No results found...":"Ничего не найдено...","Not access!":"Нет доступа!","Not founded!":"Не найдено!","Other":"Еще","Password":"Пароль","Password is empty!":"Не указан пароль!","Password:":"Пароль:","Please enter code from email and new password for you account":"Пожалуйста введите код высланный вам на почту и укажите новый пароль","Please enter you email address and password for login on site":"Пожалуйста введите адрес ваш электронной почты и пароль для входа на сайт","Please enter you email address used on registration":"Укажите ваш адрес электронной почты","Position":"Позиция","Post <strong>%s</strong> created!":"Заметка <strong>%s</strong> успешно создана!","Post <strong>%s</strong> deleted!":"Заметка <strong>%s</strong> успешно удалена!","Post <strong>%s</strong> updated!":"Заметка <strong>%s</strong> успешно изменена!","Posts":"Заметки","Posts description":"Заметки и небольшие посты","Profile":"Профиль","Profile of user":"Профиль пользователя","Profile updated!":"Профиль изменен!","Project <strong>%s</strong> created!":"Проект <strong>%s</strong> успешно создан!","Project <strong>%s</strong> deleted!":"Проект <strong>%s</strong> успешно удален!","Project <strong>%s</strong> updated!":"Проект <strong>%s</strong> успешно изменен!","Projects":"Проекты","Projects description":"Список собственных небольших и больших проектов","Properties":"Свойства","Properties description":"Свойства используемые при построении и выводе сайта","Property <strong>%s</strong> created!":"Свойство <strong>%s</strong> успешно создано!","Property <strong>%s</strong> deleted!":"Свойство <strong>%s</strong> успешно удалено!","Property <strong>%s</strong> updated!":"Свойство <strong>%s</strong> успешно изменено!","Public link <strong>%s</strong> created!":"Публичная ссылка <strong>%s</strong> успешно создано!","Public link <strong>%s</strong> deleted!":"Публичная ссылка <strong>%s</strong> успешно удалено!","Public link <strong>%s</strong> updated!":"Публичная ссылка <strong>%s</strong> успешно изменено!","Public links":"Публичные ссылки","Public links description":"Контактные ссылки на другие ресурсы","Recovery access":"Восстановить доступ","Recovery access to site":"Восстановление доступа к сайту","Redirect uris":"Redirect uris","Registration form":"Регистрация","Registration on site":"Регистрация на сайте","Reset password":"Сброс пароля","Reset password for account":"Сброс пароля для учетной записи","RU":"RU","Save":"Сохранить","Search":"Поиск","Search result for text \"%s\"":"Результат поиска \"%s\"","search text":"текст для поиска","Select":"Выбрать","Select file":"Выбрать файл","Send message":"Отправить сообщение","Sent link to reset password":"Отправить ссылку для сброса пароля","Show all":"Показать все","Src":"Источник","Tag <strong>%s</strong> created!":"Тэг <strong>%s</strong> успешно создан!","Tag <strong>%s</strong> deleted!":"Тэг <strong>%s</strong> успешно удален!","Tag <strong>%s</strong> updated!":"Тэг <strong>%s</strong> успешно изменено!","Tag: %s":"Тэги: %s","Tags":"Тэги","Tags description":"Список тэгов используемых на сайте","Text":"Текст","Title":"Заголовок","Type":"Тип","Url":"Url","User <strong>%s</strong> created!":"Пользователь <strong>%s</strong> успешно создан!","User <strong>%s</strong> deleted!":"Пользователь <strong>%s</strong> успешно удален!","User <strong>%s</strong> updated!":"Пользователь <strong>%s</strong> успешно изменен!","User not activated!":"Пользователь не активирован!","User not founded!":"Пользователь не найден!","User with email <strong>%s</strong> is exists!":"Пользователь с почтой <strong>%s</strong> уже зарегистрирован!","User with email <strong>%s</strong> not found!":"Пользователь с почтой <strong>%s</strong> не найден!","Username":"Имя пользователя","Users":"Пользователи","Users description":"Пользователи сайта","Value":"Значение","View":"Смотреть","Wrong password!":"Неверный пароль!","Yes":"Да","You authorizing!":"Вы авторизованы!","You name":"Ваше имя","You not activated!":"Вы не активировали учетную запись!"});
 /* jshint +W100 */
 }]);

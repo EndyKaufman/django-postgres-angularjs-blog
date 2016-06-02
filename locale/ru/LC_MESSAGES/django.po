@@ -41,7 +41,7 @@ msgstr "Добавить изображение"
 msgid "Add new application"
 msgstr "Добавить новое приложение"
 
-#: file/file.svc.js:57
+#: file/file.svc.js:63
 msgid "Add new file"
 msgstr "Добавить новый файл"
 
@@ -140,7 +140,7 @@ msgid "Cache <strong>%s</strong> updated!"
 msgstr "Кэш файл <strong>%s</strong> успешно изменен!"
 
 #: account/user_app/user_app.svc.js:26 account/user_app/user_app.svc.js:53
-#: file/file.svc.js:30 file/file.svc.js:64 file/file.svc.js:91
+#: file/file.svc.js:33 file/file.svc.js:70 file/file.svc.js:97
 #: manager/html_cache/htm_cache.svc.js:131
 #: manager/html_cache/htm_cache.svc.js:94 manager/meta_tag/meta_tag.svc.js:26
 #: manager/meta_tag/meta_tag.svc.js:53 manager/properties/properties.svc.js:30
@@ -187,7 +187,7 @@ msgstr "Контакты"
 
 #: contact/const.js:5
 msgid "Contact us description"
-msgstr "Форма для обратной связи, а также контактные данный для связи"
+msgstr "Форма для обратной связи, а также контактные данные для связи"
 
 #: manager/html_cache/inputs.html:6 manager/meta_tag/inputs.html:12
 #: manager/meta_tag/list.html:6
@@ -195,7 +195,7 @@ msgid "Content"
 msgstr "Содержимое"
 
 #: account/reg.html:12 account/user_app/list-header.html:4
-#: account/user_app/user_app.svc.js:25 file/file.svc.js:63
+#: account/user_app/user_app.svc.js:25 file/file.svc.js:69
 #: manager/html_cache/htm_cache.svc.js:93 manager/meta_tag/list-header.html:4
 #: manager/meta_tag/meta_tag.svc.js:25 manager/properties/list-header.html:9
 #: manager/properties/properties.svc.js:29
@@ -319,7 +319,7 @@ msgstr "Редактировать"
 msgid "Edit application"
 msgstr "редактировать приложение"
 
-#: file/file.svc.js:84
+#: file/file.svc.js:90
 msgid "Edit file properties"
 msgstr "Редактировать свойства файла"
 
@@ -720,7 +720,7 @@ msgid "RU"
 msgstr "RU"
 
 #: account/profile.html:14 account/user_app/user_app.svc.js:52
-#: file/file.svc.js:90 manager/html_cache/htm_cache.svc.js:130
+#: file/file.svc.js:96 manager/html_cache/htm_cache.svc.js:130
 #: manager/meta_tag/meta_tag.svc.js:52 manager/properties/properties.svc.js:56
 #: manager/public_link/public_link.svc.js:56 post/update.html:18
 #: project/update.html:19 tag/tag.svc.js:66
@@ -742,12 +742,12 @@ msgstr "Результат поиска \"%s\""
 msgid "search text"
 msgstr "текст для поиска"
 
-#: file/file.svc.js:29 post/inputs/central.html:42
+#: file/file.svc.js:32 post/inputs/central.html:42
 #: project/inputs/central.html:41
 msgid "Select"
 msgstr "Выбрать"
 
-#: file/file.svc.js:23 manager/properties/inputs.html:15
+#: file/file.svc.js:26 manager/properties/inputs.html:15
 msgid "Select file"
 msgstr "Выбрать файл"
 
