@@ -79882,12 +79882,13 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
                         response.data !== null && response.data.code !== undefined) {
                         MessageSvc.error(response.data.code, response.data);
                         deferred.reject(response.data);
-                    }
+                    } else
                     if (response.error !== undefined &&
                         response.error !== null && response.message !== undefined) {
                         MessageSvc.error(response.message);
                         deferred.reject(null);
-                    }
+                    } else
+                        deferred.reject(null);
                 } else {
                     deferred.reject(null);
                 }
@@ -79916,12 +79917,13 @@ app.factory('AppRes', function($q, $http, $cookies, uiUploader, MessageSvc) {
                         response.data !== null && response.data.code !== undefined) {
                         MessageSvc.error(response.data.code, response.data);
                         deferred.reject(response.data);
-                    }
+                    } else
                     if (response.error !== undefined &&
                         response.error !== null && response.message !== undefined) {
                         MessageSvc.error(response.message);
                         deferred.reject(null);
-                    }
+                    } else
+                        deferred.reject(null);
                 } else {
                     deferred.reject(null);
                 }

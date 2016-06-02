@@ -86,7 +86,9 @@ class CustomPrerenderIO(PrerenderIO):
                     resource.update_by_url(new_url, new_response.content)
                     return new_response
                 else:
-                    return Http404()
+                    r = HttpResponse()
+                    r.status_code = 404
+                    return r
             except requests.exceptions.Timeout:
                 return self.build_request_timeout_response()
         else:
